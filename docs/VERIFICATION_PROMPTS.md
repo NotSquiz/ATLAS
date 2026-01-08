@@ -141,6 +141,64 @@ What would make this recommendation WRONG?
 
 ---
 
+## Post-Phase Verification Guide
+
+**After an agent completes a phase, run verification based on phase type:**
+
+### Code/Script Phases (e.g., QC Hook, Pipeline)
+Run these 3:
+1. **Code Review Self-Check** - Find bugs, security issues
+2. **Inversion Test** - What inputs would break it?
+3. **Junior Analyst Challenge** - Spawn fresh agent to find problems
+
+### Documentation Phases
+Run these 2:
+1. **Documentation Completeness** - All sections present?
+2. **Fact-Check Prompt** - Claims accurate?
+
+### Architecture/Design Phases
+Run these 3:
+1. **Inversion Test** - What would make this design wrong?
+2. **Adversarial Self-Check** - Assumptions stated as facts?
+3. **"Wait" Pattern** - What am I missing?
+
+### Research/Analysis Phases
+Run these 3:
+1. **Fact-Check Prompt** - Sources valid?
+2. **Confidence Extraction** - How certain?
+3. **"Wait" Pattern** - Assumptions?
+
+### Phase Type Quick Matrix
+
+| Phase Type | Must Run | Should Run | Skip |
+|------------|----------|------------|------|
+| Code/Scripts | Code Review, Inversion | Junior Analyst | Fact-Check, Confidence |
+| Documentation | Doc Completeness, Fact-Check | Adversarial | Code Review |
+| Architecture | Inversion, Adversarial | Wait, Junior Analyst | Doc Completeness |
+| Research | Fact-Check, Confidence | Wait | Code Review |
+
+### Example: Verifying Phase 2 QC Hook
+
+After agent reports completion:
+
+```
+1. CODE REVIEW: Review check_activity_quality.py for:
+   - All 5 block codes implemented?
+   - Exit codes correct (0=pass, 1=fail)?
+   - JSON output format matches spec?
+   - Edge cases: empty YAML, malformed YAML, huge files?
+
+2. INVERSION: What would make this QC hook wrong?
+   - What valid activity would it incorrectly FAIL?
+   - What invalid activity would it incorrectly PASS?
+   - What em-dash variants might it miss? (—, –, -)
+
+3. JUNIOR ANALYST: Spawn fresh agent to audit the code
+   against /home/squiz/ATLAS/docs/HANDOVER_PHASE2_QC_HOOK.md
+```
+
+---
+
 ## Implementation
 
 ```python
