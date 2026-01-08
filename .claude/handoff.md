@@ -1,41 +1,59 @@
 # ATLAS Session Handoff
 
-## Last Session: January 9, 2026
+## Last Session: January 9, 2026 (Activity QC Hook)
 
 ### Completed This Session
-- Reviewed Activity Pipeline handover from knowledge repo
-- Analyzed 5 Anthropic research papers via sub-agents
-- Implemented full infrastructure based on research:
-  - Git initialization (commit aea7942)
-  - CLAUDE.md project context
-  - handoff.md + atlas-progress.json session tracking
-  - Sandbox configs (config/sandbox/*.json)
-  - sandbox-runtime installed and tested (srt working)
-  - confidence_router.py with "Wait" pattern
-- Updated all documentation (V2_ORCHESTRATOR_GUIDE.md, CLAUDE.md)
-- Created Phase 2 handover docs for fresh agent
+- **Created Activity QC Hook** (`/home/squiz/code/knowledge/scripts/check_activity_quality.py`)
+  - Voice validation: Em-dashes (U+2014), en-dashes (U+2013), double-hyphens, formal transitions, superlatives
+  - Structure validation: 34 required YAML sections
+  - Cross-reference validation: 18 valid principle slugs
+  - Context-aware detection: "best practices", "perfect" as verb, negated contexts
+- **Registered hook** in `atlas/orchestrator/hooks.py` as `knowledge/activity_qc`
+- **Ran adversarial verification** via 3 Opus sub-agents:
+  - Code Review Self-Check
+  - Inversion Test (false positive/negative analysis)
+  - Junior Analyst Challenge
+- **Fixed issues identified by verification:**
+  - CRITICAL: JSON field mismatch (passed→pass, message→msg)
+  - HIGH: En-dash and double-hyphen detection
+  - HIGH: Context-aware superlatives (best practice, perfect as verb)
+  - MEDIUM: Pre-compiled regex patterns for performance
+  - MEDIUM: Null/empty field detection for required sections
+- **Updated all documentation:**
+  - V2_ORCHESTRATOR_GUIDE.md (hooks table, activity_qc section)
+  - TECHNICAL_STATUS.md (V2 Components Status)
+  - DECISIONS.md (D19: Output Format, D20: Context-Aware Detection)
+  - CLAUDE.md (Infrastructure table)
 
 ### Pending for Next Session
+- [ ] Activity Pipeline Phase 3 (Pipeline Orchestrator)
 - [ ] Integrate sandboxing INTO SubAgentExecutor code
-- [ ] Write core tests for orchestrator components
-- [ ] Activity Pipeline Phase 3 (after Phase 2 QC hook complete)
 - [ ] Personal assistant workflows (HRV, supplements, recovery)
 
 ### Key Decisions Made
-- JSON for progress tracking (prevents model modification per research)
-- Sandbox configs split: subagent.json (network allowed) vs hook.json (offline)
-- Confidence inversion: high confidence + safety domain = MORE verification
-- Fresh agent for Phase 2 QC hook (clean context for critical work)
+- D19: Match hooks.py JSON format exactly (pass/msg/block)
+- D20: Multi-layer context awareness for superlatives (exception phrases, verb detection, negation patterns)
 
-### Git Commits This Session
+### Test Commands
+```bash
+# Test canonical activity (should PASS)
+cat /home/squiz/code/knowledge/data/canonical/activities/practical_life/ACTIVITY_PRACTICAL_LIFE_WASHING_FRUITS_VEGETABLES_12_36M.yaml | python3 /home/squiz/code/knowledge/scripts/check_activity_quality.py
+
+# Test bad content (should FAIL)
+echo "description: This is an amazing—truly incredible activity" | python3 /home/squiz/code/knowledge/scripts/check_activity_quality.py
 ```
-aea7942 - Initial commit (183 files)
-ea90225 - Add infrastructure based on Anthropic research
-02159e9 - Document new infrastructure
-c67af5c - Add Phase 2 handover documentation
+
+### Files Modified This Session
+```
+/home/squiz/code/knowledge/scripts/check_activity_quality.py (CREATED)
+/home/squiz/ATLAS/atlas/orchestrator/hooks.py (MODIFIED - added activity_qc)
+/home/squiz/ATLAS/docs/V2_ORCHESTRATOR_GUIDE.md (MODIFIED)
+/home/squiz/ATLAS/docs/TECHNICAL_STATUS.md (MODIFIED)
+/home/squiz/ATLAS/docs/DECISIONS.md (MODIFIED - D19, D20)
+/home/squiz/ATLAS/CLAUDE.md (MODIFIED)
 ```
 
 ### Context Notes
-- sandbox-runtime requires: bubblewrap, socat, ripgrep (installed)
-- SubAgentExecutor at: atlas/orchestrator/subagent_executor.py
-- Activity skills at: /home/squiz/code/babybrains-os/skills/activity/
+- Activity QC Hook gates 175+ activity conversions
+- Canonical activity at: /home/squiz/code/knowledge/data/canonical/activities/
+- Hook output format: {"pass": bool, "issues": [{"code", "msg", "severity", "line"}], ...}
