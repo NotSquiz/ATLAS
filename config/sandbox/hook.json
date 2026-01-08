@@ -1,0 +1,11 @@
+{
+  "network": {
+    "allowedDomains": [],
+    "deniedDomains": ["*"]
+  },
+  "filesystem": {
+    "denyRead": ["~/.ssh", "~/.aws"],
+    "allowWrite": ["/home/squiz/code"],
+    "denyWrite": [".env*"]
+  }
+}
