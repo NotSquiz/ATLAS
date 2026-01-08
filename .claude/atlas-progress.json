@@ -1,17 +1,21 @@
 {
-  "current_phase": "setup",
+  "current_phase": "activity_pipeline_phase2",
   "completed_tasks": [
     {"id": "pre-1", "task": "Git initialization", "status": "completed", "date": "2026-01-09"},
     {"id": "pre-2", "task": "Test structure creation", "status": "completed", "date": "2026-01-09"},
-    {"id": "pre-3", "task": "Research Anthropic papers", "status": "completed", "date": "2026-01-09"}
+    {"id": "pre-3", "task": "Research Anthropic papers", "status": "completed", "date": "2026-01-09"},
+    {"id": "setup-1", "task": "Create CLAUDE.md", "status": "completed", "date": "2026-01-09"},
+    {"id": "setup-2", "task": "Create handoff.md", "status": "completed", "date": "2026-01-09"},
+    {"id": "setup-3", "task": "Add sandbox config", "status": "completed", "date": "2026-01-09"},
+    {"id": "setup-4", "task": "Create confidence_router.py", "status": "completed", "date": "2026-01-09"}
   ],
   "pending_tasks": [
-    {"id": "setup-1", "task": "Create CLAUDE.md", "status": "in_progress"},
-    {"id": "setup-2", "task": "Create handoff.md", "status": "in_progress"},
-    {"id": "setup-3", "task": "Add sandbox config", "status": "pending"},
-    {"id": "setup-4", "task": "Create confidence_router.py", "status": "pending"},
-    {"id": "phase2-1", "task": "Create QC hook", "status": "pending"}
+    {"id": "phase2-1", "task": "Create QC hook (check_activity_quality.py)", "status": "pending"},
+    {"id": "phase2-2", "task": "Register activity_qc hook in hooks.py", "status": "pending"},
+    {"id": "phase2-3", "task": "Test hook with sample canonical activity", "status": "pending"},
+    {"id": "phase3-1", "task": "Create pipeline orchestrator", "status": "pending"},
+    {"id": "phase4-1", "task": "Build human review interface", "status": "pending"}
   ],
-  "last_updated": "2026-01-09T00:00:00Z",
+  "last_updated": "2026-01-09T08:05:00Z",
   "session_count": 1
 }

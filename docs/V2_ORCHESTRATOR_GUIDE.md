@@ -579,4 +579,178 @@ result = asyncio.run(generate_content("sleep", "12-18m"))
 
 ---
 
+## 6. Confidence Router (January 2026)
+
+### What It Does
+Routes responses based on verbalized confidence levels. Implements research findings from Anthropic's introspection paper.
+
+### Key Insight: Confidence Inversion
+High confidence in safety-critical domains triggers MORE verification, not less. This catches systematic hallucinations where the model incorrectly activates "known entity" signals.
+
+### Usage
+
+```python
+from atlas.orchestrator.confidence_router import (
+    route_by_confidence,
+    apply_wait_pattern,
+    ConfidenceLevel,
+    VerificationAction,
+)
+
+# Basic routing
+result = route_by_confidence(response_text)
+print(result.score)   # 0.0-1.0
+print(result.level)   # HIGH, MEDIUM, LOW
+print(result.action)  # PROCEED, VERIFY_EXTERNAL, VERIFY_ADVERSARIAL, REGENERATE
+
+# With safety-critical domain (triggers confidence inversion)
+result = route_by_confidence(response_text, domain="health")
+# High confidence + health domain → VERIFY_ADVERSARIAL (not PROCEED)
+
+# The "Wait" pattern for self-correction (89.3% blind spot reduction)
+correction_prompt = apply_wait_pattern(original_response, query)
+```
+
+### Confidence Levels and Actions
+
+| Level | Score | Default Action | Safety-Critical Action |
+|-------|-------|----------------|------------------------|
+| HIGH | > 0.8 | PROCEED | VERIFY_ADVERSARIAL |
+| MEDIUM | 0.5-0.8 | VERIFY_EXTERNAL | VERIFY_EXTERNAL |
+| LOW | < 0.5 | REGENERATE | REGENERATE |
+
+### Safety-Critical Domains
+These domains always require external verification:
+- health, medical, supplements, exercise
+- safety, financial, legal
+
+### CLI Testing
+```bash
+python -m atlas.orchestrator.confidence_router "I am confident this is correct"
+python -m atlas.orchestrator.confidence_router "I think this might work"
+```
+
+---
+
+## 7. Sandboxing (January 2026)
+
+### What It Does
+OS-level security isolation for sub-agents and hooks. Prevents prompt injection attacks from accessing sensitive files or exfiltrating data.
+
+### Why It Matters
+Sub-agents spawned via `claude -p` have full system access. A prompt injection attack could:
+- Read `~/.ssh/id_rsa` and exfiltrate via network
+- Modify `~/.bashrc` to persist malware
+- Access credentials in `.env` files
+
+### Sandbox Configs
+
+| Config | File | Use For |
+|--------|------|---------|
+| SubAgent | `config/sandbox/subagent.json` | SubAgentExecutor spawns |
+| Hook | `config/sandbox/hook.json` | HookRunner validators |
+
+### SubAgent Config (`config/sandbox/subagent.json`)
+```json
+{
+  "network": {
+    "allowedDomains": ["api.anthropic.com"]
+  },
+  "filesystem": {
+    "denyRead": ["~/.ssh", "~/.aws", "~/.gnupg"],
+    "allowWrite": ["/home/squiz/ATLAS", "/home/squiz/code"],
+    "denyWrite": [".env*", "*.key", "*.pem"]
+  }
+}
+```
+
+### Hook Config (`config/sandbox/hook.json`)
+```json
+{
+  "network": {
+    "allowedDomains": []  // Hooks run offline
+  },
+  "filesystem": {
+    "denyRead": ["~/.ssh", "~/.aws"],
+    "allowWrite": ["/home/squiz/code"]
+  }
+}
+```
+
+### Usage (when integrated)
+```bash
+# Manual sandboxed execution
+srt --settings config/sandbox/subagent.json claude -p "your prompt"
+
+# In SubAgentExecutor (future integration)
+cmd = ["srt", "--settings", sandbox_config] + base_cmd
+```
+
+### Requirements
+- `npm install -g @anthropic-ai/sandbox-runtime`
+- Linux (bubblewrap) or macOS (seatbelt)
+- WSL2 works (uses Linux sandboxing)
+
+---
+
+## 8. Session Handoff (January 2026)
+
+### What It Does
+Manages context transitions between sessions via structured files.
+
+### Files
+
+| File | Format | Purpose |
+|------|--------|---------|
+| `.claude/handoff.md` | Markdown | Human-readable session notes |
+| `.claude/atlas-progress.json` | JSON | Machine-readable task tracking |
+
+### Why JSON for Progress
+Research finding: Models are less likely to inappropriately modify JSON than Markdown. Use JSON for task status that needs to persist accurately.
+
+### Handoff Protocol
+
+**At Session Start:**
+1. Read `.claude/handoff.md` for context
+2. Read `.claude/atlas-progress.json` for task status
+3. Update "Last Session Summary" if continuing work
+
+**At Session End:**
+1. Update `handoff.md` with completed work and pending tasks
+2. Update `atlas-progress.json` task statuses
+3. Note any key decisions or blockers
+
+### Example Workflow
+```python
+import json
+from pathlib import Path
+
+# Read progress
+progress = json.load(open('.claude/atlas-progress.json'))
+pending = [t for t in progress['pending_tasks'] if t['status'] == 'pending']
+
+# Work on first pending task
+task = pending[0]
+task['status'] = 'in_progress'
+
+# Save progress
+with open('.claude/atlas-progress.json', 'w') as f:
+    json.dump(progress, f, indent=2)
+```
+
+---
+
+## Research References
+
+These patterns are based on Anthropic's 2025-2026 research:
+
+| Pattern | Source | Key Finding |
+|---------|--------|-------------|
+| Session Handoff | [Long-Running Agents](https://anthropic.com/engineering/effective-harnesses-for-long-running-agents) | JSON prevents model modification; single-task-per-session |
+| Sandboxing | [Claude Code Sandboxing](https://anthropic.com/engineering/claude-code-sandboxing) | OS-level isolation for sub-agents |
+| Confidence Routing | [Introspection](https://anthropic.com/research/introspection) | "Wait" pattern reduces blind spots 89.3% |
+| Verification | [Tracing Thoughts](https://anthropic.com/research/tracing-thoughts-language-model) | CoT is unfaithful; external verification required |
+
+---
+
 *This guide should be read by any agent working on ATLAS to understand available capabilities.*
