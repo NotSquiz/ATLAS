@@ -49,6 +49,7 @@ correction_prompt = apply_wait_pattern(original_response, query)
 - V2 Guide: docs/V2_ORCHESTRATOR_GUIDE.md
 - Architecture: docs/ATLAS_ARCHITECTURE_V2.md
 - Activity Pipeline: docs/HANDOVER_ACTIVITY_PIPELINE.md
+- **Verification Prompts: docs/VERIFICATION_PROMPTS.md** (self-check patterns)
 
 ## Coding Standards
 - Use async/await for all I/O
