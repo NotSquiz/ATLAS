@@ -1,0 +1,641 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "ATLAS Exercise Database - Curated for user's home gym equipment",
+    "equipment_available": [
+      "power_rack",
+      "bench",
+      "pullup_bar",
+      "barbell",
+      "dumbbells",
+      "skipping_rope",
+      "neck_harness"
+    ]
+  },
+  "exercises": [
+    {
+      "id": "bench_press",
+      "name": "Barbell Bench Press",
+      "category": "strength",
+      "equipment": ["bench", "barbell", "power_rack"],
+      "primary_muscles": ["chest"],
+      "secondary_muscles": ["triceps", "shoulders"],
+      "injury_contraindications": ["shoulder", "rotator_cuff", "pec"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Lie on bench with eyes under the bar",
+        "Grip bar slightly wider than shoulder width",
+        "Unrack and lower to mid-chest",
+        "Press up to lockout"
+      ]
+    },
+    {
+      "id": "incline_bench_press",
+      "name": "Incline Barbell Bench Press",
+      "category": "strength",
+      "equipment": ["bench", "barbell", "power_rack"],
+      "primary_muscles": ["chest", "shoulders"],
+      "secondary_muscles": ["triceps"],
+      "injury_contraindications": ["shoulder", "rotator_cuff"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Set bench to 30-45 degree incline",
+        "Unrack bar and lower to upper chest",
+        "Press up to lockout"
+      ]
+    },
+    {
+      "id": "db_bench_press",
+      "name": "Dumbbell Bench Press",
+      "category": "strength",
+      "equipment": ["bench", "dumbbells"],
+      "primary_muscles": ["chest"],
+      "secondary_muscles": ["triceps", "shoulders"],
+      "injury_contraindications": ["shoulder"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Lie on bench with dumbbells at shoulder level",
+        "Press up and together",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "incline_db_press",
+      "name": "Incline Dumbbell Press",
+      "category": "strength",
+      "equipment": ["bench", "dumbbells"],
+      "primary_muscles": ["chest", "shoulders"],
+      "secondary_muscles": ["triceps"],
+      "injury_contraindications": ["shoulder"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Set bench to 30-45 degree incline",
+        "Hold dumbbells at shoulder level",
+        "Press up and together",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "db_flyes",
+      "name": "Dumbbell Flyes",
+      "category": "strength",
+      "equipment": ["bench", "dumbbells"],
+      "primary_muscles": ["chest"],
+      "secondary_muscles": ["shoulders"],
+      "injury_contraindications": ["shoulder", "rotator_cuff", "pec"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Lie on bench with dumbbells above chest",
+        "Lower with slight bend in elbows",
+        "Stop when you feel stretch in chest",
+        "Squeeze back up"
+      ]
+    },
+    {
+      "id": "pullups",
+      "name": "Pull-ups",
+      "category": "strength",
+      "equipment": ["pullup_bar"],
+      "primary_muscles": ["back", "lats"],
+      "secondary_muscles": ["biceps", "forearms"],
+      "injury_contraindications": ["shoulder", "elbow"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Hang from bar with overhand grip",
+        "Pull up until chin over bar",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "chinups",
+      "name": "Chin-ups",
+      "category": "strength",
+      "equipment": ["pullup_bar"],
+      "primary_muscles": ["back", "biceps"],
+      "secondary_muscles": ["forearms"],
+      "injury_contraindications": ["shoulder", "elbow", "bicep"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Hang from bar with underhand grip",
+        "Pull up until chin over bar",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "barbell_row",
+      "name": "Barbell Row",
+      "category": "strength",
+      "equipment": ["barbell"],
+      "primary_muscles": ["back", "lats"],
+      "secondary_muscles": ["biceps", "core"],
+      "injury_contraindications": ["lower_back"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Hinge at hips, back flat",
+        "Pull bar to lower chest",
+        "Squeeze shoulder blades",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "pendlay_row",
+      "name": "Pendlay Row",
+      "category": "strength",
+      "equipment": ["barbell"],
+      "primary_muscles": ["back"],
+      "secondary_muscles": ["biceps", "core"],
+      "injury_contraindications": ["lower_back"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Bar on floor, hinge at hips",
+        "Explosively row to lower chest",
+        "Return bar to floor each rep"
+      ]
+    },
+    {
+      "id": "db_row",
+      "name": "Dumbbell Row",
+      "category": "strength",
+      "equipment": ["dumbbells", "bench"],
+      "primary_muscles": ["back", "lats"],
+      "secondary_muscles": ["biceps"],
+      "injury_contraindications": ["lower_back"],
+      "difficulty": "beginner",
+      "instructions": [
+        "One hand and knee on bench",
+        "Row dumbbell to hip",
+        "Squeeze at top",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "deadlift",
+      "name": "Conventional Deadlift",
+      "category": "strength",
+      "equipment": ["barbell", "power_rack"],
+      "primary_muscles": ["back", "hamstrings", "glutes"],
+      "secondary_muscles": ["core", "forearms"],
+      "injury_contraindications": ["lower_back", "hip"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Stand with feet hip-width, bar over mid-foot",
+        "Hinge and grip bar",
+        "Brace core, drive through floor",
+        "Lock out hips and knees together"
+      ]
+    },
+    {
+      "id": "romanian_deadlift",
+      "name": "Romanian Deadlift",
+      "category": "strength",
+      "equipment": ["barbell"],
+      "primary_muscles": ["hamstrings", "glutes"],
+      "secondary_muscles": ["back", "core"],
+      "injury_contraindications": ["lower_back", "hamstring"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Stand with bar at hips",
+        "Hinge at hips, slight knee bend",
+        "Lower until stretch in hamstrings",
+        "Drive hips forward to stand"
+      ]
+    },
+    {
+      "id": "db_rdl",
+      "name": "Dumbbell Romanian Deadlift",
+      "category": "strength",
+      "equipment": ["dumbbells"],
+      "primary_muscles": ["hamstrings", "glutes"],
+      "secondary_muscles": ["back", "core"],
+      "injury_contraindications": ["lower_back", "hamstring"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Hold dumbbells at thighs",
+        "Hinge at hips, slight knee bend",
+        "Lower until stretch in hamstrings",
+        "Drive hips forward to stand"
+      ]
+    },
+    {
+      "id": "squat",
+      "name": "Barbell Back Squat",
+      "category": "strength",
+      "equipment": ["barbell", "power_rack"],
+      "primary_muscles": ["quads", "glutes"],
+      "secondary_muscles": ["hamstrings", "core"],
+      "injury_contraindications": ["knee", "lower_back", "hip"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Bar on upper back, not neck",
+        "Feet shoulder width, toes slightly out",
+        "Descend until thighs parallel",
+        "Drive up through heels"
+      ]
+    },
+    {
+      "id": "front_squat",
+      "name": "Front Squat",
+      "category": "strength",
+      "equipment": ["barbell", "power_rack"],
+      "primary_muscles": ["quads"],
+      "secondary_muscles": ["glutes", "core"],
+      "injury_contraindications": ["knee", "wrist", "shoulder"],
+      "difficulty": "advanced",
+      "instructions": [
+        "Bar on front delts, elbows high",
+        "Feet shoulder width",
+        "Descend keeping torso upright",
+        "Drive up through heels"
+      ]
+    },
+    {
+      "id": "goblet_squat",
+      "name": "Goblet Squat",
+      "category": "strength",
+      "equipment": ["dumbbells"],
+      "primary_muscles": ["quads", "glutes"],
+      "secondary_muscles": ["core"],
+      "injury_contraindications": ["knee"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Hold dumbbell at chest",
+        "Feet shoulder width",
+        "Squat between knees",
+        "Drive up through heels"
+      ]
+    },
+    {
+      "id": "lunges",
+      "name": "Walking Lunges",
+      "category": "strength",
+      "equipment": ["dumbbells"],
+      "primary_muscles": ["quads", "glutes"],
+      "secondary_muscles": ["hamstrings", "core"],
+      "injury_contraindications": ["knee", "hip", "ankle"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Hold dumbbells at sides",
+        "Step forward into lunge",
+        "Both knees at 90 degrees",
+        "Drive through front heel"
+      ]
+    },
+    {
+      "id": "split_squat",
+      "name": "Bulgarian Split Squat",
+      "category": "strength",
+      "equipment": ["bench", "dumbbells"],
+      "primary_muscles": ["quads", "glutes"],
+      "secondary_muscles": ["hamstrings"],
+      "injury_contraindications": ["knee", "hip", "ankle"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Rear foot elevated on bench",
+        "Hold dumbbells at sides",
+        "Lower until back knee near floor",
+        "Drive up through front heel"
+      ]
+    },
+    {
+      "id": "overhead_press",
+      "name": "Overhead Press",
+      "category": "strength",
+      "equipment": ["barbell", "power_rack"],
+      "primary_muscles": ["shoulders"],
+      "secondary_muscles": ["triceps", "core"],
+      "injury_contraindications": ["shoulder", "rotator_cuff", "neck"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Bar at collar bone level",
+        "Press straight up",
+        "Lock out overhead",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "db_shoulder_press",
+      "name": "Dumbbell Shoulder Press",
+      "category": "strength",
+      "equipment": ["dumbbells", "bench"],
+      "primary_muscles": ["shoulders"],
+      "secondary_muscles": ["triceps"],
+      "injury_contraindications": ["shoulder", "rotator_cuff"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Sit or stand with dumbbells at shoulders",
+        "Press up and together",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "lateral_raises",
+      "name": "Lateral Raises",
+      "category": "strength",
+      "equipment": ["dumbbells"],
+      "primary_muscles": ["shoulders"],
+      "secondary_muscles": [],
+      "injury_contraindications": ["shoulder", "rotator_cuff"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Hold dumbbells at sides",
+        "Raise to shoulder height",
+        "Slight bend in elbows",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "face_pulls",
+      "name": "Face Pulls (Band/Cable)",
+      "category": "strength",
+      "equipment": [],
+      "primary_muscles": ["rear_delts", "upper_back"],
+      "secondary_muscles": ["rotator_cuff"],
+      "injury_contraindications": [],
+      "difficulty": "beginner",
+      "instructions": [
+        "Pull to face level",
+        "Separate hands at end",
+        "Squeeze shoulder blades"
+      ],
+      "notes": "Can use resistance band if no cable"
+    },
+    {
+      "id": "barbell_curl",
+      "name": "Barbell Curl",
+      "category": "strength",
+      "equipment": ["barbell"],
+      "primary_muscles": ["biceps"],
+      "secondary_muscles": ["forearms"],
+      "injury_contraindications": ["elbow", "bicep"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Stand with bar at thighs",
+        "Curl up to shoulders",
+        "Keep elbows stationary",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "db_curl",
+      "name": "Dumbbell Curl",
+      "category": "strength",
+      "equipment": ["dumbbells"],
+      "primary_muscles": ["biceps"],
+      "secondary_muscles": ["forearms"],
+      "injury_contraindications": ["elbow", "bicep"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Stand with dumbbells at sides",
+        "Curl up, supinating at top",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "hammer_curl",
+      "name": "Hammer Curl",
+      "category": "strength",
+      "equipment": ["dumbbells"],
+      "primary_muscles": ["biceps", "forearms"],
+      "secondary_muscles": [],
+      "injury_contraindications": ["elbow"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Hold dumbbells with neutral grip",
+        "Curl up keeping thumbs up",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "skull_crushers",
+      "name": "Skull Crushers",
+      "category": "strength",
+      "equipment": ["barbell", "bench"],
+      "primary_muscles": ["triceps"],
+      "secondary_muscles": [],
+      "injury_contraindications": ["elbow", "shoulder"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Lie on bench, bar above forehead",
+        "Lower bar to forehead",
+        "Extend to lockout"
+      ]
+    },
+    {
+      "id": "tricep_dips",
+      "name": "Tricep Dips",
+      "category": "strength",
+      "equipment": ["bench"],
+      "primary_muscles": ["triceps"],
+      "secondary_muscles": ["chest", "shoulders"],
+      "injury_contraindications": ["shoulder", "elbow"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Hands on bench behind you",
+        "Lower until arms at 90 degrees",
+        "Press up to lockout"
+      ]
+    },
+    {
+      "id": "close_grip_bench",
+      "name": "Close Grip Bench Press",
+      "category": "strength",
+      "equipment": ["bench", "barbell", "power_rack"],
+      "primary_muscles": ["triceps"],
+      "secondary_muscles": ["chest", "shoulders"],
+      "injury_contraindications": ["elbow", "wrist", "shoulder"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Grip bar shoulder width or narrower",
+        "Lower to mid-chest",
+        "Press up keeping elbows tucked"
+      ]
+    },
+    {
+      "id": "neck_curl",
+      "name": "Neck Curl (Harness)",
+      "category": "strength",
+      "equipment": ["neck_harness"],
+      "primary_muscles": ["neck"],
+      "secondary_muscles": [],
+      "injury_contraindications": ["neck", "cervical"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Attach weight to harness",
+        "Sit on bench, lean forward",
+        "Curl head up against resistance",
+        "Lower slowly"
+      ]
+    },
+    {
+      "id": "neck_extension",
+      "name": "Neck Extension (Harness)",
+      "category": "strength",
+      "equipment": ["neck_harness"],
+      "primary_muscles": ["neck"],
+      "secondary_muscles": [],
+      "injury_contraindications": ["neck", "cervical"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Attach weight to harness",
+        "Face bench, lean over",
+        "Extend head up against resistance",
+        "Lower slowly"
+      ]
+    },
+    {
+      "id": "shrugs",
+      "name": "Barbell Shrugs",
+      "category": "strength",
+      "equipment": ["barbell"],
+      "primary_muscles": ["traps"],
+      "secondary_muscles": ["neck"],
+      "injury_contraindications": ["neck", "shoulder"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Hold bar at thighs",
+        "Shrug shoulders to ears",
+        "Hold briefly at top",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "db_shrugs",
+      "name": "Dumbbell Shrugs",
+      "category": "strength",
+      "equipment": ["dumbbells"],
+      "primary_muscles": ["traps"],
+      "secondary_muscles": ["neck"],
+      "injury_contraindications": ["neck", "shoulder"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Hold dumbbells at sides",
+        "Shrug shoulders to ears",
+        "Hold briefly at top",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "calf_raises",
+      "name": "Standing Calf Raises",
+      "category": "strength",
+      "equipment": ["power_rack", "barbell"],
+      "primary_muscles": ["calves"],
+      "secondary_muscles": [],
+      "injury_contraindications": ["ankle", "achilles"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Bar on back, balls of feet on plate",
+        "Rise up on toes",
+        "Lower with stretch at bottom"
+      ]
+    },
+    {
+      "id": "plank",
+      "name": "Plank",
+      "category": "core",
+      "equipment": [],
+      "primary_muscles": ["core"],
+      "secondary_muscles": ["shoulders"],
+      "injury_contraindications": ["lower_back"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Forearms on ground, body straight",
+        "Squeeze glutes and core",
+        "Hold position"
+      ]
+    },
+    {
+      "id": "hanging_leg_raise",
+      "name": "Hanging Leg Raise",
+      "category": "core",
+      "equipment": ["pullup_bar"],
+      "primary_muscles": ["core", "hip_flexors"],
+      "secondary_muscles": ["forearms"],
+      "injury_contraindications": ["lower_back", "hip"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Hang from bar",
+        "Raise legs to parallel",
+        "Lower with control"
+      ]
+    },
+    {
+      "id": "ab_wheel",
+      "name": "Ab Wheel Rollout",
+      "category": "core",
+      "equipment": [],
+      "primary_muscles": ["core"],
+      "secondary_muscles": ["shoulders", "lats"],
+      "injury_contraindications": ["lower_back", "shoulder"],
+      "difficulty": "advanced",
+      "instructions": [
+        "Kneel with hands on wheel",
+        "Roll out keeping back flat",
+        "Pull back to start"
+      ],
+      "notes": "Can use barbell with plates as alternative"
+    },
+    {
+      "id": "jump_rope",
+      "name": "Jump Rope",
+      "category": "cardio",
+      "equipment": ["skipping_rope"],
+      "primary_muscles": ["calves"],
+      "secondary_muscles": ["core", "shoulders"],
+      "injury_contraindications": ["ankle", "knee", "achilles"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Hold handles at hip height",
+        "Jump with minimal height",
+        "Land on balls of feet",
+        "Keep core tight"
+      ]
+    },
+    {
+      "id": "burpees",
+      "name": "Burpees",
+      "category": "cardio",
+      "equipment": [],
+      "primary_muscles": ["full_body"],
+      "secondary_muscles": [],
+      "injury_contraindications": ["wrist", "shoulder", "knee"],
+      "difficulty": "intermediate",
+      "instructions": [
+        "Drop to push-up position",
+        "Perform push-up",
+        "Jump feet to hands",
+        "Jump up with arms overhead"
+      ]
+    },
+    {
+      "id": "mountain_climbers",
+      "name": "Mountain Climbers",
+      "category": "cardio",
+      "equipment": [],
+      "primary_muscles": ["core", "hip_flexors"],
+      "secondary_muscles": ["shoulders"],
+      "injury_contraindications": ["wrist", "shoulder"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Start in push-up position",
+        "Alternate driving knees to chest",
+        "Keep hips level"
+      ]
+    },
+    {
+      "id": "farmers_walk",
+      "name": "Farmers Walk",
+      "category": "strength",
+      "equipment": ["dumbbells"],
+      "primary_muscles": ["forearms", "traps"],
+      "secondary_muscles": ["core"],
+      "injury_contraindications": ["shoulder"],
+      "difficulty": "beginner",
+      "instructions": [
+        "Hold heavy dumbbells at sides",
+        "Walk with good posture",
+        "Keep shoulders back"
+      ]
+    }
+  ]
+}

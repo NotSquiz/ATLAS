@@ -1,0 +1,2858 @@
+[14s] [music]
+[21s] Okay. Yeah, thanks for joining me. I uh
+[23s] I'm still on the West Coast time, so it
+[25s] feels like I'm doing this at like 7:00
+[27s] a.m.
+[29s] Uh so yeah, but um glad to talk to you
+[33s] about the Claude agent SDK. So um yeah,
+[38s] I think like this is going to be like a
+[40s] rough agenda, but we're going to talk
+[42s] about we're going to talk about like
+[43s] what is the claud agent SDK? Why use it?
+[46s] There's so many other agent frameworks.
+[48s] What is an agent? What is an agent
+[50s] framework?
+[51s] um how do you design an agent uh using
+[55s] the agent SDK or or just in general? Um
+[58s] and then I'm going to do some like live
+[60s] coding or Claude is going to do some
+[62s] live coding on prototyping an agent. Um
+[65s] and uh I've got some starter code. But
+[68s] uh yeah, I I the whole goal of this is
+[71s] like know we got two hours. We're going
+[73s] to be super collaborative, ask
+[74s] questions. Um, this is also going to be
+[78s] not like a super canned demo in the
+[81s] sense that like we're going to be like
+[83s] thinking through things live. You know,
+[84s] I'm not going to have all the answers
+[85s] right away. Um, and I think that'll be a
+[88s] good way of like building an agent loop
+[91s] I think is like really very much like
+[94s] kind of an art or intuition. So, um, but
+[98s] yeah, before we get started, just
+[99s] curious, a show of hands, like how many
+[101s] people have heard of the cloud agent SDK
+[103s] or Okay, great. Cool. How many have like
+[107s] used it or tried it out? Okay, awesome.
+[110s] Okay, so pretty good show of hands. Um,
+[114s] yeah, so I'll I'll just get started on
+[116s] like the like, you know, overview on
+[119s] agents. I I think that like this is I I
+[123s] I think something that people
+[124s] [clears throat] have seen before, but I
+[126s] think it still is taking some time to
+[128s] like really sink in. Uh how AI features
+[132s] are evolving, you know? So I think like
+[135s] when GPT, you know, 3 came out, it was
+[138s] really about like single LLM features,
+[141s] right? You're like, oh, like, hey, can
+[142s] you categorize this like return a
+[144s] response in one of these categories? Um,
+[146s] and then we've got more like workflow
+[149s] like things, right? Hey, like can you
+[150s] like take this email and label it or
+[154s] like, hey, here's my codebase like index
+[156s] via rag. Can you give me like the next
+[159s] completion or the next um the next file
+[162s] to edit, right? And so that's what we'd
+[164s] call like a workflow where you're very
+[166s] like structured. You're like, hey, like
+[169s] given this code, give me code back out,
+[172s] right? And now we're getting to agents,
+[175s] right? And uh like the canonical agent
+[179s] to use is cloud code, right? Cloud code
+[181s] is a tool where you don't really tell
+[184s] it. We don't restrict what it can do
+[187s] really, right? You're just talking to it
+[189s] in text and it will take a really wide
+[191s] variety of actions, right? And so agents
+[194s] uh build their own context, like decide
+[197s] their own trajectories, are working very
+[199s] very autonomously, right? And so, uh,
+[203s] yeah, and I think like as the future
+[205s] goes on, like agents will get more and
+[208s] more autonomous. Um, and we,
+[211s] uh, yeah, I think it's like we're kind
+[213s] of at a break point where we can start
+[214s] to build these agents. Um, they're not
+[217s] perfect, you know, but it's definitely
+[219s] like the right time to get started. So,
+[222s] um, yeah, Cloud Code, I'm sure many of
+[224s] you have have tried or used. Um it is
+[227s] yeah I think the first true agent right
+[231s] like the first uh time where I saw an AI
+[233s] working for like 10 20 30 minutes right
+[236s] so um yeah it's a coding agent and uh
+[241s] the cloud agent SDK is actually built on
+[243s] top of cloud code and uh the reason we
+[247s] did that is because
+[250s] um basically we found that when we were
+[253s] building agents at anthropic we kept
+[256s] rebuilding
+[256s] the same parts over and over again. And
+[259s] so to to give you a sense of like what
+[261s] that looks like, of course, they're the
+[263s] models to start, right? Um, and then in
+[266s] the harness, you've got tools, right?
+[268s] And that's like sort of the first
+[270s] obvious step, like let's add some tools
+[272s] to this harness. And later on, we'll
+[274s] give an example of sort of like trying
+[277s] to build your own harness from scratch,
+[279s] too, and and what that looks like and
+[280s] and how challenging it can be. But tools
+[283s] are not just like your own custom tools.
+[285s] might be tools to interact with your
+[286s] file system like with cloud code. Um did
+[290s] the volume just go up or were they not
+[292s] holding it close enough? [laughter]
+[294s] Okay. Now anyways um got tools tools you
+[298s] run in a loop and then you have the
+[299s] prompts right like the core agent
+[301s] prompts the um the prompts for the
+[304s] things like that. Uh and then finally
+[308s] you have the file system right and or
+[311s] not finally but you have the file
+[312s] system. The file system is a way of
+[317s] context engineering that we'll talk more
+[319s] about later, right? And I think like I
+[321s] one of the key insights we had through
+[323s] cloud code was thinking a lot more
+[325s] through the like context not just a
+[327s] prompt, it's also the tools, the files
+[329s] and scripts that it can use. Um, and
+[332s] then there are skills which we've like
+[334s] rolled out recently and uh we can talk
+[336s] more about skills uh um if that's
+[338s] interesting to you guys as well. Um and
+[340s] then yeah things like uh sub aents uh
+[344s] web search you know like um like
+[346s] research compacting hooks memory there
+[349s] all these like other things around the
+[351s] harness as well um and uh it ends up
+[355s] being quite a lot. So the cloud agent
+[357s] SDK is all of these things packaged up
+[360s] for you to use right [clears throat]
+[362s] um and yeah you have your application.
+[365s] So I I think like
+[367s] uh to give you a sense of uh yeah to
+[371s] give you a sense of like
+[375s] maybe why the cloud agent SDK is um
+[381s] yeah like like so yeah people are
+[383s] already building agents on the SDK a lot
+[386s] of software agents uh you know software
+[389s] reliability security triaging bug
+[392s] finding um site and dashboard builders
+[394s] if
+[395s] These are extremely popular. If you're
+[397s] using it, you should absolutely use the
+[398s] SDK. Um, I guess office agents, if
+[401s] you're doing any sort of office work,
+[403s] tons of examples there. Um, got some
+[406s] like, you know, legal, finance,
+[408s] healthcare ones. Um, so yeah, there are
+[411s] tons of people building on top of it.
+[413s] Um, I want to Oh, yeah. Okay. So, why
+[418s] the cloud agent SDK, right? Like why did
+[420s] we do it this way? It's why did we build
+[422s] it on top of cloud code? And we realized
+[425s] basically that as soon as we put cloud
+[427s] code out, yeah, the engineers started
+[428s] using it, but then the finance people
+[430s] started using it and the data science
+[432s] people started using it and the
+[433s] marketing people started using it and
+[436s] yeah, I think it just like it we just
+[438s] realized that people were using cloud
+[440s] code for non-coding tasks and we felt
+[444s] and and as we were building, you know,
+[446s] non-coding agents, we kept coming back
+[448s] to it, right? And so, um, it's a like,
+[452s] and we'll go more into why that just
+[455s] works, why we you could use cloud code
+[457s] for non-coding task. Uh, spoiler alert,
+[460s] it's like the bash tool. Um, but yeah,
+[463s] it's uh it it was something that we saw
+[465s] as an emergent pattern that we want to
+[468s] use and we've built our agents on top of
+[470s] it, right? And uh these are lessons that
+[472s] we've learned from deploying cloud code
+[474s] that we've sort of baked in. So, uh,
+[477s] tool use errors or compacting or things
+[480s] like that, stuff that is like very can
+[482s] take a lot of scale to find, you know,
+[484s] like what are the best practices we've
+[486s] sort of baked into the cloud agent SDK.
+[488s] Um, as a result, we have a lot of strong
+[490s] opinions on the best way to build
+[492s] agents. Uh, like I think the cloud agent
+[494s] SDK is quite opinionated. I'll talk over
+[496s] some of these opinions and and why like
+[499s] uh why we chose them, right? Um but
+[502s] yeah, one of the big opinions of the
+[504s] bash tool is the most powerful agent
+[505s] tool. So okay, um what what are like
+[509s] what I would describe as the anthropic
+[511s] way to build agents, right? And I'm not
+[513s] I'm not saying that you can only build
+[514s] agents using the API this way, right?
+[516s] But this is like um if you're using our
+[518s] opinionated stack on the agent SDK, what
+[521s] is it? Right? So roughly Unix primitives
+[525s] like the bash and file system and you
+[528s] know we're going to go over like
+[530s] prototyping an agent using cloud code
+[532s] and my goal is really to sort of show
+[534s] you what that looks like in real time
+[536s] right like why is batch useful why is
+[539s] the file system useful why not just use
+[541s] tools um yeah agents uh I mean you can
+[545s] also make workflows and we'll talk about
+[546s] that a bit later but agents build their
+[548s] own context um thinking about code
+[550s] generation for non-coding
+[553s] um like we use codegen to generate docs,
+[556s] query the web, like do data analysis,
+[558s] take uh unstructured action. So um
+[562s] there's a lot of like uh this can be
+[565s] pretty counterintuitive to some people
+[566s] and again in the like prototyping
+[569s] session, we'll we'll go over how to use
+[571s] code generation for non-coding agents.
+[573s] Um and yeah, every agent has a container
+[576s] or is hosted locally because this is
+[578s] cloud code. uh it needs a file system,
+[580s] it needs bash, it needs to be able to
+[582s] operate on it. And so it's a very very
+[584s] different architecture. I'm not planning
+[586s] to talk too much about the architecture
+[588s] today, but we can at the end if that's
+[590s] what people are interested in in or
+[592s] sorry by architecture I mean hosting
+[594s] architecture like how do you host an
+[595s] agent and like uh what are best
+[597s] practices there? Have you talked about
+[599s] that at the end? Um [clears throat] yeah
+[602s] so
+[604s] well let me pause there because I feel
+[605s] like I covered a lot already. any
+[608s] questions so far on the agent SDK agents
+[612s] um yeah like what you get from it
+[615s] >> can you can you explain what code
+[617s] generation for non-coding means exactly
+[620s] >> yeah um this is um like basically when
+[626s] you ask cloud code to do a task right
+[627s] like let's say that you ask it to uh
+[631s] find the weather in San Francisco and
+[634s] like you know tell me what I should wear
+[636s] or something right? Like uh what it
+[639s] might do is it might start writing a
+[641s] script uh to fetch a weather API, right?
+[646s] And then start like maybe it wants it to
+[649s] be reusable. Like maybe you want to do
+[651s] this pretty often, right? So it might
+[653s] fetch the weather API and then get the
+[657s] like maybe even get your location
+[658s] dynamically right based on your IP
+[660s] address and then it will like um you
+[664s] know check the weather and then maybe
+[667s] like call out to like a sub agent to
+[669s] give you recommendations. Maybe there's
+[671s] an API for your closet or wardrobe,
+[674s] right? It's like so that's an example. I
+[676s] I think that like it's kind of um for
+[679s] any single example we can talk over how
+[681s] you might use code codegen. Uh a lot of
+[684s] it is like composing APIs is like the
+[686s] high level way to think about it. Yeah.
+[689s] >> Uh yeah. And [clears throat]
+[690s] >> yeah uh workflow versus agent uh like
+[693s] for repetitive task or you know like a
+[695s] process a business process that is
+[697s] always the same. Do you will still
+[699s] prefer to build an agent versus a fully
+[702s] deterministic workflow?
+[704s] >> Yeah. So, we do have
+[707s] >> Oh, sure. Yeah. Yeah. Um, so the
+[709s] question the question was about
+[710s] workflows versus agents and would you
+[712s] still use the cloud agent SDK for
+[715s] workflows? Is that right? Um, yes. And
+[719s] and so uh I mean we I just we just sort
+[723s] of tell you what we do internally
+[725s] basically and what we do internally is
+[727s] we've done a lot of like GitHub
+[728s] automations and Slack automations built
+[730s] on the cloud agent SDK. So, uh, you
+[732s] know, we have a bot that triages issues
+[734s] when it comes in. That's a pretty
+[735s] workflow like thing, but we've still
+[737s] found that, you know, in order to triage
+[739s] issues, we want it to be able to clone
+[741s] the codebase and sometimes spin up a
+[743s] Docker container and test it and things
+[745s] like that. And so, it's still ends up
+[747s] being like a very like there's a lot of
+[749s] steps in the middle that need to be
+[751s] quite free flowing. Um, and then you
+[753s] like give structured output at the end.
+[755s] So, um, yes. All right, we'll take one
+[759s] more question and then we'll keep going.
+[760s] So, yeah, in the blue. Yeah. Uh so could
+[762s] you talk about security and guardians
+[764s] like if if you know you're using cloud
+[766s] agent SDK and you know you lean towards
+[768s] using bash as the you know all powerful
+[771s] generic tool and is the onus on uh
+[774s] building the agent builder to make sure
+[776s] that you know you're preventing against
+[778s] like common attack vectors or is that
+[780s] something that the model is is is doing
+[783s] itself?
+[783s] >> Yeah. So I I think this is sort of like
+[785s] the Swiss chief. Oh yeah. Okay. So the
+[788s] question was uh permissions on the bash
+[791s] tool, right? Or like how do you think
+[792s] about permissions and guardrails the
+[794s] like in like when you're giving the
+[796s] agent this much power over you know your
+[799s] its environment and the computer, how do
+[801s] you make sure it's aligned, right? And
+[803s] so the way we think about this is uh
+[804s] what we call like the Swiss cheese
+[806s] defense, right? So like there is um like
+[810s] on every layer some defenses and
+[812s] together we hope that it like blocks
+[814s] everything, right? So obviously on the
+[816s] model layer uh we do a lot of um
+[820s] alignment there. We actually just put
+[821s] out a really good paper on reward
+[823s] hacking. Super recommend you check that
+[825s] out. Um so like definitely I think cloud
+[829s] models like we try and make them very
+[830s] very aligned, right? And uh so yeah
+[833s] there's the model alignment behavior
+[835s] then there is like the harness itself,
+[838s] right? And so we have a lot of like
+[840s] permissioning and prompting um and uh
+[844s] like we do a pass par parser on the bash
+[847s] tool for example so we know um fairly
+[850s] reliably like what the bash tool is
+[852s] actually doing and definitely not
+[853s] something you want to build yourself. Um
+[855s] and then finally
+[858s] the last layer is sandboxing right so
+[860s] like let's say that an someone has
+[862s] maliciously taken over your agent what
+[864s] can it actually do uh we've included a
+[867s] sandbox and like where you can sandbox
+[869s] network request um and sandbox uh file
+[873s] system operations outside of the file
+[874s] system. And so, uh, yeah, ultimately
+[878s] that's what they call like the lethal
+[879s] triacto, right? Is like, um, like the
+[882s] ability to like execute code in an
+[884s] environment, change a file system, um,
+[887s] excfiltrate the code, right? I think I'm
+[889s] getting the lethal trifecta a little bit
+[890s] wrong there, but like the idea is
+[892s] basically like if they can excfiltrate
+[893s] your like information back out, right?
+[896s] Um, that's like they still need to be
+[899s] able to extract information. And so if
+[900s] you sandbox the network, that's a good
+[902s] way of doing it. Um if you're hosting on
+[904s] a sandbox container like Cloudflare uh
+[907s] modal or you know E2B Daytona like all
+[910s] of these like sound sandbox providers
+[912s] they've also done like some level level
+[914s] of security there right it's like you're
+[915s] not hosting it on your personal computer
+[917s] um or on a computer with like your prod
+[919s] secrets or something so uh yeah lots of
+[922s] different layers there and and yeah we
+[923s] can talk more about hosting in depth um
+[925s] so okay so I'm going to uh talk a little
+[930s] bit about bash is all you need you
+[933s] Um, I think this is something that Oh,
+[935s] yeah. Um, this is like my stickick, you
+[939s] know? I'm just going to like keep
+[940s] talking about this until everyone like
+[942s] uh agrees with me. Um, or like I think
+[946s] this is something that we found
+[947s] atanthropic. I think it is sort of
+[949s] something I discovered once I got here.
+[951s] Um, bash is what makes code so good,
+[954s] right? So, I think like you guys have
+[956s] probably seen like code mode or
+[959s] programmatic tool use, right? like the
+[962s] uh different ways of like composing MLPS
+[964s] uh cloudfl put out some blog post on
+[966s] that we put out some blog posts uh the
+[969s] way I think about code mode is like or
+[971s] bash is that it was like the first code
+[974s] mode right so the bash tool allows you
+[976s] to you know like store the results of
+[978s] your tool calls to files uh store memory
+[981s] dynamically generate scripts and call
+[982s] them compose functionality like tail
+[985s] graph uh it lets you use existing
+[988s] software like fmp or libra office right
+[990s] so there's a lot of like interesting
+[992s] things and powerful things that the
+[994s] batch tool can do. And like think about
+[997s] like again what made cloud code so good.
+[998s] If you were designing an agent harness,
+[1001s] maybe what you would do is you'd have a
+[1003s] search tool and a lint tool and an
+[1005s] execute tool, right? And like you have
+[1007s] end tools, right? Like every time you
+[1009s] thought of like a new use case, you're
+[1010s] like, I need to have another tool now,
+[1012s] right? Um instead now cloud just uses
+[1015s] grap, right? And nodes your package
+[1017s] manager. So it runs like npm run like
+[1021s] test.ts or index.ts s or whatever,
+[1024s] right? Like it can lint, right? And it
+[1025s] can find out how you lint, right? And
+[1027s] can run npm run lint if if you don't
+[1029s] have a llinter. It can be like what if I
+[1031s] install eslint for you, right? So, um
+[1034s] this is like you know like I said the
+[1036s] first programmatic tool calling first
+[1038s] code mode, right? Like you can do a lot
+[1041s] of different actions very very
+[1043s] generically, right? Um and so to talk
+[1047s] about this a little bit in the context
+[1049s] of non-coding agents, right? So let's
+[1052s] say that we have an email agent and the
+[1056s] user is like okay how much did I spend
+[1058s] on ride sharing this week um a you know
+[1062s] like it's got one tool call or generally
+[1064s] it's got the ability to search your
+[1066s] inbox right and so it can run a query
+[1069s] like hey search Uber oryft right and
+[1074s] without bash it it searches Uber oryft
+[1077s] it gets like a hundred emails or
+[1080s] something and now it's just got to
+[1082s] think about it. You know what I mean?
+[1084s] And I I think like a good like analogy
+[1086s] is sort of like imagine if someone came
+[1088s] to you with like like a stack of papers
+[1090s] and like hey, how much did I spend on
+[1092s] ride sharing this week? Can you like
+[1093s] read through my emails? You know, I mean
+[1094s] like that that would be really hard,
+[1096s] right? Like uh you need very very good
+[1098s] precision and recall to do it. Um or
+[1102s] with bash, right? Like let's say there's
+[1104s] a Gmail search script, right? It takes
+[1106s] in a query function. Um, and then you
+[1109s] can start to save that query function to
+[1112s] a file or pipe it. You can GP for
+[1115s] prices. You know, you can uh then add
+[1118s] them together. You can check your work
+[1120s] too, right? Like you can say, okay, let
+[1122s] me grab all my prices, store those as
+[1125s] like in a file with line numbers and
+[1127s] then let me then be able to check
+[1129s] afterwards like uh was this actually a
+[1131s] price? Like what does each one correlate
+[1133s] to? Right? So there's a lot more like
+[1135s] dynamic information you can do to check
+[1138s] your work with the bash tool. So this is
+[1140s] like
+[1142s] um just a simple example but like
+[1145s] hopefully showing you sort of the power
+[1146s] of like the composability of bash right
+[1148s] so I'll pause there any questions on
+[1152s] bash is all you need the bash tool any
+[1154s] any thing I can make a little bit
+[1155s] clearer
+[1156s] >> do you have stats on how many people use
+[1158s] yolo mode
+[1161s] >> uh stats on yolo mode we probably do
+[1165s] um I mean internally we we don't uh but
+[1167s] that's just I think we just have a
+[1169s] higher security posture. Um,
+[1172s] [clears throat]
+[1172s] yeah, I'm not sure. Uh, I can probably
+[1175s] pull that. Any other questions on bash?
+[1179s] Okay, cool. Um, yeah, just to give you
+[1182s] like some more examples like let's say
+[1185s] that you had an email API and you wanted
+[1188s] to uh, you know, like go through like
+[1192s] fetch my like tell me who emailed me
+[1194s] this week, right? So, you've got two
+[1195s] APIs. You've got an inbox API and a
+[1196s] contact API. Um this is like a way you
+[1199s] can do it via bash. You can also do it
+[1201s] via codegen. This is kind of like enough
+[1203s] bash that it is codegen, right? Like um
+[1205s] bash is a ostensibly codegen tool. Um
+[1210s] and then yeah like let's say that you
+[1212s] wanted to you had a video meeting agent,
+[1214s] right? You wanted to say like find all
+[1216s] the moments where the speaker says
+[1217s] quarterly results in this earnings call,
+[1220s] right? You can use ffmpeg to like slice
+[1222s] up this video, right? um you can use jq
+[1225s] to like uh start analyzing the
+[1227s] information afterward. So um yeah, lots
+[1230s] of like def like powerful ways to use uh
+[1233s] to use bash. So
+[1236s] I'm going to talk a little bit about
+[1238s] workflows and agents. Yeah, you can do
+[1239s] both. You could use uh build workflows
+[1241s] and agents on the agent SDK. Um yeah,
+[1245s] agents are like cloud code. If if you
+[1247s] are like building something where you
+[1249s] want to talk to it in natural language
+[1251s] and take action flexibly, right? Then
+[1254s] that's why you're building an agent,
+[1255s] right? Like you want you have an agent
+[1257s] that talks to your like business data
+[1259s] and you want to get insights or
+[1260s] dashboards or answer questions or uh
+[1263s] write code or something like that's an
+[1265s] agent, right? And then a workflow is
+[1267s] kind of like, you know, we do a lot of
+[1269s] GitHub actions for example, right? So
+[1270s] you define the inputs and outputs very
+[1272s] closely, right? So you're like, "Okay,
+[1273s] take it a PR and give me a code review."
+[1276s] Um, and yeah, both of these you can use
+[1278s] agent SDK for. Um, when building
+[1281s] workflows, you can use structured
+[1282s] outputs. We just released this. Um, you
+[1286s] can, yeah, Google agent SDK structured
+[1288s] outputs. Um, but yeah, so you can do
+[1291s] both. I'm going to primarily be talking
+[1293s] about agents right now. A lot of the
+[1296s] things that you can like learn from this
+[1299s] are applicable to workflows as well. So,
+[1302s] um, yeah, we'll we'll talk about this.
+[1305s] Uh, wait, show of hands. How many people
+[1308s] have like designed an agent loop before?
+[1311s] Okay, cool. Okay, great. Great. Um, so
+[1314s] yeah, I mean, I think the number one
+[1317s] thing the the metalarning for designing
+[1319s] an agent loop to me is just to read the
+[1322s] transcripts over and over again. Like
+[1324s] every time you see see the agent
+[1326s] running, just read it and figure out
+[1327s] like, hey, what is it doing? Why is it
+[1329s] doing this? can I uh help it out
+[1331s] somehow? Right? Um and uh we'll do some
+[1335s] of that later, right? So we'll uh we'll
+[1338s] build an agent loop. Um but here is the
+[1343s] uh the three parts to an agent loop,
+[1345s] right? So uh first it's gather context,
+[1349s] right? Second is taking action and the
+[1353s] third is verifying the work, right? And
+[1357s] uh this is like not the only way to
+[1360s] build an agent, but I think a pretty
+[1361s] good way to think about it. Um gathering
+[1364s] context is uh like you know for cloud
+[1367s] code it's grepping and finding the files
+[1369s] needed, right? Um you know for an email
+[1372s] agent it's like finding the relevant
+[1374s] emails, right? Um, and so these are all
+[1378s] like pretty um, yeah, like I I think
+[1381s] thinking about how it finds this context
+[1382s] is very important and I think a lot of
+[1384s] people sort of uh, skip the step or like
+[1388s] underthink it. This can be like very
+[1390s] very important. Uh, and then taking
+[1392s] action um, how does it like do its work?
+[1396s] Uh, does it have the right tools to do
+[1397s] it like code generation, uh, bash these
+[1400s] are more flexible ways of taking action,
+[1401s] right? And then verification is another
+[1404s] really important step. And so the
+[1407s] basically what I'd say right now is like
+[1409s] if you're thinking of building an agent,
+[1411s] think about like can you verify its
+[1414s] work, right? And if you can verify its
+[1416s] work, it's like a great like candidate
+[1418s] for an agent. If you can't verify its
+[1420s] work, like it's like you know coding you
+[1422s] can verify by lending, right? And you
+[1425s] can at least make sure it compiles. So
+[1426s] that's great. uh if you're doing let's
+[1428s] say deep research for example it's
+[1430s] actually a lot harder to verify your
+[1432s] work one way you can do it is by citing
+[1434s] sources right so that's like a step in
+[1436s] verification but obviously research is
+[1438s] less verifiable than code in some ways
+[1440s] right because like code has a compile
+[1442s] step right you can also like execute it
+[1444s] then see what it does right so um I
+[1447s] think like thinking on you know like as
+[1449s] we build agents the ones that are
+[1451s] closest to being very general are the
+[1453s] ones with the verification step that is
+[1455s] very strong right So I I think there was
+[1458s] a question here. Yeah.
+[1459s] >> So when where do you generate a plan of
+[1463s] the work?
+[1467s] >> Yeah. I mean you you might
+[1469s] >> question
+[1470s] >> Oh yeah sorry the the question was when
+[1472s] do you generate a plan um before you run
+[1474s] through it. So um like in cloud code you
+[1478s] don't always generate a plan. Uh but if
+[1481s] you want to you'd insert it between the
+[1483s] gathering context and taking action
+[1484s] step, right? And so um plans sort of
+[1488s] help the agent think through step by
+[1490s] step, but they add some latency, right?
+[1492s] And so there is like some trade-off
+[1494s] there. Um but yeah, the agent SDK helps
+[1496s] you like do some planning as well. So
+[1498s] yeah.
+[1500s] >> Yeah. Can you like make the agent create
+[1504s] that to-do list for like 100%
+[1508s] sure that it will create that to-do list
+[1511s] and run by it?
+[1513s] >> Uh yeah. So the question was will the
+[1514s] agent create the to-do list? Uh yes. Um
+[1518s] if you're using the agent SDK, we have
+[1520s] like some to-do tools that come with it
+[1522s] and so it will like maintain and check
+[1524s] off to-dos and you can display that as
+[1526s] you go. So yep.
+[1529s] Um,
+[1530s] any other questions about this right
+[1532s] now? Okay, cool. Okay, so I'm going to
+[1536s] quickly talk about like like how do you
+[1538s] do this stuff? You like what are your
+[1541s] tools for doing it, right? And uh there
+[1544s] are three things you can do that you
+[1545s] have tools, bash and code generation,
+[1548s] right? And I I think traditionally I
+[1550s] think a lot of people are only thinking
+[1551s] about tools and uh yeah, basically one
+[1554s] of the call to actions is just figuring
+[1555s] out like thinking about it more broadly,
+[1558s] right? So tools are extremely structured
+[1559s] and very very reliable, right? Like if
+[1562s] you want to sort of have as fast an
+[1564s] output as possible with minimal errors,
+[1567s] uh minimal retries, uh tools are great.
+[1570s] Uh cons, they're high context usage. If
+[1573s] anyone's built an agent with like 50 or
+[1575s] 100 tools, right? Like they take up a
+[1578s] lot of context and the model it kind of
+[1580s] gets a little bit confused, right? Um
+[1582s] there's no like sort of discoverability
+[1584s] of the tools. Um and they're not
+[1585s] composable, right? and and I say tools
+[1588s] in the sense of like if you're using you
+[1591s] know messages or completion API right
+[1593s] now um that's how the tools work of
+[1596s] course like you know there's like code
+[1597s] mode and programmatic tool calling so
+[1599s] you can sort of blend some of these um
+[1601s] but [clears throat] there's bash so bash
+[1603s] is very composable right like uh static
+[1607s] scripts low context usage uh it can take
+[1610s] a little bit more discovery time because
+[1611s] like let's say that you have whatever
+[1613s] you have like the playright MCP or
+[1615s] something like that um or sorry the
+[1618s] playright CLI the playright like bash
+[1620s] tool um you can do playright-help to
+[1623s] figure out all the things you can do but
+[1625s] the agent needs to do that every time
+[1626s] right so it needs to like discover what
+[1628s] it can do um which is kind of powerful
+[1630s] that it helps take away some of the high
+[1632s] context usage but add some latency um
+[1635s] there might be slightly lower call rates
+[1638s] you know just because like it has a
+[1639s] little bit more time to um it needs to
+[1643s] like find the tools and what it can do.
+[1646s] Um but this will definitely like improve
+[1647s] as it goes. And then finally, codegen
+[1650s] highly composable dynamic scripts. Um
+[1654s] they take the longest to execute, right?
+[1657s] So they need linking possibly
+[1658s] compilation. API design becomes like a
+[1661s] very very interesting step here, right?
+[1664s] And I and I'll talk more about like uh
+[1667s] best like how to think about API design
+[1669s] in an agent. Um but yeah I think this is
+[1672s] like how we like the the three tools you
+[1675s] have and so yeah using tools think you
+[1678s] still want some tools but you want to
+[1679s] think about them as atomic actions your
+[1682s] agent usually needs to execute in
+[1684s] sequence and you need a lot of control
+[1685s] over right so for example in cloud code
+[1688s] we don't use bash to write a file we
+[1689s] have a write file tool right because we
+[1692s] want the user to be able to sort of see
+[1693s] the output and approve it and um we're
+[1697s] not really composing write file with
+[1699s] other things, right? It's like very
+[1700s] atomic action. Um, sending an email is
+[1703s] another example. Like any sort of like
+[1705s] non-destruct like destructible or sort
+[1707s] of like you know uh unreversible change
+[1710s] is definitely like a a tool is a good
+[1713s] place for that. Um then [clears throat]
+[1715s] we've got bash. Uh so for example there
+[1718s] are like uh composable actions like
+[1720s] searching a folder using GitHub linting
+[1723s] code and checking for errors or memory.
+[1726s] Um and so yeah you can write files to
+[1729s] memory and that can be your bash like
+[1731s] bash can be your memory system for
+[1732s] example right so um and then finally
+[1735s] you've got code generation right so if
+[1736s] you're trying to do this like highly
+[1738s] dynamic very flexible logic composing
+[1740s] APIs uh like you're doing data analysis
+[1743s] or deep research or like reusing
+[1745s] patterns and so um yeah we'll talk more
+[1748s] about uh code generation in a bit
+[1752s] um any questions so far about like the
+[1755s] SDK loop loop or tools versus bash
+[1756s] versus codegen. Yeah.
+[1758s] >> Yeah. Uh I was going to ask
+[1760s] [clears throat] you are you going to
+[1762s] have any readymade tools for like
+[1764s] offloading results [snorts]
+[1767s] >> offloading tool called results like into
+[1769s] the file system or
+[1770s] >> like let's say goes to bash and then
+[1772s] context explodes.
+[1773s] >> Does it like [clears throat] typed a
+[1775s] command that like do everything up?
+[1777s] >> Okay.
+[1777s] >> Or or otherwise just like long outputs
+[1779s] polluting your history.
+[1781s] >> Sure. Yeah. Yeah. Yeah. I imagine like
+[1783s] all the time just uploading them to
+[1784s] files.
+[1785s] >> Yeah. Yeah. I I think that's a good
+[1787s] common practice. I think um we
+[1793s] I I remember seeing some PRs about this
+[1795s] very recently on on cloud code about
+[1798s] handling very long outputs and I I I
+[1803s] don't know exactly like I I think I
+[1806s] think we are moving towards a place
+[1808s] where more and more things are being
+[1810s] like just stored in the file system and
+[1811s] this is like a good example. Yeah, like
+[1813s] it's storing like long outputs uh over
+[1815s] time. Um, I think like generally
+[1818s] prompting the agent to do this is a good
+[1820s] uh way to think about it. Or even if you
+[1823s] have I think like something I just do
+[1825s] always now is like whenever I have a
+[1826s] tool call I um I save it like the
+[1830s] results of the tool call to the file
+[1832s] system so that you can like search
+[1833s] across it and then have the tool call
+[1835s] return the path of the result. Um just
+[1839s] because like that helps it like sort of
+[1840s] recheck its work. So um yes. Um, do you
+[1846s] find that you need to [clears throat]
+[1848s] use like the skills um kind of structure
+[1851s] to help claude along to use the bash
+[1855s] better or out of the box? You know,
+[1858s] that's not necessary.
+[1859s] >> Yeah. So, the question was about skills
+[1861s] and like do we need skills to use bash
+[1863s] better? Um, yeah, for context skills
+[1866s] maybe I can
+[1869s] Okay, skills. Okay. Yeah, skills are
+[1873s] basically a way of like uh you know
+[1876s] allowing our agent to take longer
+[1879s] complex tasks and like sort of load in
+[1881s] things via context, right? So some like
+[1884s] for example we have uh a bunch of DOCX
+[1886s] skills and these DOCX skills tell it how
+[1888s] to do code generation to generate these
+[1891s] files, right? And so um yeah, I think
+[1894s] overall skills are yeah, basically just
+[1897s] a collection of files. They're also sort
+[1899s] of like an example of being very like
+[1901s] file system or bash tool pilled, right?
+[1903s] Um because they're really just folders
+[1906s] that your agent can like CD into and
+[1909s] like read, right? Um and so yeah, they
+[1914s] give like what we found the skills are
+[1916s] really good for is pretty like
+[1918s] repeatable instructions that need a lot
+[1920s] of expertise in them. Uh like for
+[1923s] example, we released a front-end design
+[1925s] skill recently that I really really like
+[1927s] and um it's really just sort of a very
+[1931s] detailed and good prompt on how to do
+[1933s] front-end design. Uh but it comes from
+[1935s] like our best, you know, like uh AI
+[1938s] front-end engineer, you know what I
+[1940s] mean? And he like really put a lot of
+[1941s] top thought and iteration to it. So
+[1943s] that's one way of using skills. Um
+[1946s] >> yeah,
+[1947s] >> quick question. Why use that front
+[1950s] skill?
+[1950s] >> Sure. It's pretty good. Thanks for
+[1953s] publishing it. Uh I want to understand
+[1955s] uh there are multiple MP files like MP
+[1958s] is also there and it is also at the user
+[1961s] level
+[1962s] and then there are skill files like is
+[1966s] there like a priority order should some
+[1968s] stuff be relegated to claw.md and some
+[1971s] other stuff should only come to
+[1973s] skill.md? H so the question was about
+[1976s] skill.md versus claw.md and how to think
+[1979s] about uh that right and uh I think like
+[1983s] I I will say all of these concepts are
+[1985s] so new you know I mean like even cloud
+[1987s] code is like released it like eight or
+[1989s] nine months ago right like um and so
+[1992s] skills were released like two weeks ago
+[1993s] like I like I won't pretend to know all
+[1996s] of the best practices for for everything
+[1998s] right um I think generally
+[2001s] skills are a form of progressive context
+[2003s] disclosure closure and that's sort of a
+[2005s] pattern that we've talked about a bunch
+[2007s] right like with like uh bash and you
+[2009s] know like preferring that over like you
+[2012s] know purely like normal tool calls is
+[2015s] like it's a way of like the agent being
+[2016s] like okay I need to do this let me find
+[2019s] out how to do this and then let me read
+[2022s] in this skill empty right so you ask it
+[2024s] to make a docx file and then it like cds
+[2027s] into the directory reads how to do it
+[2028s] writes some scripts and keeps going so
+[2031s] um yeah I think like there's still some
+[2034s] intuition to build around like what what
+[2036s] exactly you like define as a skill and
+[2038s] how you split it out. Um but uh yeah, I
+[2042s] think uh yeah, lots of best practices to
+[2045s] learn there still. Um
+[2047s] >> yeah,
+[2049s] >> so yesterday
+[2051s] we [clears throat] talked about the
+[2052s] future of skills over time.
+[2055s] >> Do you see these as ultimately becoming
+[2058s] part of the model and some of the skills
+[2060s] this is just a way to bridge the gap for
+[2062s] now?
+[2063s] >> Yeah. Yeah. So the question was are
+[2064s] skills ultimately part of the model? Um
+[2067s] are they a way to bridge the gap? I
+[2069s] missed Barry's talk at Barry and M's
+[2071s] talk yesterday, but uh yeah, I think
+[2073s] roughly the idea is that the model will
+[2076s] get better and better at doing a wide
+[2077s] variety of tasks and skills are the best
+[2079s] way to give it out of distribution
+[2081s] tasks, right? Um, [clears throat] but I
+[2084s] I would broadly say that like it's
+[2087s] really really hard especially like you
+[2090s] know if you're like uh not at a lab to
+[2094s] like tell where the models are going
+[2095s] exactly. Um my general rule of thumb is
+[2099s] like I try and like rethink or rewrite
+[2101s] my like agent code like every 6 months.
+[2103s] Uh just cuz I'm like uh things have
+[2105s] probably changed enough that I've like
+[2106s] baked in some assumptions here. And so
+[2110s] like I think that like our agent SDK is
+[2112s] built to as much as possible sort of
+[2114s] advance with capabilities, right? Like
+[2116s] the bash tool will get better and
+[2118s] better. Uh we're building it on top of
+[2120s] cloud code. So as cloud code evolves,
+[2122s] you'll get those wins out out of the
+[2124s] gate. Um but at the same time like you
+[2128s] know things are so different now like
+[2130s] than they were a year ago in in terms of
+[2132s] like AI engineering, right? And I think
+[2135s] like a general best practice to me is
+[2138s] sort of like, hey, we can write code 10
+[2139s] times faster. We should throw out code
+[2141s] 10 times faster as well. Um, and I think
+[2144s] thinking about like not so like hedging
+[2148s] your bets on like where is the future
+[2149s] right now, but like what can we do today
+[2152s] that really works, right? And like like
+[2155s] let's get market share today and not be
+[2157s] afraid to throw out code later. Um, if
+[2160s] you're a startup, this is arguably your
+[2162s] largest advantage that you have over
+[2163s] competitors. They're like, you know,
+[2165s] larger [snorts] companies have like
+[2166s] six-month incubation cycles. And so
+[2169s] they're always like stuck in the past of
+[2171s] like the agent capabilities, right? And
+[2173s] so your advantage is that you can like
+[2175s] be like, hey, the agent the capabilities
+[2177s] are here right now. Let me build
+[2179s] something that uses this right now,
+[2180s] right? So, um, yeah. Uh
+[2186s] any any other questions on for we're
+[2189s] talking about skills in bash. Okay. It
+[2191s] seems like there are a lot of skill
+[2192s] questions. So um yeah uh I I think at
+[2198s] the back someone you might have to
+[2199s] shout.
+[2200s] >> Yeah. So why would you use a skill
+[2202s] versus an API? They look very similar to
+[2206s] that Python program there could be a
+[2207s] package, right?
+[2209s] >> Yeah. The question was why use a skill
+[2211s] versus an API? Um, good question. I I
+[2214s] think that like um when you like these
+[2218s] are all forms of progressive disclosure
+[2220s] basically to the agent to figure out
+[2221s] what it needs to do. Um, and I'll go
+[2224s] over like uh examples of like you just
+[2227s] have an API, right? In in our like in
+[2229s] our prototyping session. Um, it's
+[2232s] totally like use case dependent, right?
+[2234s] Like just I think like I don't have a
+[2238s] like I don't think there's a general
+[2239s] rule. I think it's like read the
+[2240s] transcript and see what your agent
+[2241s] wants. If your agent always wants like
+[2244s] thinks about the API better as like a
+[2246s] API.ts file or something or API.py file,
+[2249s] do that. You know, that's great. Like I
+[2251s] think skills are like like sort of an
+[2254s] introduction into like thinking about
+[2255s] the file system as a way of storing
+[2257s] context, right? And they're a great
+[2259s] abstraction. Um, but there are many ways
+[2262s] to use the system. Um, and I I should
+[2265s] say that like something about skills
+[2267s] that like you need the bash tool, you
+[2268s] need a virtual file system, things like
+[2270s] that. So the agent SDK is like basically
+[2272s] the only way to really use skills to
+[2274s] like their full extent right now. So um
+[2278s] yeah. Yeah. Back there.
+[2279s] >> Can we expect a marketplace for skills?
+[2282s] >> Yeah. The question was can we expect a
+[2284s] marketplace for skills? So um yeah,
+[2287s] clock code has a plug-in marketplace
+[2289s] that you can also use with the agent
+[2291s] SDK. Uh we're evolving that over time,
+[2293s] you know, like it was like a very much a
+[2295s] v0ero. Um, and by marketplace, I'm not
+[2298s] sure if people will be charging for this
+[2300s] exactly. It's more just like a discovery
+[2302s] system, I think. Um, but yeah, that
+[2304s] exists right now. You can do SL plugins
+[2306s] in cloud code. Um, and and you can find
+[2309s] some. So, yeah. Yep.
+[2311s] >> What's your current thinking about when
+[2312s] you're going to reach for like the SDK,
+[2314s] you know, to solve a problem?
+[2317s] >> When? Yes. The question is when do I use
+[2318s] the SDK to solve a problem? uh if I'm
+[2322s] building an agent basically I I think
+[2324s] that like um my overall belief is that
+[2330s] like for any agent the bash tool gives
+[2333s] you so much power and flexibility and
+[2335s] using the file system gives you so much
+[2336s] power and flexibility that you can
+[2338s] always ek out performance gains over it
+[2341s] right and so uh yeah in the prototyping
+[2344s] part of this talk we're going to like
+[2346s] look at an example with only tools and
+[2348s] an example without with you bash and the
+[2351s] file system and compare those two. Um,
+[2353s] and yeah, that's what I mean by being
+[2355s] bashful to build. I'm like I I just like
+[2358s] start from the agent SDK, you know, and
+[2360s] I think a lot of people at Enthropic
+[2361s] have started like doing that as well.
+[2363s] So, um, of course I I do want to say
+[2365s] that there are lots of times where the
+[2367s] agent SDK is kind of annoying because
+[2369s] you've got like this network sandbox
+[2371s] container and you're like, I hate like I
+[2373s] don't want to do this, you know? I mean,
+[2374s] like I want to run on my browser
+[2376s] locally, right? Um, I totally get that.
+[2378s] And I think it's there is like a real
+[2380s] performance trade-off. Um the way I
+[2382s] think about it is sort of like React
+[2385s] versus like jQuery, you know, like I
+[2387s] like I when I was coming up, I was like
+[2389s] very into webdev and like you know I was
+[2392s] using jQuery and Backbone and then React
+[2393s] came out and it was by Facebook and
+[2395s] they're like you have to here's JSX like
+[2397s] we just made this up and and now there's
+[2399s] a bundler, right? I'm like it's so
+[2401s] annoying. Um, but like they generally
+[2404s] makes the model or it makes it made web
+[2407s] apps more powerful, right? And I think
+[2409s] we're sort of like the agent SDKs are
+[2411s] like the react of agent frameworks to me
+[2413s] because it's like we build our own stuff
+[2416s] on top of it. So, you know, it's real
+[2418s] and all the annoying parts of it are
+[2420s] just like things where we're annoyed
+[2422s] about it too, but we're like it just
+[2423s] works like you have like got to do this,
+[2425s] you know? Um, so yeah.
+[2429s] Uh, yeah. Okay. more more skill
+[2432s] questions I guess. Yeah. Right here.
+[2434s] >> Uh what's the question? Bash.
+[2435s] >> Oh, sure. Bash question. Great. I love
+[2436s] bash.
+[2437s] >> Custom internal like bash tools.
+[2439s] >> Yeah.
+[2439s] >> How do you let the agent discover that
+[2441s] or do those have to become tool tools?
+[2444s] >> Okay. The question is if you have custom
+[2446s] agent bash tools, how do you let the
+[2448s] agent discover that? By custom bash
+[2449s] tools, you mean like bash scripts?
+[2451s] >> We have we have bash scripts. Yeah.
+[2454s] >> Um yeah. So I I think uh where is it?
+[2458s] you just put it in the file system and
+[2460s] you tell it like hey like here is a
+[2462s] script. Uh you can call it you know I
+[2464s] I'm generally thinking in the context of
+[2467s] the cloud agent SDK where it has the
+[2469s] file system and the bash tools are tied
+[2472s] together. This is kind of an anti
+[2473s] pattern I see sometimes where people are
+[2475s] like, "Oh, like we're going to host the
+[2477s] bash tool in this like virtualized place
+[2479s] and it's not going to interact with
+[2481s] other parts of like the agent loop, you
+[2483s] know, and that sort of, you know, makes
+[2485s] it hard cuz if if you got a tool result
+[2487s] that's saving a file, then your bash
+[2489s] tool can't like uh read it, you know, I
+[2492s] mean, unless it's all in one one
+[2494s] container." So, does that answer your
+[2496s] question? Like
+[2497s] >> Yeah, kind of. I mean, like, so you're
+[2499s] just saying you just put it in like
+[2500s] system prompt or something? Yeah, I just
+[2501s] put in system prompting like hey you
+[2502s] have access to this. I would like sort
+[2504s] of design all my CLI scripts to have
+[2506s] like a d-help or something so that the
+[2508s] model can call that and then it can like
+[2511s] progressively disclose like every like
+[2513s] subcomand inside of the script. Yeah.
+[2517s] >> Uh yeah m
+[2518s] >> yeah so uh like my question is around
+[2520s] when to reach for the agent SDK. So have
+[2522s] you designed or rather would you
+[2524s] recommend someone use the agent SDK to
+[2526s] build like a generic chat agent as
+[2530s] compared to like oh you know I'm
+[2532s] building an agent where you have some
+[2533s] input and the agent goes and does some
+[2535s] stuff and finally I care about the
+[2537s] output as compared to let's say someone
+[2539s] like are you using or do you foresee
+[2542s] using the agent to build like the agent
+[2544s] SDK to build like clot the the app
+[2547s] rather than clot code. Uh yeah. So the
+[2550s] question is when do we reach for the
+[2552s] agent SDK uh does um like uh like would
+[2558s] we use the agent SDK to build cloud.AI
+[2561s] which is a more traditional chatbot uh
+[2563s] than cloud code. Um I one I think cloud
+[2568s] code is like a very like like interface
+[2570s] is not a traditional chatbot interface
+[2572s] but like the inputs and outputs are
+[2575s] right like you input code in you you get
+[2577s] like or you input text in you get text
+[2579s] out and you they take actions along the
+[2580s] way um you might have seen that like
+[2583s] when we rolled out doc creation for
+[2586s] cloud.ai AI. Um, now it has the ability
+[2590s] to spin up a file system and like create
+[2594s] spreadsheets and PowerPoint files and
+[2596s] things like that by generating code. And
+[2598s] so that is like you know we're in the
+[2600s] midst of sort of like um like merging
+[2603s] our agent loops and stuff like that. But
+[2604s] but broadly like uh like yeah cloud.ai
+[2609s] will like is getting more and more like
+[2611s] you see it with skills and the memory
+[2612s] tool and stuff more and more file system
+[2614s] pills, right? So, uh, we do think this
+[2616s] like a broad thing that you can use just
+[2619s] just generally and happy to talk through
+[2620s] examples.
+[2622s] Um, yeah, one more question then we'll
+[2624s] keep going. Yeah.
+[2625s] >> Still trying to understand the rule of
+[2627s] thumb on when to build a tool or use a
+[2629s] tool, when to
+[2631s] wrap something with a script or just let
+[2634s] the agent go wild on the bash because I
+[2637s] I'll give you an example. Let's say I
+[2639s] need to access a database
+[2642s] from time to time. I can use an MCP. I
+[2645s] can wrap it in a script and I can just
+[2647s] let the agent call an endpoint from B
+[2651s] directly from bash, right?
+[2653s] >> Yeah, great question. Great question.
+[2655s] So, it still trying to gro like when to
+[2658s] use tools versus bash versus codegen and
+[2660s] you gave an example like okay, I have a
+[2661s] database. Um, I want the agent to be
+[2663s] able to access it in some way. What
+[2664s] should I do? Should I create a tool that
+[2667s] queries the database in some way? Um,
+[2670s] should I use the bash? Should I use
+[2671s] codegen? Right? These are all these are
+[2673s] three ways of doing it. Um I think that
+[2676s] they are like you could use any of them
+[2678s] and I I think like part of it is like I
+[2681s] I think unfortunately there's no like
+[2684s] single best practice, right? This is
+[2685s] like kind of a system design problem.
+[2687s] But let's say that you want to access
+[2688s] your bash your database via tool. You
+[2691s] would do that if your database was very
+[2693s] very structured and you had to be very
+[2695s] careful about like I don't know you're
+[2697s] accessing like user sensitive
+[2700s] information or something like that and
+[2701s] you're like hey I I can only take in
+[2704s] this input and I need to like give this
+[2707s] output and I have to mask everything
+[2709s] else about the database from the agent
+[2712s] right obviously that like sort of limits
+[2714s] what the agent can do right like it
+[2716s] can't write a very dynamic query right
+[2719s] um if you're writing a full-on SQL
+[2721s] query, I would definitely use bash or
+[2723s] cogen uh just because when the model is
+[2726s] writing a SQL query, it can make
+[2727s] mistakes and the way it fixes it is is
+[2731s] its mistakes is by like linting or like
+[2734s] running the file, looking at the output,
+[2736s] seeing if there are errors and then
+[2738s] iterating on it, right? Um, and so I
+[2741s] generally like if I'm building an agent
+[2744s] today, I'm giving it as much access to
+[2746s] my database as possible and then I'm
+[2748s] like putting in guard rails, right? Like
+[2751s] I'm probably limiting its like right
+[2753s] access in different ways. But what I
+[2757s] probably what I would do is like I would
+[2759s] give it right access and put in specific
+[2762s] rules and then give it feedback if it
+[2765s] tries to do something it can't do. You
+[2766s] know what I mean? And so I know this is
+[2768s] like kind of a hard problem, but I think
+[2770s] this is the like set of problems for us
+[2772s] to solve, right? Like we built a bash
+[2774s] tool parser. Um, and that's a super
+[2778s] annoying problem. Uh, but we need to
+[2780s] solve that in order to like let the
+[2782s] agent work generally, right? And same
+[2784s] thing with like database like like yes,
+[2787s] it's quite hard to understand what is a
+[2788s] query doing, but if you can solve that,
+[2790s] you can let your agent work more
+[2792s] generally over time. So um yeah I think
+[2795s] thinking about it uh like flexibly as
+[2798s] much as possible and keeping tools to be
+[2800s] like very very like sort of atomic
+[2802s] actions right that you need a lot of
+[2804s] guarantees around.
+[2806s] Um
+[2807s] >> a follow on the same thing right uh how
+[2810s] do you ensure the role based access
+[2812s] controls are taken care of
+[2815s] >> how do you uh so the question is how do
+[2818s] you ensure that the role based act uh
+[2819s] access controls are taken care of
+[2821s] usually that's in like how you provision
+[2823s] your API key or your backend service or
+[2825s] something like that right like um I
+[2828s] think that like probably what I do is
+[2830s] like I create like temporary API keys
+[2832s] sometimes people create proxies in
+[2834s] between to insert the API keys
+[2836s] um if you're concerned about
+[2837s] excfiltration of that. Um but yeah, I
+[2839s] would create like API keys for your
+[2841s] agents that are scoped in certain ways
+[2843s] and so then on the back end you can sort
+[2845s] of check it's like you know what it's
+[2847s] trying to do and like uh if it's a an
+[2850s] agent you can like give it different
+[2851s] feedback. So yeah.
+[2854s] >> All right. I have one more question.
+[2855s] >> Um anything you could tell us uh more
+[2858s] about the the memory tool the internal
+[2860s] memory tool? Um,
+[2863s] I have I I'm not trying to like keep a
+[2866s] secret. I I don't know exactly like I
+[2868s] haven't read the code, but I I think it
+[2870s] generally works on on the file system.
+[2872s] And so, um,
+[2872s] >> you expose it to uh to the uh SDK or is
+[2876s] it already available?
+[2878s] >> Um, I would say that like we we've had
+[2880s] this question a bunch. I would just use
+[2882s] the file system on in the cloud agent
+[2884s] SDK. I would just create like a memories
+[2885s] folder or something and tell it to write
+[2887s] memories there. Um it's like I I don't
+[2890s] know the exact implementation of the
+[2892s] memory tool but it does use the file
+[2893s] system in in in that way. So yeah
+[2897s] um all right yeah last question on this.
+[2899s] Yeah
+[2899s] >> yeah how you are manage for the b and
+[2901s] the code how you are managing the like
+[2905s] reusability suppose the same agent is
+[2907s] rolled out to hundreds of users and uh
+[2910s] same code every time it is generating
+[2912s] and every time it is executing. So how
+[2914s] can we use the reusability? Yeah, that's
+[2917s] a really good question. So, uh yeah,
+[2920s] let's say you have two agents
+[2922s] interacting with two different people.
+[2924s] The question is like how do you think
+[2926s] about reusability between agents or how
+[2928s] do agents communicate, right? Um I think
+[2933s] uh this is a thing to be discovered. I
+[2936s] think like but I think there's a lot of
+[2938s] best practices and system design to be
+[2940s] done on like um because traditionally
+[2943s] with web apps you're serving one app to
+[2946s] like a million people right and with
+[2947s] agents like with cloud code we serve
+[2949s] like you know a onetoone like container
+[2952s] when you use cloud code on the web it's
+[2954s] like it's your container right and so
+[2957s] there's not a lot of like communication
+[2959s] between containers it's a very very
+[2961s] different paradigm I'm not going to say
+[2962s] that like I know exactly the best system
+[2965s] design to do that right and like I think
+[2967s] there's a lots of best practices on like
+[2969s] okay these agents are reusing work um
+[2971s] how can we give them like like
+[2974s] general scripts that combine together
+[2976s] the work that they've done how can we
+[2978s] make them share it um I would generally
+[2981s] think this is sort of like a tangent but
+[2983s] on like agent communication frameworks I
+[2987s] would say that like we probably don't
+[2988s] need like a whole we don't I I think
+[2992s] this is more of a personal opinion I
+[2993s] think like we probably don't need to
+[2994s] reinvent and uh like a new communication
+[2997s] system. There are like the agents are
+[2999s] good at using the things that we have
+[3000s] like HTTP requests and hash tools and
+[3003s] API keys and uh named pipes and all of
+[3007s] these things. And so like probably like
+[3009s] the agents are just making HTTP requests
+[3011s] back and forth from each other, you
+[3013s] know, using HTTP server. Um there's a
+[3016s] bunch of interesting work there. I've
+[3017s] seen people make like a virtual forum
+[3021s] for their agents to communicate and they
+[3023s] like post topics and like reply and
+[3027s] stuff like that. Um kind of cool. I
+[3029s] think there's a lot of things to explore
+[3030s] and discover there. Yeah. Okay. Um going
+[3035s] to keep going a little bit. How are we
+[3036s] doing for time? Okay. It's got an hour
+[3039s] left, I think. Okay. Um
+[3042s] cool. So, an example of designing an
+[3044s] agent. Uh this is a like yeah let's this
+[3048s] is not the prototyping session but I
+[3050s] think this is like will be a good sort
+[3051s] of like like lee way into it. Let's say
+[3054s] we're making a spreadsheet agent. Uh
+[3057s] what is the best way to search a
+[3059s] spreadsheet? What's the best way to
+[3060s] execute code like or what's the best way
+[3063s] to take action in a spreadsheet? What is
+[3065s] the best way to link a spreadsheet?
+[3066s] Right? These are all like really
+[3067s] interesting things to do. Uh I'm going
+[3069s] to do like a Figma and we can go over
+[3071s] it. Um, if someone could grab a water as
+[3074s] well, that'd be great. I like could
+[3077s] really use water. I'm uh Yeah. Yeah.
+[3079s] Okay. Um, thanks. Uh,
+[3083s] okay. So, we're going to um
+[3086s] Yeah, let's let's talk through it. Uh,
+[3089s] or why don't you spend like a couple
+[3090s] minutes yourselves thinking about this
+[3092s] question? You have a spreadsheet agent.
+[3094s] You want it to be able to search. You
+[3096s] want to be able to like gather context,
+[3099s] take action, verify its work. How would
+[3100s] you think about it? Right? So like just
+[3102s] spend some time thinking through that.
+[3104s] Take some notes or something.
+[3177s] Okay. Is everyone get had a little bit
+[3180s] of time to think about this? Does anyone
+[3182s] want more time or want to just dive into
+[3184s] it? Okay. Uh, what's the best way for an
+[3187s] agent to search a spreadsheet? Realizing
+[3190s] I have to type with one hand now. Um,
+[3195s] I should figure this out because I'm
+[3196s] going to type later. Okay. Um, the Okay,
+[3200s] searching a spreadsheet. Uh, any any
+[3202s] ideas how do you search a spreadsheet?
+[3204s] Like what would you do?
+[3205s] >> CSV.
+[3207s] >> Okay. You've got a CSV. Okay. And now
+[3210s] like your agent wants to like search the
+[3212s] CSV. What what does it do?
+[3214s] >> A GP. Okay. Uh what does the GP look
+[3218s] like?
+[3218s] >> Needs to look at all the headers.
+[3220s] >> Looks at the headers. Okay.
+[3221s] >> Headers of all sheets.
+[3223s] >> Okay. Great. Yeah. Yeah. And let's say
+[3225s] I'm looking for the revenue in 2024 or
+[3229s] something. Um
+[3231s] now I've got my headers like uh I'm just
+[3235s] going to pull up a spreadsheet, right?
+[3237s] Um let's say that the revenue is in
+[3240s] there's a revenue column and then
+[3242s] there's like a
+[3245s] uh so yeah let's see
+[3262s] okay so yeah let's say it's something
+[3264s] like this right like um How do I get
+[3267s] revenue in 2026? Right? So, this is sort
+[3270s] of like a tabular problem, right? Like
+[3273s] there is revenue here and there's also
+[3274s] 2026 here, right? So, it's like a
+[3277s] multi-dimensional step, right? We could
+[3279s] look at the headers that will then give
+[3280s] us uh like if you just pull this, you'll
+[3284s] get 100, 200, 300, right? So, we need a
+[3288s] little bit more. Uh any other ideas?
+[3292s] >> Yeah,
+[3293s] >> there's a bash tool for it. Uh, a AWK, I
+[3296s] think.
+[3297s] >> O. Okay. Yeah. Yeah. Yeah. And what
+[3299s] would it A for?
+[3301s] >> Well, depends on what you what you're
+[3303s] looking for.
+[3304s] >> Yeah. Yeah. Yeah. That that's a
+[3305s] question, right? Like what is the user
+[3307s] looking for, right? They're probably
+[3308s] looking for something like this, like
+[3309s] revenue in 2026, right? Um,
+[3312s] >> maybe use the APIs to use the Google
+[3315s] tools to add all the numbers together or
+[3318s] V look up something like this, right?
+[3320s] >> Yeah. So the idea is like use the APIs
+[3322s] like use the Google APIs to like look it
+[3324s] up. Um that's great. Uh but yeah, let's
+[3326s] say we're working locally. We need to
+[3328s] sort of design these APIs. Yeah.
+[3330s] >> SQLite ord
+[3332s] CSV directly and work.
+[3334s] >> Oh, interesting. Okay. Yeah, I didn't
+[3336s] know that. That's great. So yeah, you
+[3337s] you use SQLite to query a CSV. Um that's
+[3341s] a great like sort of creative way of
+[3343s] thinking about API interfaces, right?
+[3345s] like um if you can translate something
+[3347s] into a interface that the agent knows
+[3350s] very well that's great right and so like
+[3353s] if you have a data source if you can
+[3354s] convert it into a SQL query then your
+[3358s] agent really knows how to search SQL
+[3360s] right so thinking about this
+[3361s] transformation step is really really
+[3362s] interesting it's a great way of like
+[3364s] designing like an agentic search
+[3365s] interface so
+[3367s] >> um yeah over there
+[3368s] >> sorry real quick while we're talking
+[3369s] about tools because you can use TSV for
+[3371s] some of the stuff as well
+[3372s] >> um is there any good ranking within the
+[3374s] with Is Cloud smart enough to start
+[3376s] ranking the right tool for the right
+[3377s] job? Because that's kind of what we're
+[3379s] talking about here is right tool for the
+[3380s] right job.
+[3380s] >> Yeah. Is Cloud smart enough to write
+[3382s] rank the right cool tool for the right
+[3384s] job? Uh yeah, if you prompt it, you
+[3386s] know, like or like I I think that's one
+[3387s] of those things where like I don't know,
+[3388s] let's find out like let's read the
+[3390s] transcript. Uh if it's not like how can
+[3393s] you help it?
+[3395s] >> Yeah. Just sort of like I I think all of
+[3397s] these things are like an intuition, you
+[3399s] know? It's like like kind of like riding
+[3401s] a horse. Not that I've ever rode a
+[3403s] horse, but I know just like I imagine
+[3405s] it's like running.
+[3409s] [laughter]
+[3410s] >> Yeah. Like you like, you know, you're
+[3412s] sort of giving these signals to the
+[3413s] horse. You're calming it down. You're
+[3415s] trying to understand what it how how do
+[3417s] you push it faster? You know what I
+[3418s] mean? And sort of like it's a very
+[3420s] organic like thing, right? Um like I
+[3424s] think we like to say that models are
+[3426s] grown and not designed, right? And so
+[3428s] we're like sort of understanding their
+[3430s] capabilities. Yeah. Uh yeah what and
+[3432s] where it is. Yeah
+[3433s] >> quick question. So is a way to add like
+[3435s] metadata to the spreadsheet? Can you
+[3436s] give descriptions in a different
+[3438s] document?
+[3439s] >> Yeah that's for example KPI
+[3443s] to build intelligence to ask questions.
+[3446s] >> Yeah. So that's another great pattern is
+[3448s] like okay can you add metadata to a
+[3450s] spreadsheet? So these are some questions
+[3452s] that you might want to think about
+[3453s] before like when you're thinking about
+[3455s] search is like what pre-processing can
+[3457s] you do to make the search better, right?
+[3460s] And so one example is that you translate
+[3462s] it into like a SQL format or something
+[3464s] where you use something that can query
+[3466s] it, right? That's like a translation
+[3467s] step. Another step is like maybe you
+[3469s] have a tool or um like a a
+[3473s] pre-processing step where another agent
+[3475s] annotates the the spreadsheet and and
+[3477s] like adds information so that the agent
+[3480s] can then like search across that
+[3481s] information better. Right. So um yeah,
+[3484s] one more. Um, I was just curious what I
+[3488s] mean all those tools sound great, but
+[3489s] yeah, why can't the agent just,
+[3491s] >> you know, do what was suggested, read
+[3493s] the header and then just get the date?
+[3496s] Like I feel like that should pretty
+[3497s] trivial
+[3500s] or retest.
+[3501s] >> Yeah, probably I should have like
+[3503s] prepared this in code. But yeah, I I
+[3506s] built a ton of spreadsheet agents
+[3507s] before. Basically, it's
+[3509s] >> not it's kind of hard to do. Yeah. Yeah.
+[3511s] So, um, basically what what I would
+[3514s] think about is like, so we we've got
+[3515s] like Okay, I
+[3518s] Sean, do you have suggestions on how it
+[3520s] can talk and code at the same time? Go
+[3522s] ahead.
+[3525s] >> Oh, I see. Yeah.
+[3527s] >> Do you work at Whisper Flow or something
+[3529s] or
+[3530s] >> Stick the mic in your shirt?
+[3532s] >> There's a microphone button. [laughter]
+[3535s] >> There's a microphone button on the bat.
+[3536s] >> Stick the mic in your shirt.
+[3539s] Oh, I I I just don't trust that stuff,
+[3541s] man. Okay. Um,
+[3544s] [laughter]
+[3545s] maybe I shouldn't be working in an AI
+[3547s] lab. Um, okay. So,
+[3551s] uh, let's see.
+[3555s] >> Hold on. Hold on. Um,
+[3560s] search. So,
+[3562s] >> one way to do it is like
+[3565s] you see in spreadsheets, right? Like you
+[3567s] can say here you can design formulas
+[3570s] right so like B3
+[3573s] 2
+[3580s] right so this is a syntax for example
+[3582s] that the agent's pretty familiar with
+[3584s] like B3 to B5 right and so you can
+[3586s] design an agentic search interface which
+[3588s] is like this right like B3
+[3591s] B5 or something right so like your
+[3593s] agentic search interface can take in a
+[3595s] range right it can taking a range
+[3598s] string, right? And these are things that
+[3600s] like the agent knows pretty well, right?
+[3602s] Like you can um do SQL queries, right?
+[3606s] Agent knows SQL queries pretty well,
+[3607s] right? Um and uh like these you can also
+[3614s] uh do XML, right? Sorry, the font is so
+[3617s] small. Um
+[3621s] okay. Uh yeah, you can also do XML.
+[3625s] I'm not sure if you guys know but like
+[3627s] uh XLX files are XML in the back end
+[3629s] right and XML is very structured uh you
+[3632s] can do like an XML search query uh and
+[3635s] there are different libraries that can
+[3636s] do that so that's one example right is
+[3638s] like how do you search and gather
+[3639s] context and I hope this sort of like
+[3641s] illustrates to you that like gathering
+[3643s] context is really really creative right
+[3645s] like and and like there's so many
+[3646s] iterations and if you just if you've
+[3649s] only tried one iteration it's probably
+[3651s] not enough right like think about like
+[3653s] as many different ways as you can like
+[3655s] try these out, right? Like try SQL, try
+[3657s] try the CER, try try the GP and O and
+[3659s] like all of these things and um have a
+[3662s] few tests that you're trying across
+[3664s] different things and and see what the
+[3665s] agent likes and what it what it doesn't
+[3666s] like. Um it's going to be different for
+[3668s] each case.
+[3669s] >> Sorry.
+[3671s] When you say agent, you're referring to
+[3674s] the the model or because we're building
+[3677s] an agent here.
+[3678s] >> Yeah. and you're relying on already free
+[3681s] existing knowledge of how to handle XML
+[3684s] who's who's doing that the model.
+[3686s] >> Yeah, because the question is like who
+[3688s] uh where is the knowledge come from? Is
+[3690s] it the model? Is it like what is what do
+[3692s] I mean by the agent? Yeah, generally I
+[3694s] think what you're looking for is like
+[3696s] you have a problem you want to make it
+[3698s] as indistribution as possible for the
+[3700s] agent, right? And so the agent knows a
+[3702s] lot about a lot of different things. It
+[3704s] knows a lot about for example finance,
+[3706s] right? So if you ask it to make a DCF
+[3708s] model, it knows what DCF is, right? And
+[3712s] you can if if you want to give it more
+[3714s] information, you can make a skill,
+[3715s] right? But so it knows what DCF is. It
+[3718s] knows what SQL is. Can it combine those
+[3720s] things together, right? And so like uh
+[3723s] ideally you want to like your your
+[3726s] problem is going to be out of
+[3727s] distribution in some way, right? like
+[3728s] like there's some like information
+[3730s] that's not on the internet or something
+[3732s] that you have um or something somewhat
+[3735s] unique to you and you want to try and
+[3736s] like massage it to be as in distribution
+[3738s] as possible. Um and uh yeah it's it's
+[3742s] very very creative I think like uh you
+[3744s] know it's not like a it's not a science
+[3748s] to be [laughter] very much like an art.
+[3751s] So, um, yeah. Okay. So, we we've tried
+[3755s] gathering context, then taking action.
+[3758s] Um, we can probably do a lot of the same
+[3761s] stuff here that we've done before,
+[3763s] right? Like we can do like insert
+[3767s] 2D array, right? Um, if we've got like a
+[3772s] SQL interface, right, we can um we can
+[3776s] do a SQL query, we can edit XML. Um,
+[3780s] these are like often very similar,
+[3782s] right? Like taking action and gathering
+[3783s] context that that you probably want a
+[3785s] similar API back and forth. And then the
+[3787s] last thing is verifying work, right?
+[3788s] Like how do you think about how do you
+[3790s] think about that? Um, check
+[3794s] for null pointers, right, is one of the
+[3798s] ways to do it. Um, any other ideas on on
+[3801s] verification or Yeah.
+[3803s] >> Sorry, I'm I'm a bit confused if you say
+[3808s] >> like when when you're using other SDKs
+[3811s] to build Asian, I don't need to tell it
+[3813s] how it should gather the context.
+[3815s] >> Sure.
+[3815s] >> I just give it the context and explain
+[3817s] this is what like basically I explain in
+[3819s] plain English
+[3821s] >> what is meant to do.
+[3822s] >> Yeah.
+[3823s] >> And what I tend to do and you tell me if
+[3826s] I'm wrong, I actually end up creating a
+[3828s] separate agent for QA.
+[3830s] >> Oh, interesting.
+[3831s] >> To to verify because I don't trust the
+[3833s] agent to verify itself.
+[3836s] But I'm just I'm I'm just a bit I
+[3840s] confused about the level of detail I
+[3841s] need to provide the agent in that
+[3843s] example.
+[3844s] >> Yeah. Okay. So the question is about um
+[3847s] giving context to the agent versus
+[3849s] having it gather its own context. Uh you
+[3851s] mentioned that you sometimes use a Q&A
+[3854s] agent. Uh can I ask like what like
+[3856s] domain you you're building your agent in
+[3859s] or
+[3859s] >> in uh cyber security.
+[3861s] >> Okay. Sure. Yeah. Yeah. Um, I think that
+[3867s] I I think I need to like look into more
+[3869s] specifics, but the cloud agent SDK is
+[3871s] great for cyber security and like I
+[3874s] would generally push people on like let
+[3876s] the agent gather context as much as
+[3878s] possible, you know, like let it find its
+[3880s] own work as much as possible. Um, you're
+[3884s] trying to give it the tools to find its
+[3885s] own work. The way I think about this is
+[3887s] kind of like let's say that someone
+[3889s] locked you in a room and they were they
+[3892s] were like giving you tasks, you know,
+[3893s] like that's your what your job was like
+[3895s] a Mr. Beast sort of like scenario,
+[3898s] right? Like you get $500,000 if you stay
+[3900s] in this room for 6 months. Um then like
+[3904s] like someone's giving you a message,
+[3906s] what tools would you want to be able to
+[3907s] do it, right? Like would you just want
+[3909s] like a list of papers or like would you
+[3913s] want a calculator or like a computer?
+[3916s] Right? Probably I would want a computer,
+[3917s] right? I'd want Google. I'd want like
+[3919s] all of these things, right? And so like
+[3921s] I wouldn't want the person to send me
+[3923s] like a stack of papers being like, "Hey,
+[3925s] this is probably all the information you
+[3926s] need." I'd rather just be like, "Hey,
+[3928s] just give me a computer. Give me the
+[3929s] problem. Let me search it and figure it
+[3931s] out." Right? And so that's how I think
+[3933s] about agents as well. like they need
+[3935s] like like you know they're stuck in a
+[3937s] room.
+[3938s] >> So I need to give them tools. So if you
+[3940s] can go back to the slides you have to
+[3941s] the graph you had
+[3944s] >> to the graph like this or
+[3947s] >> yeah the so basically that gathering
+[3949s] context is basically these are the tools
+[3951s] I'm offering it.
+[3953s] >> Yeah. Exactly. Yeah. You're I'm giving
+[3955s] it like maybe an API for code
+[3957s] generation. Maybe I'm giving it a SQL
+[3959s] tool. Maybe I'm giving a bash. These are
+[3961s] all like examples, right? So yeah, you
+[3964s] have one more question
+[3965s] >> question. So for all the agents that
+[3967s] you're [clears throat] having,
+[3969s] do they share the same context window?
+[3974s] >> Interesting. Yeah. So do agents share
+[3975s] the context window? I think I think this
+[3977s] is like an interesting question just
+[3979s] overall about how you manage context. Um
+[3981s] I think and I haven't talked about this
+[3983s] too much yet, but sub agents are like a
+[3985s] very very important way of managing
+[3987s] context. Um, I think that this is like
+[3991s] we're using more and more sub agents
+[3993s] inside of cloud code and I would think
+[3995s] about like doing sub agents very
+[3998s] generally. So like what we might do for
+[4000s] the spreadsheet agent is maybe we have a
+[4003s] search sub agent, right? So like sub
+[4006s] aents are great for when you need to do
+[4008s] a lot of work and return an answer to
+[4010s] the main agent. So for search, let's say
+[4012s] the question is like how do I find my
+[4014s] revenue in 2026? Maybe you need to do a
+[4016s] bunch of results. Maybe you need to like
+[4019s] uh search the internet, maybe you need
+[4020s] to search the spreadsheet, things like
+[4021s] that. And there's a bunch of things that
+[4023s] don't need to go into the context of the
+[4025s] main agent. The main agent just needs to
+[4027s] see the follow result, right? And so
+[4029s] that's a great sub agent task. Um I
+[4033s] don't have a dedicated sub aent slide
+[4034s] here, but like yeah, they're very very
+[4036s] useful and I I think a great way to
+[4038s] think about things. Um yeah,
+[4041s] >> and just to just to build on that
+[4042s] question actually
+[4044s] >> for verification for example, you can
+[4046s] imagine doing that through a skill or a
+[4047s] sub agent. You might even want to have
+[4049s] an adversarial like the security example
+[4051s] is a great one. Want to have really go
+[4053s] to town on it and not really have any
+[4055s] sympathetic relationship with the work
+[4057s] already done. It's a very I I get it's a
+[4060s] spectrum, but do you like are you saying
+[4062s] yes, you'd use a sub agent here, you'd
+[4064s] use a skill? How would you think about
+[4065s] this?
+[4066s] >> Yeah, definitely. So question on like uh
+[4069s] do you sub agents or oh
+[4070s] >> I'm sure it'll work just to make sure.
+[4072s] >> Oh, sure. Okay. Yeah. Yeah. Thank you.
+[4074s] Appreciate it. Um okay. Yeah. Uh can you
+[4077s] use sub agents for verification? Uh yes.
+[4080s] I I think this is a pattern. I think
+[4082s] like ideally the the best form of
+[4085s] verification is rulebased, right? You're
+[4087s] like is there like a null pointer or
+[4090s] something? Uh that's like easy
+[4092s] verification. it it doesn't lint or
+[4094s] compile like like as many rules as you
+[4097s] can try and insert them and again be
+[4099s] creative right like for example uh in
+[4101s] cloud code if the agent tries to write
+[4103s] to a file that we know it hasn't read
+[4106s] yet like we haven't seen we haven't seen
+[4108s] it enter the read cache we throw it an
+[4111s] error we we tell it like hey uh you
+[4113s] haven't read this file yet try reading
+[4115s] it first right and that's an example of
+[4117s] sort of like a deterministic tool that
+[4120s] we insert into the verification step and
+[4122s] So as much as possible like anytime you
+[4125s] are thinking about you know verification
+[4127s] first step is like what can you do
+[4128s] deterministically what like what like
+[4131s] you know outputs can you do and again
+[4133s] like when you're choosing which a like
+[4135s] types of agents to make the agents that
+[4138s] have more deterministic rules are better
+[4140s] you know like they just like like it
+[4143s] just makes a lot of sense right so um of
+[4146s] course as the models get better and
+[4147s] better at reasoning then you can have
+[4148s] these sub agents that check the work of
+[4150s] the main agent the Main thing there is
+[4153s] to like avoid uh context pollution. So
+[4156s] you probably wouldn't want to like fork
+[4157s] the context. You'd probably want to
+[4159s] start a new context session and just be
+[4161s] like, "Hey, yeah, adversarily check um
+[4164s] the work of like this this output was
+[4167s] made by a junior analyst at McKenzie or
+[4170s] something. They graduated from like not
+[4173s] a grade school like their GPA like you
+[4175s] know like like just like feed it a bunch
+[4177s] of stuff and then tell it to critique
+[4179s] it, right? Like that's like one of the
+[4181s] tools of the sub agent, right? And so um
+[4184s] yeah, the more you like
+[4186s] uh yeah, as the models get better and
+[4188s] better, that sort of verification will
+[4189s] become better as well. Um but doing it
+[4192s] deterministically is like a great start.
+[4195s] >> Yeah.
+[4197s] >> Just a [clears throat] question about
+[4198s] the verify work. So
+[4200s] >> yeah.
+[4201s] >> Um so let's say we found no pointers.
+[4205s] It's probably easy to just say, "Okay,
+[4207s] fix it." But like you know let's say we
+[4210s] deploy it to production and the client
+[4211s] is using it that's not us and they
+[4214s] somehow get into a spot where the whole
+[4216s] spreadsheet is deleted and so like like
+[4220s] on what level do we need to bake in like
+[4222s] the ability to like undo tools and
+[4225s] because like um let's say the QA agent
+[4229s] returns that their spreadsheet is empty.
+[4231s] >> Yeah.
+[4232s] >> Not necessarily is able to undo for so
+[4234s] like what was your advice there?
+[4237s] >> Yeah. So the question is like how do you
+[4238s] think about state and like undoing and
+[4241s] redoing being able to um fix errors
+[4245s] basically right? I think this is like a
+[4247s] really good question and honestly
+[4249s] another sort of like um like when you
+[4254s] think about like what are agents good at
+[4257s] right like or what problem domains are
+[4259s] agents good at? How reversible is the
+[4262s] work is like a really good intuition
+[4264s] right? So code is quite reversible. you
+[4266s] can just like go back, you can undo the
+[4268s] git history. We we come with like, you
+[4270s] know, these atomic operations right out
+[4272s] of the gate, right? Like I use git
+[4274s] constantly through cloud code. I I don't
+[4276s] type g commands anymore, right? So, um
+[4278s] that's like a really good example. A
+[4280s] really bad example is computer use,
+[4282s] [clears throat] you know, because
+[4283s] computer use has is not reversible in
+[4286s] state, right? Like let's say you go to
+[4288s] like door-ash.com and you add like the
+[4292s] user wants you to order a Coke and you
+[4294s] add order a Pepsi now like you can't
+[4297s] just go back and click on the Coke. You
+[4299s] have to like go to the cart and you have
+[4301s] to remove the Pepsi, right? And so your
+[4303s] mistake has like compounded this like
+[4306s] you know this state and the state
+[4308s] machine has gotten more complex, right?
+[4309s] And and so like whenever you're dealing
+[4311s] with like very very complex state
+[4312s] machines that you can't undo or redo of
+[4315s] it does become harder, right? And I
+[4317s] think one of the questions for you as an
+[4319s] engineer is like can you turn this into
+[4321s] a reversible state machine kind of like
+[4323s] you said can you store state between
+[4326s] checkpoints such that the user can be
+[4328s] like oh my spreadsheet is messed up
+[4329s] right now just go back to the previous
+[4331s] uh checkpoint right uh potentially even
+[4333s] can the model go back to previous
+[4335s] checkpoints um I I think someone had
+[4337s] this like time travel tool um that they
+[4340s] were giving one of the coding agents
+[4341s] which was kind of cool where you're like
+[4343s] it's like you can time travel back to a
+[4346s] point before this happened. You know
+[4348s] what I mean? Uh it's kind of fun. I
+[4349s] think like all of these tools, some of
+[4352s] them don't work that well yet, but you
+[4354s] know, we'll we'll get there. Um yeah,
+[4356s] thinking about state and verification is
+[4358s] is very useful, right? So, um yeah,
+[4362s] quick question at the back.
+[4364s] >> Yeah. Um
+[4366s] >> I'm kind of curious about scale. Um so
+[4370s] what if the spreadsheet is like millions
+[4372s] of rows million and thou hundreds of
+[4375s] thousands of columns right or just like
+[4377s] any sort of database like in that type
+[4379s] of situation how would you go about
+[4382s] searching there's obviously a context
+[4384s] you have to commentate for
+[4386s] >> yeah this is great um I probably should
+[4388s] have done the spreadsheet example as my
+[4390s] coding example for for a preview my
+[4393s] coding like agent is a Pokemon agent um
+[4397s] probably spreadsheet would have been
+[4399s] Okay. Uh the question was what if the
+[4401s] spreadsheet is very big? If you have a
+[4403s] million rows, uh how do you think about
+[4406s] >> 100 column
+[4408s] >> yeah 100,000 columns or 100 columns or
+[4410s] whatever like how do you think about it
+[4411s] right like your database is also very
+[4413s] big like how do you how do you do that?
+[4415s] Um I think for all of these things uh
+[4418s] one of course as the data becomes larger
+[4421s] and larger it's just a harder problem
+[4422s] like you know it just absolutely is your
+[4424s] accuracy will go down right like cloud
+[4426s] code is worse in larger code bases than
+[4428s] it is in smaller code bases right as the
+[4430s] models get better they will get better
+[4432s] at all of that um for all of these I
+[4434s] would think about like how would I do
+[4437s] this if I had a spreadsheet that was
+[4439s] like a million columns and a million
+[4441s] rows what would I do I I mean I would
+[4443s] need to start searching for it Right. I
+[4445s] would need to be like like if I'm
+[4446s] searching for revenue, I'd be like
+[4448s] searching Ctrl+F revenue and then I'd go
+[4450s] check each of these like results and I'd
+[4453s] be like is this right? And then like I'd
+[4455s] see like hey is there a number here? And
+[4458s] then I'd probably keep a scratch pad
+[4460s] like a new sheet where I'm like hey like
+[4463s] equals revenue equals this you know and
+[4465s] and and store this reference and and
+[4467s] keep going. So I I think that's a good
+[4469s] way of thinking about it is like the
+[4471s] model should you should never like read
+[4473s] the entire spreadsheet into context
+[4475s] because it would it would take too much
+[4477s] right like um you want to give it like
+[4480s] the starting amount of context that's
+[4481s] also how you work right like let's say
+[4483s] that you open up the spreadsheet what
+[4485s] you see is rows is this right you see
+[4487s] like the first 10 rows and the first
+[4491s] like you know 30 columns or something
+[4493s] right that's what you see you don't load
+[4494s] all of it into context right away you
+[4497s] probably have an intuition for like,
+[4498s] hey, I should load more of this into
+[4500s] context, right? And and like, oh, I
+[4502s] should navigate to this other sheet,
+[4504s] right? And this other sheet has more
+[4506s] data, right? Um, but you need to like
+[4510s] sort of you gather context yourself,
+[4512s] right? And so the agent can operate in
+[4514s] the same way. It can like navigate to
+[4516s] these sheets, read them, like try and
+[4518s] like keep a scratch pad, keep some notes
+[4520s] and keep going. So that's how I would
+[4522s] think about it. Uh, yeah, in the back.
+[4524s] >> Yeah. So my question is about managing
+[4526s] context pollution and actually I guess
+[4528s] relates to the previous question. Um do
+[4530s] you have a rule of thumb for you know
+[4533s] what fraction of the context window do
+[4535s] you use before you start hitting
+[4537s] diminishing returns or it becomes less
+[4539s] effective?
+[4540s] >> Yeah the question is yeah context
+[4542s] management. Do you have a rule of thumb
+[4543s] for like uh how much of the context
+[4545s] window to use before it becomes less
+[4547s] effective? This is actually I'd say a
+[4551s] pretty interesting problem right now.
+[4553s] Um,
+[4555s] I think a lot of times when I talk to
+[4556s] people who are using cloud code, they're
+[4558s] like, I'm on my fifth compact. I'm like,
+[4561s] what? Like like I've I like almost have
+[4564s] never done a compact before. You know
+[4566s] what I mean? Like I have to like test
+[4568s] the UX myself by like like forcing
+[4570s] myself to get compacted. Um just because
+[4573s] like I I tend to like clear the context
+[4575s] window very often right when I'm using
+[4577s] cloud code myself just because like um
+[4580s] at least in in code the state is in the
+[4583s] the files of the codebase right so let's
+[4586s] say that I've made some changes uh cloud
+[4588s] code can just look at my git diff and be
+[4590s] like [snorts] oh hey these are the
+[4591s] changes you made it doesn't need to know
+[4593s] like my entire chat history with it you
+[4596s] know in order to continue a new task
+[4598s] right and so in cloud code I clear the
+[4601s] context very very often often and I'm
+[4602s] like, "Hey, look at my outstanding get
+[4604s] changes. I'm working on this. Can you
+[4606s] help me extend it in this way?" Right?
+[4608s] That's like a way of thinking about it.
+[4610s] And um when you're building your own
+[4613s] agent, like let's say we're building a
+[4614s] spreadsheet agent, it gets a little bit
+[4616s] more complex because your users are less
+[4618s] technical, right? And they don't know
+[4619s] what a context window is, right? Um that
+[4622s] is like I'd say a hard problem. I think
+[4625s] there's like some UX design there of
+[4626s] like can you reset the conversation
+[4628s] state, right? like can you maybe every
+[4632s] time the user asks a new question can
+[4634s] you do your own compact or something and
+[4636s] can you like uh summarize the context?
+[4639s] Um does it like in a spreadsheet a lot
+[4642s] of the state is in the spreadsheet
+[4643s] itself so it probably doesn't need you
+[4645s] know to know the entire context. um can
+[4648s] you store user preferences
+[4650s] um as it goes so that you remember some
+[4652s] of this stuff you know like there's a
+[4654s] lot of like again like it's an art
+[4655s] there's like so many different angles
+[4657s] and ways in which you can do this right
+[4660s] um but yeah you are trying to like sort
+[4662s] of minimize context usage um you
+[4665s] probably don't need s a million context
+[4667s] or something you know I mean like you
+[4668s] just need good context management like
+[4670s] UX design yeah um yeah
+[4673s] >> um just I just want to ask the sub
+[4675s] agents were made to protect the conduct
+[4678s] of the core agent. Right.
+[4679s] >> That's right. Yeah. Sub agents were made
+[4680s] to
+[4681s] >> spreadsheet. Would we be able to use
+[4682s] multiple sub agents and try to make a
+[4684s] process where we chunk up the
+[4685s] spreadsheet in the case where it's super
+[4687s] large. So then the agents can kind of
+[4688s] run through each portion like in
+[4690s] parallel with each other.
+[4691s] >> Yeah. Yeah. I mean um Yeah. So like one
+[4695s] of the things I love about cloud code is
+[4697s] that we are like the best experience for
+[4699s] using sub agents like especially sub
+[4701s] agents with bash. It is very very good.
+[4704s] I didn't really quite realize uh all the
+[4706s] pain. Um I think if anyone's going to
+[4709s] QCON, I believe Adam Wolf is giving a
+[4711s] talk on QCON about how we did the bash
+[4713s] tool. Adam's a legend and the bash tool
+[4716s] such a good job. Um when you're running
+[4718s] parallel sub agents at the same time,
+[4721s] bash becomes like very complex and there
+[4723s] are lots of like like race conditions
+[4725s] and stuff like that and and so there's a
+[4727s] lot of work that we've solved there,
+[4729s] right? So this is like one of the things
+[4731s] I love about cloud code is you can just
+[4732s] be like hey like spin up three sub
+[4734s] agents to do this task and it will do
+[4735s] that and in the agent SDK as well you
+[4738s] you can just ask it to do that. So
+[4739s] number one sub agents are a great
+[4742s] primitive in the agent SDK and I haven't
+[4744s] seen anyone do it as well. So that's
+[4745s] like a big reason to use it. Um yes
+[4748s] generally you want it you want these sub
+[4750s] agents to preserve context. Let's say
+[4752s] you have if you have a spreadsheet, you
+[4753s] could potentially have multiple read sub
+[4755s] aents going on at the same time, right?
+[4757s] So maybe the main agent is like, "Hey,
+[4759s] can this agent read and summarize sheet
+[4761s] one? Can this agent read and summarize
+[4763s] sheet two? Can this re agent summarize
+[4765s] sheet three?" And then they return their
+[4767s] results and then the agent maybe spins
+[4769s] off more sub agents again. Right? So
+[4770s] this is like another
+[4773s] knob you have. Um, and I I think what I
+[4776s] want to say is like
+[4779s] there's like we've talked so many so
+[4781s] much about like all these different
+[4782s] creative ways that you can like do
+[4784s] things. This is like the level at which
+[4786s] you should think about should have to
+[4788s] think about your problem. You should not
+[4790s] really in my opinion think about like uh
+[4793s] like how like how do I spin off a
+[4795s] process to make a sub agent or like you
+[4797s] know like the system engineering between
+[4799s] like behind like what is a compact or
+[4802s] something right? So like we take care of
+[4803s] all of this for you in the harness so
+[4806s] that you can think about like hey what
+[4807s] sub agents do I need to spin off right
+[4809s] and like how do I create a a a genic
+[4812s] search interface and how do I like
+[4813s] verify it's work these are the really
+[4815s] core and hard problems that you have to
+[4817s] solve [laughter] and any time you spend
+[4819s] not solving these problems and and
+[4821s] solving like lower level problems you're
+[4824s] probably not delivering value to your
+[4825s] users you know and and so um yeah I I
+[4829s] think sub agents big fan of the agent
+[4831s] SDK in case of yeah uh yeah
+[4835s] >> so uh like we have this uh text and the
+[4838s] verification task so where exactly we
+[4841s] need to put the verification in this
+[4842s] example I let's say after generation of
+[4844s] the SQL query I can verify it is the
+[4848s] right query is generated or not that is
+[4850s] the one path second path is like
+[4852s] generation the query directly executing
+[4854s] and once I will get the output then I
+[4857s] will do the verification so uh and how
+[4860s] how agent can choose dynamically like
+[4862s] which one is the right path?
+[4864s] >> Yeah. So the question is like where do
+[4866s] you do verification? Uh is it only at
+[4868s] the end? You do it in the middle like
+[4870s] things like that. I would say like
+[4871s] everywhere you can just like constantly
+[4873s] verify right like uh like I said we do
+[4876s] some verification in the read step of
+[4878s] the of cloud code right so that's like a
+[4880s] great example um you can do it at the
+[4883s] end you should absolutely do it at the
+[4884s] end but at any other point if you have
+[4887s] rules or heruristics especially uh like
+[4890s] if for example you're like hey one of my
+[4892s] rules is that you shouldn't do like the
+[4895s] the total number of columns you should
+[4896s] search is should be under 10,000 or
+[4898s] under a thousand or something that's
+[4900s] like a a nice way of doing it, right?
+[4902s] Like similarly here like maybe you
+[4904s] shouldn't be inserting like a huge like
+[4906s] row like of of values like give feedback
+[4909s] to the model be like hey chunk this up
+[4910s] right you throw an error and give a
+[4912s] feedback and the great thing about the
+[4913s] model is like it listens to feedback it
+[4915s] will read the error outputs right and
+[4916s] then it'll just keep going so yeah
+[4918s] verification is definitely like I I know
+[4920s] I have it in this like as a sort of a
+[4923s] loop but um it's definitely more like
+[4928s] verification can happen anywhere and and
+[4930s] should happen anywhere like like put it
+[4932s] in as many places as you can. So, um all
+[4936s] right, I do need to start doing some of
+[4938s] the prototyping, but I'll take one more
+[4939s] question. So, right here. Yeah.
+[4941s] >> How do we say how do we form the steps?
+[4942s] I mean, like how do we say the agent
+[4944s] that go search first and then this step
+[4947s] and then do that step?
+[4948s] >> How does the loop actually from the
+[4950s] start point to the end? How do we
+[4953s] >> you just tell it? So, like uh
+[4955s] >> like is it in a system prompt or
+[4958s] >> Yeah, in the system prompt. Yeah. So
+[4959s] like with cloud code, we just give it
+[4960s] the bash tool and we're like, "Hey, like
+[4961s] gather context, read your files, uh do
+[4965s] stuff like run your linting, you know
+[4966s] what I mean?" Um, and so yeah, again
+[4968s] with the agent, you don't need to
+[4970s] enforce this, right? You don't need to
+[4971s] tell it, hey, like you need to do this
+[4974s] because like sometimes it might not be
+[4975s] necessary, right? Like let's say that
+[4977s] someone is asking a readonly question
+[4980s] for your spreadsheet.
+[4983s] you don't need to like verify that uh
+[4986s] like you're that there are no compile
+[4989s] errors, right? Because there you haven't
+[4990s] done any write errors, write write
+[4992s] operations, right? So, um let the agent
+[4995s] be intelligent and and like in the same
+[4996s] way that you would like that same
+[4998s] freedom when you're doing your work,
+[4999s] right? Uh you're trapped in this box or
+[5001s] whatever like same way, right? Uh so,
+[5005s] okay, cool. I I I do want to try and see
+[5007s] if I can do some prototyping now that we
+[5008s] have this uh uh the the holder as well.
+[5014s] Um okay, yeah, execute lint. We've done
+[5017s] a bunch of Q&A. Okay. Prototyping. Okay.
+[5020s] Let's say that you have an agent, right?
+[5022s] Like you want you want to build an
+[5024s] agent. You come out of this talk and
+[5025s] you're like great. I have a bunch of
+[5026s] ideas. How how do I do this? Um I think
+[5030s] what I say overall is like building an
+[5033s] agent should be simple. Your agent at
+[5035s] the end should be simple, but simple is
+[5037s] not the same as easy, right? So like it
+[5040s] should be very simple to get started and
+[5041s] it is just go to cloud code, give cloud
+[5045s] code some scripts and libraries and uh
+[5048s] custom cloud identities and ask it to do
+[5050s] it, right? That's what we're going to
+[5052s] do, right? Um that's like it should be
+[5055s] so easy to be like, hey, this is my API.
+[5057s] This would be like an API key. uh can
+[5060s] you like go search like you know I
+[5064s] [clears throat] don't know like my
+[5065s] customer support tickets or something
+[5066s] and organize them by priority or
+[5068s] something like that right and then look
+[5070s] at what cloud code does and and and
+[5071s] iterate on it right and this is like a
+[5074s] great way of like just skipping to like
+[5076s] the hard domain specific problems that
+[5079s] you have right so you have a lot of like
+[5081s] domain problems like how do you organize
+[5083s] your data your agentic search how do you
+[5085s] like create guard rails on your database
+[5088s] these are all questions that you can
+[5089s] just start solving right away with cloud
+[5091s] code, right? And so try and like build
+[5094s] something that feels pretty good with
+[5095s] cloud code. And I think generally what
+[5098s] I've seen is that you can do this and
+[5099s] get really good results just out of the
+[5101s] bat using cloud code locally, right? And
+[5103s] and you should have high conviction by
+[5105s] the end of it, right? And so um yeah, I
+[5110s] think like [laughter]
+[5111s] I forgot more info. Watch my AI engineer
+[5115s] talk. Uh this is like a deck for
+[5117s] internal that we were using. Um okay. So
+[5121s] uh yeah, I'm going to be inserting this.
+[5123s] So yeah, you're getting what we what we
+[5125s] show customers, right? So um okay. Uh
+[5129s] yeah. So yeah, use use cloud code. Uh
+[5132s] again, simple but simple is not easy,
+[5136s] right? So like the amount of code in
+[5138s] your agent should not be like super
+[5140s] large. Doesn't need to be huge. doesn't
+[5142s] need to be extremely complex, but it
+[5144s] does need to be elegant. It needs to be
+[5147s] like what the model wants. You want to
+[5149s] have this interesting insight. Let's
+[5151s] turn the the model into a SQL query. Oh,
+[5153s] let's turn this spreadsheet into a SQL
+[5154s] query and then go from there, right? So,
+[5156s] um, think about it that way. And cloud
+[5158s] code is like a great way of doing that.
+[5160s] So, okay, uh, let's make a Pokemon
+[5162s] agent, right? This is what we're going
+[5164s] to do. Uh, Pokemon is a game with a lot
+[5166s] of information. There are thousands of
+[5168s] Pokemon, each with a ton of moves. Um,
+[5172s] uh, we want to be pretty general. And so
+[5174s] there is actually like a Pokey API. Um,
+[5177s] and the reason I chose Pokemon is just
+[5178s] because like I know that you guys have
+[5180s] your own APIs as well, right? And
+[5182s] they're all like very unique, right? And
+[5184s] uh, so I wanted to choose something with
+[5185s] a kind of complex API that I haven't
+[5187s] tried before. Um, so the Poke API has
+[5190s] like, you know, you can search up
+[5192s] Pokemon like Ditto. Uh, you can search
+[5195s] up like items and things like that. Um,
+[5198s] and so it's got this like yeah, this
+[5200s] custom API. You've got everything in the
+[5203s] games, right? So, um, and yeah, like one
+[5208s] of the Quest things
+[5210s] agent might want, your user might want
+[5212s] to do is make a Pokemon team, right? I
+[5214s] love Pokemon. I know very little about
+[5216s] making an interesting Pokemon team for
+[5218s] competitive play. Uh, could my agent
+[5220s] help me with that? That'd be that'd be
+[5221s] cool, right? So, um, my goal is to make
+[5224s] an agent that can chat about Pokemon and
+[5227s] then we will like, you know, see what we
+[5230s] can do, right? And and and how far we
+[5232s] get. So, um, I've done like some of this
+[5235s] work already and I will like open up and
+[5238s] show you. So, um, the first step and the
+[5243s] prompt here is like the first step is
+[5245s] I'm I'm going to do mostly code
+[5247s] generation for this, right? And so, um,
+[5250s] let me
+[5252s] Is that going to be on GitHub somewhere?
+[5254s] >> Uh, actually it is. Uh, yeah, it's on my
+[5258s] personal GitHub.
+[5260s] >> Oh, yeah. I was going to commit all of
+[5262s] this as well.
+[5264s] >> Yeah.
+[5265s] >> Um, yeah. Yeah. So, uh, I think my
+[5268s] personal GitHub is, let's see. All
+[5271s] right.
+[5271s] >> Is it secure GitHub or does it have
+[5273s] malware in [laughter] it?
+[5276s] >> You guys are AI engineers. Yeah. Like,
+[5278s] if you can get owned, that's that's your
+[5280s] fault. Um,
+[5282s] yeah. So,
+[5285s] um, yeah, you can you can clone this if
+[5287s] you'd like. Um, I need to push the last
+[5290s] change this. So, okay. So, um, yeah. Can
+[5293s] you guys see this? Should I put it in
+[5295s] dark mode instead or is this fine? Like,
+[5297s] um,
+[5298s] >> dark mode.
+[5299s] >> Dark mode. Okay. [laughter]
+[5309s] >> Okay. Okay, this better.
+[5311s] >> No.
+[5312s] >> You want a different dark mode?
+[5319s] >> Dark hard. Okay. I don't think this as
+[5321s] good as it's going to get, guys. Um,
+[5324s] okay.
+[5326s] I Is it How does this work? Can you guys
+[5328s] still hear me or
+[5330s] >> Okay. Um, okay. So here's an example of
+[5333s] like I've taken the the prompt I gave it
+[5337s] was
+[5338s] hey I go search Pokey API for its API
+[5342s] and create a TypeScript library right
+[5344s] and so this is all by coded um and so
+[5347s] you can see here that it's created this
+[5349s] like interface for Pokemon right and so
+[5352s] it's created like this Pokemon API I can
+[5354s] get by name I can list Pokemon I can get
+[5359s] all Pokemon I can get species and
+[5361s] ability abilities and stuff like that.
+[5362s] And so like this is just a prompt that I
+[5364s] gave it, right? And it generated this
+[5366s] like TypeScript API. It also did it for
+[5368s] moves. Um and then it's created this um
+[5373s] like uh it's created this like API that
+[5376s] I can use import Poke API right from the
+[5379s] Poke API SDK. And uh yeah, you can see
+[5383s] like sort of how it's like set set this
+[5385s] up. And uh now in contrast, right, and
+[5388s] and so this is the cloud. MB, right?
+[5391s] This is a TypeScript SDK for the Pokey
+[5393s] API. Um, this is like the the modules in
+[5397s] the Pokey API. Here are some of the key
+[5399s] features. Um, uh, I'm asking it to write
+[5403s] scripts in the examples directory and
+[5406s] then it will execute those scripts to
+[5407s] help me with my queries, right? Um, and
+[5410s] I give it some example scripts. It
+[5412s] doesn't always need all this
+[5413s] information, right? Like, uh, but yeah,
+[5415s] fetching Pokemon, listing the resources,
+[5418s] getting data, things like that. So this
+[5420s] is like my agent really. It's like a
+[5423s] prompt I gave it to generate a
+[5424s] TypeScript library and then this
+[5425s] cloud.md and I I can chat with it in
+[5428s] cloud code. I'll also show you a version
+[5430s] of it that is just tools, right? So here
+[5434s] I'm using the messages completion API,
+[5437s] right? And I've given it a bunch of
+[5438s] tools from the API. So like get Pokemon,
+[5441s] get Pokemon species, uh get Pokemon
+[5444s] ability, get Pokemon type, get move. So
+[5447s] you've defined all of these tools and
+[5448s] you can see that like you know I also
+[5451s] just gave it a prompt and told it to
+[5452s] make the tools. Um it doesn't want to
+[5455s] make a 100 tools right like there's a
+[5457s] ton of smoke on or sorry um pokey API
+[5461s] data. Um but like it you know there's
+[5465s] only so many parameters it can do. So
+[5467s] it's got this like tool call and now um
+[5471s] and I I made like a little chat
+[5472s] interface with it. Right. So let me now
+[5475s] go here and say like uh this is my tool
+[5480s] calling.
+[5481s] Um
+[5485s] >> did I
+[5492s] great. So yeah, here we've got this
+[5494s] chat.ts, right? Um
+[5497s] I I use bun when I'm prototyping stuff
+[5500s] just cuz like I don't want to compile
+[5502s] from Typescript to JavaScript. Um and uh
+[5505s] again bun has like linting built into
+[5507s] it. Uh it's a way of like simplifying
+[5510s] for the agent so the agent doesn't need
+[5511s] to remember to compile but TypeScript is
+[5514s] better for generation because it has
+[5515s] types right. I'm going to start this
+[5516s] like fun chat and then I'm going to try
+[5518s] like, okay, what are the generation
+[5523s] two water Pokemon?
+[5526s] Um, and you'll see that it's it's
+[5529s] starting to like search and I'm logging
+[5531s] all the tool calls here. This is very
+[5533s] very important, right? Because like it
+[5534s] needs to like do the tool calls. And so
+[5536s] you can see that what it's doing is like
+[5538s] it's searching a bunch of Pokemon. Um,
+[5542s] and then it told me, okay, here are the
+[5544s] water Pokemon for Gen 2, right? It's got
+[5546s] Toadile, Crocenoff, or alligator. You
+[5549s] can see sort of like how it's thought
+[5550s] like in between each step, it's thinking
+[5552s] through um the previous steps. Right
+[5556s] now, like let's say that I want to do
+[5559s] with claw code. I think I might need to
+[5564s] >> uh
+[5565s] I need to delete this example.
+[5568s] >> Um Oh, yeah.
+[5569s] >> Small question. How do you log the the
+[5572s] tool calls? It's like there's just an
+[5575s] argument you can
+[5576s] >> Oh yeah, this is um this is like in the
+[5580s] normal API, right? So I just like uh in
+[5583s] the model every time it logs it, I just
+[5585s] call this this is in the like normal
+[5588s] anthropic API um in the SDK. I I'll get
+[5592s] back to get to the SDK. Um it's just
+[5595s] like you just log every system message.
+[5597s] So, um, just doing it in console logs.
+[5600s] Does that make sense or Yeah. Okay.
+[5602s] Yeah.
+[5603s] >> So, so that chat interface you were
+[5604s] showing, is that just using the regular
+[5606s] API or
+[5607s] >> Yeah, that's using the regular API.
+[5608s] >> So, not the agent SK,
+[5609s] >> not the agent SDK. Yeah. Yeah. And so,
+[5611s] what I'm going to do here is um here I'm
+[5614s] going to delete the script
+[5617s] because I don't want it to cheat. Um,
+[5620s] but okay. So, here you know that um I've
+[5624s] I'm just opening cloud code. I've
+[5625s] created a bunch of files here. I'm going
+[5627s] to say like, can you tell me all the
+[5630s] generation 2 water Pokemon?
+[5633s] Um, and then we'll see what it can do,
+[5634s] right? So, um, [clears throat] I forget
+[5637s] if I need to prompt it to write a script
+[5639s] or something. I think it'll be fine.
+[5640s] We'll see what happens.
+[5641s] >> Do you mind going to the core SDK file
+[5644s] and just showing you talked about
+[5646s] getting context and then action and then
+[5648s] verification? Can you show that in the
+[5650s] code and how we're configuring the tool
+[5652s] description?
+[5653s] >> Yeah. So, uh, we haven't done the SDK
+[5657s] part yet. So, so far I've just put put
+[5661s] some APIs in cloud code. Yeah. Yeah.
+[5664s] >> Sorry, I thought I missed that. That's
+[5665s] >> Yeah. Yeah. Yeah. Of course. Okay. Um,
+[5668s] but yeah. So, okay. You can see here um
+[5671s] it's it's given me a lot more, right?
+[5674s] And um
+[5680s] >> yeah, it's given me a lot more. So, it
+[5682s] it it's it's saying there's 20 water
+[5684s] Pokemon, right? And I think this is
+[5685s] roughly right. I've like um
+[5689s] uh what did it do?
+[5693s] I think it just knows. Okay.
+[5697s] That's funny. Live this. Um
+[5703s] um anyways uh
+[5707s] yeah Pokemon is slightly in distribution
+[5709s] which is which is I I guess good
+[5712s] [laughter]
+[5713s] um but yeah so like what what it will do
+[5716s] is like it will try and like write like
+[5718s] a script and uh because you don't want
+[5721s] it to think as much right so here it's
+[5723s] like okay what I'm going to do is
+[5726s] um let's see gen two water type Pokemon
+[5731s] and where is it?
+[5735s] Okay. So, yeah, you can see here it
+[5737s] knows like, okay, the start of the
+[5738s] generations. It fetches these uh per
+[5742s] API. Um I guess this decided not to use
+[5745s] like my pre-built API here. Um
+[5748s] and then uh yeah, and and then runs it,
+[5751s] right? So, um I think I need to like
+[5754s] improve the cloud. MV for this. But
+[5756s] anyways, you can see that like it's able
+[5759s] to like check 200 plus Pokémon and then
+[5762s] check for their type and and you know
+[5764s] get their get their information, right?
+[5766s] So this is like uh just a quick example
+[5769s] on like how to do codegen and how to use
+[5771s] cloud code to do it, right? So um we'll
+[5775s] run this script and then like uh um like
+[5778s] keep going, right? So, uh it will give
+[5782s] me the output and um yeah, basically
+[5785s] what I want to show, let's see, we have
+[5788s] roughly 15 minutes left. Um
+[5793s] >> play Pokemon.
+[5794s] >> The time play Pokemon. Yeah. Yeah.
+[5796s] Actually, this is one of the demos I was
+[5798s] thinking of doing. Um Cloud Code plays
+[5800s] Pokemon. So, like let's say you want to
+[5802s] do like an agentic version of Cloud
+[5804s] Plays Pokemon. How would you do it?
+[5806s] um
+[5808s] what you would do I think is like you
+[5810s] would give it access to the internal
+[5812s] memory of the uh the ROM right and so
+[5816s] let's say that it wanted to find its
+[5818s] party it could search that in memory and
+[5820s] Pokémon Red is like a very well in
+[5823s] distribution uh reverse engineered uh
+[5826s] game right and so it could search in
+[5828s] memory to be like hey these are the
+[5829s] Pokemon um these are like this is how I
+[5833s] figure out where the map is this how I
+[5834s] navigate it right so this is like maybe
+[5837s] exercise to the reader if you want to
+[5838s] try it out. It's like um there is like a
+[5840s] no.js GBA emulator. Um I think I have to
+[5845s] legally say you have to go buy Pokemon
+[5846s] Red and try it. Um but yeah, I think
+[5849s] like uh yeah, good example. Anyways,
+[5853s] here so it's it's fetched all of them
+[5854s] and it's listed all their types and um
+[5858s] yeah, you can see how it's like used
+[5859s] code generation to do this, right? So um
+[5862s] a quick example of using cloud code to
+[5864s] prototype this. Um now there can be like
+[5867s] more interesting like data here. So um I
+[5871s] do want to leave time for example. So I
+[5874s] think I'll just sort of like for
+[5875s] questions. So I'll just sort of go
+[5877s] through like an example. Let's say
+[5880s] you're making competitive Pokemon.
+[5881s] Competitive Pokemon has a lot of
+[5882s] different variables and data. So, this
+[5884s] is like a a
+[5887s] text file from this online like a
+[5891s] library basically which stores like all
+[5893s] of the Pokemon and their like moves and
+[5897s] who they work well with and don't work
+[5899s] well with and you know like who they're
+[5902s] countered by and all of these things,
+[5904s] right? So, there's a ton of data here,
+[5906s] right? And it's all in text file. Um,
+[5908s] which is actually pretty good for cloud
+[5910s] code, right? because I can say like,
+[5911s] okay, um, hey, I'm going to give it a
+[5915s] little bit more data. Normally, I put
+[5916s] this in the, um, check the data folder.
+[5919s] Tell me,
+[5921s] I I want to make a team around Venusaur.
+[5926s] Can you give me some suggestions based
+[5929s] on the Smogon data? Um,
+[5933s] and Smoke on is like this online API.
+[5935s] And so I'm I'm not entirely sure what
+[5937s] it'll do here yet. I haven't done this
+[5939s] query before. Uh, but we'll see. I think
+[5941s] it'll be it'll be fun. Um,
+[5946s] where am I? Oh, I see.
+[5954s] Um, yeah. But what I wanted to do is
+[5956s] sort of grapple through this this data,
+[5960s] right? And and sort of figure out from
+[5961s] itself from first principles, not having
+[5963s] seen this data before, how can I like
+[5965s] answer my query, right? So um while it
+[5969s] does does that I'll I'll take any
+[5970s] questions. Yeah.
+[5972s] >> Um first of all great work job. Uh so
+[5975s] this is like really on top of cloud code
+[5978s] >> and so my question is if we were to
+[5981s] deploy this customer basically
+[5984s] >> are we supposed to have cloud code
+[5986s] running in like a like a swarm or are we
+[5990s] somehow able to take the cloud code part
+[5992s] out just bot and the agent SDK?
+[5995s] >> Yeah. So, let me show you like very
+[5997s] quickly like what the what it looks like
+[6000s] to use the agent SDK here. Um, so I've
+[6004s] already done this file system, right?
+[6006s] And again, I want you to think about the
+[6008s] file system as a way of doing context
+[6010s] engineering, right? Like this is like a
+[6012s] lot of the inputs into the agent. So, my
+[6013s] actual agent file is like 50 lines,
+[6016s] right? Um, and it's mostly just like
+[6019s] random like boiler plate, right? Like I
+[6022s] guess, yeah, it's decided to stop it
+[6024s] from
+[6026s] uh writing scripts outside of the custom
+[6028s] scripts directory. Again, fully
+[6029s] backcoded. So, um yeah, you can see like
+[6032s] it just runs this query, takes in the
+[6034s] working directory
+[6036s] um and uh like like runs it in a loop,
+[6040s] right? And so probably I'd want to like
+[6043s] turn into like some allowed tools here
+[6045s] and stuff, but it it's very simple. And
+[6047s] and so um if I were to like
+[6049s] productionize this, the first step I do
+[6052s] is like okay, I I've tested it on cloud
+[6054s] cloud code. It seems to do pretty well.
+[6056s] I write this file. Then I put it there
+[6059s] are two ways to do it. So one is I do
+[6061s] think that like local apps might be
+[6066s] coming back with AI because I think that
+[6068s] like there's such an overhead to running
+[6070s] it. Like for example, cloud code is a
+[6072s] front-end app, right? Like it works on
+[6074s] your computer. So maybe the way I shift
+[6076s] this as a Pokemon app is like hey I have
+[6077s] like an app that you install and it
+[6079s] works locally on your computer and
+[6081s] writing scripts. I think that's one way
+[6082s] of doing it, right? Um the other way is
+[6086s] yeah you have you [clears throat] host
+[6087s] it in a sandbox. Um and again there's a
+[6089s] bunch of different sandbox providers
+[6091s] that make it really easy like Cloudflare
+[6093s] has a good example um of using the agent
+[6096s] SDK and it's just like sandbox.st start
+[6099s] you know and then like bun agent.ts ts
+[6103s] and that's kind of all it takes, right?
+[6104s] Like it's like like they've abstracted
+[6106s] away a lot of it. Um so you run like the
+[6109s] sandbox um and then you communicate with
+[6111s] it and um yeah I think there is like
+[6115s] some very interesting stuff that I'm not
+[6116s] sure I had time to get to but um like I
+[6121s] I think some interesting questions are
+[6123s] like um
+[6126s] yeah like how do you do this sort of
+[6127s] like service now you're just spinning up
+[6129s] a sub like a sandbox per user. Um,
+[6131s] there's a lot of like I'd say best
+[6133s] practices to solve here. One thing I
+[6136s] just want to call out for you guys to
+[6137s] think about, um, if you're making a an
+[6140s] agent with a UI, like let's say that you
+[6142s] have, uh, yeah, my Pokemon agent and I
+[6146s] wanted to have an UI that is adaptable
+[6149s] to the user, right? Like maybe some
+[6150s] users are doing team building, some
+[6152s] users are helping it with their game,
+[6154s] some users just want pictures of
+[6155s] Pokemon. How would how would I have an
+[6157s] agent that adapts in in real time to my
+[6160s] user, right? Um the way I would do it is
+[6163s] in my sandbox, I would have a dev
+[6165s] server, right? And the dev server would
+[6167s] expose a port. Um it would run on bun or
+[6170s] node or something. It would like expose
+[6172s] a port. The agent could edit code and it
+[6175s] would live refresh and and your user
+[6177s] would be interacting with that website.
+[6179s] This is how a lot of like site builders
+[6181s] like lovable and stuff work, right? they
+[6183s] they use sandboxes and they host
+[6186s] essentially a dev server. And so
+[6188s] thinking about this for your users, if
+[6190s] you want a customized interface, this is
+[6192s] a great way to do it. Um, okay, let's
+[6196s] see. Let's see what it did. Um,
+[6203s] okay, cool. Okay. So, um it's like
+[6208s] written this like script has generated
+[6210s] like show me some base stats and
+[6213s] suggested it a like um uh a move set and
+[6218s] some teammates and you can see sort of
+[6220s] like see what did it do? Um control E.
+[6228s] Um
+[6230s] yeah. Okay. Okay. So, you can see here
+[6231s] what it started doing is like it started
+[6233s] searching for Venusaur, right? And it
+[6235s] started finding uh those types the like
+[6239s] those Pokemon and when it does that it
+[6241s] also gets other Pokemon that mentioned
+[6243s] Venusaur. So, it gets like its teammates
+[6245s] and it counters and stuff, right? And
+[6247s] it's sort of over this time found
+[6250s] interesting Pokemon, right, that like it
+[6252s] might work with, right? So, it's done a
+[6254s] bunch of these searches and it's gone
+[6256s] these profile. It's found most common
+[6258s] teammates and and written a script to to
+[6260s] analyze it, right? And so this is all
+[6262s] based on a text file. Of course, I could
+[6264s] have pre-processed a text file a little
+[6266s] bit more. Um, but yeah, it's like done
+[6269s] this sort of like interesting
+[6272s] um analysis for me, right? And again,
+[6274s] I'll I'll push out more code to the
+[6276s] GitHub repo. And um I'll also tweet
+[6278s] about this. I'm on Twitter. I'm uh
+[6281s] TRQ212.
+[6282s] Uh I tweet a lot. So, uh, definitely
+[6285s] like mostly about agent SDK stuff. Um,
+[6287s] but yeah, we have about 8 minutes left,
+[6289s] so I want to spend the rest of time
+[6290s] taking questions about kind of anything,
+[6292s] you know, and I'm sorry we didn't get to
+[6294s] do more prototyping. Um, but, uh, yeah,
+[6297s] over there.
+[6298s] >> Yeah, I was going to say it's a flaw
+[6299s] play. Can you uh sort of plug this in
+[6301s] with that just to see if the agent will
+[6303s] uh be more selective with the team it uh
+[6305s] tries to capture?
+[6306s] >> Yeah, put it in in Cloud Play's Pokemon.
+[6309s] Yeah. Yeah, I do want to play CL
+[6310s] codeplays Pokemon. I think that would be
+[6312s] fun. Yeah. Yeah. I I think cloud plays
+[6314s] Pokemon. I think we try and keep it like
+[6315s] a pure reasoning task as much as
+[6317s] possible. Yeah. Um other questions?
+[6318s] Yeah.
+[6319s] >> I was curious about how people are
+[6320s] monetizing
+[6322s] like
+[6324s] you know kind of like
+[6327s] you kind of like lose the opportunity to
+[6328s] get all the margins.
+[6330s] >> Yeah. I'm curious like
+[6333s] shipping your own SDK so that they kind
+[6335s] of take the usage base.
+[6338s] >> Yeah. I I do think overall, especially
+[6341s] right now, agents are kind of pricey,
+[6344s] you know what I mean? Because like um
+[6347s] the models are have just started to get
+[6348s] agentic. We really focus on like having
+[6351s] the most intelligent models, you know,
+[6352s] and like you generally this is just like
+[6355s] an overall like SAS business software
+[6358s] thing. You'd rather charge fewer people
+[6361s] more money that really have like a hard
+[6363s] problem, you know? And so I think this
+[6364s] is still good. like you probably should
+[6366s] find um you know these hard use cases
+[6369s] but I would say like number one make
+[6371s] sure you're solving a problem that
+[6372s] people want to pay for right is like the
+[6374s] number one step right and then number
+[6376s] two um yeah I think you could do
+[6379s] subscription or token based I I think
+[6382s] this kind of comes down to like how much
+[6384s] you expect people to use your product uh
+[6386s] versus like how much you expect them to
+[6388s] like use it occasionally like cloud code
+[6390s] obviously people use a lot and in order
+[6392s] to like we do a mix of like if we give
+[6395s] you some rate limits and if you exceed
+[6397s] it we do uh usage based pricing. Um I
+[6401s] think that like yeah it's very like
+[6403s] dependent on your own user base and kind
+[6406s] of like what they will do but I will say
+[6407s] monetization is something you should
+[6410s] think about up front and design your you
+[6413s] know agent around because it's hard to
+[6415s] walk back these promises.
+[6417s] Um, yeah, back there.
+[6420s] >> I haven't heard you talk at all about
+[6421s] hooks and be curious to hear your take
+[6423s] on how
+[6426s] >> uh Yeah, there's so much to talk about.
+[6427s] Um, hooks are great. We we do ship with
+[6430s] hooks. Um, hooks are a way of doing
+[6433s] deterministic verification in particular
+[6436s] or inserting context. So, um, you know,
+[6439s] we fire these hooks as events and you
+[6441s] can register them in the in the agent
+[6442s] SDK. There's like a guide on how to do
+[6444s] that. Um, examples of things you might
+[6446s] use hooks for is like for example, um,
+[6449s] yeah, you can run it to verify the like
+[6451s] a spreadsheet each time. Uh, you can
+[6454s] also like let's say I'm working with an
+[6455s] agent and, uh, I'm the agent is doing
+[6458s] some spreadsheet operations and the user
+[6460s] has also changed the spreadsheet. This
+[6462s] is an interesting like place to use a
+[6464s] hook because you can be like hey has
+[6466s] after every tool call insert changes
+[6469s] that the user has made uh and and so
+[6471s] you're giving it kind of live context
+[6474s] changes um in an interesting way. So um
+[6478s] yeah I think uh uh yeah there there's
+[6481s] more stuff on like the docs about hooks
+[6484s] um and happy to like talk about it
+[6487s] afterwards as well. Yeah, more
+[6488s] questions. Yeah.
+[6490s] like I do
+[6497s] in
+[6498s] >> I realize it's working.
+[6500s] >> I want to take the same conversation
+[6502s] that I've already done because I'm going
+[6503s] through
+[6505s] >> and convert that into a new
+[6506s] >> okay
+[6507s] >> which is that I followed a few steps now
+[6509s] it's actually working but I don't want
+[6511s] to rewrite all of the code to write
+[6514s] [clears throat] it
+[6516s] like because it works.
+[6518s] >> Yeah. Sure. Yeah. So like let's say
+[6520s] you've done this prototyping, you found
+[6521s] something that works. What I would do is
+[6523s] like I somewhere the cloud MD like
+[6525s] obviously like when I tried doing this
+[6528s] one time it like didn't use my API
+[6529s] directly and it wrote JavaScript. I
+[6532s] should have been more specific in my
+[6533s] cloud. Mmd to be like hey you should use
+[6535s] this. Um [snorts]
+[6537s] I yeah I think like that's one thing. Um
+[6540s] the second thing is uh yeah do summarize
+[6544s] in terms have the helper scripts that
+[6547s] you need and then like write something
+[6549s] like this agent.ts script for like to
+[6552s] run the test again. Uh yeah more
+[6555s] questions in the grade. Uh yeah, I just
+[6558s] put it a Pokemon and I think it's lying
+[6560s] about using the scripts answer. It tries
+[6562s] a couple times like my SDK isn't very
+[6564s] good it tries twice and then it's like
+[6568s] oh here's your comparison table but it's
+[6569s] just because it's a distribution. Do you
+[6571s] have any advice for that kind of
+[6572s] problem?
+[6573s] >> Yeah, this is a good question and and
+[6574s] you know like I'm I think there is some
+[6577s] messiness, right? Like I I think one of
+[6579s] the things if an agent knows an answer
+[6582s] um and you want to like sort of like
+[6584s] fight it kind of to be like okay like no
+[6586s] it's generation 9 now and like Venusaur
+[6589s] stats have changed and there's like this
+[6591s] new like charact like um this is hard I
+[6595s] actually think uh one of the ways of
+[6596s] doing that is hooks. So you can say for
+[6599s] example like hey uh don't if if you've
+[6602s] like returned a response without writing
+[6605s] a script you know you can check that you
+[6607s] can be like give feedback to bit like
+[6609s] please make sure you write a script
+[6610s] please make sure you read this data
+[6612s] right and and you can use hooks to like
+[6614s] give that feedback in in the same way
+[6615s] that in cloud code uh we have these like
+[6617s] rules like make sure you read a file
+[6619s] before you write to it right so add some
+[6621s] determinism uh it can definitely be like
+[6624s] I said it's an art you know sometimes
+[6626s] you know yeah maybe like like writing
+[6628s] course I guess probably um [laughter]
+[6631s] yeah and the gray
+[6632s] >> how are you guys dealing with like large
+[6634s] code bases I'm working like a 50 million
+[6636s] plus code base and so
+[6639s] >> bre tool doesn't work really
+[6641s] >> um so I'm having to build like my own
+[6642s] like semantic indexing type thing to
+[6645s] kind of help with that right
+[6646s] >> is there any kind of like addthropic
+[6648s] maybe thinking about how that can be
+[6651s] more native to the product like you know
+[6652s] in a couple months is the thing I'm
+[6654s] writing just going to go away or like
+[6655s] how how do you guys think about
+[6657s] Okay, your last question in a couple
+[6659s] months is you're thinking to go away
+[6660s] generally. Yes. Yeah. [laughter] Anytime
+[6662s] you ask about AI, yeah. Uh I think that
+[6666s] um
+[6668s] semantic search this is a cloud code
+[6670s] question more than a security question,
+[6671s] but happy to answer it. Like um we you
+[6675s] know there are trade-offs of semantic
+[6676s] search. It's more brittle. Um I think
+[6678s] you have to like index and and and
+[6679s] search and we it's not necessar the
+[6683s] model is not trained on semantic search
+[6684s] and so I think that's sort of like a
+[6686s] problem like you know grap it's trained
+[6688s] on because it's like it's easy to do
+[6689s] that but like semantic search you're
+[6691s] implementing your bespoke query um for
+[6694s] like very large code bases you know we
+[6696s] have lots of customers that work in
+[6698s] large code bases I think what I've seen
+[6700s] is sort of like they just do like good
+[6703s] claw mds you start in you know trying
+[6707s] Make sure you start in the directory you
+[6708s] want, have like good like verification
+[6711s] steps and hooks and links and things
+[6713s] like that. And so u you know that's what
+[6715s] we do. We don't have you know a custom
+[6717s] we dog food clunk code, right? So um
+[6720s] yeah.
+[6721s] >> Okay. Yeah. Last question.
+[6723s] >> We have to close unfortunately actually.
+[6724s] Give it up for Tariq everyone.
+[6726s] [applause]
+[6728s] [music]
+[6737s] >> [music]
+[6744s] >> Heat.

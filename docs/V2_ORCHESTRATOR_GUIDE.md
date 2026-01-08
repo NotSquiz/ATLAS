@@ -1,0 +1,582 @@
+# ATLAS V2 Orchestrator Guide
+
+> **Purpose:** This document explains ATLAS's orchestration capabilities so that ATLAS (or any agent) can understand and use them effectively.
+> **Last Updated:** January 8, 2026
+
+---
+
+## Reference Documentation
+
+**Read these for deeper understanding of WHY these capabilities exist:**
+
+### Masterclass Source Material
+The V2 architecture is based on the Claude Agent SDK Masterclass by Tariq (Anthropic). The key insights are documented in:
+
+| Document | Content | Read When |
+|----------|---------|-----------|
+| `docs/research/R30.Claude Agent SDK Masterclass Analysis.md` | **10 key insights**, executive summary, timestamps | Start here for the "why" |
+| `docs/research/R30_Section1_Philosophy.md` | Agent definition, loops, bash philosophy | Understanding agent patterns |
+| `docs/research/R30_Section2_Implementation.md` | Skills, sub-agents, hooks, state management | Implementing new features |
+| `docs/research/R30_Section3_Advanced.md` | Q&A, verification patterns, production tips | Advanced patterns |
+
+### Key Masterclass Quotes (with timestamps)
+
+> **[194s]** "Agents build their own context, decide their own trajectories, are working very very autonomously."
+
+> **[2001s]** Skills = Progressive Disclosure - "Agent discovers capabilities by reading skill files on demand."
+
+> **[4147s]** Sub-Agents - "Avoid context pollution. Start a new context session" for complex sub-tasks.
+
+> **[4575s]** Context Management - Store state externally (git diff, files), clear context between tasks.
+
+> **[4928s]** Verification - "Verification can happen anywhere and should happen anywhere."
+
+> **[6596s]** Hooks - Use deterministic hooks to enforce behavior and fight hallucinations.
+
+### Raw Transcript
+The full masterclass transcript (127KB) is available for searching specific topics:
+```
+/home/squiz/ATLAS/masterclass_transcript.txt
+```
+Use `grep` to find specific discussions (e.g., `grep -i "verification" masterclass_transcript.txt`).
+
+### Architecture & Decisions
+| Document | Content |
+|----------|---------|
+| `docs/ATLAS_ARCHITECTURE_V2.md` | Design specs for each V2 component |
+| `docs/DECISIONS.md` | Why each decision was made (D1-D18) |
+| `docs/TECHNICAL_STATUS.md` | Current implementation status |
+
+---
+
+## Quick Reference
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| SubAgentExecutor | `atlas/orchestrator/subagent_executor.py` | Spawn parallel sub-agents with isolated context |
+| HookRunner | `atlas/orchestrator/hooks.py` | Run validators before/after skill execution |
+| SessionManager | `atlas/orchestrator/session_manager.py` | Track session state and git changes |
+| SkillLoader | `atlas/orchestrator/skill_executor.py` | Load skills or specific sections on demand |
+| ScratchPad | `atlas/orchestrator/scratch_pad.py` | Track intermediate results during skill chains |
+
+---
+
+## 1. SubAgentExecutor
+
+### What It Does
+Spawns sub-agents (via `claude -p` CLI) with fresh, isolated context. Enables parallel execution and adversarial verification.
+
+### When To Use
+- Running multiple independent tasks simultaneously
+- Needing a "second opinion" on generated content
+- Isolating context to prevent cross-contamination
+
+### Usage
+
+```python
+from atlas.orchestrator.subagent_executor import SubAgentExecutor
+
+executor = SubAgentExecutor(timeout=120)  # 2 minute default
+
+# Single task
+result = await executor.spawn(
+    task="Summarize this code and identify potential bugs",
+    context={"file": "auth.py", "focus": "security"},  # Optional context
+    timeout=60  # Override timeout
+)
+print(result.output)  # The sub-agent's response
+print(result.success)  # True/False
+
+# Parallel tasks (runs simultaneously)
+results = await executor.spawn_parallel([
+    "Review error handling in auth module",
+    "Check for SQL injection vulnerabilities",
+    "Verify input validation coverage"
+])
+for r in results:
+    print(f"{r.task[:30]}... -> {r.success}")
+
+# Adversarial verification (fresh agent double-checks work)
+verification = await executor.verify_adversarially(
+    output={"draft": "Your generated content here..."},
+    skill_name="draft_21s",
+    persona="junior analyst at McKinsey"  # Default persona
+)
+if not verification.passed:
+    print(f"Issues found: {verification.issues}")
+```
+
+### CLI Testing
+```bash
+python -m atlas.orchestrator.subagent_executor --test
+```
+
+### How To Extend
+To add new verification personas, modify `verify_adversarially()` in `subagent_executor.py:380`.
+
+---
+
+## 2. HookRunner (Validators)
+
+### What It Does
+Wraps existing validation scripts as hooks that run at specific timing points (PRE or POST execution).
+
+### When To Use
+- Validating skill inputs before execution
+- Running QC checks after content generation
+- Enforcing quality gates automatically
+
+### Currently Configured Hooks
+
+| Repo | Hook | Timing | Blocking |
+|------|------|--------|----------|
+| babybrains | qc_runner | POST | Yes |
+| knowledge | tier1_validators | POST | Yes |
+| web | pre_pr | POST | Yes |
+
+### Usage
+
+```python
+from atlas.orchestrator.hooks import HookRunner, HookTiming
+
+runner = HookRunner()
+
+# List available hooks for a repo
+hooks = runner.get_available_hooks("babybrains")  # ['qc_runner']
+
+# Run a specific hook
+result = await runner.run(
+    repo="babybrains",
+    hook_name="qc_runner",
+    input_data={"format": "s21", "content": "..."},
+    timeout=60
+)
+
+if result.passed:
+    print("QC passed!")
+else:
+    print(f"Blocked: {result.blocking}")
+    for issue in result.issues:
+        print(f"  [{issue.code}] {issue.message}")
+
+# Run all POST hooks for a repo
+results = await runner.run_all_for_timing(
+    repo="babybrains",
+    timing=HookTiming.POST_EXECUTION,
+    stop_on_block=True  # Stop at first failure
+)
+```
+
+### CLI Testing
+```bash
+# List hooks
+python -m atlas.orchestrator.hooks babybrains --list
+
+# Run by timing
+python -m atlas.orchestrator.hooks babybrains --timing post
+
+# Run specific hook with input
+python -m atlas.orchestrator.hooks babybrains qc_runner --input data.json
+```
+
+### How To Add New Hooks
+Edit the `HOOKS` dict in `hooks.py:83`:
+
+```python
+HOOKS = {
+    "babybrains": {
+        "new_validator": {
+            "cmd": ["python", "scripts/validate_something.py"],
+            "cwd": "/home/squiz/code/babybrains-os",
+            "blocking": True,  # True = blocks on failure
+            "input_mode": "stdin",  # "stdin" or "none"
+            "output_format": "json",  # "json" or "text"
+            "timing": HookTiming.PRE_EXECUTION,  # or POST_EXECUTION
+        },
+    },
+}
+```
+
+---
+
+## 3. SessionManager
+
+### What It Does
+Tracks session state across interactions. Persists to `~/.atlas/sessions/`. Captures git context for resumption.
+
+### When To Use
+- Starting a work session on a specific repo
+- Tracking which skills have been executed
+- Storing scratch notes that persist
+- Getting git diff context for resumption after context clearing
+
+### Usage
+
+```python
+from atlas.orchestrator.session_manager import SessionManager, get_session_manager
+
+mgr = SessionManager()
+
+# Start a session
+session_id = mgr.start_session(repo="babybrains")  # Returns: "babybrains_20260108_143022"
+
+# Track skill execution
+mgr.record_skill("ingest")
+mgr.record_skill("plan")
+mgr.record_skill("draft_21s")
+
+# Store scratch data
+mgr.add_to_scratch("current_domain", "sleep")
+mgr.add_to_scratch("target_age", "12-18m")
+
+# Retrieve scratch data
+domain = mgr.get_from_scratch("current_domain")
+
+# Get git context (what files changed)
+git_ctx = mgr.get_git_context(repo_path=Path("/home/squiz/code/babybrains-os"))
+print(f"Modified: {git_ctx.files_modified}")
+print(f"Added: {git_ctx.files_added}")
+print(f"Clean: {git_ctx.is_clean}")
+
+# Get context for resumption after clearing
+resume_data = mgr.clear_and_resume()
+# Returns: {session_state, git_context, resume_prompt}
+
+# Save state (auto-saves on changes, but can force)
+mgr.save_state()
+
+# End session
+mgr.end_session()
+
+# List past sessions
+sessions = mgr.list_sessions(repo="babybrains")
+
+# Load a previous session
+mgr.load_session("babybrains_20260108_143022")
+```
+
+### CLI Testing
+```bash
+# Start session
+python -m atlas.orchestrator.session_manager --start --repo babybrains
+
+# Get git context
+python -m atlas.orchestrator.session_manager --git-context --path /home/squiz/code/babybrains-os
+
+# List sessions
+python -m atlas.orchestrator.session_manager --list --repo babybrains
+
+# Resume session
+python -m atlas.orchestrator.session_manager --resume babybrains_20260108_143022
+
+# Cleanup old sessions
+python -m atlas.orchestrator.session_manager --cleanup --days 7
+```
+
+### Session File Location
+Sessions are stored as JSON at: `~/.atlas/sessions/{session_id}.json`
+
+---
+
+## 4. Progressive Loading (SkillLoader)
+
+### What It Does
+Loads skill markdown files efficiently - either full content, just the header, or specific sections.
+
+### When To Use
+- Loading only the sections needed for a task (saves context tokens)
+- Checking what a skill contains before loading
+- Getting size estimates for context budgeting
+
+### Skill Structure
+Skills are markdown files with `## ` headers defining sections:
+```markdown
+# Skill: draft_21s
+**Purpose:** Generate a 21-second script...
+
+---
+
+## I/O Schema
+[content]
+
+## 3. Voice DNA Requirements
+[content]
+
+## 10. Output Structure
+[content]
+```
+
+### Usage
+
+```python
+from atlas.orchestrator.skill_executor import SkillLoader, SkillExecutor
+
+loader = SkillLoader()
+
+# List available skills
+skills = loader.list_skills()  # ['draft_21s', 'draft_60s', 'ingest', ...]
+
+# Load full skill (original behavior)
+full_content = loader.load_skill("draft_21s")
+
+# Load just the header (before first ## section)
+header = loader.load_skill_header("draft_21s")
+
+# List sections without loading content
+sections = loader.list_skill_sections("draft_21s")
+for s in sections:
+    print(f"{s.name} (lines {s.line_start}-{s.line_end})")
+
+# Load specific section (partial match works!)
+section = loader.load_skill_section("draft_21s", "Voice DNA")
+# Matches: "## 3. Voice DNA Requirements"
+print(section.content)
+
+# Load multiple sections
+sections = loader.load_skill_sections("draft_21s", ["Voice DNA", "Output Structure"])
+
+# Get size info
+size = loader.get_skill_size("draft_21s")
+# Returns: {"bytes": 8404, "lines": 349, "sections": 12, "estimated_tokens": 2101}
+```
+
+### Partial Matching
+Section names match with this priority:
+1. Exact match
+2. Case-insensitive exact
+3. Number prefix stripped (e.g., "Voice DNA" matches "3. Voice DNA Requirements")
+4. Substring match
+
+### CLI Testing
+```bash
+# List skills
+python -m atlas.orchestrator.skill_executor --list
+
+# List sections
+python -m atlas.orchestrator.skill_executor draft_21s --list-sections
+
+# Get header only
+python -m atlas.orchestrator.skill_executor draft_21s --header-only
+
+# Get specific sections
+python -m atlas.orchestrator.skill_executor draft_21s --sections "Voice DNA,Output Structure"
+
+# Get size info
+python -m atlas.orchestrator.skill_executor draft_21s --size
+```
+
+### Skill File Locations
+Skills: `/home/squiz/code/babybrains-os/skills/*.md`
+Schemas: `/home/squiz/code/babybrains-os/schemas/*.json`
+
+---
+
+## 5. ScratchPad
+
+### What It Does
+Tracks intermediate results during multi-step skill chains. Each entry has a key, value, step number, timestamp, and optional skill name.
+
+### When To Use
+- Running skill chains (ingest → plan → draft → qc)
+- Needing to recover if a step fails
+- Debugging what each step produced
+- Generating summaries for context reload
+
+### Usage
+
+```python
+from atlas.orchestrator.scratch_pad import ScratchPad
+from pathlib import Path
+
+pad = ScratchPad(session_id="content_session_001")
+
+# Add entries (step auto-increments if not provided)
+pad.add("ingest_output", {"domain": "sleep", "age": "12-18m"}, step=1, skill_name="ingest")
+pad.add("plan_result", {"segments": [1, 2, 3, 4]}, step=2, skill_name="plan")
+pad.add("draft_output", {"text": "...", "word_count": 62}, step=3, skill_name="draft_21s")
+
+# Retrieve values
+ingest = pad.get("ingest_output")
+latest = pad.get_latest(n=3)
+
+# Query by step or skill
+step2_entries = pad.get_by_step(2)
+plan_entries = pad.get_by_skill("plan")
+
+# Get human-readable summary
+print(pad.get_summary())
+# Output:
+# ScratchPad: content_session_001 (3 entries, 3 steps)
+# Step 1 (ingest):
+#   - ingest_output: {"domain": "sleep", "age": "12-18m"}
+# Step 2 (plan):
+#   - plan_result: {"segments": [1, 2, 3, 4]}
+# ...
+
+# Get minimal context dict for LLM injection
+ctx = pad.get_context_dict()
+
+# Persist to file
+pad.to_file(Path("~/.atlas/scratch/session.json"))
+
+# Load from file
+loaded = ScratchPad.from_file(Path("~/.atlas/scratch/session.json"))
+
+# Clear entries
+pad.clear()  # All entries
+pad.clear_before_step(3)  # Keep step 3+, clear 1-2
+```
+
+### CLI Testing
+```bash
+# Add entry
+python -m atlas.orchestrator.scratch_pad --session test --add key=value --step 1
+
+# View summary
+python -m atlas.orchestrator.scratch_pad --session test --summary
+
+# View as JSON
+python -m atlas.orchestrator.scratch_pad --session test --json
+
+# Clear
+python -m atlas.orchestrator.scratch_pad --session test --clear
+
+# Load from file
+python -m atlas.orchestrator.scratch_pad --load /path/to/scratch.json --summary
+```
+
+---
+
+## Complete Workflow Example
+
+Here's how all components work together for a content generation task:
+
+```python
+import asyncio
+from pathlib import Path
+from atlas.orchestrator.session_manager import SessionManager
+from atlas.orchestrator.skill_executor import SkillLoader, SkillExecutor
+from atlas.orchestrator.scratch_pad import ScratchPad
+from atlas.orchestrator.hooks import HookRunner, HookTiming
+from atlas.orchestrator.subagent_executor import SubAgentExecutor
+
+async def generate_content(domain: str, age_band: str):
+    # 1. Start session
+    session = SessionManager()
+    session_id = session.start_session(repo="babybrains")
+
+    # 2. Initialize scratch pad
+    pad = ScratchPad(session_id)
+
+    # 3. Load only the sections we need
+    loader = SkillLoader()
+    voice_section = loader.load_skill_section("draft_21s", "Voice DNA")
+    output_section = loader.load_skill_section("draft_21s", "Output Structure")
+
+    # 4. Execute skill
+    executor = SkillExecutor()
+    result = await executor.execute(
+        "draft_21s",
+        input_data={"domain": domain, "age_band": age_band}
+    )
+
+    # 5. Track result
+    pad.add("draft_output", result.output, step=1, skill_name="draft_21s")
+    session.record_skill("draft_21s")
+
+    # 6. Run QC hook
+    hooks = HookRunner()
+    qc_result = await hooks.run("babybrains", "qc_runner", input_data=result.output)
+
+    if not qc_result.passed:
+        pad.add("qc_failure", qc_result.issues, step=2, skill_name="qc")
+        return {"success": False, "issues": qc_result.issues}
+
+    # 7. Adversarial verification
+    sub = SubAgentExecutor()
+    verification = await sub.verify_adversarially(
+        output=result.output,
+        skill_name="draft_21s"
+    )
+
+    if not verification.passed:
+        pad.add("verification_issues", verification.issues, step=3)
+        # Could retry or flag for review
+
+    # 8. Save everything
+    pad.to_file(Path.home() / ".atlas" / "scratch" / f"{session_id}.json")
+    session.save_state()
+
+    return {"success": True, "output": result.output, "session_id": session_id}
+
+# Run it
+result = asyncio.run(generate_content("sleep", "12-18m"))
+```
+
+---
+
+## Environment Variables
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `BABYBRAINS_REPO` | `~/code/babybrains-os` | Path to babybrains-os repo |
+| `ANTHROPIC_API_KEY` | (none) | Required for API mode skill execution |
+
+---
+
+## File Locations
+
+| What | Where |
+|------|-------|
+| Orchestrator code | `/home/squiz/ATLAS/atlas/orchestrator/` |
+| Sessions | `~/.atlas/sessions/*.json` |
+| Scratch pads | `~/.atlas/scratch/*.json` |
+| Skills | `/home/squiz/code/babybrains-os/skills/*.md` |
+| Schemas | `/home/squiz/code/babybrains-os/schemas/*.json` |
+
+---
+
+## Adding New Capabilities
+
+### Adding a New Hook
+1. Edit `atlas/orchestrator/hooks.py`
+2. Add entry to `HOOKS` dict with cmd, cwd, blocking, input_mode, output_format, timing
+3. Test with `python -m atlas.orchestrator.hooks <repo> <hook_name>`
+
+### Adding a New Skill
+1. Create `skills/<skill_name>.md` in babybrains-os
+2. Follow structure: `# Skill:` header, `## ` sections
+3. Optionally create `schemas/<skill_name>.out.v1.json` for validation
+4. Test with `python -m atlas.orchestrator.skill_executor <skill_name> --list-sections`
+
+### Extending SubAgentExecutor
+- New verification personas: modify `verify_adversarially()` method
+- New spawn options: add parameters to `spawn()` method
+- Parallel execution limits: modify `spawn_parallel()` batching
+
+---
+
+## Troubleshooting
+
+### SubAgent not responding
+- Check `claude` CLI is installed: `which claude`
+- Check timeout isn't too short (default 120s)
+
+### Hooks failing
+- Run hook directly: `python /path/to/validator.py`
+- Check cwd path exists
+- Check input_mode matches what script expects
+
+### Session not persisting
+- Check `~/.atlas/sessions/` directory exists
+- Check file permissions
+- Call `save_state()` explicitly if needed
+
+### Skill section not found
+- Use `--list-sections` to see exact names
+- Partial matching is case-insensitive
+- Check for typos in section name
+
+---
+
+*This guide should be read by any agent working on ATLAS to understand available capabilities.*

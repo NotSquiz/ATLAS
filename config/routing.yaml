@@ -1,0 +1,57 @@
+# ATLAS Routing Configuration
+
+system:
+  persona: "lethal_gentleman"
+  latency_budget_ms: 3000
+
+router:
+  embedding_model: "all-MiniLM-L6-v2"
+  embedding_device: "cpu"  # Save VRAM for Qwen
+
+  thresholds:
+    local: 0.65      # Confidence needed to route to local
+    haiku: 0.82      # Confidence for Haiku (middle tier)
+    agent_sdk: 0.88  # Confidence for Agent SDK (complex)
+
+  # Regex patterns for immediate routing (bypass embeddings)
+  reflex_patterns:
+    local:
+      - "turn on.*"
+      - "turn off.*"
+      - "set timer.*"
+      - "stop"
+      - "pause"
+      - "play"
+      - "what time.*"
+      - "weather.*"
+    agent:
+      - "plan .* for"
+      - "analyze .*"
+      - "research .*"
+      - "compare .* vs"
+
+budget:
+  monthly_limit_usd: 10.00
+  daily_limit_usd: 0.33     # ~$10/30 days
+  soft_limit_pct: 0.80      # Enable thrifty mode at 80%
+  hard_limit_pct: 1.00      # Block API at 100%
+
+latency_targets_ms:
+  local: 200
+  haiku: 500
+  agent_sdk: 6000
+
+# Persona-appropriate failure messages (Lethal Gentleman)
+failure_messages:
+  budget_warning: "Resources are running low today."
+  budget_exceeded: "The external archives are temporarily unavailable."
+  api_timeout: "The connection is delayed. Let me work with what's available."
+  api_error: "I cannot access that resource at the moment."
+  misunderstanding: "I seem to have missed the nuance. Let me reconsider."
+
+# Latency masking phrases (said immediately while waiting for cloud)
+filler_phrases:
+  - "Let me see..."
+  - "One moment..."
+  - "Give me a moment."
+  - "Let me consider this."
