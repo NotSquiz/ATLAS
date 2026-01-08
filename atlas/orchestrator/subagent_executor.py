@@ -35,6 +35,7 @@ Usage:
 """
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional, Any
 import asyncio
 import json
@@ -45,6 +46,9 @@ import time
 
 # MEDIUM: Add logging
 logger = logging.getLogger(__name__)
+
+# Sandbox configuration path for sub-agents
+SANDBOX_CONFIG = Path(__file__).parent.parent.parent / "config" / "sandbox" / "subagent.json"
 
 
 @dataclass
@@ -92,10 +96,16 @@ class SubAgentExecutor:
         self.timeout = timeout
         # CRITICAL #5: Check CLI availability once in __init__, not every spawn()
         self._cli_available = self._check_cli_available()
+        # Cache sandbox availability check
+        self._sandbox_available_cached = self._sandbox_available()
 
     def _check_cli_available(self) -> bool:
         """Check if claude CLI is available."""
         return shutil.which("claude") is not None
+
+    def _sandbox_available(self) -> bool:
+        """Check if srt sandbox command is available."""
+        return shutil.which("srt") is not None
 
     def _serialize_context(self, context: dict) -> str:
         """
@@ -254,6 +264,7 @@ class SubAgentExecutor:
         task: str,
         context: Optional[dict] = None,
         timeout: Optional[int] = None,
+        sandbox: bool = True,
     ) -> SubAgentResult:
         """
         Spawn a single sub-agent with isolated context.
@@ -266,6 +277,7 @@ class SubAgentExecutor:
             task: Task description for the sub-agent
             context: Optional context dict to include in prompt (JSON-serialized)
             timeout: Optional timeout override in seconds (must be positive)
+            sandbox: Whether to run in sandbox mode (default True, gracefully degrades if srt not installed)
 
         Returns:
             SubAgentResult with output or error
@@ -327,6 +339,16 @@ Task: {task}"""
             prompt,
         ]
 
+        # Wrap with sandbox if enabled and available
+        if sandbox and self._sandbox_available_cached:
+            config_path = str(SANDBOX_CONFIG)
+            cmd = ["srt", "--settings", config_path] + cmd
+            logger.debug(f"Sub-agent running in sandbox mode with config: {config_path}")
+        elif sandbox and not self._sandbox_available_cached:
+            logger.debug("Sandbox requested but srt not available, running without sandbox")
+        else:
+            logger.debug("Sub-agent running without sandbox (sandbox=False)")
+
         effective_timeout = timeout or self.timeout
 
         # CRITICAL #2: Use subprocess with proper timeout and cleanup
@@ -382,6 +404,7 @@ Task: {task}"""
         tasks: list[str],
         contexts: Optional[list[dict]] = None,
         timeout: Optional[int] = None,
+        sandbox: bool = True,
     ) -> list[SubAgentResult]:
         """
         Spawn multiple sub-agents in parallel.
@@ -393,6 +416,7 @@ Task: {task}"""
             tasks: List of task descriptions
             contexts: Optional list of context dicts (one per task)
             timeout: Optional timeout override in seconds
+            sandbox: Whether to run in sandbox mode (default True, gracefully degrades if srt not installed)
 
         Returns:
             List of SubAgentResults in same order as tasks
@@ -408,7 +432,7 @@ Task: {task}"""
 
         # Create coroutines for all tasks
         coroutines = [
-            self.spawn(task, context=ctx, timeout=timeout)
+            self.spawn(task, context=ctx, timeout=timeout, sandbox=sandbox)
             for task, ctx in zip(tasks, contexts)
         ]
 

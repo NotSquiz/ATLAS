@@ -119,6 +119,22 @@ class HookRunner:
                 "output_format": "text",
                 "timing": HookTiming.POST_EXECUTION,
             },
+            "activity_qc": {
+                "cmd": ["python3", "scripts/check_activity_quality.py"],
+                "cwd": "/home/squiz/code/knowledge",
+                "blocking": True,
+                "input_mode": "stdin",
+                "output_format": "json",
+                "timing": HookTiming.POST_EXECUTION,
+                "block_codes": [
+                    "VOICE_EM_DASH",
+                    "VOICE_FORMAL_TRANSITION",
+                    "VOICE_SUPERLATIVE",
+                    "STRUCTURE_MISSING_SECTION",
+                    "STRUCTURE_INVALID_YAML",
+                    "CROSS_REF_INVALID_PRINCIPLE",
+                ],
+            },
         },
         "web": {
             "pre_pr": {
