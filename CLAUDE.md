@@ -13,6 +13,7 @@ Hardware: ThinkPad X1 Extreme, 16GB RAM, RTX 3050 Ti 4GB.
 | SessionManager | atlas/orchestrator/session_manager.py | Session state + git context |
 | ScratchPad | atlas/orchestrator/scratch_pad.py | Intermediate results tracking |
 | ConfidenceRouter | atlas/orchestrator/confidence_router.py | Route responses by confidence level |
+| CodeSimplifier | atlas/simplifier/code_simplifier.py | On-demand code quality analysis |
 
 ## Infrastructure (January 2026)
 Based on Anthropic research papers. See `docs/V2_ORCHESTRATOR_GUIDE.md` for full details.

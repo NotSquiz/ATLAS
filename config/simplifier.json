@@ -1,0 +1,40 @@
+{
+  "enabled": true,
+  "description": "Code simplifier configuration for ATLAS",
+
+  "auto_trigger": {
+    "enabled": false,
+    "description": "Auto-trigger disabled - use /simplify command on-demand",
+    "complexity_threshold": 10,
+    "min_lines": 20,
+    "exclude_paths": [
+      "tests/",
+      "*.test.py",
+      "__pycache__/",
+      ".venv/",
+      "node_modules/"
+    ]
+  },
+
+  "validation": {
+    "run_tests": false,
+    "adversarial_check": false,
+    "wait_pattern": false,
+    "min_confidence": 0.7
+  },
+
+  "output": {
+    "default_verbose": false,
+    "show_atlas_rules": true,
+    "max_suggestions": 50
+  },
+
+  "severity_levels": {
+    "info": "Nice to know",
+    "suggestion": "Recommended improvement",
+    "warning": "Should fix",
+    "error": "Must fix"
+  },
+
+  "blocking": false
+}

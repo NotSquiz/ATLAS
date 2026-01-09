@@ -44,3 +44,5 @@
 | ConfidenceRouter | V2 Guide Section 6 |
 | Sandboxing | V2 Guide Section 7 |
 | Session Handoff | V2 Guide Section 8 |
+| Quality Audit Pipeline | V2 Guide Section 9 |
+| CodeSimplifier | V2 Guide Section 10 |
