@@ -140,8 +140,8 @@ class ActivityConversionPipeline:
         self.skill_loader = SkillLoader(
             skills_path=Path("/home/squiz/code/babybrains-os/skills")
         )
-        # CLI mode with extended timeout for quality processing
-        self.skill_executor = SkillExecutor(timeout=300)
+        # CLI mode (uses Max subscription, no API key needed)
+        self.skill_executor = SkillExecutor(use_api=False)
         self.session = SessionManager()
         self.scratch_pad: Optional[ScratchPad] = None
 
