@@ -205,9 +205,16 @@ Create `/home/squiz/ATLAS/atlas/pipelines/activity_conversion.py`:
 
 - [x] Phase 1: Skills created (5 skills + guide)
 - [x] Phase 1: Skills verified loading with ATLAS
-- [ ] Phase 2: QC hook created
-- [ ] Phase 2: Hook registered in ATLAS
+- [x] Phase 2: QC hook created (`/home/squiz/code/knowledge/scripts/check_activity_quality.py`)
+- [x] Phase 2: Hook registered in ATLAS (`knowledge/activity_qc`)
 - [ ] Phase 3: Pipeline orchestrator created
 - [ ] Phase 4: Human review interface built
 - [ ] Integration testing
 - [ ] First automated conversion
+
+## Phase Handover Documents
+
+| Phase | Document | Status |
+|-------|----------|--------|
+| Phase 2 | `docs/HANDOVER_PHASE2_QC_HOOK.md` | COMPLETE |
+| Phase 3 | `docs/HANDOVER_PHASE3_PIPELINE.md` | READY FOR FRESH AGENT |
