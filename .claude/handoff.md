@@ -1,77 +1,85 @@
 # ATLAS Session Handoff
 
-## Last Session: January 9, 2026 (Phase 4 - Quality Audit Pipeline)
+## Last Session: January 9, 2026 (Phase 4 - Pipeline Testing & Timeout Fixes)
 
 ### Completed This Session
-- **Quality Audit Pipeline Enhancement** (`atlas/pipelines/activity_conversion.py`)
-  - Switched to CLI mode (no API key required - uses Max subscription)
-  - Added `audit_quality()` - grades activities against Voice Elevation Rubric
-  - Added `reflect_on_failure()` - "Wait" pattern for 89.3% blind spot reduction
-  - Added `convert_with_retry()` - intelligent retry with learned feedback
-  - Only Grade A/A+/A- proceeds to human review
-  - Fixed grade check flexibility (A+ was incorrectly failing)
-  - Added input validation and error handling
+- **CLI Timeout Fixes** for full pipeline execution:
+  - SkillExecutor CLI: 300s → 600s (10 min per skill)
+  - SubAgentExecutor init: 120s → 300s
+  - audit_quality spawn: 120s → 300s
+  - reflect_on_failure spawn: 60s → 120s
 
-- **Opus Verification Audit** (3 agents in parallel):
-  - Code Review Self-Check: Found 2 HIGH, 5 MEDIUM issues
-  - Inversion Test: Identified false positive/negative scenarios
-  - End-to-End Integration: Verified method chain connectivity
-  - All critical issues fixed
+- **QC_FAILED Retry Loop** - QC failures now trigger intelligent retry:
+  - Added QC_FAILED to retryable statuses
+  - QC issues converted to reflection format for Wait pattern
+  - Better CLI output showing detailed QC issues on failure
 
-- **Documentation Updated**:
-  - `CLAUDE.md` - Added Quality Audit section, updated commands
-  - `V2_ORCHESTRATOR_GUIDE.md` - Added Section 9 with full usage docs
-  - `TECHNICAL_STATUS.md` - Updated V2 Components table
-  - `DECISIONS.md` - Added D21, D22, D23 (Quality Audit decisions)
+- **End-to-End Pipeline Testing**:
+  - Pipeline runs successfully (12+ minutes per attempt)
+  - Reaches QC stage and correctly identifies issues
+  - Retry with Wait pattern triggers on QC failure
+  - Skills need tuning to pass QC (current issues below)
 
-### Files Changed
-- `atlas/pipelines/activity_conversion.py` - Major enhancements (~1800 lines now)
-- `CLAUDE.md` - Quality Audit section
-- `docs/V2_ORCHESTRATOR_GUIDE.md` - Section 9 added
-- `docs/TECHNICAL_STATUS.md` - Status updates
-- `docs/DECISIONS.md` - D21-D23 added
-- `.claude/handoff.md` - This file
-
-### Key Methods Added
-```python
-# Quality audit against Voice Rubric
-audit = await pipeline.audit_quality(elevated_yaml, activity_id)
-# Returns: {"grade": "A", "passed": True, "issues": [], ...}
-
-# "Wait" pattern reflection for retry
-feedback = await pipeline.reflect_on_failure(failed_yaml, issues, grade)
-
-# Intelligent retry with learned context
-result = await pipeline.convert_with_retry(raw_id, max_retries=2)
+### Test Results (tummy-time activity)
+```
+QC Issues Found:
+- [VOICE_SUPERLATIVE] 'perfect' at line 32, 104
+- [VOICE_SUPERLATIVE] 'optimal' at line 155
+- [STRUCTURE_MISSING_SECTION] Missing 'au_cultural_adaptation.au_resources'
+- [CROSS_REF_INVALID_PRINCIPLE] Invalid slug 'freedom_of_movement' (should be 'movement')
 ```
 
-### CLI Changes
+### Files Changed
+- `atlas/orchestrator/skill_executor.py` - CLI timeout 600s
+- `atlas/pipelines/activity_conversion.py` - QC retry loop, CLI output
+- `docs/HANDOVER_TIMEOUT_FIX.md` - Timeout documentation
+
+### Commits Made
+```
+270d1d1 Increase CLI timeouts for full pipeline execution
+50a7ccd Add QC_FAILED to retry loop and improve CLI output
+```
+
+### Key Commands
 ```bash
-# Primary mode (no API key needed)
+# Run single activity (primary mode)
 python -m atlas.pipelines.activity_conversion --activity tummy-time
 
-# With explicit retry count
+# With retry count
 python -m atlas.pipelines.activity_conversion --activity tummy-time --retry 3
 ```
 
-### Previous Session
-- Phase 3 Pipeline Orchestrator completed
-- 1377-line pipeline with SubAgentExecutor, HookRunner, SessionManager integration
-
 ### Pending for Next Session
-- [ ] Test quality audit with actual activity conversion
-- [ ] Tune skills based on quality audit feedback
+- [ ] **Tune ELEVATE skill** to avoid superlatives (perfect, optimal)
+- [ ] **Tune ELEVATE skill** to use valid principle slugs (movement not freedom_of_movement)
+- [ ] **Add au_cultural_adaptation.au_resources** section in ELEVATE output
 - [ ] First successful Grade A production activity
 
-### Phase Documentation Status
-| Phase | Status | Notes |
+### Pipeline Status
+| Stage | Status | Notes |
 |-------|--------|-------|
-| Phase 1 | COMPLETE | 5 skills in babybrains-os |
-| Phase 2 | COMPLETE | QC hook created |
-| Phase 3 | COMPLETE | Pipeline + all fixes |
-| Phase 4 | IN PROGRESS | Quality Audit Pipeline done, testing next |
+| INGEST | Working | Loads raw activity from knowledge repo |
+| RESEARCH | Working | Fetches evidence and sources |
+| TRANSFORM | Working | Creates canonical YAML structure |
+| ELEVATE | Working | Voice elevation (needs tuning for QC) |
+| VALIDATE | Working | Schema validation |
+| QC_HOOK | Working | Catches voice/structure issues |
+| QUALITY_AUDIT | Not reached | Blocked by QC failures |
+
+### Root Cause
+Skills produce content that fails QC validation:
+1. Uses superlatives ("perfect", "optimal") - Voice Rubric violation
+2. Uses wrong principle slugs - Knowledge schema violation
+3. Missing AU resources section - Structure violation
+
+### Next Steps (Priority Order)
+1. Review ELEVATE skill prompts in babybrains-os
+2. Add explicit instructions to avoid superlatives
+3. Add valid principle slug reference list
+4. Ensure AU sections are fully populated
+5. Re-test pipeline
 
 ### Context Notes
 - Quality Audit uses Voice Rubric at `/home/squiz/code/knowledge/coverage/VOICE_ELEVATION_RUBRIC.md`
-- Reference A+ activity at `/home/squiz/code/knowledge/data/canonical/activities/practical_life/ACTIVITY_PRACTICAL_LIFE_CARING_CLOTHES_FOLDING_HANGING_24_36M.yaml`
-- "Wait" pattern from Anthropic introspection research reduces blind spots 89.3%
+- Valid principles: absorbent_mind, concentration, cosmic_view, freedom_within_limits, grace_and_courtesy, independence, maximum_effort, movement, normalization, observation, order, practical_life, prepared_environment, repetition, sensitive_periods, sensorial, spiritual_embryo, work_of_the_child
+- Pipeline takes 10-15 minutes per attempt (CLI mode)

@@ -25,13 +25,29 @@
     {"id": "phase4-5", "task": "Update CLI for --activity mode", "status": "completed", "date": "2026-01-09"},
     {"id": "phase4-verify", "task": "Opus verification audit (3 agents)", "status": "completed", "date": "2026-01-09"},
     {"id": "phase4-fixes", "task": "Fix critical issues from verification (feedback param, grade check, validation)", "status": "completed", "date": "2026-01-09"},
-    {"id": "phase4-docs", "task": "Update all documentation (CLAUDE.md, V2 Guide, Status, Decisions)", "status": "completed", "date": "2026-01-09"}
+    {"id": "phase4-docs", "task": "Update all documentation (CLAUDE.md, V2 Guide, Status, Decisions)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-timeout", "task": "Increase CLI timeouts for full pipeline (10 min per skill)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-qc-retry", "task": "Add QC_FAILED to retry loop with Wait pattern", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-test", "task": "End-to-end pipeline test (QC identifies real issues)", "status": "completed", "date": "2026-01-09"}
   ],
   "pending_tasks": [
-    {"id": "phase4-test", "task": "Test quality audit with actual activity", "status": "pending"},
-    {"id": "phase4-tune", "task": "Tune skills based on quality audit feedback", "status": "pending"},
+    {"id": "phase4-tune-voice", "task": "Tune ELEVATE skill to avoid superlatives", "status": "pending"},
+    {"id": "phase4-tune-slugs", "task": "Tune ELEVATE skill to use valid principle slugs", "status": "pending"},
+    {"id": "phase4-tune-au", "task": "Ensure AU sections are fully populated", "status": "pending"},
     {"id": "phase4-prod", "task": "First successful Grade A production activity", "status": "pending"}
   ],
-  "last_updated": "2026-01-09T15:00:00Z",
-  "session_count": 4
+  "last_updated": "2026-01-09T14:30:00Z",
+  "session_count": 5,
+  "test_results": {
+    "tummy-time": {
+      "date": "2026-01-09",
+      "status": "QC_FAILED",
+      "issues": [
+        "VOICE_SUPERLATIVE: 'perfect' at lines 32, 104",
+        "VOICE_SUPERLATIVE: 'optimal' at line 155",
+        "STRUCTURE_MISSING_SECTION: au_cultural_adaptation.au_resources",
+        "CROSS_REF_INVALID_PRINCIPLE: freedom_of_movement (should be movement)"
+      ]
+    }
+  }
 }
