@@ -1,59 +1,47 @@
 # ATLAS Session Handoff
 
-## Last Session: January 9, 2026 (Activity QC Hook)
+## Last Session: January 9, 2026 (Phase 3 Handover Documentation)
 
 ### Completed This Session
-- **Created Activity QC Hook** (`/home/squiz/code/knowledge/scripts/check_activity_quality.py`)
-  - Voice validation: Em-dashes (U+2014), en-dashes (U+2013), double-hyphens, formal transitions, superlatives
-  - Structure validation: 34 required YAML sections
-  - Cross-reference validation: 18 valid principle slugs
-  - Context-aware detection: "best practices", "perfect" as verb, negated contexts
-- **Registered hook** in `atlas/orchestrator/hooks.py` as `knowledge/activity_qc`
-- **Ran adversarial verification** via 3 Opus sub-agents:
-  - Code Review Self-Check
-  - Inversion Test (false positive/negative analysis)
-  - Junior Analyst Challenge
-- **Fixed issues identified by verification:**
-  - CRITICAL: JSON field mismatch (passed→pass, message→msg)
-  - HIGH: En-dash and double-hyphen detection
-  - HIGH: Context-aware superlatives (best practice, perfect as verb)
-  - MEDIUM: Pre-compiled regex patterns for performance
-  - MEDIUM: Null/empty field detection for required sections
-- **Updated all documentation:**
-  - V2_ORCHESTRATOR_GUIDE.md (hooks table, activity_qc section)
-  - TECHNICAL_STATUS.md (V2 Components Status)
-  - DECISIONS.md (D19: Output Format, D20: Context-Aware Detection)
-  - CLAUDE.md (Infrastructure table)
+- **Created Phase 3 Handover Documentation** (`docs/HANDOVER_PHASE3_PIPELINE.md`)
+  - Complete data flow diagram for pipeline
+  - Input file structures with examples (raw activities, conversion map, progress tracker)
+  - ATLAS V2 component usage patterns (SkillLoader, SkillExecutor, SubAgentExecutor, HookRunner, SessionManager)
+  - Skill I/O contracts for all 5 activity skills + QC hook
+  - Pipeline orchestrator code skeleton
+  - Human review interface design
+  - Success criteria checklist
+  - Test commands
+- **Created Fresh Agent Prompt** (`docs/PROMPT_PHASE3_FRESH_AGENT.md`)
+- **Created Handover Template** (`docs/HANDOVER_TEMPLATE.md`) for future phases
+- **Updated Activity Pipeline Handover** to mark Phase 2 complete and link Phase 3
+
+### Previous Session (QC Hook - Fresh Agent)
+- Created Activity QC Hook (`/home/squiz/code/knowledge/scripts/check_activity_quality.py`)
+- Registered hook in `atlas/orchestrator/hooks.py` as `knowledge/activity_qc`
+- Ran adversarial verification via 3 Opus sub-agents
 
 ### Pending for Next Session
-- [ ] Activity Pipeline Phase 3 (Pipeline Orchestrator)
-- [ ] Integrate sandboxing INTO SubAgentExecutor code
+- [ ] Activity Pipeline Phase 3 (Pipeline Orchestrator) - READY FOR FRESH AGENT
 - [ ] Personal assistant workflows (HRV, supplements, recovery)
 
-### Key Decisions Made
-- D19: Match hooks.py JSON format exactly (pass/msg/block)
-- D20: Multi-layer context awareness for superlatives (exception phrases, verb detection, negation patterns)
-
-### Test Commands
-```bash
-# Test canonical activity (should PASS)
-cat /home/squiz/code/knowledge/data/canonical/activities/practical_life/ACTIVITY_PRACTICAL_LIFE_WASHING_FRUITS_VEGETABLES_12_36M.yaml | python3 /home/squiz/code/knowledge/scripts/check_activity_quality.py
-
-# Test bad content (should FAIL)
-echo "description: This is an amazing—truly incredible activity" | python3 /home/squiz/code/knowledge/scripts/check_activity_quality.py
+### Git Commits This Session
+```
+315a7f4 - Add post-phase verification guide to verification prompts
+be1e0bc - Update handoff with complete commit history
+055a56f - Add Phase 3 Pipeline Orchestrator handover documentation
+7fd34a4 - Add Phase 3 agent prompt and handover template
 ```
 
-### Files Modified This Session
-```
-/home/squiz/code/knowledge/scripts/check_activity_quality.py (CREATED)
-/home/squiz/ATLAS/atlas/orchestrator/hooks.py (MODIFIED - added activity_qc)
-/home/squiz/ATLAS/docs/V2_ORCHESTRATOR_GUIDE.md (MODIFIED)
-/home/squiz/ATLAS/docs/TECHNICAL_STATUS.md (MODIFIED)
-/home/squiz/ATLAS/docs/DECISIONS.md (MODIFIED - D19, D20)
-/home/squiz/ATLAS/CLAUDE.md (MODIFIED)
-```
+### Phase Documentation Status
+| Phase | Handover Doc | Status |
+|-------|-------------|--------|
+| Phase 1 | (skills in babybrains-os) | COMPLETE |
+| Phase 2 | `docs/HANDOVER_PHASE2_QC_HOOK.md` | COMPLETE |
+| Phase 3 | `docs/HANDOVER_PHASE3_PIPELINE.md` | READY FOR FRESH AGENT |
+| Phase 4 | (not yet created) | After Phase 3 |
 
 ### Context Notes
-- Activity QC Hook gates 175+ activity conversions
-- Canonical activity at: /home/squiz/code/knowledge/data/canonical/activities/
-- Hook output format: {"pass": bool, "issues": [{"code", "msg", "severity", "line"}], ...}
+- Phase 3 handover is self-contained: fresh agent can execute without additional context
+- Template created at `docs/HANDOVER_TEMPLATE.md` for consistent future handovers
+- Verification prompts at `docs/VERIFICATION_PROMPTS.md` include post-phase guidance
