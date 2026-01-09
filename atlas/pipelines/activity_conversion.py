@@ -1260,8 +1260,9 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
                     print(f"\nSucceeded on attempt {attempt + 1}!")
                 return result
 
-            # Not a quality issue (FAILED, QC_FAILED, SKIPPED) - don't retry
-            if result.status != ActivityStatus.REVISION_NEEDED:
+            # Check if this is a retryable quality issue
+            retryable_statuses = {ActivityStatus.REVISION_NEEDED, ActivityStatus.QC_FAILED}
+            if result.status not in retryable_statuses:
                 logger.info(f"Status {result.status.value} - not retrying")
                 return result
 
@@ -1271,22 +1272,35 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
                 return result
 
             # Apply "Wait" pattern reflection for intelligent retry
-            # Get audit results from scratch pad
-            audit = self.scratch_pad.get(f"quality_audit") if self.scratch_pad else {}
-            if not audit:
-                audit = {"issues": [], "grade": "Unknown"}
+            # Use QC issues if QC failed, otherwise use quality audit issues
+            if result.status == ActivityStatus.QC_FAILED and result.qc_issues:
+                # Convert QC issues to audit format for reflection
+                issues = [
+                    {"category": "QC", "issue": issue, "fix": "Review and fix"}
+                    for issue in result.qc_issues
+                ]
+                grade = "QC_FAILED"
+            else:
+                # Get audit results from scratch pad
+                audit = self.scratch_pad.get(f"quality_audit") if self.scratch_pad else {}
+                if not audit:
+                    audit = {"issues": [], "grade": "Unknown"}
+                issues = audit.get("issues", [])
+                grade = audit.get("grade", "Unknown")
 
             feedback = await self.reflect_on_failure(
                 failed_yaml=result.elevated_yaml or "",
-                issues=audit.get("issues", []),
-                grade=audit.get("grade", "Unknown"),
+                issues=issues,
+                grade=grade,
             )
 
             logger.info(f"Will retry with reflection feedback")
-            if result.qc_warnings:
+            # Show issues from either QC or quality audit
+            display_issues = result.qc_issues if result.qc_issues else result.qc_warnings
+            if display_issues:
                 print(f"Issues from attempt {attempt + 1}:")
-                for w in result.qc_warnings[:3]:
-                    print(f"  - {w}")
+                for issue in display_issues[:5]:
+                    print(f"  - {issue}")
 
         return last_result or ConversionResult(
             activity_id=raw_id,
@@ -1851,9 +1865,22 @@ Quality audit requires Grade A to proceed to human review.
             print(f"Status: {result.status.value}")
             if result.error:
                 print(f"Error: {result.error}")
+            # Show QC issues for debugging
+            if result.qc_issues:
+                print(f"QC Issues ({len(result.qc_issues)}):")
+                for issue in result.qc_issues:
+                    print(f"  - {issue}")
+            if result.qc_warnings:
+                print(f"QC Warnings ({len(result.qc_warnings)}):")
+                for warning in result.qc_warnings[:5]:
+                    print(f"  - {warning}")
             if result.status == ActivityStatus.FAILED:
                 pipeline._update_progress_file(
                     raw_id, ActivityStatus.FAILED, result.error or "Failed"
+                )
+            elif result.status == ActivityStatus.QC_FAILED:
+                pipeline._update_progress_file(
+                    raw_id, ActivityStatus.QC_FAILED, "QC failed"
                 )
             sys.exit(1)
 
