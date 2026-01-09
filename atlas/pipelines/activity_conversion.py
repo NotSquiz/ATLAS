@@ -1,24 +1,28 @@
 """
-Activity Conversion Pipeline Orchestrator
+Activity Conversion Pipeline Orchestrator (Quality Mode)
 
 Converts raw Montessori activities to canonical Activity Atoms using:
 - 5 chained skills (ingest -> research -> transform -> elevate -> validate)
 - QC hook gate (check_activity_quality.py)
+- Quality audit stage (Grade A required for human review)
+- Intelligent retry with "Wait" pattern (89.3% blind spot reduction)
 - Human review interface
 - Progress tracking
 
+Uses CLI mode (Max subscription) - no ANTHROPIC_API_KEY needed.
+
 Usage:
-    # Single activity with review
-    python -m atlas.pipelines.activity_conversion --single tummy-time
+    # Single activity (primary mode - no API key needed)
+    python -m atlas.pipelines.activity_conversion --activity tummy-time
 
-    # Batch processing
-    python -m atlas.pipelines.activity_conversion --batch --limit 10
-
-    # Auto-approve mode (for testing)
-    python -m atlas.pipelines.activity_conversion --batch --limit 5 --auto-approve
+    # With explicit retry count
+    python -m atlas.pipelines.activity_conversion --activity tummy-time --retry 3
 
     # List pending activities
     python -m atlas.pipelines.activity_conversion --list-pending
+
+    # Batch mode (use only after skills reliably produce Grade A)
+    python -m atlas.pipelines.activity_conversion --batch --limit 10
 """
 
 import asyncio
@@ -130,19 +134,14 @@ class ActivityConversionPipeline:
 
     def __init__(self):
         """Initialize the pipeline with all required components."""
-        # A-3: Validate API key early
-        if not os.environ.get("ANTHROPIC_API_KEY"):
-            raise EnvironmentError(
-                "ANTHROPIC_API_KEY environment variable required. "
-                "Set it before running the pipeline: "
-                "export ANTHROPIC_API_KEY=sk-ant-..."
-            )
+        # CLI mode for Max subscription (no API key needed)
+        # Uses `claude` CLI command instead of direct API calls
 
         self.skill_loader = SkillLoader(
             skills_path=Path("/home/squiz/code/babybrains-os/skills")
         )
-        # MUST use API mode for automation
-        self.skill_executor = SkillExecutor(use_api=True)
+        # CLI mode with extended timeout for quality processing
+        self.skill_executor = SkillExecutor(timeout=300)
         self.session = SessionManager()
         self.scratch_pad: Optional[ScratchPad] = None
 
@@ -528,22 +527,32 @@ class ActivityConversionPipeline:
         return True, result.output or {}, None
 
     async def _execute_elevate(
-        self, canonical_yaml: str
+        self, canonical_yaml: str, feedback: Optional[str] = None
     ) -> tuple[bool, dict, Optional[str]]:
         """
         Execute the elevate_voice_activity skill.
 
         Args:
             canonical_yaml: YAML content from transform skill
+            feedback: Optional feedback from previous attempt for intelligent retry
 
         Returns:
             Tuple of (success, output_data, error_message)
         """
-        logger.info("[ELEVATE] Starting voice elevation")
+        if feedback:
+            logger.info("[ELEVATE] Starting voice elevation WITH FEEDBACK (retry)")
+        else:
+            logger.info("[ELEVATE] Starting voice elevation")
+
+        # Build input data with optional feedback for retry context
+        input_data = {"canonical_yaml": canonical_yaml}
+        if feedback:
+            input_data["retry_feedback"] = feedback
+            input_data["is_retry"] = True
 
         result = await self.skill_executor.execute(
             skill_name="activity/elevate_voice_activity",
-            input_data={"canonical_yaml": canonical_yaml},
+            input_data=input_data,
             validate=True,
         )
 
@@ -647,7 +656,180 @@ class ActivityConversionPipeline:
                 except OSError:
                     pass
 
-    async def convert_activity(self, raw_id: str) -> ConversionResult:
+    async def audit_quality(self, elevated_yaml: str, activity_id: str) -> dict:
+        """
+        Audit activity quality using BabyBrains voice standards.
+
+        Spawns a fresh sub-agent to grade the activity against:
+        - Voice Elevation Rubric criteria
+        - A+ reference activity (gold standard)
+
+        Args:
+            elevated_yaml: The elevated YAML content to audit
+            activity_id: Activity ID for logging
+
+        Returns:
+            dict with grade, passed, issues, philosophy info, and recommendation
+
+        Raises:
+            ValueError: If elevated_yaml is empty or activity_id is missing
+        """
+        # Input validation
+        if not elevated_yaml or not elevated_yaml.strip():
+            logger.error("audit_quality called with empty elevated_yaml")
+            return {
+                "grade": "F",
+                "passed": False,
+                "issues": [{"category": "input", "issue": "Empty YAML provided", "fix": "Ensure elevation produces output"}],
+                "philosophy_found": [],
+                "philosophy_missing": [],
+                "australian_voice": False,
+                "rationale_quality": "unknown",
+                "recommendation": "Cannot audit empty content",
+            }
+
+        if not activity_id:
+            logger.error("audit_quality called without activity_id")
+            activity_id = "unknown"
+
+        # Load grading context
+        rubric_path = Path("/home/squiz/code/knowledge/coverage/VOICE_ELEVATION_RUBRIC.md")
+        reference_path = Path(
+            "/home/squiz/code/knowledge/data/canonical/activities/practical_life/"
+            "ACTIVITY_PRACTICAL_LIFE_CARING_CLOTHES_FOLDING_HANGING_24_36M.yaml"
+        )
+
+        # Rubric is REQUIRED for meaningful audit
+        if rubric_path.exists():
+            rubric = rubric_path.read_text()
+        else:
+            logger.error(f"CRITICAL: Voice Rubric not found: {rubric_path}")
+            return {
+                "grade": "F",
+                "passed": False,
+                "issues": [{"category": "system", "issue": "Voice Rubric file missing", "fix": f"Ensure file exists at {rubric_path}"}],
+                "philosophy_found": [],
+                "philosophy_missing": [],
+                "australian_voice": False,
+                "rationale_quality": "unknown",
+                "recommendation": "Cannot audit without rubric - system configuration error",
+            }
+
+        # Reference is optional but recommended
+        if reference_path.exists():
+            reference = reference_path.read_text()
+        else:
+            logger.warning(f"Reference activity not found: {reference_path}")
+            reference = "Reference not found - grade based on rubric only"
+
+        audit_prompt = f"""You are a quality auditor for BabyBrains Activity Atoms.
+
+## GRADING RUBRIC
+{rubric}
+
+## REFERENCE A+ ACTIVITY (Gold Standard)
+```yaml
+{reference}
+```
+
+## ACTIVITY TO AUDIT
+```yaml
+{elevated_yaml}
+```
+
+## YOUR TASK
+Grade this activity using the Voice Elevation Rubric. Check:
+
+1. **Anti-Pattern Check**: Any em-dashes (—), formal transitions (Moreover, Furthermore, etc.), superlatives (amazing, incredible)?
+2. **Philosophy Integration**: Which of the 6 Montessori principles are present?
+   - Cosmic View (connects to meaningful work)
+   - Spiritual Embryo (child develops from within)
+   - Adult as Obstacle (parent self-reflection prompts)
+   - Freedom Within Limits (boundaries as loving structure)
+   - Transformed Adult (adult self-regulation matters)
+   - Creating Conditions Not Outcomes (anxiety-reducing)
+3. **Australian Voice**: Understated confidence, tall poppy safe, cost-aware, correct vocab (mum, nappy, cot)?
+4. **Rationale Field**: Does it follow the A+ pattern? (Observable → Philosophy → Parent psychology → Reassurance)
+5. **Science Weaving**: Observable → Invisible → Meaningful pattern?
+
+**IMPORTANT**: Grade A requires ALL checks to pass. Any em-dash = automatic B+ maximum.
+
+Return ONLY valid JSON (no markdown, no explanation):
+{{
+  "grade": "A",
+  "passed": true,
+  "issues": [],
+  "philosophy_found": ["cosmic_view", "spiritual_embryo", "adult_as_obstacle", "freedom_within_limits", "transformed_adult", "creating_conditions"],
+  "philosophy_missing": [],
+  "australian_voice": true,
+  "rationale_quality": "excellent",
+  "recommendation": "Ready for production"
+}}
+
+OR if issues found:
+{{
+  "grade": "B+",
+  "passed": false,
+  "issues": [
+    {{"category": "anti-pattern", "issue": "Em-dash found in description", "fix": "Replace with period or comma"}},
+    {{"category": "philosophy", "issue": "Missing 'Adult as Obstacle' reflection", "fix": "Add prompt for parent self-awareness"}}
+  ],
+  "philosophy_found": ["cosmic_view", "spiritual_embryo"],
+  "philosophy_missing": ["adult_as_obstacle", "transformed_adult"],
+  "australian_voice": true,
+  "rationale_quality": "needs_work",
+  "recommendation": "Needs elevation - add philosophy integration and fix anti-patterns"
+}}
+"""
+
+        logger.info(f"Running quality audit for {activity_id}")
+
+        # Use SubAgentExecutor for fresh context
+        result = await self.sub_executor.spawn(
+            task=audit_prompt,
+            context={"activity_id": activity_id, "audit_type": "voice_quality"},
+            timeout=120,
+            sandbox=True,
+        )
+
+        # Parse JSON response
+        if result.success and result.output:
+            try:
+                output = result.output.strip()
+                # Handle potential markdown code blocks
+                if "```json" in output:
+                    output = output.split("```json")[1].split("```")[0].strip()
+                elif "```" in output:
+                    output = output.split("```")[1].split("```")[0].strip()
+
+                audit_result = json.loads(output)
+                logger.info(f"Quality audit result: Grade {audit_result.get('grade')}")
+                return audit_result
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse audit response: {e}")
+                logger.debug(f"Raw response: {result.output[:500]}")
+
+        # Fallback on failure
+        return {
+            "grade": "F",
+            "passed": False,
+            "issues": [
+                {
+                    "category": "audit",
+                    "issue": "Audit failed - could not parse response",
+                    "fix": "Manual review required",
+                }
+            ],
+            "philosophy_found": [],
+            "philosophy_missing": [],
+            "australian_voice": False,
+            "rationale_quality": "unknown",
+            "recommendation": "Audit failed - requires manual review",
+        }
+
+    async def convert_activity(
+        self, raw_id: str, feedback: Optional[str] = None
+    ) -> ConversionResult:
         """
         Run the full conversion pipeline for a single activity.
 
@@ -655,12 +837,14 @@ class ActivityConversionPipeline:
             1. Ingest - Load and validate raw activity
             2. Research - Find principles, safety, sources
             3. Transform - Build 34-section canonical YAML
-            4. Elevate - Apply BabyBrains voice
+            4. Elevate - Apply BabyBrains voice (with feedback if retrying)
             5. Validate - Structure and cross-reference checks
             6. QC Hook - Deterministic quality gate
+            7. Quality Audit - Voice rubric grading (Grade A required)
 
         Args:
             raw_id: Activity raw ID
+            feedback: Optional feedback from previous attempt for intelligent retry
 
         Returns:
             ConversionResult with status and details
@@ -757,7 +941,10 @@ class ActivityConversionPipeline:
                 )
 
             # Stage 4: ELEVATE VOICE
-            success, elevate_output, error = await self._execute_elevate(canonical_yaml)
+            # Pass feedback from previous attempt if this is a retry
+            success, elevate_output, error = await self._execute_elevate(
+                canonical_yaml, feedback=feedback
+            )
             self.session.record_skill("elevate_voice_activity")
             if not success:
                 return ConversionResult(
@@ -853,6 +1040,58 @@ class ActivityConversionPipeline:
                     elevated_yaml=elevated_yaml,
                 )
 
+            # Stage 7: QUALITY AUDIT
+            logger.info(f"Stage 7: QUALITY AUDIT for {raw_id}")
+            audit = await self.audit_quality(
+                elevated_yaml=elevated_yaml,
+                activity_id=raw_id,
+            )
+
+            # Store audit results in scratch pad for retry reflection
+            self.scratch_pad.add(
+                "quality_audit",
+                audit,
+                step=7,
+                skill_name="quality_audit",
+            )
+            # Also store elevated_yaml for retry access
+            self.scratch_pad.add(
+                "elevated_yaml",
+                elevated_yaml,
+                step=7,
+                skill_name="quality_audit",
+            )
+
+            # Check if grade is acceptable (A, A+, A- all pass)
+            grade = audit.get("grade", "Unknown")
+            grade_str = str(grade).strip().upper() if grade else ""
+            is_grade_a = grade_str.startswith("A") and grade_str not in ("AB", "AC", "AD", "AF")
+
+            if not audit.get("passed") or not is_grade_a:
+                logger.warning(f"Quality audit: Grade {grade} (requires A/A+/A-)")
+
+                for issue in audit.get("issues", []):
+                    if isinstance(issue, dict):
+                        logger.warning(f"  [{issue.get('category')}] {issue.get('issue')}")
+                        if issue.get("fix"):
+                            logger.info(f"    Fix: {issue.get('fix')}")
+
+                return ConversionResult(
+                    activity_id=raw_id,
+                    status=ActivityStatus.REVISION_NEEDED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    error=f"Quality audit: Grade {grade} (need A/A+/A-)",
+                    qc_warnings=[
+                        f"[{i.get('category')}] {i.get('issue')}"
+                        for i in audit.get("issues", [])
+                        if isinstance(i, dict)
+                    ],
+                    elevated_yaml=elevated_yaml,
+                )
+
+            logger.info(f"Quality audit PASSED: Grade {grade}")
+
             # SUCCESS - Ready for human review
             logger.info(f"Conversion successful for {raw_id}")
             return ConversionResult(
@@ -892,6 +1131,168 @@ class ActivityConversionPipeline:
                 logger.debug("Session ended")
             except Exception as sess_err:
                 logger.warning(f"Failed to end session: {sess_err}")
+
+    async def reflect_on_failure(
+        self,
+        failed_yaml: str,
+        issues: list[dict],
+        grade: str,
+    ) -> str:
+        """
+        Apply the "Wait" pattern to reflect on why an activity failed quality audit.
+
+        Uses Anthropic introspection research (89.3% blind spot reduction) to
+        generate intelligent feedback for retry attempts.
+
+        Args:
+            failed_yaml: The YAML that failed quality audit
+            issues: List of issues from quality audit
+            grade: Grade received (B+, B, C, F)
+
+        Returns:
+            Reflection feedback to pass to next attempt
+        """
+        # Input validation - ensure issues is a list of dicts
+        if not isinstance(issues, list):
+            issues = []
+        # Filter to only dict items and limit to prevent prompt overflow
+        valid_issues = [i for i in issues[:20] if isinstance(i, dict)]
+
+        if not grade:
+            grade = "Unknown"
+
+        # Format issues for reflection
+        issues_text = "\n".join(
+            f"- [{i.get('category', 'unknown')}] {i.get('issue', 'No description')}"
+            + (f"\n  Fix: {i.get('fix')}" if i.get("fix") else "")
+            for i in valid_issues
+        )
+        if len(issues) > 20:
+            issues_text += f"\n... and {len(issues) - 20} more issues"
+
+        # The "Wait" pattern from Anthropic introspection research
+        reflection_prompt = f"""Wait. Before re-elevating this activity, pause and consider:
+
+## Failed Activity (Grade {grade})
+The previous elevation attempt received Grade {grade} instead of the required A.
+
+## Specific Issues Found
+{issues_text}
+
+## Reflection Questions
+- What assumptions did the previous elevation make that led to these issues?
+- Why did these specific anti-patterns or gaps occur?
+- What would I tell another agent who made these same mistakes?
+
+## Your Task
+Based on this reflection, provide specific guidance for the re-elevation:
+1. What MUST change to achieve Grade A?
+2. Which Montessori principles need stronger integration?
+3. What Australian voice elements need adjustment?
+4. Any anti-patterns that must be eliminated?
+
+Be specific and actionable. This feedback will guide the next elevation attempt.
+"""
+
+        logger.info(f"Applying 'Wait' pattern reflection for Grade {grade}")
+
+        # Use SubAgentExecutor for fresh reflection
+        result = await self.sub_executor.spawn(
+            task=reflection_prompt,
+            context={"grade": grade, "issue_count": len(issues)},
+            timeout=60,
+            sandbox=True,
+        )
+
+        if result.success and result.output:
+            logger.info("Reflection generated successfully")
+            return result.output
+        else:
+            # Fallback to formatted issues if reflection fails
+            logger.warning("Reflection failed, using formatted issues as feedback")
+            return f"Previous attempt failed with Grade {grade}. Issues:\n{issues_text}"
+
+    async def convert_with_retry(
+        self,
+        raw_id: str,
+        max_retries: int = 2,
+    ) -> ConversionResult:
+        """
+        Convert activity with intelligent retry using the "Wait" pattern.
+
+        If quality audit fails (not Grade A), applies reflection to understand
+        why and retries with learned context. Each retry learns from what
+        went wrong, not just hopes for different output.
+
+        Args:
+            raw_id: Activity ID to convert
+            max_retries: Max retry attempts (default 2 retries = 3 total attempts)
+
+        Returns:
+            ConversionResult with final status
+
+        Raises:
+            ValueError: If raw_id is empty or max_retries is negative
+        """
+        # Input validation
+        if not raw_id or not raw_id.strip():
+            raise ValueError("raw_id is required and cannot be empty")
+        if max_retries < 0:
+            raise ValueError("max_retries must be non-negative")
+
+        last_result: Optional[ConversionResult] = None
+        feedback: Optional[str] = None
+
+        for attempt in range(max_retries + 1):
+            if attempt > 0:
+                logger.info(f"Retry attempt {attempt}/{max_retries} for {raw_id}")
+                print(f"\nApplying 'Wait' pattern reflection...")
+                print(f"Retry attempt {attempt}/{max_retries} with learned context\n")
+
+            # Run conversion with any feedback from previous attempt
+            result = await self.convert_activity(raw_id, feedback=feedback)
+            last_result = result
+
+            # Success - Grade A achieved
+            if result.status == ActivityStatus.DONE:
+                if attempt > 0:
+                    logger.info(f"Succeeded on attempt {attempt + 1}")
+                    print(f"\nSucceeded on attempt {attempt + 1}!")
+                return result
+
+            # Not a quality issue (FAILED, QC_FAILED, SKIPPED) - don't retry
+            if result.status != ActivityStatus.REVISION_NEEDED:
+                logger.info(f"Status {result.status.value} - not retrying")
+                return result
+
+            # Max retries exhausted
+            if attempt >= max_retries:
+                logger.warning(f"Max retries ({max_retries}) reached for {raw_id}")
+                return result
+
+            # Apply "Wait" pattern reflection for intelligent retry
+            # Get audit results from scratch pad
+            audit = self.scratch_pad.get(f"quality_audit") if self.scratch_pad else {}
+            if not audit:
+                audit = {"issues": [], "grade": "Unknown"}
+
+            feedback = await self.reflect_on_failure(
+                failed_yaml=result.elevated_yaml or "",
+                issues=audit.get("issues", []),
+                grade=audit.get("grade", "Unknown"),
+            )
+
+            logger.info(f"Will retry with reflection feedback")
+            if result.qc_warnings:
+                print(f"Issues from attempt {attempt + 1}:")
+                for w in result.qc_warnings[:3]:
+                    print(f"  - {w}")
+
+        return last_result or ConversionResult(
+            activity_id=raw_id,
+            status=ActivityStatus.FAILED,
+            error="No result from conversion attempts",
+        )
 
     def present_for_review(
         self, result: ConversionResult, yaml_content: str
@@ -1290,46 +1691,67 @@ class ActivityConversionPipeline:
 
 
 async def main():
-    """CLI entry point."""
+    """CLI entry point with quality-focused single activity processing."""
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Activity Conversion Pipeline",
+        description="Activity Conversion Pipeline (Quality Mode)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Convert a single activity with review
-  python -m atlas.pipelines.activity_conversion --single tummy-time
+  # Convert single activity (primary mode - no API key needed)
+  python -m atlas.pipelines.activity_conversion --activity tummy-time
 
-  # Process batch of pending activities
-  python -m atlas.pipelines.activity_conversion --batch --limit 10
-
-  # Auto-approve mode (for testing)
-  python -m atlas.pipelines.activity_conversion --batch --limit 5 --auto-approve
+  # With explicit retry count
+  python -m atlas.pipelines.activity_conversion --activity tummy-time --retry 3
 
   # List pending activities
   python -m atlas.pipelines.activity_conversion --list-pending
+
+  # Batch mode (use only after skills reliably produce Grade A)
+  python -m atlas.pipelines.activity_conversion --batch --limit 10
+
+Note: Uses CLI mode (Max subscription). No ANTHROPIC_API_KEY needed.
+Quality audit requires Grade A to proceed to human review.
 """,
     )
 
     # Mutually exclusive actions
     action = parser.add_mutually_exclusive_group(required=True)
-    action.add_argument("--single", metavar="RAW_ID", help="Convert single activity")
-    action.add_argument("--batch", action="store_true", help="Process batch of pending")
     action.add_argument(
-        "--list-pending", action="store_true", help="List pending activities"
+        "--activity", "-a", metavar="RAW_ID",
+        help="Single activity ID to convert (primary mode)"
+    )
+    action.add_argument(
+        "--single", metavar="RAW_ID",
+        help="Convert single activity (legacy, use --activity instead)"
+    )
+    action.add_argument(
+        "--batch", action="store_true",
+        help="Process batch of pending (use only after skills reliably produce Grade A)"
+    )
+    action.add_argument(
+        "--list-pending", action="store_true",
+        help="List pending activities"
     )
 
     # Options
     parser.add_argument(
-        "--limit", type=int, default=10, help="Limit for batch processing (default: 10)"
+        "--retry", type=int, default=2,
+        help="Max retry attempts for non-A grades (default: 2)"
     )
     parser.add_argument(
-        "--auto-approve",
-        action="store_true",
-        help="Auto-approve passing activities (batch mode)",
+        "--limit", type=int, default=10,
+        help="Limit for batch processing (default: 10)"
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose logging")
+    parser.add_argument(
+        "--auto-approve", action="store_true",
+        help="Auto-approve passing activities (batch mode)"
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true",
+        help="Verbose logging"
+    )
 
     args = parser.parse_args()
 
@@ -1352,20 +1774,98 @@ Examples:
         pending = pipeline.get_pending_activities()
         if pending:
             print(f"Pending activities ({len(pending)}):")
-            for raw_id in pending:
-                print(f"  - {raw_id}")
+            for i, raw_id in enumerate(pending[:20], 1):
+                print(f"  {i}. {raw_id}")
+            if len(pending) > 20:
+                print(f"  ... and {len(pending) - 20} more")
         else:
             print("No pending activities.")
 
-    elif args.single:
-        result = await pipeline.run_single(args.single)
-        if result is None:
-            print("Conversion cancelled.")
-            sys.exit(0)
-        elif result.status in (ActivityStatus.FAILED, ActivityStatus.QC_FAILED):
+    elif args.activity or args.single:
+        # Single activity processing with quality audit
+        raw_id = args.activity or args.single
+
+        print(f"\n{'='*60}")
+        print(f"QUALITY MODE: Processing {raw_id}")
+        print(f"Max retries: {args.retry}")
+        print(f"{'='*60}\n")
+
+        # Update progress to in_progress
+        pipeline._update_progress_file(raw_id, ActivityStatus.IN_PROGRESS)
+
+        # Run conversion with retry
+        result = await pipeline.convert_with_retry(raw_id, max_retries=args.retry)
+
+        # Print result
+        print(f"\n{'='*60}")
+        print(f"RESULT: {result.status.value.upper()}")
+
+        if result.status == ActivityStatus.DONE:
+            print(f"Grade A - Ready for human review!")
+            print(f"Canonical ID: {result.canonical_id}")
+            if result.file_path:
+                print(f"File path: {result.file_path}")
+
+            # Present for human review
+            decision = pipeline.present_for_review(
+                result, result.elevated_yaml or ""
+            )
+
+            if decision == "approve":
+                if pipeline.write_canonical_file(result):
+                    pipeline._update_progress_file(raw_id, ActivityStatus.DONE, "Converted")
+                    print(f"\nApproved and saved: {raw_id}")
+                else:
+                    pipeline._update_progress_file(
+                        raw_id, ActivityStatus.FAILED, "Write failed"
+                    )
+                    print(f"\nFailed to write file for: {raw_id}")
+                    sys.exit(1)
+            elif decision == "reject":
+                pipeline._update_progress_file(
+                    raw_id, ActivityStatus.REVISION_NEEDED, "Rejected in review"
+                )
+                print(f"\nRejected: {raw_id}")
+            elif decision == "skip":
+                pipeline._update_progress_file(raw_id, ActivityStatus.PENDING, "Skipped review")
+                print(f"\nSkipped for later: {raw_id}")
+            elif decision == "quit":
+                pipeline._update_progress_file(raw_id, ActivityStatus.PENDING)
+                print("Conversion cancelled.")
+                sys.exit(0)
+
+        elif result.status == ActivityStatus.REVISION_NEEDED:
+            print(f"Status: {result.status.value}")
+            if result.error:
+                print(f"Error: {result.error}")
+            if result.qc_warnings:
+                print("Issues:")
+                for w in result.qc_warnings[:5]:
+                    print(f"  - {w}")
+            pipeline._update_progress_file(
+                raw_id, ActivityStatus.REVISION_NEEDED, result.error or "Needs revision"
+            )
             sys.exit(1)
 
+        else:
+            print(f"Status: {result.status.value}")
+            if result.error:
+                print(f"Error: {result.error}")
+            if result.status == ActivityStatus.FAILED:
+                pipeline._update_progress_file(
+                    raw_id, ActivityStatus.FAILED, result.error or "Failed"
+                )
+            sys.exit(1)
+
+        print(f"{'='*60}\n")
+
     elif args.batch:
+        # Batch mode warning
+        print("\n" + "=" * 60)
+        print("WARNING: Batch mode recommended only after skills")
+        print("reliably produce Grade A content.")
+        print("=" * 60 + "\n")
+
         result = await pipeline.run_batch(
             limit=args.limit, auto_approve=args.auto_approve
         )

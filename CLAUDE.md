@@ -24,7 +24,8 @@ Based on Anthropic research papers. See `docs/V2_ORCHESTRATOR_GUIDE.md` for full
 | Sandbox Configs | `config/sandbox/*.json` | Security isolation for sub-agents and hooks |
 | Confidence Router | `atlas/orchestrator/confidence_router.py` | Route by verbalized confidence + "Wait" pattern |
 | Activity QC Hook | `knowledge/scripts/check_activity_quality.py` | Voice/structure validation for Activity Atoms |
-| Activity Pipeline | `atlas/pipelines/activity_conversion.py` | Orchestrate 5-skill chain for Activity Atoms |
+| Activity Pipeline | `atlas/pipelines/activity_conversion.py` | 7-stage pipeline with quality audit gate |
+| Quality Audit | `atlas/pipelines/activity_conversion.py:audit_quality()` | Grade A enforcement via Voice Rubric |
 
 ### Confidence Routing
 ```python
@@ -59,16 +60,32 @@ correction_prompt = apply_wait_pattern(original_response, query)
 - Always add logging to new modules
 
 ## Current Focus
-Phase 4 - Human review interface enhancements + integration testing
+Phase 4 - Quality audit pipeline + intelligent retry with Wait pattern
 
-### Activity Pipeline Commands
+### Activity Pipeline Commands (CLI Mode - No API Key)
 ```bash
-# Convert single activity with review
-ANTHROPIC_API_KEY=your_key python -m atlas.pipelines.activity_conversion --single tummy-time
+# Convert single activity (primary mode)
+python -m atlas.pipelines.activity_conversion --activity tummy-time
 
-# Batch processing
-python -m atlas.pipelines.activity_conversion --batch --limit 10
+# With explicit retry count (uses Wait pattern for intelligent retry)
+python -m atlas.pipelines.activity_conversion --activity tummy-time --retry 3
 
 # List pending activities
 python -m atlas.pipelines.activity_conversion --list-pending
+
+# Batch mode (only after skills reliably produce Grade A)
+python -m atlas.pipelines.activity_conversion --batch --limit 10
+```
+
+### Quality Audit Pipeline
+```python
+# Quality audit grades activities A/B+/B/C/F using Voice Elevation Rubric
+# Only Grade A proceeds to human review
+# Non-A grades trigger intelligent retry with "Wait" pattern reflection
+
+from atlas.pipelines.activity_conversion import ActivityConversionPipeline
+
+pipeline = ActivityConversionPipeline()
+result = await pipeline.convert_with_retry("tummy-time", max_retries=2)
+# Uses Wait pattern (89.3% blind spot reduction) between retries
 ```

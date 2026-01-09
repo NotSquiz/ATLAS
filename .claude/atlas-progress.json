@@ -1,5 +1,5 @@
 {
-  "current_phase": "activity_pipeline_phase3",
+  "current_phase": "activity_pipeline_phase4",
   "completed_tasks": [
     {"id": "pre-1", "task": "Git initialization", "status": "completed", "date": "2026-01-09"},
     {"id": "pre-2", "task": "Test structure creation", "status": "completed", "date": "2026-01-09"},
@@ -17,13 +17,21 @@
     {"id": "phase3-verify", "task": "Verification audit (Code Review, Inversion, Junior Analyst)", "status": "completed", "date": "2026-01-09"},
     {"id": "phase3-fixes-a", "task": "Fix 5 CRITICAL issues (QC JSON, transform validation, API key, memory, YAML)", "status": "completed", "date": "2026-01-09"},
     {"id": "phase3-fixes-b", "task": "Fix 4 HIGH issues (file locking, scratch pad, input limit, QC parsing)", "status": "completed", "date": "2026-01-09"},
-    {"id": "phase3-spec-c", "task": "Add spec compliance (SubAgentExecutor, HookRunner, SessionManager)", "status": "completed", "date": "2026-01-09"}
+    {"id": "phase3-spec-c", "task": "Add spec compliance (SubAgentExecutor, HookRunner, SessionManager)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-1", "task": "Switch to CLI mode (no API key required)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-2", "task": "Add audit_quality() method with Voice Rubric grading", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-3", "task": "Add reflect_on_failure() with Wait pattern", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-4", "task": "Add convert_with_retry() for intelligent retry", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-5", "task": "Update CLI for --activity mode", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-verify", "task": "Opus verification audit (3 agents)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-fixes", "task": "Fix critical issues from verification (feedback param, grade check, validation)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase4-docs", "task": "Update all documentation (CLAUDE.md, V2 Guide, Status, Decisions)", "status": "completed", "date": "2026-01-09"}
   ],
   "pending_tasks": [
-    {"id": "phase3-2", "task": "Test single activity conversion", "status": "pending"},
-    {"id": "phase3-3", "task": "Test batch processing", "status": "pending"},
-    {"id": "phase4-1", "task": "Build human review interface enhancements", "status": "pending"}
+    {"id": "phase4-test", "task": "Test quality audit with actual activity", "status": "pending"},
+    {"id": "phase4-tune", "task": "Tune skills based on quality audit feedback", "status": "pending"},
+    {"id": "phase4-prod", "task": "First successful Grade A production activity", "status": "pending"}
   ],
-  "last_updated": "2026-01-09T12:00:00Z",
-  "session_count": 3
+  "last_updated": "2026-01-09T15:00:00Z",
+  "session_count": 4
 }

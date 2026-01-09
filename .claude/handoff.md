@@ -1,48 +1,67 @@
 # ATLAS Session Handoff
 
-## Last Session: January 9, 2026 (Phase 3 COMPLETE)
+## Last Session: January 9, 2026 (Phase 4 - Quality Audit Pipeline)
 
 ### Completed This Session
-- **Phase 3 Pipeline Orchestrator COMPLETE** (`atlas/pipelines/activity_conversion.py`)
-  - 1377 lines with full spec compliance
-  - Fixed 5 CRITICAL + 4 HIGH issues from verification audit
-  - Integrated SubAgentExecutor, HookRunner, SessionManager
-  - End-to-end test passed (pipeline runs, QC catches issues)
+- **Quality Audit Pipeline Enhancement** (`atlas/pipelines/activity_conversion.py`)
+  - Switched to CLI mode (no API key required - uses Max subscription)
+  - Added `audit_quality()` - grades activities against Voice Elevation Rubric
+  - Added `reflect_on_failure()` - "Wait" pattern for 89.3% blind spot reduction
+  - Added `convert_with_retry()` - intelligent retry with learned feedback
+  - Only Grade A/A+/A- proceeds to human review
+  - Fixed grade check flexibility (A+ was incorrectly failing)
+  - Added input validation and error handling
 
-- **QC Test Results** (narrating-daily-care activity):
-  | Stage | Result |
-  |-------|--------|
-  | INGEST | ✅ Pass |
-  | RESEARCH | ✅ Pass |
-  | TRANSFORM | ✅ Pass |
-  | ELEVATE | ✅ Pass |
-  | Adversarial | ⚠️ Timeout (non-blocking) |
-  | VALIDATE | ✅ Pass |
-  | QC HOOK | ❌ 3 issues found |
+- **Opus Verification Audit** (3 agents in parallel):
+  - Code Review Self-Check: Found 2 HIGH, 5 MEDIUM issues
+  - Inversion Test: Identified false positive/negative scenarios
+  - End-to-End Integration: Verified method chain connectivity
+  - All critical issues fixed
 
-- **QC Failures Discovered** (actionable intel):
-  1. `VOICE_EM_DASH` - Elevate skill not catching em-dashes
-  2. `STRUCTURE_MISSING_SECTION` - Transform skill missing `au_cultural_adaptation.au_resources`
-  3. `CROSS_REF_INVALID_PRINCIPLE` - Transform using 'respect' (not in valid 18 slugs)
+- **Documentation Updated**:
+  - `CLAUDE.md` - Added Quality Audit section, updated commands
+  - `V2_ORCHESTRATOR_GUIDE.md` - Added Section 9 with full usage docs
+  - `TECHNICAL_STATUS.md` - Updated V2 Components table
+  - `DECISIONS.md` - Added D21, D22, D23 (Quality Audit decisions)
 
 ### Files Changed
-- `atlas/pipelines/activity_conversion.py` - 1377 lines (new)
-- `atlas/pipelines/__init__.py` - Package init (new)
-- Documentation updates across 7 files
+- `atlas/pipelines/activity_conversion.py` - Major enhancements (~1800 lines now)
+- `CLAUDE.md` - Quality Audit section
+- `docs/V2_ORCHESTRATOR_GUIDE.md` - Section 9 added
+- `docs/TECHNICAL_STATUS.md` - Status updates
+- `docs/DECISIONS.md` - D21-D23 added
+- `.claude/handoff.md` - This file
+
+### Key Methods Added
+```python
+# Quality audit against Voice Rubric
+audit = await pipeline.audit_quality(elevated_yaml, activity_id)
+# Returns: {"grade": "A", "passed": True, "issues": [], ...}
+
+# "Wait" pattern reflection for retry
+feedback = await pipeline.reflect_on_failure(failed_yaml, issues, grade)
+
+# Intelligent retry with learned context
+result = await pipeline.convert_with_retry(raw_id, max_retries=2)
+```
+
+### CLI Changes
+```bash
+# Primary mode (no API key needed)
+python -m atlas.pipelines.activity_conversion --activity tummy-time
+
+# With explicit retry count
+python -m atlas.pipelines.activity_conversion --activity tummy-time --retry 3
+```
 
 ### Previous Session
-- Phase 2 QC Hook created and verified
-- Phase 3 handover documentation prepared
+- Phase 3 Pipeline Orchestrator completed
+- 1377-line pipeline with SubAgentExecutor, HookRunner, SessionManager integration
 
 ### Pending for Next Session
-- [ ] Fix transform/elevate skills based on QC findings
-- [ ] First batch conversion (after skill fixes)
-- [ ] Personal assistant workflows (HRV, supplements, recovery)
-
-### Git Commits This Session
-```
-9b185e7 - Complete Phase 3: Activity Conversion Pipeline with all fixes
-```
+- [ ] Test quality audit with actual activity conversion
+- [ ] Tune skills based on quality audit feedback
+- [ ] First successful Grade A production activity
 
 ### Phase Documentation Status
 | Phase | Status | Notes |
@@ -50,9 +69,9 @@
 | Phase 1 | COMPLETE | 5 skills in babybrains-os |
 | Phase 2 | COMPLETE | QC hook created |
 | Phase 3 | COMPLETE | Pipeline + all fixes |
-| Phase 4 | PENDING | After skill improvements |
+| Phase 4 | IN PROGRESS | Quality Audit Pipeline done, testing next |
 
 ### Context Notes
-- Pipeline infrastructure verified working end-to-end
-- Skills need tuning based on real QC failures
-- See `docs/SKILL_IMPROVEMENT_NOTES.md` for specific fixes needed
+- Quality Audit uses Voice Rubric at `/home/squiz/code/knowledge/coverage/VOICE_ELEVATION_RUBRIC.md`
+- Reference A+ activity at `/home/squiz/code/knowledge/data/canonical/activities/practical_life/ACTIVITY_PRACTICAL_LIFE_CARING_CLOTHES_FOLDING_HANGING_24_36M.yaml`
+- "Wait" pattern from Anthropic introspection research reduces blind spots 89.3%

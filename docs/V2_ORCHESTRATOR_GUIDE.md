@@ -58,6 +58,7 @@ Use `grep` to find specific discussions (e.g., `grep -i "verification" mastercla
 | SessionManager | `atlas/orchestrator/session_manager.py` | Track session state and git changes |
 | SkillLoader | `atlas/orchestrator/skill_executor.py` | Load skills or specific sections on demand |
 | ScratchPad | `atlas/orchestrator/scratch_pad.py` | Track intermediate results during skill chains |
+| Quality Audit Pipeline | `atlas/pipelines/activity_conversion.py` | 7-stage pipeline with Grade A enforcement |
 
 ---
 
@@ -543,7 +544,7 @@ result = asyncio.run(generate_content("sleep", "12-18m"))
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `BABYBRAINS_REPO` | `~/code/babybrains-os` | Path to babybrains-os repo |
-| `ANTHROPIC_API_KEY` | (none) | Required for API mode skill execution |
+| `ANTHROPIC_API_KEY` | (none) | Optional - only for API mode. Activity Pipeline uses CLI mode (Max subscription) |
 
 ---
 
@@ -760,6 +761,124 @@ task['status'] = 'in_progress'
 with open('.claude/atlas-progress.json', 'w') as f:
     json.dump(progress, f, indent=2)
 ```
+
+---
+
+## 9. Quality Audit Pipeline (January 2026)
+
+### What It Does
+Ensures only Grade A content reaches human review by adding a quality audit stage after QC hook. Implements intelligent retry using the "Wait" pattern when grades are below A.
+
+### Key Features
+- **CLI Mode**: Uses Max subscription (`claude` CLI), no API key needed
+- **Grade A Gate**: Only A/A+/A- grades proceed to human review
+- **Intelligent Retry**: "Wait" pattern reflection between attempts (89.3% blind spot reduction)
+- **Voice Rubric**: Grades against BabyBrains voice standards
+
+### Pipeline Flow
+```
+RAW ACTIVITY
+     │
+     ▼
+┌─────────────────────┐
+│ 1. INGEST           │
+│ 2. RESEARCH         │
+│ 3. TRANSFORM        │  7-stage pipeline
+│ 4. ELEVATE          │  (with feedback on retry)
+│ 5. VALIDATE         │
+│ 6. QC HOOK          │
+│ 7. QUALITY AUDIT    │
+└─────────┬───────────┘
+          │
+          │ Grade A? ──NO──► Reflect → Retry
+          │
+          ▼ YES
+┌─────────────────────┐
+│ HUMAN REVIEW        │ Only sees Grade A content
+└─────────────────────┘
+```
+
+### Usage
+
+```python
+from atlas.pipelines.activity_conversion import ActivityConversionPipeline
+
+# Initialize (no API key needed - uses CLI mode)
+pipeline = ActivityConversionPipeline()
+
+# Convert single activity with intelligent retry
+result = await pipeline.convert_with_retry("tummy-time", max_retries=2)
+
+# Check result
+if result.status == ActivityStatus.DONE:
+    print(f"Grade A achieved: {result.canonical_id}")
+else:
+    print(f"Failed: {result.error}")
+    for issue in result.qc_warnings:
+        print(f"  - {issue}")
+```
+
+### CLI Commands
+
+```bash
+# Primary mode: single activity with quality audit
+python -m atlas.pipelines.activity_conversion --activity tummy-time
+
+# With explicit retry count
+python -m atlas.pipelines.activity_conversion --activity tummy-time --retry 3
+
+# List pending activities
+python -m atlas.pipelines.activity_conversion --list-pending
+
+# Batch mode (use only after skills reliably produce Grade A)
+python -m atlas.pipelines.activity_conversion --batch --limit 10
+```
+
+### How Intelligent Retry Works
+
+When quality audit returns a non-A grade:
+
+1. **Reflect**: `reflect_on_failure()` applies the "Wait" pattern:
+   ```
+   Wait. Before re-elevating, pause and consider:
+   - What assumptions did the previous attempt make?
+   - Why did these specific issues occur?
+   - What would I tell another agent who made these mistakes?
+   ```
+
+2. **Feedback**: Reflection generates specific guidance for fixes
+
+3. **Retry**: `convert_activity()` receives feedback, passes to elevate skill
+
+4. **Learn**: Each retry learns from what went wrong, not just hopes for different output
+
+### Grade Scale
+
+| Grade | Result | Meaning |
+|-------|--------|---------|
+| A/A+/A- | PASS | Ready for human review |
+| B+ | FAIL | 1-2 fixable issues, retry triggered |
+| B | FAIL | Multiple issues, retry triggered |
+| C | FAIL | Significant issues, retry triggered |
+| F | FAIL | Major problems or audit failure |
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `atlas/pipelines/activity_conversion.py` | Pipeline orchestrator |
+| `audit_quality()` method | Grades against Voice Rubric |
+| `reflect_on_failure()` method | Wait pattern reflection |
+| `convert_with_retry()` method | Intelligent retry loop |
+| `/home/squiz/code/knowledge/coverage/VOICE_ELEVATION_RUBRIC.md` | Grading criteria |
+
+### External Dependencies
+
+The quality audit requires these files to exist:
+- **Voice Rubric** (required): `/home/squiz/code/knowledge/coverage/VOICE_ELEVATION_RUBRIC.md`
+- **Reference A+ Activity** (optional): `/home/squiz/code/knowledge/data/canonical/activities/practical_life/ACTIVITY_PRACTICAL_LIFE_CARING_CLOTHES_FOLDING_HANGING_24_36M.yaml`
+
+If rubric is missing, audit returns Grade F with system error.
 
 ---
 

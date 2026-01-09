@@ -420,6 +420,99 @@ class SkillExecutor:
 
 ---
 
+## D21: Quality Audit Gate (Grade A Enforcement)
+**Date:** January 2026
+**Context:** Activity Conversion Pipeline needed quality control beyond deterministic QC hook
+
+**Problem:** QC hook catches structural issues (em-dashes, missing sections) but cannot assess:
+- Philosophy integration (6 Montessori principles)
+- Voice authenticity (Australian, understated confidence)
+- Rationale field quality (Observable → Philosophy → Psychology → Reassurance)
+- Science weaving (Observable → Invisible → Meaningful)
+
+**Options Considered:**
+1. Expand QC hook to check all criteria (deterministic)
+2. Add LLM-based quality audit stage (semantic evaluation)
+3. Human review catches everything (manual bottleneck)
+
+**Decision:** LLM-based Quality Audit Stage after QC Hook
+
+**Implementation:**
+- `audit_quality()` spawns sub-agent to grade against Voice Elevation Rubric
+- Only Grade A/A+/A- proceeds to human review
+- Non-A grades trigger intelligent retry with "Wait" pattern reflection
+
+**Rationale:**
+- Voice quality requires semantic understanding (can't be regex)
+- Sub-agent has fresh context (no pollution from conversion)
+- Grade A gate reduces human reviewer burden
+- Retry mechanism improves output quality automatically
+
+---
+
+## D22: Intelligent Retry with Wait Pattern
+**Date:** January 2026
+**Context:** When quality audit fails, need to improve next attempt rather than blind retry
+
+**Problem:** Simple retry loops just hope for different output. LLMs have "blind spots" where they consistently make the same mistake.
+
+**Research Finding:** Anthropic's introspection research shows 89.3% blind spot reduction with "Wait" pattern:
+```
+Wait. Before continuing, pause and consider:
+- What assumptions did I make?
+- Why did these specific issues occur?
+- What would I tell another agent who made these mistakes?
+```
+
+**Decision:** Intelligent retry with `reflect_on_failure()` + feedback injection
+
+**Implementation:**
+```python
+# After failed quality audit:
+feedback = await self.reflect_on_failure(failed_yaml, issues, grade)
+result = await self.convert_activity(raw_id, feedback=feedback)
+```
+
+**Rationale:**
+- Each retry learns from what went wrong
+- Feedback is passed to elevate skill for informed re-elevation
+- Reduces retry count needed to reach Grade A
+- Leverages proven Anthropic research pattern
+
+---
+
+## D23: CLI Mode Default (No API Key Required)
+**Date:** January 2026
+**Context:** Activity Pipeline was requiring ANTHROPIC_API_KEY for SkillExecutor
+
+**Problem:**
+- API mode costs per-token
+- User has Max subscription (CLI mode is $0)
+- Pipeline should work out-of-box without environment setup
+
+**Decision:** Switch to CLI mode by default
+
+**Before:**
+```python
+if not os.environ.get("ANTHROPIC_API_KEY"):
+    raise EnvironmentError("ANTHROPIC_API_KEY required")
+self.skill_executor = SkillExecutor(use_api=True)
+```
+
+**After:**
+```python
+# CLI mode for Max subscription (no API key needed)
+self.skill_executor = SkillExecutor(timeout=300)
+```
+
+**Rationale:**
+- Consistent with D10/D11 (CLI mode = Max = $0)
+- Zero setup required for users with Max subscription
+- Extended timeout (300s) for quality processing
+- API mode still available if explicitly needed
+
+---
+
 ## Template for New Decisions
 
 ```
