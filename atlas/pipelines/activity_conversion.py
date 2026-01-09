@@ -544,8 +544,13 @@ class ActivityConversionPipeline:
         else:
             logger.info("[ELEVATE] Starting voice elevation")
 
-        # Build input data with optional feedback for retry context
-        input_data = {"canonical_yaml": canonical_yaml}
+        # Build input data with voice standard path and optional feedback
+        # The voice_standard_path enables the skill to load BabyBrains-Writer.md
+        # which is the 1713-line master voice standard used for all 23 Grade A elevations
+        input_data = {
+            "canonical_yaml": canonical_yaml,
+            "voice_standard_path": "/home/squiz/code/web/.claude/agents/BabyBrains-Writer.md",
+        }
         if feedback:
             input_data["retry_feedback"] = feedback
             input_data["is_retry"] = True
