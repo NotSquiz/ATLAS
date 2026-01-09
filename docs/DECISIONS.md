@@ -2,7 +2,7 @@
 
 Decisions are logged chronologically. Future agents should read this to understand why choices were made.
 
-**Last Updated:** January 8, 2026
+**Last Updated:** January 9, 2026
 
 ---
 
@@ -372,6 +372,51 @@ class SkillExecutor:
 - ScratchPad can be used independently of sessions
 - Typed ScratchEntry dataclass provides structure (key, value, step, timestamp, skill_name)
 - File persistence enables recovery without coupling to SessionManager
+
+---
+
+## D19: Activity QC Hook Output Format
+**Date:** January 2026
+**Context:** Creating QC hook for Activity Atoms that integrates with existing HookRunner
+
+**Options Considered:**
+1. Custom output format optimized for Activity validation
+2. Match existing hooks.py `_parse_json_result()` expectations exactly
+
+**Decision:** Match hooks.py format (`pass`, `msg`, `severity: "block"`)
+
+**Rationale:**
+- hooks.py expects `output.get("pass")` not `output.get("passed")`
+- hooks.py expects `issue.get("msg")` not `issue.get("message")`
+- hooks.py uses `severity: "block"` not `severity: "blocking"`
+- Framework compatibility > custom naming
+- Discovered via adversarial sub-agent verification before deployment
+
+---
+
+## D20: Context-Aware Superlative Detection
+**Date:** January 2026
+**Context:** Superlative check was producing false positives on legitimate phrases
+
+**Problem Cases:**
+- "Best practices suggest..." (legitimate technical term)
+- "Children perfect their skills" ("perfect" as verb)
+- "Technique is still imperfect" (negated form)
+- "Doesn't need to be perfect" (negated context)
+
+**Decision:** Multi-layer context awareness
+
+**Implementation:**
+1. **Exception phrases:** Pre-compiled patterns for "best practice", "try your best", etc.
+2. **Verb detection:** Pattern for "perfect(s|ed|ing) the/their/his/her/a"
+3. **Prefix negation:** `(?<!im)` to exclude "imperfect"
+4. **Context negation:** Check for "not/n't/no/never" preceding the match
+
+**Rationale:**
+- Voice guidelines allow anti-perfectionist messaging ("doesn't need to be perfect")
+- Technical phrases like "best practices" are not promotional
+- False positives undermine trust in the QC hook
+- Pre-compiled patterns avoid O(n²) regex compilation
 
 ---
 

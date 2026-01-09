@@ -59,7 +59,7 @@ Create a Python QC hook that validates Activity Atoms for voice quality, structu
     "em_dash_count": 0,
     "formal_transition_count": 0,
     "superlative_count": 0,
-    "sections_found": 32,
+    "sections_found": 34,
     "sections_missing": []
   }
 }
@@ -76,7 +76,7 @@ Create a Python QC hook that validates Activity Atoms for voice quality, structu
 | `VOICE_EM_DASH` | blocking | Any em-dash character (—) found anywhere |
 | `VOICE_FORMAL_TRANSITION` | blocking | Moreover/Furthermore/Consequently/Nevertheless/Hence/Thus/Therefore at sentence start |
 | `VOICE_SUPERLATIVE` | blocking | amazing/incredible/wonderful/perfect/optimal/best (context-aware) |
-| `STRUCTURE_MISSING_SECTION` | blocking | Any of the 32 required sections missing |
+| `STRUCTURE_MISSING_SECTION` | blocking | Any of the 34 required sections missing |
 | `STRUCTURE_INVALID_YAML` | blocking | YAML parse error |
 | `CROSS_REF_INVALID_PRINCIPLE` | blocking | Principle slug not in valid list |
 
@@ -88,7 +88,7 @@ Create a Python QC hook that validates Activity Atoms for voice quality, structu
 | `WARN_GUIDANCE_MISSING` | Guidance file doesn't exist (may need creation) |
 | `WARN_AGE_EXTREME` | Age range at boundaries (-9 or 72 months) |
 
-### The 32 Required Sections
+### The 34 Required Sections
 
 From the transform_activity.md skill, these sections MUST be present:
 
@@ -142,7 +142,7 @@ production_notes
 tags, priority_ranking, query_frequency_estimate, parent_search_terms
 ```
 
-### Valid Principle Slugs (16 total)
+### Valid Principle Slugs (18 total)
 
 ```python
 VALID_PRINCIPLES = {
@@ -238,7 +238,7 @@ cat /home/squiz/code/knowledge/data/canonical/activities/practical_life/ACTIVITY
     "em_dash_count": 0,
     "formal_transition_count": 0,
     "superlative_count": 0,
-    "sections_found": 32,
+    "sections_found": 34,
     "sections_missing": []
   }
 }
@@ -259,7 +259,7 @@ Should detect: em-dash, "amazing", "incredible"
 - [ ] Correctly detects em-dashes (test with — character)
 - [ ] Correctly detects formal transitions at sentence start
 - [ ] Correctly detects superlatives
-- [ ] Validates all 32 sections present
+- [ ] Validates all 34 sections present
 - [ ] Validates principle slugs against valid list
 - [ ] Returns proper JSON format
 - [ ] Exit code 0 for pass, 1 for fail
@@ -272,7 +272,7 @@ Should detect: em-dash, "amazing", "incredible"
 ## DO NOT
 
 - Do NOT modify the sample canonical activity
-- Do NOT change the 32-section structure
+- Do NOT change the 34-section structure
 - Do NOT add dependencies beyond Python standard library + PyYAML
 - Do NOT skip any block codes listed above
 

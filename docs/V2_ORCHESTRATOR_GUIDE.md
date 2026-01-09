@@ -1,7 +1,7 @@
 # ATLAS V2 Orchestrator Guide
 
 > **Purpose:** This document explains ATLAS's orchestration capabilities so that ATLAS (or any agent) can understand and use them effectively.
-> **Last Updated:** January 8, 2026
+> **Last Updated:** January 9, 2026
 
 ---
 
@@ -128,11 +128,12 @@ Wraps existing validation scripts as hooks that run at specific timing points (P
 
 ### Currently Configured Hooks
 
-| Repo | Hook | Timing | Blocking |
-|------|------|--------|----------|
-| babybrains | qc_runner | POST | Yes |
-| knowledge | tier1_validators | POST | Yes |
-| web | pre_pr | POST | Yes |
+| Repo | Hook | Timing | Blocking | Purpose |
+|------|------|--------|----------|---------|
+| babybrains | qc_runner | POST | Yes | Video script QC |
+| knowledge | tier1_validators | POST | Yes | Schema validation |
+| knowledge | activity_qc | POST | Yes | Activity Atom voice/structure QC |
+| web | pre_pr | POST | Yes | Pre-PR checks |
 
 ### Usage
 
@@ -178,6 +179,28 @@ python -m atlas.orchestrator.hooks babybrains --timing post
 # Run specific hook with input
 python -m atlas.orchestrator.hooks babybrains qc_runner --input data.json
 ```
+
+### Activity QC Hook (knowledge repo)
+
+The `activity_qc` hook validates Activity Atoms for:
+- **Voice violations:** Em-dashes, en-dashes, formal transitions, superlatives
+- **Structure completeness:** 34 required YAML sections
+- **Cross-references:** Valid principle slugs (18 total)
+
+```bash
+# Test activity against QC hook
+cat activity.yaml | python3 /home/squiz/code/knowledge/scripts/check_activity_quality.py
+
+# Output format (hooks.py compatible):
+{
+  "pass": true,
+  "issues": [{"code": "VOICE_EM_DASH", "severity": "block", "msg": "...", "line": 45}],
+  "warnings": [{"code": "WARN_AGE_EXTREME", "severity": "advisory", "msg": "..."}],
+  "stats": {"em_dash_count": 0, "superlative_count": 0, "sections_found": 34}
+}
+```
+
+**Block codes:** `VOICE_EM_DASH`, `VOICE_FORMAL_TRANSITION`, `VOICE_SUPERLATIVE`, `STRUCTURE_MISSING_SECTION`, `STRUCTURE_INVALID_YAML`, `CROSS_REF_INVALID_PRINCIPLE`
 
 ### How To Add New Hooks
 Edit the `HOOKS` dict in `hooks.py:83`:

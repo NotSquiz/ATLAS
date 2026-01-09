@@ -23,6 +23,8 @@ Based on Anthropic research papers. See `docs/V2_ORCHESTRATOR_GUIDE.md` for full
 | Progress Tracking | `.claude/atlas-progress.json` | JSON task tracking (prevents model modification) |
 | Sandbox Configs | `config/sandbox/*.json` | Security isolation for sub-agents and hooks |
 | Confidence Router | `atlas/orchestrator/confidence_router.py` | Route by verbalized confidence + "Wait" pattern |
+| Activity QC Hook | `knowledge/scripts/check_activity_quality.py` | Voice/structure validation for Activity Atoms |
+| Activity Pipeline | `atlas/pipelines/activity_conversion.py` | Orchestrate 5-skill chain for Activity Atoms |
 
 ### Confidence Routing
 ```python
@@ -57,4 +59,16 @@ correction_prompt = apply_wait_pattern(original_response, query)
 - Always add logging to new modules
 
 ## Current Focus
-Full setup implementation - Phase 1-3 infrastructure
+Phase 4 - Human review interface enhancements + integration testing
+
+### Activity Pipeline Commands
+```bash
+# Convert single activity with review
+ANTHROPIC_API_KEY=your_key python -m atlas.pipelines.activity_conversion --single tummy-time
+
+# Batch processing
+python -m atlas.pipelines.activity_conversion --batch --limit 10
+
+# List pending activities
+python -m atlas.pipelines.activity_conversion --list-pending
+```

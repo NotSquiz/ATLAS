@@ -1,5 +1,5 @@
 {
-  "current_phase": "activity_pipeline_phase2",
+  "current_phase": "activity_pipeline_phase3",
   "completed_tasks": [
     {"id": "pre-1", "task": "Git initialization", "status": "completed", "date": "2026-01-09"},
     {"id": "pre-2", "task": "Test structure creation", "status": "completed", "date": "2026-01-09"},
@@ -7,15 +7,23 @@
     {"id": "setup-1", "task": "Create CLAUDE.md", "status": "completed", "date": "2026-01-09"},
     {"id": "setup-2", "task": "Create handoff.md", "status": "completed", "date": "2026-01-09"},
     {"id": "setup-3", "task": "Add sandbox config", "status": "completed", "date": "2026-01-09"},
-    {"id": "setup-4", "task": "Create confidence_router.py", "status": "completed", "date": "2026-01-09"}
+    {"id": "setup-4", "task": "Create confidence_router.py", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase2-1", "task": "Create QC hook (check_activity_quality.py)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase2-2", "task": "Register activity_qc hook in hooks.py", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase2-3", "task": "Test hook with sample canonical activity", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase3-0", "task": "Create atlas/pipelines/ directory", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase3-audit", "task": "Audit Phase 3 handover documentation", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase3-1", "task": "Create pipeline orchestrator (activity_conversion.py)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase3-verify", "task": "Verification audit (Code Review, Inversion, Junior Analyst)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase3-fixes-a", "task": "Fix 5 CRITICAL issues (QC JSON, transform validation, API key, memory, YAML)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase3-fixes-b", "task": "Fix 4 HIGH issues (file locking, scratch pad, input limit, QC parsing)", "status": "completed", "date": "2026-01-09"},
+    {"id": "phase3-spec-c", "task": "Add spec compliance (SubAgentExecutor, HookRunner, SessionManager)", "status": "completed", "date": "2026-01-09"}
   ],
   "pending_tasks": [
-    {"id": "phase2-1", "task": "Create QC hook (check_activity_quality.py)", "status": "pending"},
-    {"id": "phase2-2", "task": "Register activity_qc hook in hooks.py", "status": "pending"},
-    {"id": "phase2-3", "task": "Test hook with sample canonical activity", "status": "pending"},
-    {"id": "phase3-1", "task": "Create pipeline orchestrator", "status": "pending"},
-    {"id": "phase4-1", "task": "Build human review interface", "status": "pending"}
+    {"id": "phase3-2", "task": "Test single activity conversion", "status": "pending"},
+    {"id": "phase3-3", "task": "Test batch processing", "status": "pending"},
+    {"id": "phase4-1", "task": "Build human review interface enhancements", "status": "pending"}
   ],
-  "last_updated": "2026-01-09T08:05:00Z",
-  "session_count": 1
+  "last_updated": "2026-01-09T12:00:00Z",
+  "session_count": 3
 }

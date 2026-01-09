@@ -16,7 +16,7 @@
 |-------|----------|---------|
 | `ingest_activity.md` | `/home/squiz/code/babybrains-os/skills/activity/` | Parse raw activity, check skip/group/domain |
 | `research_activity.md` | `/home/squiz/code/babybrains-os/skills/activity/` | Find sources, principles, safety standards |
-| `transform_activity.md` | `/home/squiz/code/babybrains-os/skills/activity/` | Build 32-section canonical YAML |
+| `transform_activity.md` | `/home/squiz/code/babybrains-os/skills/activity/` | Build 34-section canonical YAML |
 | `elevate_voice_activity.md` | `/home/squiz/code/babybrains-os/skills/activity/` | Apply BabyBrains AAA+ voice |
 | `validate_activity.md` | `/home/squiz/code/babybrains-os/skills/activity/` | Structure and cross-ref validation |
 | `ACTIVITY_PIPELINE_GUIDE.md` | `/home/squiz/code/babybrains-os/skills/activity/` | How skills chain together |
@@ -59,7 +59,7 @@ RAW ACTIVITY
     ↓
 [research_activity] → principles, safety, guidance
     ↓
-[transform_activity] → build 32-section YAML
+[transform_activity] → build 34-section YAML
     ↓
 [elevate_voice_activity] → BabyBrains voice
     ↓
@@ -81,7 +81,7 @@ WRITE FILE
 ### Phase 2: QC Hook (NEXT)
 Create `/home/squiz/code/knowledge/scripts/check_activity_quality.py`:
 - Voice scan (em-dashes, formal transitions, superlatives)
-- Structure check (32 sections present)
+- Structure check (34 sections present)
 - Cross-ref validation
 - Return JSON with pass/fail
 
@@ -144,7 +144,7 @@ Create `/home/squiz/ATLAS/atlas/pipelines/activity_conversion.py`:
 ### Current Manual Workflow
 `/home/squiz/code/knowledge/.claude/workflow/HANDOFF_CONVERSION_SESSION.md`
 - Template used for manual conversions
-- Shows exact 32-section structure required
+- Shows exact 34-section structure required
 
 ### Reference Canonical File
 `/home/squiz/code/knowledge/data/canonical/activities/practical_life/ACTIVITY_PRACTICAL_LIFE_WASHING_FRUITS_VEGETABLES_12_36M.yaml`
@@ -207,8 +207,12 @@ Create `/home/squiz/ATLAS/atlas/pipelines/activity_conversion.py`:
 - [x] Phase 1: Skills verified loading with ATLAS
 - [x] Phase 2: QC hook created (`/home/squiz/code/knowledge/scripts/check_activity_quality.py`)
 - [x] Phase 2: Hook registered in ATLAS (`knowledge/activity_qc`)
-- [ ] Phase 3: Pipeline orchestrator created
-- [ ] Phase 4: Human review interface built
+- [x] Phase 3: Pipeline orchestrator created (`atlas/pipelines/activity_conversion.py`)
+- [x] Phase 3: Verification audit passed (Code Review, Inversion, Junior Analyst)
+- [x] Phase 3: 5 CRITICAL fixes applied (QC JSON, transform validation, API key, memory, YAML)
+- [x] Phase 3: 4 HIGH fixes applied (file locking, scratch pad, input limit, QC parsing)
+- [x] Phase 3: Spec compliance added (SubAgentExecutor, HookRunner, SessionManager)
+- [ ] Phase 4: Human review interface enhancements
 - [ ] Integration testing
 - [ ] First automated conversion
 
@@ -217,4 +221,4 @@ Create `/home/squiz/ATLAS/atlas/pipelines/activity_conversion.py`:
 | Phase | Document | Status |
 |-------|----------|--------|
 | Phase 2 | `docs/HANDOVER_PHASE2_QC_HOOK.md` | COMPLETE |
-| Phase 3 | `docs/HANDOVER_PHASE3_PIPELINE.md` | READY FOR FRESH AGENT |
+| Phase 3 | `docs/HANDOVER_PHASE3_PIPELINE.md` | COMPLETE |

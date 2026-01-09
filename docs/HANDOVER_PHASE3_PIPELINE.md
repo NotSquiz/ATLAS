@@ -211,7 +211,9 @@ section = loader.load_skill_section("activity/transform_activity", "Output")
 
 ### 4.2 SkillExecutor - Execute Skills
 ```python
-executor = SkillExecutor(use_api=True)  # API mode for automation
+# Default is CLI mode (free via Max subscription)
+# use_api=True required for automation pipelines
+executor = SkillExecutor(use_api=True)
 
 result = await executor.execute(
     skill_name="activity/ingest_activity",

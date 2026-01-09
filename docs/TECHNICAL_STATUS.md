@@ -1,6 +1,6 @@
 # ATLAS Technical Status
 
-**Last Updated:** January 8, 2026
+**Last Updated:** January 9, 2026
 **Status:** Phase 0 COMPLETE (Memory) + Phase 1 COMPLETE (Voice) + Phase 2 COMPLETE (V2 Orchestrator)
 
 ---
@@ -348,6 +348,9 @@ python -m atlas.orchestrator.skill_executor --skill draft_21s --repo babybrains-
 | SessionManager | `session_manager.py` | ✅ Complete | Git diff pattern, state persistence |
 | Progressive Loading | `skill_executor.py` | ✅ Complete | SkillSection dataclass, 8 new methods, 5 CLI flags, partial matching (Jan 8) |
 | ScratchPad | `scratch_pad.py` | ✅ Complete | ScratchEntry dataclass, file persistence, step tracking, CLI (Jan 8) |
+| Activity QC Hook | `knowledge/scripts/check_activity_quality.py` | ✅ Complete | Voice/structure/cross-ref validation for Activity Atoms (Jan 9) |
+| Pipelines Directory | `atlas/pipelines/__init__.py` | ✅ Complete | Pipeline orchestrator package directory (Jan 9) |
+| Activity Conversion Pipeline | `atlas/pipelines/activity_conversion.py` | ✅ Complete | 1230-line pipeline orchestrator for Activity Atoms (Jan 9) |
 
 ### V2 Gaps (From Masterclass Analysis)
 
