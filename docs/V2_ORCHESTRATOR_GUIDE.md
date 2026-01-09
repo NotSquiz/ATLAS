@@ -885,145 +885,46 @@ If rubric is missing, audit returns Grade F with system error.
 
 ## 10. Code Simplifier (January 2026)
 
-### What It Does
-On-demand code analysis tool that suggests improvements while preserving functionality. Designed as a learning tool for beginner coders, with educational explanations for each suggestion.
-
-### Key Features
-- **Pattern-based analysis**: Detects 15+ common issues (redundant code, anti-patterns, complexity)
-- **ATLAS-specific rules**: Enforces CLAUDE.md coding standards (async/await, specific exceptions, logging)
-- **Educational explanations**: Each suggestion includes before/after examples and "why" explanation
-- **Severity levels**: ERROR (must-fix), WARNING, SUGGESTION, INFO
+Pattern-based code analysis. Based on Anthropic's code-simplifier agent.
 
 ### Usage
 
 ```bash
-# Help and usage info
-/simplify
-
-# Analyze a file
 /simplify atlas/orchestrator/hooks.py
-
-# With detailed explanations (learning mode)
-/simplify --verbose atlas/orchestrator/hooks.py
-
-# CLI mode
 python -m atlas.simplifier.code_simplifier --file path/to/file.py
-python -m atlas.simplifier.code_simplifier --file path/to/file.py --verbose
 python -m atlas.simplifier.code_simplifier --file path/to/file.py --json
 ```
 
-### What It Detects
+### Patterns Detected
 
-| Category | Examples |
-|----------|----------|
-| **Redundant Code** | `if x == True:` -> `if x:`, `len(list) == 0` -> `not list` |
-| **Python Anti-patterns** | Bare `except:`, mutable default arguments (`def foo(items=[])`) |
-| **ATLAS Standards** | Missing async/await for I/O, broad Exception catches, missing logging |
-| **Complexity** | Deep nesting (>3 levels), long functions (>50 lines) |
+| ID | Issue | Fix |
+|----|-------|-----|
+| REDUNDANT_TRUE | `if x == True:` | `if x:` |
+| REDUNDANT_FALSE | `if x == False:` | `if not x:` |
+| REDUNDANT_NONE | `x == None` | `x is None` |
+| REDUNDANT_LEN | `len(x) > 0` | `if x:` |
+| BARE_EXCEPT | `except:` | `except Exception:` |
+| MUTABLE_DEFAULT | `def f(x=[])` | Use None default |
+| BROAD_EXCEPTION | `except Exception:` | Catch specific |
+| DEEP_NESTING | 3+ indent levels | Guard clauses |
+| SYNC_IO | Sync file/http | Use async |
 
 ### Example Output
 
 ```
-Code Simplification Report
-========================================
-File: atlas/orchestrator/hooks.py
-Lines analyzed: 538
-Suggestions: 14
-
-Summary: 1 warnings, 7 suggestions, 6 info
-
-WARNINGS:
-  [!] Line 325: Catching broad Exception
-
-SUGGESTIONS:
-  [*] Line 201: Deep nesting detected
-  [*] Line 243: Deep nesting detected
-
-INFO:
-  [i] Line 70: Long function detected: advisory_issues() is 81 lines
-
-ATLAS Coding Standards (from CLAUDE.md):
-  - Use async/await for all I/O operations
-  - Catch specific exceptions before catch-all (except Exception)
-  - Always add logging to new modules
-
-Tip: Use --verbose for detailed explanations
+atlas/orchestrator/hooks.py: 5 issues
+  [X] L325: Bare except catches everything -> except Exception:
+  [!] L201: Deep nesting - use guard clauses -> Early return pattern
+  [*] L243: == None -> is None -> x is None
 ```
 
-### Verbose Output (Learning Mode)
-
-```
-[WARNING] Catching broad Exception
-  Line 325: except Exception as e:
-
-  Before: except Exception as e:
-  After:  except (ValueError, KeyError) as e:
-
-  Why: ATLAS rule: 'Specific exceptions before catch-all'. Catching Exception
-  is better than bare except, but consider which specific exceptions you expect
-  and handle those. This makes debugging easier and prevents swallowing
-  unexpected errors.
-```
-
-### Programmatic Usage
-
-```python
-from atlas.simplifier import CodeSimplifier
-from atlas.simplifier.patterns import Severity
-
-# Create simplifier
-simplifier = CodeSimplifier()
-
-# Analyze file
-result = simplifier.analyze_file("path/to/file.py")
-
-# Check results
-if result.has_suggestions:
-    print(result.format_report(verbose=True))
-
-# Filter by severity
-errors = result.suggestions_by_severity(Severity.ERROR)
-warnings = result.suggestions_by_severity(Severity.WARNING)
-
-# JSON output (for integration)
-print(result.to_json())
-```
-
-### Configuration
-
-Configuration file: `config/simplifier.json`
-
-```json
-{
-  "enabled": true,
-  "auto_trigger": {
-    "enabled": false,
-    "complexity_threshold": 10,
-    "min_lines": 20,
-    "exclude_paths": ["tests/", "*.test.py"]
-  },
-  "output": {
-    "default_verbose": false,
-    "show_atlas_rules": true
-  },
-  "blocking": false
-}
-```
-
-### Key Files
+### Files
 
 | File | Purpose |
 |------|---------|
-| `atlas/simplifier/__init__.py` | Module exports |
-| `atlas/simplifier/code_simplifier.py` | Main analysis logic |
-| `atlas/simplifier/patterns.py` | Simplification patterns with explanations |
-| `config/simplifier.json` | Configuration options |
-| `atlas/orchestrator/command_router.py` | `/simplify` command handler |
-
-### Future Enhancements
-- **Auto Hook mode**: Enable as POST hook after code-producing skills
-- **Adversarial verification**: Use SubAgentExecutor to verify suggestions
-- **Wait pattern integration**: Apply reflection before major simplifications
+| `atlas/simplifier/code_simplifier.py` | Main logic |
+| `atlas/simplifier/patterns.py` | Pattern definitions |
+| `config/simplifier.json` | Config (auto_hook, blocking) |
 
 ---
 

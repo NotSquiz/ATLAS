@@ -25,8 +25,7 @@ Supported Commands:
 
     /app decision <pattern>         - Search decision log
 
-    /simplify <file>                - Analyze code and suggest simplifications
-    /simplify --verbose <file>      - Show detailed explanations
+    /simplify <file>                - Analyze code for issues
 """
 
 from dataclasses import dataclass, field
@@ -492,84 +491,29 @@ class CommandRouter:
         )
 
     async def _handle_simplify(self, command: SlashCommand) -> CommandResult:
-        """
-        Handle /simplify commands.
+        """Handle /simplify <file> - analyze code for issues."""
+        from atlas.simplifier import CodeSimplifier, Severity
 
-        Usage:
-            /simplify <file>              - Analyze file and suggest improvements
-            /simplify --verbose <file>    - Show detailed explanations
-        """
-        from atlas.simplifier import CodeSimplifier
-        from atlas.simplifier.patterns import Severity
-
-        # Check for flags (may be in subcommand if it starts with --)
-        verbose = (
-            "verbose" in command.flags or
-            "v" in command.flags or
-            command.subcommand in ("--verbose", "-v")
-        )
-
-        # Get file path from args or subcommand
-        file_path = None
-        if command.args:
-            file_path = command.args[0]
-        elif command.subcommand and not command.subcommand.startswith("-"):
-            file_path = command.subcommand
-        # If subcommand is a flag, check args for file path
-        elif command.subcommand and command.subcommand.startswith("-") and command.args:
-            file_path = command.args[0]
-
+        # Get file path
+        file_path = command.subcommand if command.subcommand else (command.args[0] if command.args else None)
         if not file_path:
-            return CommandResult(
-                success=True,
-                output="\n".join([
-                    "Code Simplifier - Learn Python best practices",
-                    "",
-                    "Usage:",
-                    "  /simplify <file>              Analyze file and suggest improvements",
-                    "  /simplify --verbose <file>    Show detailed explanations",
-                    "",
-                    "Examples:",
-                    "  /simplify atlas/orchestrator/hooks.py",
-                    "  /simplify --verbose script.py",
-                    "",
-                    "The simplifier checks for:",
-                    "  - Redundant code (if x == True, len() checks)",
-                    "  - Python anti-patterns (bare except, mutable defaults)",
-                    "  - ATLAS standards (async/await, logging, specific exceptions)",
-                    "  - Complexity issues (deep nesting, long functions)",
-                ]),
-            )
+            return CommandResult(success=True, output="Usage: /simplify <file>")
 
-        # Resolve file path
+        # Resolve path
         path = Path(file_path)
-        if not path.is_absolute():
-            # Try relative to current directory, then ATLAS root
-            if not path.exists():
-                atlas_path = Path("/home/squiz/ATLAS") / file_path
-                if atlas_path.exists():
-                    path = atlas_path
+        if not path.is_absolute() and not path.exists():
+            atlas_path = Path("/home/squiz/ATLAS") / file_path
+            if atlas_path.exists():
+                path = atlas_path
 
-        # Analyze file
-        simplifier = CodeSimplifier()
-        result = simplifier.analyze_file(path)
-
+        # Analyze
+        result = CodeSimplifier().analyze_file(path)
         if result.error:
-            return CommandResult(
-                success=False,
-                output="",
-                error=result.error,
-            )
-
-        # Format output
-        output = result.format_report(verbose=verbose)
-
-        # Determine success (no errors found)
-        has_errors = bool(result.suggestions_by_severity(Severity.ERROR))
+            return CommandResult(success=False, output="", error=result.error)
 
         return CommandResult(
-            success=not has_errors,
-            output=output,
+            success=not result.by_severity(Severity.ERROR),
+            output=result.format(),
             data=result.to_dict(),
         )
 
