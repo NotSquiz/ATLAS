@@ -146,7 +146,7 @@ class ActivityConversionPipeline:
         self.scratch_pad: Optional[ScratchPad] = None
 
         # C-1: Add SubAgentExecutor for adversarial verification
-        self.sub_executor = SubAgentExecutor(timeout=120)
+        self.sub_executor = SubAgentExecutor(timeout=300)
 
         # C-2: Add HookRunner for QC hook
         self.hook_runner = HookRunner()
@@ -788,7 +788,7 @@ OR if issues found:
         result = await self.sub_executor.spawn(
             task=audit_prompt,
             context={"activity_id": activity_id, "audit_type": "voice_quality"},
-            timeout=120,
+            timeout=300,  # 5 min for quality audit
             sandbox=True,
         )
 
@@ -1199,8 +1199,8 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
         # Use SubAgentExecutor for fresh reflection
         result = await self.sub_executor.spawn(
             task=reflection_prompt,
-            context={"grade": grade, "issue_count": len(issues)},
-            timeout=60,
+            context={"grade": grade, "issue_count": len(valid_issues)},
+            timeout=120,  # 2 min for reflection
             sandbox=True,
         )
 

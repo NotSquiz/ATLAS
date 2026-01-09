@@ -565,19 +565,19 @@ class SkillExecutor:
         ]
 
         try:
-            # Run CLI command (5 minute timeout for complex skills like transform)
+            # Run CLI command (10 minute timeout - skills take 5-10 min each)
             result = await asyncio.wait_for(
                 asyncio.to_thread(
                     subprocess.run,
                     cmd,
                     capture_output=True,
                     text=True,
-                    timeout=300,  # 5 minute timeout for complex skills
+                    timeout=600,  # 10 minute timeout for complex skills
                 ),
-                timeout=310,  # Slightly longer async timeout
+                timeout=610,  # Slightly longer async timeout
             )
         except asyncio.TimeoutError:
-            return "", 0, 0.0, "CLI execution timed out after 5 minutes"
+            return "", 0, 0.0, "CLI execution timed out after 10 minutes"
         except Exception as e:
             return "", 0, 0.0, f"CLI execution failed: {e}"
 
