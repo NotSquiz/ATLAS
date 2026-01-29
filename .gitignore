@@ -5,7 +5,6 @@ __pycache__/
 *.pyd
 
 # Virtual environments
-.env
 .venv/
 venv/
 ENV/
@@ -36,3 +35,45 @@ htmlcov/
 # OS files
 .DS_Store
 Thumbs.db
+*:Zone.Identifier
+
+# Secrets / credentials (NEVER commit)
+.env
+.env.*
+*.key
+*.pem
+credentials*
+
+# AI models (large binaries — reinstall on new machine)
+models/
+
+# Audio reference files (root level — raw/working files)
+/reference_*.wav
+/reference_*.mp3
+/tom shelby.mp3
+/Tommy *.mp3
+
+# Database runtime files (db itself is ok, WAL/SHM are transient)
+data/*.db-shm
+data/*.db-wal
+
+# Shell configs (accidentally landed in repo dir)
+/.bash_profile
+/.bashrc
+/.profile
+/.zprofile
+/.zshrc
+/.gitconfig
+/.ripgreprc
+/.gitmodules
+
+# Runtime / IPC files
+.bridge/command.txt
+.bridge/text_command.txt
+nvidia-smi
+
+# Backup files
+*.backup
+
+# Personal / non-project files
+/COMPUTER REPAIR/

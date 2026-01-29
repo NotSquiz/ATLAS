@@ -548,28 +548,44 @@ class SkillExecutor:
         Execute via Claude CLI (uses Max subscription - $0).
 
         Returns: (raw_output, tokens_used, duration_ms, error)
+
+        Note: Uses stdin for prompt to avoid ARG_MAX limits on large prompts.
+        System prompt is passed via temp file if >100KB to handle voice standards.
         """
         if not self._check_cli_available():
             return "", 0, 0.0, "Claude CLI not found. Install with: npm install -g @anthropic-ai/claude-code"
 
         start = time.perf_counter()
-
-        # Build command
-        # Use --print for non-interactive, --output-format json for structured output
-        cmd = [
-            "claude",
-            "-p",  # Print mode (non-interactive)
-            "--output-format", "text",  # Get raw text output
-            "--system-prompt", system_prompt,
-            prompt,
-        ]
+        temp_system_file = None
 
         try:
-            # Run CLI command (10 minute timeout - skills take 5-10 min each)
+            # Build command - pass prompt via stdin to avoid ARG_MAX
+            # For large system prompts (>100KB), use temp file
+            cmd = [
+                "claude",
+                "-p",  # Print mode (non-interactive)
+                "--output-format", "text",  # Get raw text output
+            ]
+
+            # Handle large system prompts via temp file
+            if len(system_prompt) > 100_000:
+                import tempfile
+                temp_system_file = tempfile.NamedTemporaryFile(
+                    mode='w', suffix='.md', delete=False
+                )
+                temp_system_file.write(system_prompt)
+                temp_system_file.close()
+                cmd.extend(["--system-prompt", f"@{temp_system_file.name}"])
+                logger.debug(f"Using temp file for system prompt: {len(system_prompt)} chars")
+            else:
+                cmd.extend(["--system-prompt", system_prompt])
+
+            # Run CLI command with prompt via stdin (10 minute timeout)
             result = await asyncio.wait_for(
                 asyncio.to_thread(
                     subprocess.run,
                     cmd,
+                    input=prompt,  # Pass prompt via stdin to avoid ARG_MAX
                     capture_output=True,
                     text=True,
                     timeout=600,  # 10 minute timeout for complex skills
@@ -580,16 +596,38 @@ class SkillExecutor:
             return "", 0, 0.0, "CLI execution timed out after 10 minutes"
         except Exception as e:
             return "", 0, 0.0, f"CLI execution failed: {e}"
+        finally:
+            # Clean up temp file if created
+            if temp_system_file:
+                try:
+                    Path(temp_system_file.name).unlink()
+                except OSError:
+                    pass
 
         duration_ms = (time.perf_counter() - start) * 1000
 
+        # D38: Debug logging for CLI responses
+        logger.debug(
+            f"CLI returned: exit_code={result.returncode}, "
+            f"stdout_len={len(result.stdout) if result.stdout else 0}, "
+            f"stderr_len={len(result.stderr) if result.stderr else 0}"
+        )
+
         if result.returncode != 0:
             error_msg = result.stderr.strip() if result.stderr else f"CLI returned exit code {result.returncode}"
+            logger.warning(f"CLI error (exit {result.returncode}): {error_msg[:200]}")
             return result.stdout, 0, duration_ms, error_msg
 
         # CLI doesn't report token counts, estimate from output length
         raw_output = result.stdout.strip()
         tokens_estimate = len(raw_output) // 4  # Rough estimate
+
+        # D38: Detect empty stdout even when exit code is 0
+        if not raw_output:
+            stderr_hint = result.stderr.strip()[:200] if result.stderr else "no stderr"
+            error_msg = f"CLI returned exit code 0 but empty stdout. stderr: {stderr_hint}"
+            logger.error(error_msg)
+            return "", 0, duration_ms, error_msg
 
         return raw_output, tokens_estimate, duration_ms, None
 

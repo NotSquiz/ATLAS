@@ -1,0 +1,857 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created": "2026-01-16",
+    "author": "Claude (Opus Web)",
+    "purpose": "ATLAS voice assistant exercise form library",
+    "personality": "Lethal Gentleman - direct, efficient, no-nonsense coaching",
+    "context": {
+      "user_injuries": ["Grade 1 rotator cuff tear (suspected)", "Ankle recovery"],
+      "equipment": "Home gym - dumbbells, kettlebells, bench, resistance bands",
+      "training_phase": "Phase 1 Foundation & Rehab"
+    }
+  },
+  
+  "exercises": {
+    "goblet_squat": {
+      "name": "Goblet Squat",
+      "aliases": ["goblet", "goblet squat", "kb squat", "dumbbell squat"],
+      "category": "lower_body",
+      "movement_pattern": "squat",
+      "equipment": ["dumbbell", "kettlebell"],
+      "muscles_primary": ["quadriceps", "glutes"],
+      "muscles_secondary": ["core", "upper_back", "hamstrings", "adductors"],
+      
+      "setup": "Hold weight at chest height with elbows tucked. Feet shoulder-width or slightly wider, toes turned out 15-30 degrees.",
+      
+      "execution": [
+        "Big breath into belly, brace core like you're about to get punched",
+        "Break at hips AND knees together - don't just push hips back",
+        "Push knees out in same direction as toes, don't let them cave",
+        "Lower until thighs parallel or just below - elbows between knees at bottom",
+        "Drive through whole foot to stand, squeeze glutes at top"
+      ],
+      
+      "cues": [
+        "Spread the floor with your feet - creates hip tension",
+        "Proud chest, weight stays glued to sternum",
+        "Sit down between your legs, not back behind them",
+        "Think about pushing the floor away as you stand"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Weight shifts to toes / heels rise",
+          "fix": "Drive through whole foot. If mobility is the issue, elevate heels on a 1-inch plate or wedge."
+        },
+        {
+          "mistake": "Knees cave inward",
+          "fix": "Screw feet into floor, actively push knees out. Consider a resistance band above knees as a cue."
+        },
+        {
+          "mistake": "Torso tips forward / lower back rounds",
+          "fix": "Keep chest up, elbows high. Weight acts as counterbalance - use it."
+        },
+        {
+          "mistake": "Weight drifts forward away from body",
+          "fix": "Pin elbows to ribcage, keep weight at chest, not floating in front."
+        }
+      ],
+      
+      "breathing": "Inhale at top, hold breath and brace during descent, exhale forcefully as you drive up",
+      
+      "modifications": {
+        "easier": "Box squat - sit to a bench or box behind you for depth reference and confidence",
+        "harder": "Pause 2-3 seconds at bottom, or add slow 4-second descent",
+        "ankle_friendly": "Elevate heels 1-2 inches on plates or squat wedge - reduces ankle mobility demand"
+      },
+      
+      "phase1_notes": "Perfect for Phase 1 - teaches squat mechanics with lighter load. Good for your ankle rehab since you can elevate heels if dorsiflexion is limited.",
+      
+      "rep_ranges": {
+        "strength": "6-8 reps",
+        "hypertrophy": "8-12 reps", 
+        "endurance": "12-15 reps"
+      }
+    },
+    
+    "rdl": {
+      "name": "Romanian Deadlift",
+      "aliases": ["rdl", "romanian deadlift", "romanian", "db rdl", "dumbbell rdl"],
+      "category": "lower_body",
+      "movement_pattern": "hip_hinge",
+      "equipment": ["dumbbells", "kettlebell", "barbell"],
+      "muscles_primary": ["hamstrings", "glutes"],
+      "muscles_secondary": ["lower_back", "upper_back", "core", "grip"],
+      
+      "setup": "Stand tall, feet hip-width, weights held at thighs. Slight bend in knees that STAYS FIXED throughout. Shoulders back, chest proud.",
+      
+      "execution": [
+        "Unlock knees slightly - this angle doesn't change during the lift",
+        "Initiate by pushing hips BACK, not by bending forward",
+        "Let weights slide down thighs - keep them close, they're not swinging out",
+        "Lower until you feel strong hamstring stretch - stop before back rounds",
+        "Drive hips forward to stand, squeeze glutes hard at top"
+      ],
+      
+      "cues": [
+        "Imagine closing a car door with your arse",
+        "Hips back like someone's pulling you by a belt",
+        "Weights paint your thighs - never lose contact",
+        "Neutral spine is non-negotiable - stop when it wants to round",
+        "Hamstrings are springs - load them, then release"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Turning it into a squat - bending knees too much",
+          "fix": "Set slight knee bend at start and FREEZE it. The movement is a hip hinge, not a squat."
+        },
+        {
+          "mistake": "Rounding lower back to get more range",
+          "fix": "Your range is determined by hamstring flexibility. Stop when spine wants to flex. Tightness beats depth."
+        },
+        {
+          "mistake": "Weights drift away from body",
+          "fix": "Engage lats, pull weights into thighs. Think about bending the bar around your legs."
+        },
+        {
+          "mistake": "Looking up / neck cranked back",
+          "fix": "Neutral neck - look at floor 6 feet ahead. Chin tucked, not jutting."
+        }
+      ],
+      
+      "breathing": "Breath in at top, brace core, hold during descent, exhale as you drive hips forward",
+      
+      "modifications": {
+        "easier": "Use blocks or plates as targets - tap them at bottom for feedback",
+        "harder": "Slow 4-second descent, 2-second pause at bottom stretch",
+        "single_leg": "Single-leg RDL for balance and asymmetry correction"
+      },
+      
+      "phase1_notes": "Essential hip hinge pattern. Use tempo to ingrain proper mechanics. Protects lower back by training posterior chain properly.",
+      
+      "rep_ranges": {
+        "strength": "5-8 reps",
+        "hypertrophy": "8-12 reps"
+      }
+    },
+    
+    "floor_press": {
+      "name": "Dumbbell Floor Press",
+      "aliases": ["floor press", "db floor press", "chest press", "press"],
+      "category": "upper_body",
+      "movement_pattern": "horizontal_push",
+      "equipment": ["dumbbells"],
+      "muscles_primary": ["chest", "triceps"],
+      "muscles_secondary": ["anterior_deltoids", "core"],
+      
+      "setup": "Lie on back, knees bent, feet flat on floor. Dumbbells at chest height, elbows on floor at 45-degree angle to torso - NOT flared at 90 degrees.",
+      
+      "execution": [
+        "Squeeze shoulder blades together, press them into floor",
+        "Grip dumbbells tight, wrists neutral - not bent back",
+        "Press up and slightly in - weights meet above chest, not face",
+        "Lower with control until upper arms touch floor - don't bounce",
+        "Brief pause on floor, then press again"
+      ],
+      
+      "cues": [
+        "45-degree elbow angle - protects your shoulder",
+        "Drive shoulder blades into the floor",
+        "Squeeze glutes and brace core for stability",
+        "Control the descent - floor is not a trampoline",
+        "Think about pushing yourself away from the weights"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Elbows flared at 90 degrees to body",
+          "fix": "Tuck to 45 degrees. This is shoulder-safe pressing - critical with your rotator cuff."
+        },
+        {
+          "mistake": "Bouncing elbows off floor",
+          "fix": "Touch floor gently, pause, then press. The pause removes momentum - makes you stronger."
+        },
+        {
+          "mistake": "Lower back arched off floor",
+          "fix": "Squeeze glutes, press lower back toward floor. Core should be braced."
+        },
+        {
+          "mistake": "Wrists bent backward",
+          "fix": "Stack wrist over elbow. Weight should sit on heel of palm, not fingers."
+        }
+      ],
+      
+      "breathing": "Inhale as you lower, exhale as you press",
+      
+      "modifications": {
+        "easier": "Use lighter weights, focus on slow negatives",
+        "harder": "Pause 2 seconds with triceps on floor",
+        "shoulder_safe": "Neutral grip (palms facing each other) reduces shoulder stress - USE THIS with your rotator cuff"
+      },
+      
+      "phase1_notes": "Your primary pressing movement. Floor stops elbows from going too deep - protects your shoulder capsule. Use NEUTRAL GRIP given your rotator cuff situation.",
+      
+      "rep_ranges": {
+        "strength": "5-8 reps",
+        "hypertrophy": "8-12 reps"
+      }
+    },
+    
+    "chest_supported_row": {
+      "name": "Chest-Supported Dumbbell Row",
+      "aliases": ["chest supported row", "incline row", "db row", "row", "supported row"],
+      "category": "upper_body",
+      "movement_pattern": "horizontal_pull",
+      "equipment": ["dumbbells", "incline_bench"],
+      "muscles_primary": ["latissimus_dorsi", "rhomboids", "middle_trapezius"],
+      "muscles_secondary": ["biceps", "rear_deltoids", "core"],
+      
+      "setup": "Set incline bench to 30-45 degrees. Lie face-down with chest on pad, feet planted on floor. Arms hang straight down, dumbbells in hands.",
+      
+      "execution": [
+        "Keep chest pressed firmly on bench throughout - no lifting",
+        "Initiate pull by driving ELBOWS back, not by yanking with hands",
+        "Row dumbbells toward lower ribs or hip crease",
+        "Squeeze shoulder blades together at top - hold for a beat",
+        "Lower with control, let shoulders protract slightly at bottom"
+      ],
+      
+      "cues": [
+        "Elbows lead, hands follow - like a puppeteer pulling strings",
+        "Lead with elbows down and back, not out to sides",
+        "Squeeze a pencil between shoulder blades at top",
+        "Chest stays glued to bench - if it lifts, you're cheating",
+        "Think about putting elbows in your back pockets"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Shrugging shoulders up toward ears",
+          "fix": "Keep shoulders depressed. Think about pushing shoulders away from ears as you row."
+        },
+        {
+          "mistake": "Chest lifts off bench",
+          "fix": "Reduce weight. The point is isolating the back without momentum or lower back involvement."
+        },
+        {
+          "mistake": "Elbows flaring straight out to sides",
+          "fix": "Angle elbows toward hips for lat emphasis, or 45 degrees for mid-back. Not straight out."
+        },
+        {
+          "mistake": "Using momentum / jerking the weight",
+          "fix": "Slow and controlled. If you need momentum, the weight is too heavy."
+        }
+      ],
+      
+      "breathing": "Exhale as you row up, inhale as you lower",
+      
+      "modifications": {
+        "grip_variations": {
+          "neutral": "Palms facing each other - better lat stretch, easier on elbows",
+          "pronated": "Palms down - more upper back and rear delt",
+          "supinated": "Palms up - more bicep involvement"
+        },
+        "easier": "Lighter weight, higher bench angle (more vertical)",
+        "harder": "Pause 2 seconds at top contraction, or slow 4-second lowering"
+      },
+      
+      "phase1_notes": "Perfect for your shoulder - takes load off rotator cuff while still training pulling strength. Zero lower back stress. Use neutral grip.",
+      
+      "rep_ranges": {
+        "strength": "6-8 reps",
+        "hypertrophy": "10-15 reps"
+      }
+    },
+    
+    "kb_clean_press": {
+      "name": "Kettlebell Clean and Press",
+      "aliases": ["clean and press", "kb clean", "clean press", "kettlebell press"],
+      "category": "full_body",
+      "movement_pattern": "compound",
+      "equipment": ["kettlebell"],
+      "muscles_primary": ["shoulders", "glutes", "hamstrings", "core"],
+      "muscles_secondary": ["triceps", "upper_back", "forearms"],
+      
+      "setup": "Stand with feet hip-width, KB between feet. Hinge to grab handle with one hand, thumb pointing back.",
+      
+      "execution": [
+        "CLEAN: Hike KB back, snap hips forward, guide KB to rack position",
+        "In rack: elbow tucked to ribs, KB rests on forearm and bicep, wrist neutral",
+        "Pause and reset - don't rush into press",
+        "PRESS: Brace hard, slight lat engagement, press KB overhead",
+        "Lock out with bicep by ear, KB stacked over shoulder",
+        "Lower KB to rack, then back to start position"
+      ],
+      
+      "cues": {
+        "clean": [
+          "Thumb to bum on the backswing",
+          "Zip up a jacket - KB travels close to body, not out in a loop",
+          "Let hand rotate AROUND the bell, not under it",
+          "Soft landing in rack - bell doesn't slap forearm"
+        ],
+        "press": [
+          "Root feet into ground, squeeze glutes, brace core",
+          "Crush the handle to create tension",
+          "Press up and slightly back - lock out behind ear, not in front of face",
+          "Bicep finishes by your ear"
+        ]
+      },
+      
+      "common_mistakes": [
+        {
+          "mistake": "KB slaps/bangs forearm on clean",
+          "fix": "Keep KB close, rotate hand around it. Think of inserting your hand into a glove. Use lighter weight until smooth."
+        },
+        {
+          "mistake": "Using arms to muscle the clean up",
+          "fix": "Power comes from HIPS. Arms are just guides. If arms are sore, you're not using hips."
+        },
+        {
+          "mistake": "Leaning back during press",
+          "fix": "Squeeze glutes HARD, brace abs. If you need to lean back, the weight is too heavy."
+        },
+        {
+          "mistake": "Rushing from clean straight into press",
+          "fix": "Pause in rack. Reset. Breathe. Then press. Two distinct movements."
+        }
+      ],
+      
+      "breathing": "Sharp exhale on hip snap for clean. Fresh breath in rack. Exhale on press.",
+      
+      "modifications": {
+        "easier": "Practice clean and press as separate movements first",
+        "shoulder_safe": "Keep elbow slightly forward during press - don't let it drift behind body",
+        "progression": "Dead clean (from floor each rep) → Hang clean → Full clean"
+      },
+      
+      "phase1_notes": "Complex movement - master the clean before adding the press. With your shoulder, focus on neutral pressing path. Stop if any sharp pain. This builds explosive power and conditioning.",
+      
+      "rep_ranges": {
+        "conditioning": "5-8 reps per side",
+        "strength": "3-5 reps per side"
+      }
+    },
+    
+    "plank": {
+      "name": "Plank",
+      "aliases": ["plank", "forearm plank", "front plank", "core hold"],
+      "category": "core",
+      "movement_pattern": "anti_extension",
+      "equipment": ["none"],
+      "muscles_primary": ["rectus_abdominis", "transverse_abdominis", "obliques"],
+      "muscles_secondary": ["shoulders", "glutes", "quadriceps", "lower_back"],
+      
+      "setup": "Forearms on floor, elbows directly under shoulders. Extend legs, rest on toes. Body forms straight line from head to heels.",
+      
+      "execution": [
+        "Squeeze glutes like you're holding a coin between your cheeks",
+        "Brace core - imagine someone's about to punch your stomach",
+        "Push forearms into floor, don't sink between shoulder blades",
+        "Tuck pelvis slightly - don't let lower back sag or pike up",
+        "Maintain tension through ENTIRE body - this is not passive holding"
+      ],
+      
+      "cues": [
+        "Could someone eat dinner off your back? That flat.",
+        "Squeeze everything - abs, glutes, quads, fists",
+        "Long spine - reach crown of head forward, heels back",
+        "Belly button to spine",
+        "Breathe! Don't hold your breath - steady inhales and exhales"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Hips sagging toward floor",
+          "fix": "Engage glutes, tuck pelvis, pull belly button to spine. If you can't maintain, drop to knees."
+        },
+        {
+          "mistake": "Hips piked up (butt in the air)",
+          "fix": "You're making it easier. Lower hips until body is straight. Engage core harder."
+        },
+        {
+          "mistake": "Holding breath",
+          "fix": "Breathe normally. Steady rhythm. Core should stay braced regardless of breathing."
+        },
+        {
+          "mistake": "Sinking between shoulder blades",
+          "fix": "Push forearms into floor, engage lats. Imagine you're pushing the floor away."
+        }
+      ],
+      
+      "breathing": "Steady controlled breathing throughout - don't hold breath",
+      
+      "modifications": {
+        "easier": "Knees on floor (reduces lever length)",
+        "easier_2": "Forearms on elevated surface (bench, step)",
+        "harder": "Single arm or single leg plank",
+        "harder_2": "Weighted plank (plate on back)"
+      },
+      
+      "duration_guidelines": {
+        "beginner": "3 sets of 20-30 seconds",
+        "intermediate": "3 sets of 45-60 seconds",
+        "advanced": "Focus on harder variations rather than longer holds - quality over quantity"
+      },
+      
+      "phase1_notes": "Foundation core exercise. Perfect form for 30 seconds beats sloppy form for 2 minutes. Progress by adding difficulty (variations) not just time."
+    },
+    
+    "face_pull": {
+      "name": "Face Pull",
+      "aliases": ["face pull", "facepull", "band pull", "shoulder health"],
+      "category": "upper_body",
+      "movement_pattern": "horizontal_pull",
+      "equipment": ["resistance_band", "cable_machine"],
+      "muscles_primary": ["rear_deltoids", "rotator_cuff", "rhomboids"],
+      "muscles_secondary": ["middle_trapezius", "biceps"],
+      
+      "setup": "Band anchored at face height. Step back until tension in band. Grab with thumbs pointing BACK (not overhand grip).",
+      
+      "execution": [
+        "Start with arms extended, shoulders protracted forward slightly",
+        "Pull toward face, splitting hands apart as you pull",
+        "Elbows stay at shoulder height or slightly below - not flared up",
+        "External rotate at top - thumbs end up pointing behind you",
+        "Squeeze shoulder blades, hold for a beat, control back to start"
+      ],
+      
+      "cues": [
+        "Thumbs back grip - creates external rotation which is the whole point",
+        "Pull apart as you pull back - think of trying to snap the band",
+        "Elbows at shoulder height, not rising up toward ears",
+        "Finish position looks like a double bicep pose",
+        "Don't shrug - keep shoulders away from ears"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Overhand (pronated) grip",
+          "fix": "Thumbs pointing back. Overhand causes internal rotation under load - bad for shoulders."
+        },
+        {
+          "mistake": "Elbows rising above shoulders",
+          "fix": "Keep elbows at shoulder level or slightly below. High elbows cause impingement."
+        },
+        {
+          "mistake": "Just rowing - not pulling apart",
+          "fix": "The external rotation IS the exercise. Pull hands apart at the end, thumbs rotate back."
+        },
+        {
+          "mistake": "Using momentum / jerking",
+          "fix": "Slow and controlled. This is a rehab/prehab movement, not an ego lift."
+        }
+      ],
+      
+      "breathing": "Exhale as you pull, inhale as you return",
+      
+      "modifications": {
+        "banded": "Loop band around pull-up bar or sturdy anchor at face height",
+        "seated": "Sit on floor with band around feet for home setup",
+        "with_external_rotation": "After pulling to face, rotate hands up and back (like a scarecrow)"
+      },
+      
+      "phase1_notes": "CRITICAL for your shoulder rehab. Do these every session. They train the muscles that are weak in most people and essential for shoulder health. Light weight, high reps, perfect form.",
+      
+      "rep_ranges": {
+        "standard": "3 sets of 15-20 reps",
+        "frequency": "Every training day - before pressing work"
+      }
+    },
+    
+    "side_lying_external_rotation": {
+      "name": "Side-Lying External Rotation",
+      "aliases": ["side lying er", "external rotation", "rotator cuff", "shoulder er", "the healer"],
+      "category": "rehab",
+      "movement_pattern": "external_rotation",
+      "equipment": ["light_dumbbell", "none"],
+      "muscles_primary": ["infraspinatus", "teres_minor"],
+      "muscles_secondary": ["posterior_deltoid"],
+      
+      "setup": "Lie on side, bottom arm under head for support. Top elbow bent 90 degrees, pinned to side. Small towel roll under elbow optional for comfort.",
+      
+      "execution": [
+        "Keep elbow glued to your side throughout - it doesn't move",
+        "Rotate forearm up toward ceiling, keeping elbow at 90 degrees",
+        "Go until forearm is vertical or you feel stretch - don't force range",
+        "SLOW eccentric - lower over 4 seconds (this is where the magic happens)",
+        "Brief pause at bottom, then lift again"
+      ],
+      
+      "cues": [
+        "Elbow is a hinge - only forearm moves, upper arm stays still",
+        "Shoulder blade stays back and down - don't let it roll forward",
+        "Control the lowering - gravity wants to drop it, you resist",
+        "Think about the back of your shoulder doing the work",
+        "If you feel it in front of shoulder or down arm, check position"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Elbow drifts away from body",
+          "fix": "Pin a small towel between elbow and ribs. If it falls, elbow moved."
+        },
+        {
+          "mistake": "Body rolls backward to get more range",
+          "fix": "Stay stacked on your side. Range of motion is limited by your mobility - that's fine."
+        },
+        {
+          "mistake": "Using too heavy a weight",
+          "fix": "1-2 kg max. These are small muscles. Heavy weight shifts load to bigger muscles."
+        },
+        {
+          "mistake": "Fast/bouncy reps",
+          "fix": "Slow, especially the lowering. 4 seconds down minimum. Quality over quantity."
+        }
+      ],
+      
+      "breathing": "Exhale as you rotate up, inhale during slow lowering",
+      
+      "modifications": {
+        "easier": "No weight - just bodyweight",
+        "progression": "Start bodyweight, add 0.5-1kg when 15 reps feels easy",
+        "emphasis": "Eccentric focus - 4 second lowering builds tendon strength"
+      },
+      
+      "phase1_notes": "THE key exercise for your supraspinatus rehab. Do these EVERY session. Eccentric loading is what repairs tendon tissue. Never go heavy. Never rush. This is medicine.",
+      
+      "rep_ranges": {
+        "standard": "3 sets of 15 reps per side",
+        "frequency": "Daily during rehab phase, or every training day minimum"
+      }
+    },
+    
+    "farmer_walk": {
+      "name": "Farmer's Walk",
+      "aliases": ["farmer walk", "farmers walk", "farmer carry", "loaded carry"],
+      "category": "full_body",
+      "movement_pattern": "loaded_carry",
+      "equipment": ["dumbbells", "kettlebells"],
+      "muscles_primary": ["grip", "core", "trapezius"],
+      "muscles_secondary": ["shoulders", "glutes", "quadriceps", "calves", "forearms"],
+      
+      "setup": "Dumbbells on floor at sides. Deadlift them up with proper form. Stand tall, shoulders back, weights at sides.",
+      
+      "execution": [
+        "Stand tall - crown of head reaching to ceiling",
+        "Shoulders back and down - don't let weights pull you forward",
+        "Grip hard - squeeze the handles like you're trying to crush them",
+        "Core braced - like wearing a weightlifting belt",
+        "Walk with controlled, deliberate steps - no rushing",
+        "When done, lower weights with a controlled deadlift, not a drop"
+      ],
+      
+      "cues": [
+        "Walk like you own the place - tall, proud, controlled",
+        "Death grip on the handles - this IS grip training",
+        "Keep weights from swinging - body stays rigid",
+        "Short, quick steps - not long strides",
+        "Eyes forward, chin neutral - don't look down at feet"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Shoulders rounding forward",
+          "fix": "Pull shoulder blades back and down. Think about putting them in back pockets."
+        },
+        {
+          "mistake": "Leaning to one side",
+          "fix": "If uneven, one side is weaker. Use equal weight but pay attention to weak side."
+        },
+        {
+          "mistake": "Rushing the walk",
+          "fix": "Controlled steps. Speed is not the point. Time under tension is."
+        },
+        {
+          "mistake": "Dropping weights at end",
+          "fix": "Lower with deadlift form. Eccentric loading is valuable. Control the entire movement."
+        }
+      ],
+      
+      "breathing": "Steady breathing throughout - don't hold breath for long carries",
+      
+      "modifications": {
+        "suitcase_carry": "One weight only - massive core anti-rotation challenge",
+        "overhead_carry": "Weight held overhead - shoulder stability (not with your current shoulder)",
+        "lighter_longer": "Lighter weights, more distance = conditioning focus",
+        "heavier_shorter": "Heavier weights, shorter distance = strength focus"
+      },
+      
+      "phase1_notes": "Functional full-body exercise. Builds grip that transfers to all other lifts. Core stability without spinal loading. Great conditioning tool.",
+      
+      "rep_ranges": {
+        "distance": "20-40 meters per set",
+        "time": "30-60 seconds per set",
+        "sets": "3-4 sets"
+      }
+    },
+    
+    "split_squat": {
+      "name": "Split Squat",
+      "aliases": ["split squat", "static lunge", "bulgarian", "rear foot elevated"],
+      "category": "lower_body",
+      "movement_pattern": "lunge",
+      "equipment": ["dumbbells", "bodyweight", "bench"],
+      "muscles_primary": ["quadriceps", "glutes"],
+      "muscles_secondary": ["hamstrings", "adductors", "core", "hip_flexors"],
+      
+      "setup": "Staggered stance - front foot flat on ground, back foot behind (on floor for regular, elevated on bench for Bulgarian). Front knee roughly over ankle at bottom.",
+      
+      "execution": [
+        "80-90% of weight goes through front foot - back leg is just balance",
+        "Lower straight down - don't lunge forward",
+        "Front knee tracks over toes - don't let it cave inward",
+        "Back knee lowers toward floor (don't slam it)",
+        "Drive up through front heel, squeeze glute at top"
+      ],
+      
+      "cues": [
+        "Elevator, not escalator - straight down and up",
+        "Front heel stays planted - if it rises, stance is too narrow",
+        "Back leg is a kickstand, not a driver",
+        "Torso stays upright - don't tip forward",
+        "90 degrees at both knees at bottom is the goal"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Too much weight on back leg",
+          "fix": "Front leg should burn, not back leg. Shift weight forward."
+        },
+        {
+          "mistake": "Front knee caving inward",
+          "fix": "Push knee out over pinky toe. Weak glute med - do banded work."
+        },
+        {
+          "mistake": "Stance too narrow (front-to-back)",
+          "fix": "Step further back. At bottom, front shin should be roughly vertical."
+        },
+        {
+          "mistake": "Rising onto front toes",
+          "fix": "Stance too short. Foot further from bench. Or ankle mobility issue - work on it."
+        }
+      ],
+      
+      "breathing": "Inhale as you lower, exhale as you drive up",
+      
+      "modifications": {
+        "regular_split_squat": "Back foot on floor - easier balance, good starting point",
+        "bulgarian": "Back foot elevated on bench - harder, more quad/glute focus",
+        "deficit": "Front foot elevated on plate - increases range of motion",
+        "goblet_hold": "Weight at chest for counterbalance and core activation"
+      },
+      
+      "phase1_notes": "Great unilateral work - finds and fixes imbalances. Start with regular split squats, progress to Bulgarian when stable. Front foot positioning matters for ankle comfort.",
+      
+      "rep_ranges": {
+        "strength": "6-8 reps per leg",
+        "hypertrophy": "10-12 reps per leg"
+      }
+    },
+    
+    "deadlift": {
+      "name": "Deadlift",
+      "aliases": ["deadlift", "trap bar deadlift", "db deadlift", "dumbbell deadlift"],
+      "category": "lower_body",
+      "movement_pattern": "hip_hinge",
+      "equipment": ["dumbbells", "trap_bar", "barbell"],
+      "muscles_primary": ["glutes", "hamstrings", "quadriceps", "lower_back"],
+      "muscles_secondary": ["core", "upper_back", "trapezius", "grip"],
+      
+      "setup": "Feet hip-width, weights beside feet. Hinge hips back, bend knees to grab weights. Chest proud, shoulders over or slightly in front of weights. Neutral spine.",
+      
+      "execution": [
+        "Brace core HARD - like bracing for a punch",
+        "Push the floor away with your feet - don't think 'pull'",
+        "Weights stay close to body throughout - don't let them drift forward",
+        "Hips and shoulders rise together - don't let hips shoot up first",
+        "Stand tall at top - squeeze glutes, don't hyperextend lower back",
+        "Reverse the motion to lower - hips back, controlled descent"
+      ],
+      
+      "cues": [
+        "Push the floor away through your heels",
+        "Big chest, long arms - don't round shoulders",
+        "Bar/weights travel in a straight line up",
+        "Squeeze oranges in your armpits - engages lats",
+        "Stand tall and proud at top - no excessive leaning back"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Lower back rounding",
+          "fix": "Don't go lower than you can with neutral spine. Brace harder. If it rounds, stop and reset."
+        },
+        {
+          "mistake": "Hips shoot up, back becomes horizontal",
+          "fix": "Push through heels, drive hips forward. Think about humping the bar, not rowing it."
+        },
+        {
+          "mistake": "Weight drifts away from body",
+          "fix": "Engage lats, keep weights in contact with legs. Paint your shins with the bar."
+        },
+        {
+          "mistake": "Looking up / neck cranked back",
+          "fix": "Neutral neck. Look at floor 6 feet ahead at bottom, horizon at top."
+        }
+      ],
+      
+      "breathing": "Big breath at top, brace, hold during lift, exhale at top, controlled lowering",
+      
+      "modifications": {
+        "trap_bar": "More quad-dominant, easier to keep neutral spine - great choice for Phase 1",
+        "dumbbell": "Weights beside feet - similar pattern, home gym friendly",
+        "elevated": "Plates under weights to reduce range - if mobility is limited",
+        "romanian": "Start from standing, less knee bend - more hamstring focus (separate entry)"
+      },
+      
+      "phase1_notes": "Trap bar or dumbbell deadlifts are your friend in Phase 1. More forgiving on form, still build the pattern. Focus on the hip hinge mechanics.",
+      
+      "rep_ranges": {
+        "strength": "3-5 reps",
+        "hypertrophy": "6-8 reps"
+      }
+    },
+    
+    "single_leg_balance": {
+      "name": "Single Leg Balance",
+      "aliases": ["single leg balance", "balance", "one leg stand", "proprioception"],
+      "category": "balance",
+      "movement_pattern": "stability",
+      "equipment": ["none"],
+      "muscles_primary": ["ankle_stabilizers", "glute_medius", "core"],
+      "muscles_secondary": ["hip_stabilizers", "quadriceps", "calves"],
+      
+      "setup": "Stand tall on one leg. Other knee lifted to hip height. Arms wherever helps balance (out to sides, hands on hips, or crossed).",
+      
+      "execution": [
+        "Stand on one leg - foot pointing straight ahead",
+        "Slight bend in standing knee - not locked out",
+        "Engage core, squeeze glute of standing leg",
+        "Hold position - minimize wobbling",
+        "Eyes forward on fixed point for easier balance"
+      ],
+      
+      "cues": [
+        "Root through whole foot - tripod stance (heel, big toe, little toe)",
+        "Standing knee tracks over toes",
+        "Hip stays level - don't let it drop on lifted side",
+        "Tall spine - crown of head reaching up",
+        "Breathe normally - don't hold breath"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Locking out standing knee",
+          "fix": "Slight bend. Locked knee reduces proprioceptive feedback and stresses joint."
+        },
+        {
+          "mistake": "Hip drops on lifted leg side",
+          "fix": "Engage glute med on standing leg. Think about keeping pelvis level."
+        },
+        {
+          "mistake": "Weight shifts to edge of foot",
+          "fix": "Spread through whole foot. If rolling out, glute med is weak. If rolling in, control through big toe."
+        },
+        {
+          "mistake": "Holding breath",
+          "fix": "Normal breathing. Your core should brace without requiring breath hold."
+        }
+      ],
+      
+      "progression": {
+        "eyes_open_firm_surface": "Starting point - 60 seconds goal (GATE 1 requirement)",
+        "eyes_closed_firm_surface": "Harder - 30 seconds goal (GATE 1 requirement)",
+        "eyes_open_unstable": "Pillow, foam pad, or wobble cushion",
+        "eyes_closed_unstable": "Advanced balance work"
+      },
+      
+      "phase1_notes": "GATE 1 REQUIREMENT: 60 seconds eyes open, 30 seconds eyes closed. Essential for ankle rehab. Train daily - it's skill work, not strength work.",
+      
+      "duration": {
+        "target_eyes_open": "60 seconds per side",
+        "target_eyes_closed": "30 seconds per side",
+        "sets": "3-5 attempts per variation"
+      }
+    },
+    
+    "heel_raises": {
+      "name": "Single Leg Heel Raises",
+      "aliases": ["heel raise", "calf raise", "single leg calf raise", "ankle strength"],
+      "category": "rehab",
+      "movement_pattern": "plantar_flexion",
+      "equipment": ["none", "step"],
+      "muscles_primary": ["gastrocnemius", "soleus"],
+      "muscles_secondary": ["tibialis_posterior", "peroneals"],
+      
+      "setup": "Stand on one leg, ball of foot on edge of step (optional), other foot lifted. Hand on wall or rail for light balance support only.",
+      
+      "execution": [
+        "Push through ball of foot to raise heel as high as possible",
+        "Pause at top - full contraction",
+        "Lower slowly with control (3-4 seconds)",
+        "Go below step level if using step (full stretch)",
+        "Use hand for balance only - not to push yourself up"
+      ],
+      
+      "cues": [
+        "Push up through big toe, not rolling to outside of foot",
+        "Straight ankle - don't let it wobble side to side",
+        "Full range of motion - bottom to top",
+        "Control the eccentric - lowering builds strength",
+        "Hand is for balance, not assistance"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Using hand to pull up",
+          "fix": "Light fingertip touch only. The calf does the work."
+        },
+        {
+          "mistake": "Not going to full height",
+          "fix": "Rise onto tiptoes - full plantar flexion. Partial reps = partial results."
+        },
+        {
+          "mistake": "Dropping down fast",
+          "fix": "Control the lowering - this eccentric portion is crucial for tendon health."
+        },
+        {
+          "mistake": "Ankle wobbles/rolls",
+          "fix": "Keep ankle neutral. If unstable, don't use step yet - do flat ground first."
+        }
+      ],
+      
+      "breathing": "Exhale as you rise, inhale as you lower",
+      
+      "modifications": {
+        "easier": "Both feet, or flat ground instead of step",
+        "progression": "Flat ground → Step with full range → Add hold at top → Add slow eccentric",
+        "harder": "Weighted (dumbbell in hand)"
+      },
+      
+      "phase1_notes": "GATE 1 REQUIREMENT: 25 reps each leg, LSI ≥90% (limb symmetry index - injured leg must be at least 90% of healthy leg). Critical for ankle return to sport.",
+      
+      "rep_ranges": {
+        "target": "25 reps per leg",
+        "sets": "3 sets per leg",
+        "frequency": "Daily during rehab"
+      }
+    }
+  },
+  
+  "quick_reference": {
+    "shoulder_safe_pressing": "Neutral grip floor press with 45-degree elbow angle",
+    "shoulder_rehab_priority": ["side_lying_external_rotation", "face_pull"],
+    "ankle_rehab_priority": ["single_leg_balance", "heel_raises"],
+    "ankle_mobility_help": "Elevate heels for goblet squats and split squats if dorsiflexion limited",
+    "gate_1_exercises": ["single_leg_balance", "heel_raises", "double_leg_hop"]
+  },
+  
+  "voice_response_format": {
+    "short": "{name}. {setup} Key cues: {cues[0:2]}. Watch out: {common_mistakes[0].mistake}",
+    "medium": "{name}. {setup} Execution: {execution[0:3]}. Key cues: {cues[0:3]}. Common mistake: {common_mistakes[0].mistake} - fix: {common_mistakes[0].fix}",
+    "full": "Return all fields formatted for voice"
+  }
+}

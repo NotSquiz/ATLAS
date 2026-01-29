@@ -2,17 +2,19 @@
   "last_cost": 0.0,
   "session_cost": 0.0,
   "routing": {
-    "tier": "haiku",
-    "confidence": 0.5
+    "tier": "WORKOUT_INTERACTIVE",
+    "confidence": 1.0
   },
-  "updated_at": "20:58:08",
+  "updated_at": "16:22:03",
   "last_exchange": {
-    "user": "Start of 30 second timer.",
-    "atlas": "Timer initiated. Tracking precise 30-second interval with calculated precision."
+    "user": "Let's begin workout one.",
+    "atlas": "Week 2, Day 8. Strength A (Legs & Back). 45 minutes. Fix aching back by strengthening glutes/hamstrings and mobilizing hips.. First exercise: Single-leg Balance on Pillow. 3 sets for 30 seconds each side. Say ready when set up."
   },
   "timing": {
-    "stt_ms": 712,
-    "tts_ms": 643
+    "stt_ms": 1120,
+    "tts_ms": 10503
   },
-  "gpu": "CUDA"
+  "gpu": "CUDA",
+  "action": "workout_start",
+  "saved_to": ""
 }

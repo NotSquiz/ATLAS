@@ -130,6 +130,7 @@ class HookRunner:
                     "VOICE_EM_DASH",
                     "VOICE_FORMAL_TRANSITION",
                     "VOICE_SUPERLATIVE",
+                    "VOICE_PRESSURE_LANGUAGE",  # D35: Added to match D32 enforcement
                     "STRUCTURE_MISSING_SECTION",
                     "STRUCTURE_INVALID_YAML",
                     "CROSS_REF_INVALID_PRINCIPLE",

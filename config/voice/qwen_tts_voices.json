@@ -1,0 +1,15 @@
+{
+  "default_voice": "jeremy_irons",
+  "voices": {
+    "jeremy_irons": {
+      "name": "Jeremy Irons",
+      "description": "Deep, authoritative British voice - Lethal Gentleman",
+      "model_id": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
+      "ref_audio": "config/voice/jeremy_irons.wav",
+      "ref_text": "I became an actor to be a rogue and a vagabond, which is how we used to call actors in England, not to be a knob, which is what we call the aristocrats.",
+      "language": "english",
+      "pacing_notes": "Use punctuation for natural pacing: commas for short pauses, ellipses for longer pauses"
+    }
+  },
+  "pacing_template": "Good morning, sir. Your status... is {status}. Body battery, at {battery}. {workout_message}"
+}

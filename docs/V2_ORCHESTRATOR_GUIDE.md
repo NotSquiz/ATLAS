@@ -1,7 +1,7 @@
 # ATLAS V2 Orchestrator Guide
 
 > **Purpose:** This document explains ATLAS's orchestration capabilities so that ATLAS (or any agent) can understand and use them effectively.
-> **Last Updated:** January 9, 2026
+> **Last Updated:** January 10, 2026
 
 ---
 
@@ -44,7 +44,7 @@ Use `grep` to find specific discussions (e.g., `grep -i "verification" mastercla
 | Document | Content |
 |----------|---------|
 | `docs/ATLAS_ARCHITECTURE_V2.md` | Design specs for each V2 component |
-| `docs/DECISIONS.md` | Why each decision was made (D1-D18) |
+| `docs/DECISIONS.md` | Why each decision was made (D1-D35) |
 | `docs/TECHNICAL_STATUS.md` | Current implementation status |
 
 ---
@@ -60,6 +60,9 @@ Use `grep` to find specific discussions (e.g., `grep -i "verification" mastercla
 | ScratchPad | `atlas/orchestrator/scratch_pad.py` | Track intermediate results during skill chains |
 | Quality Audit Pipeline | `atlas/pipelines/activity_conversion.py` | 7-stage pipeline with Grade A enforcement |
 | CodeSimplifier | `atlas/simplifier/code_simplifier.py` | On-demand code quality analysis and learning |
+| Voice API Pipeline | `atlas/voice/bridge_file_server.py` | Token-efficient voice-first health queries |
+| InteractiveWorkoutTimer | `atlas/voice/bridge_file_server.py` | Voice-controlled user-paced workout execution |
+| MorningSyncService | `atlas/health/morning_sync.py` | Cached status + voice formatting |
 
 ---
 
@@ -111,6 +114,16 @@ if not verification.passed:
 ### CLI Testing
 ```bash
 python -m atlas.orchestrator.subagent_executor --test
+```
+
+### Stdin-Based Execution (D24)
+Prompts are passed via stdin to avoid Linux ARG_MAX limits (~128-256KB). This is critical when prompts include large context (voice standards, rubrics).
+
+```python
+# Implementation detail (handled automatically):
+# - spawn() passes prompt via subprocess input= parameter
+# - verify_adversarially() uses same pattern
+# - Large system prompts (>100KB) use temp file fallback
 ```
 
 ### How To Extend
@@ -602,6 +615,15 @@ result = asyncio.run(generate_content("sleep", "12-18m"))
 - Partial matching is case-insensitive
 - Check for typos in section name
 
+### ARG_MAX error (D24)
+**Symptom:** `[Errno 7] Argument list too long: 'claude'`
+
+**Cause:** Prompt + system prompt exceeds Linux ARG_MAX (~128-256KB)
+
+**Solution:** Already fixed in `skill_executor.py` and `subagent_executor.py` (Jan 10, 2026):
+- Prompts pass via stdin (`input=` parameter)
+- Large system prompts (>100KB) use temp file with `@` prefix
+
 ---
 
 ## 6. Confidence Router (January 2026)
@@ -775,6 +797,20 @@ Ensures only Grade A content reaches human review by adding a quality audit stag
 - **Grade A Gate**: Only A/A+/A- grades proceed to human review
 - **Intelligent Retry**: "Wait" pattern reflection between attempts (89.3% blind spot reduction)
 - **Voice Rubric**: Grades against BabyBrains voice standards
+- **Stage Caching (D79)**: Retries skip stages 1-3, only re-run 4-7 (60-70% faster)
+- **Early Truncation Detection (D79)**: Detects incomplete YAML before expensive QC/AUDIT
+
+### Performance Optimizations (D79)
+
+**Stage Caching**: On first attempt, full 7-stage pipeline runs and caches transform output (`canonical_yaml`, `canonical_id`, `file_path`). On retry, stages 1-3 (INGEST/RESEARCH/TRANSFORM) are skipped because feedback only affects ELEVATE. Uses `_convert_from_cached_transform()` method.
+
+**Early Truncation Detection**: All canonical Activity Atoms end with `parent_search_terms:` list. The `_detect_truncation()` method checks for this pattern after ELEVATE but before QC_HOOK and QUALITY_AUDIT. Truncated output returns `QC_FAILED` immediately, saving 5-10 minutes of unnecessary processing.
+
+| Metric | Before D79 | After D79 | Improvement |
+|--------|------------|-----------|-------------|
+| Retry time (stages 1-3) | ~3-5 min | 0 min | 100% skipped |
+| Total retry time | ~15-21 min | ~5-7 min | 60-70% faster |
+| Truncation detection | After AUDIT | After ELEVATE | 2-4 min earlier |
 
 ### Pipeline Flow
 ```
@@ -822,6 +858,9 @@ else:
 ### CLI Commands
 
 ```bash
+# Verify deduplication before batch processing (D37)
+python -m atlas.pipelines.activity_conversion --verify
+
 # Primary mode: single activity with quality audit
 python -m atlas.pipelines.activity_conversion --activity tummy-time
 
@@ -834,6 +873,36 @@ python -m atlas.pipelines.activity_conversion --list-pending
 # Batch mode (use only after skills reliably produce Grade A)
 python -m atlas.pipelines.activity_conversion --batch --limit 10
 ```
+
+### Deduplication Verification (D37)
+
+The `--verify` command provides visibility into activity deduplication before processing:
+
+```
+============================================================
+ACTIVITY DEDUPLICATION REPORT
+============================================================
+
+Raw activities loaded:        234
+Explicit duplicates (skip):   7
+Grouped activities:           75 → 22 atoms
+Standalone activities:        152
+----------------------------------------
+Expected canonical atoms:     174
+
+Groups:
+  visual-mobiles-progression: 5 sources → 1 atom
+  breastfeeding-support: 6 sources → 1 atom
+  ...
+
+✓ All conversion map references validated
+```
+
+**Key features:**
+- Detects duplicate IDs in raw YAML (warns, keeps first)
+- Validates all conversion map references exist
+- Shows group→atom consolidation math
+- Exits with code 1 if validation issues found
 
 ### How Intelligent Retry Works
 
@@ -871,7 +940,9 @@ When quality audit returns a non-A grade:
 | `audit_quality()` method | Grades against Voice Rubric |
 | `reflect_on_failure()` method | Wait pattern reflection |
 | `convert_with_retry()` method | Intelligent retry loop |
+| `_fix_canonical_slug()` method | Deterministic slug derivation (D25) |
 | `/home/squiz/code/knowledge/coverage/VOICE_ELEVATION_RUBRIC.md` | Grading criteria |
+| `/home/squiz/code/babybrains-os/skills/activity/elevate_voice_activity.md` | ELEVATE skill with zero-tolerance rules (D26) |
 
 ### External Dependencies
 
@@ -880,6 +951,52 @@ The quality audit requires these files to exist:
 - **Reference A+ Activity** (optional): `/home/squiz/code/knowledge/data/canonical/activities/practical_life/ACTIVITY_PRACTICAL_LIFE_CARING_CLOTHES_FOLDING_HANGING_24_36M.yaml`
 
 If rubric is missing, audit returns Grade F with system error.
+
+### Pipeline Fixes (January 10, 2026)
+
+**D24: Stdin-Based CLI Execution**
+- All CLI executions pass prompt via stdin (no size limit)
+- Avoids ARG_MAX error when voice standard (~95KB) + rubric (~12KB) + YAML combined
+
+**D25: Deterministic canonical_slug**
+- Post-processes LLM output with `_fix_canonical_slug()`
+- Formula: `canonical_slug = canonical_id.lower().replace('_', '-')`
+- Robust to LLM format variations
+
+**D26: Zero-Tolerance Superlatives**
+- ELEVATE skill has CRITICAL section at top (lines 7-24)
+- Superlatives escalated from MODERATE to SEVERE
+- Validation rule 3 changed from WARN to BLOCK
+- Philosophy section has counter-balance warning
+
+**D32: Zero-Tolerance Pressure Language**
+- Added pressure language to CRITICAL section (line 15)
+- Psychological intervention: "If you feel the urge to write 'You need to'..."
+- Permission-giving alternatives from Grade A benchmarks
+- BLOCK validation rule 4 for pressure language
+- Grade A criteria updated to require "zero pressure language"
+
+**D33: Robust JSON Parsing**
+- `_extract_audit_json()` method with truncation detection
+- Automatic repair for unbalanced braces/brackets
+- Extended timeout for final retry (10 min vs 5 min)
+- Full raw response logging on failure
+
+**D34: Sandbox Disabled**
+- `sandbox=False` for audit_quality() and reflect_on_failure()
+- Prevents EROFS errors with claude CLI config writes
+- No security benefit for trusted local file operations
+
+**D35: Context-Aware QC Exceptions**
+- Added "focus best", developmental verb + best patterns
+- Added negation patterns for "perfect" (doesn't exist, does not need)
+- `_fix_principle_slugs()` for hyphen → underscore normalization
+- `VOICE_PRESSURE_LANGUAGE` added to hook block_codes
+
+**A/B Test Results (Jan 11):**
+- tummy-time: **Grade A PASSED**
+- caring-for-clothes-folding-hanging: Failed (raw data mismatch)
+- undivided-attention-during-feeding: Failed (pressure language)
 
 ---
 
@@ -925,6 +1042,660 @@ atlas/orchestrator/hooks.py: 5 issues
 | `atlas/simplifier/code_simplifier.py` | Main logic |
 | `atlas/simplifier/patterns.py` | Pattern definitions |
 | `config/simplifier.json` | Config (auto_hook, blocking) |
+
+---
+
+## 11. 2nd Brain / Thought Classifier (January 2026)
+
+Voice-first capture and classification system. Transforms ATLAS from reactive (queries) to proactive (capture + digest).
+
+### Philosophy
+
+Based on "2nd Brain" video: "AI running a loop, not just AI as search."
+
+| Video Concept | ATLAS Implementation |
+|---------------|---------------------|
+| Frictionless Capture (Dropbox) | Voice pipeline with capture triggers |
+| Auto-Sort (Sorter) | ThoughtClassifier with pattern matching |
+| Categories (Form) | PEOPLE, PROJECTS, IDEAS, ADMIN, RECIPES |
+| Storage (Filing Cabinet) | SQLite semantic_memory with hierarchical source |
+| Proactive Push (Tap on Shoulder) | Daily/weekly digest generator |
+| Background Loop | Scheduler with systemd/cron support |
+
+### Capture Triggers
+
+Say any of these to bypass LLM and save directly:
+
+```
+"Remember...", "Save...", "Note...", "Capture...", "Record...", "Store..."
+"Don't forget...", "Log this...", "Write down...", "Remember this..."
+```
+
+Example:
+```
+You: "Remember that Sarah called about the deadline"
+ATLAS: "Captured as a person note. Stored."
+```
+
+### Categories & Records
+
+| Category | Record Type | Key Fields |
+|----------|-------------|------------|
+| PEOPLE | PersonRecord | name, context, follow_ups, last_touched |
+| PROJECTS | ProjectRecord | name, parent_project, sub_area, next_action |
+| IDEAS | IdeaRecord | name, one_liner, notes |
+| ADMIN | AdminRecord | name, due_date, status |
+| RECIPES | RecipeRecord | name, notes |
+
+### Project Hierarchy (Taxonomy)
+
+Projects are auto-classified into parent/sub-area:
+
+| Parent | Sub-Areas | Trigger Examples |
+|--------|-----------|------------------|
+| **baby-brains** | website, app, knowledge, os, marketing, content | "baby brains", "bb", "landing page" |
+| **health** | sauna, red-light, garmin, workouts, ice-bath, running, meals | "sauna", "cold plunge", "5k", "macros" |
+
+Voice confirmation includes hierarchy:
+```
+"Captured as Baby Brains website project. Stored."
+"Captured as Health ice-bath project. Stored."
+```
+
+### Storage Format
+
+Hierarchical source field for SQL queries:
+```python
+source = "classifier:projects:baby-brains:website"
+source = "classifier:projects:health:running"
+source = "classifier:recipes"
+source = "classifier:ideas"
+```
+
+Query by hierarchy:
+```sql
+-- All Baby Brains projects
+SELECT * FROM semantic_memory WHERE source LIKE '%:baby-brains:%';
+
+-- Just health running entries
+SELECT * FROM semantic_memory WHERE source LIKE '%:health:running';
+```
+
+### Usage
+
+#### Voice Capture
+```bash
+python atlas/voice/pipeline.py
+# Then speak: "Remember to build the landing page for Baby Brains"
+```
+
+#### CLI Classification
+```bash
+echo "Build Baby Brains landing page" | python -m atlas.orchestrator.classifier --json
+echo "Try cold plunge for 3 minutes" | python -m atlas.orchestrator.classifier --store
+```
+
+#### MCP Tools
+```python
+# In Claude conversation
+capture_thought("Build the Baby Brains landing page")
+classify_thought("Research DIY sauna builds")
+generate_daily_digest()
+generate_weekly_review()
+```
+
+#### Digest Generation
+```bash
+python -m atlas.digest.generator --type daily
+python -m atlas.digest.generator --type weekly --format voice
+```
+
+#### Scheduler
+```bash
+# Run once
+python -m atlas.scheduler.loop --once daily_digest
+
+# Run daemon
+python -m atlas.scheduler.loop --daemon
+
+# Generate cron/systemd configs
+python -m atlas.scheduler.loop --generate-cron
+python -m atlas.scheduler.loop --generate-systemd
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `atlas/orchestrator/classifier.py` | ThoughtClassifier, categories, PROJECT_TAXONOMY |
+| `atlas/voice/pipeline.py` | CAPTURE_TRIGGERS, _handle_capture() |
+| `atlas/digest/generator.py` | DigestGenerator, DailyDigest, WeeklyReview |
+| `atlas/scheduler/loop.py` | ATLASScheduler, cron/systemd generation |
+| `atlas/mcp/server.py` | capture_thought, classify_thought, generate_*_digest |
+
+### Adding New Project Areas
+
+Edit `PROJECT_TAXONOMY` in `atlas/orchestrator/classifier.py`:
+
+```python
+PROJECT_TAXONOMY = {
+    "baby-brains": {
+        "patterns": [r"\bbaby\s*brains?\b", r"\bbb\b"],
+        "areas": {
+            "website": [r"\bweb(?:site)?\b", r"\blanding\s+page\b"],
+            # Add new area here
+            "docs": [r"\bdocumentation\b", r"\bdocs\b"],
+        }
+    },
+    # Add new parent project here
+    "atlas": {
+        "patterns": [r"\batlas\b"],
+        "areas": {
+            "voice": [r"\bvoice\b", r"\bstt\b", r"\btts\b"],
+            "memory": [r"\bmemory\b", r"\bstore\b"],
+        }
+    },
+}
+```
+
+---
+
+## 11. Voice API Pipeline (January 2026)
+
+### What It Does
+Token-efficient voice-first health queries via PowerShell↔WSL2 bridge. Enables frictionless morning routine where user wakes up, speaks to ATLAS, and gets health status + guided workout.
+
+### Key Design Decisions
+
+**D40: Direct HTTP for Garmin API**
+The `garth.connectapi()` library function returned empty responses despite valid OAuth tokens. Fixed by making direct HTTP requests to `connectapi.garmin.com` with OAuth2 bearer tokens. Working endpoints:
+- `/hrv-service/hrv/{date}` - HRV data
+- `/wellness-service/wellness/dailyStress/{date}` - Body battery + stress
+
+**D41: Intent Detection Before LLM Routing**
+Health/fitness queries use regex pattern matching to bypass LLM entirely (0 tokens). Order:
+1. Health intents → cached status (0 tokens)
+2. Meal intents → Haiku parsing (~200 tokens)
+3. Capture intents → direct storage (0 tokens)
+4. General queries → Router (Haiku/Sonnet)
+
+**D42: Two Response Formats**
+- Quick status: "my status" → one-liner
+- Detailed briefing: "morning briefing" / "how was my sleep" → full metrics
+
+### Architecture
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│ Windows         │     │ ~/.atlas/.bridge│     │ WSL2            │
+│ PowerShell      │────▶│ audio_in.raw    │────▶│ bridge_file_    │
+│ (mic input)     │     │ status.txt      │     │ server.py       │
+│                 │◀────│ audio_out.raw   │◀────│                 │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+                                                         │
+                        ┌────────────────────────────────┼────────────────────────────────┐
+                        │                                │                                │
+                        ▼                                ▼                                ▼
+               ┌─────────────────┐             ┌─────────────────┐             ┌─────────────────┐
+               │ Health Intent   │             │ Meal Intent     │             │ General Query   │
+               │ (regex match)   │             │ (prefix match)  │             │ (LLM router)    │
+               │                 │             │                 │             │                 │
+               │ morning_sync.py │             │ nutrition/      │             │ llm/router.py   │
+               │ → 0 tokens      │             │ → ~200 tokens   │             │ → varies        │
+               └─────────────────┘             └─────────────────┘             └─────────────────┘
+```
+
+### Voice Commands
+
+#### Quick Status (0 tokens)
+```
+"my status"
+"what's my status"
+"what is my status"
+→ "YELLOW. Battery 32. HRV 56. Proceed with caution. Active Mobility."
+```
+
+#### Detailed Briefing (0 tokens)
+```
+"morning briefing"
+"how was my sleep"
+"give me a rundown"
+→ "Morning briefing. YELLOW status. Mixed recovery signals.
+   Body battery 32. Running low. HRV 56. Watch still calibrating baseline.
+   Sleep data unavailable from Garmin. Stress moderate at 41.
+   Today's workout: Active Mobility."
+```
+
+### Health Intent Patterns
+
+```python
+# In bridge_file_server.py
+HEALTH_PATTERNS = [
+    r"(what'?s|what is|show|give me|tell me).*(status|morning status)",
+    r"my (morning )?status",
+    r"(how am i|how'm i) (doing|today)",
+    r"traffic light",
+    r"body battery",
+    r"hrv",
+    r"sleep (score|hours|quality)",
+    r"how (was|is|did).*(sleep|i sleep)",
+    r"(morning )?briefing",
+    r"(daily |morning )?report",
+    r"give me.*(rundown|summary|overview)",
+]
+```
+
+### Morning Sync Cache
+
+Status is cached to `~/.atlas/morning_status.json` for 0-token queries:
+
+```python
+from atlas.health.morning_sync import get_morning_status, format_status_voice, format_briefing_voice
+
+# Returns cached if <4 hours old, syncs fresh otherwise
+status = get_morning_status()
+
+# Quick format (one-liner)
+format_status_voice(status)
+# → "YELLOW. Battery 32. HRV 56. Proceed with caution."
+
+# Detailed format
+format_briefing_voice(status)
+# → "Morning briefing. YELLOW status. Mixed recovery signals..."
+```
+
+### Token Cost Summary
+
+| Action | Tokens | Cost |
+|--------|--------|------|
+| Morning status query | 0 (cache) | $0 |
+| Detailed briefing | 0 (cache) | $0 |
+| Meal logging | ~200 | $0.0002 |
+| Thought capture | 0 | $0 |
+| General query | ~500 | $0.0005 |
+| **Daily estimate** | ~550 | **~$0.0006** |
+
+Monthly estimate: ~$0.02
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `atlas/voice/bridge_file_server.py` | Main voice bridge server with intent routing |
+| `atlas/health/morning_sync.py` | Status caching, voice formatting, 5am cron |
+| `atlas/health/garmin.py` | Direct HTTP to Garmin API |
+| `atlas/health/service.py` | HealthService orchestration |
+| `atlas/health/routine_runner.py` | Timer-based 18-min morning routine |
+| `atlas/health/workout_runner.py` | Timer-based workout execution |
+| `atlas/voice/audio_utils.py` | Chime generation (440Hz sine waves) |
+
+### CLI Testing
+
+```bash
+# Test morning sync (shows all metrics)
+python -m atlas.health.morning_sync --test
+
+# Voice output only
+python -m atlas.health.morning_sync --test --voice
+
+# Force fresh Garmin sync
+python -m atlas.health.morning_sync --force
+
+# Test workout runner
+python -m atlas.health.workout_runner --dry-run
+
+# List available workout protocols
+python -m atlas.health.workout_runner --list
+```
+
+### Qwen3-TTS Voice Cloning (January 2026)
+
+Voice synthesis using Qwen3-TTS with Jeremy Irons voice clone ("Lethal Gentleman" persona).
+
+**Model:** `Qwen/Qwen3-TTS-12Hz-0.6B-Base` with ICL (In-Context Learning) mode
+
+**Key Files:**
+- `atlas/voice/tts_qwen.py` - TTS wrapper with voice cloning
+- `config/voice/qwen_tts_voices.json` - Voice configurations
+- `config/voice/jeremy_irons.wav` - Reference audio (11 seconds)
+
+**Usage:**
+```python
+from atlas.voice.tts_qwen import get_qwen_tts
+
+tts = get_qwen_tts("jeremy_irons")
+result = tts.synthesize("Good morning, sir. Your status... is green.")
+
+# result.audio - numpy array of audio samples
+# result.sample_rate - 24000 Hz
+# result.duration_ms - synthesis time
+```
+
+**Voice Cloning Requirements:**
+- Clean reference audio (3-15 seconds, interview/podcast quality)
+- Accurate transcript of reference audio
+- RP British accent works best (regional accents struggle)
+
+**Pacing Control:**
+Use punctuation to control speech rhythm:
+- Commas (`,`) → short pause
+- Ellipses (`...`) → longer pause
+- Periods (`.`) → sentence break
+
+**Decision D90:** Adopted Qwen3-TTS over Kokoro-82M for voice quality. Jeremy Irons clone provides authoritative British voice matching ATLAS "Lethal Gentleman" persona. Thomas Shelby (Cillian Murphy) failed due to TV audio processing and Birmingham accent complexity.
+
+### Future Enhancements
+
+1. **Yesterday Comparison**: "Body battery 32, down from 45 yesterday"
+2. **Weekly Trends**: "HRV trending up 12% over 7 days"
+3. **Predictive Insights**: "At current drain, you'll hit low reserves around 3pm"
+4. **Weekly Voice Summary**: Sunday evening review
+5. **Additional Voice Clones**: Find clean interview audio for more voice options
+
+---
+
+## 12. Interactive Workout Timer (January 2026)
+
+### What It Does
+Voice-controlled workout execution that behaves like a personal trainer. User controls the pace - sets start when ready, rest periods have countdown beeps, and exercises advance on user command.
+
+### Key Design Decisions
+
+**D58: User-Paced Sets vs Auto-Timer**
+The original WorkoutRunner ran timers automatically. The interactive version waits for user commands:
+- "ready" → start set
+- "done" → complete set, start rest
+- Rest countdown with beeps at 30s, 15s, 5s
+
+**D59: Weight Tracking (In Scope)**
+Simple weight prompt during workout: "What weight?" → "30 kilos" → logged with exercise.
+Progressive overload system (baseline-informed, periodization) is OUT OF SCOPE for this release.
+
+### State Machine
+
+```
+                    ┌──────────────────────────────┐
+                    │     WORKOUT_INACTIVE         │
+                    └──────────────┬───────────────┘
+                                   │ "start workout"
+                    ┌──────────────▼───────────────┐
+                    │   EXERCISE_PENDING           │
+                    │ (waiting for "ready")        │
+                    └──────────────┬───────────────┘
+                                   │ "ready"
+                    ┌──────────────▼───────────────┐
+                    │   SET_ACTIVE                 │
+                    │ (user doing reps)            │
+                    └──────────────┬───────────────┘
+                                   │ "done"
+                ┌──────────────────┴──────────────────┐
+                │                                      │
+       (not last set)                          (last set)
+                │                                      │
+    ┌───────────▼───────────┐            ┌────────────▼────────────┐
+    │   REST_ACTIVE         │            │   Next exercise or      │
+    │ (countdown timer)     │            │   WORKOUT_COMPLETE      │
+    └───────────┬───────────┘            └─────────────────────────┘
+                │ timer ends OR "ready"
+                │
+    ┌───────────▼───────────┐
+    │ EXERCISE_PENDING      │
+    │ (next set)            │
+    └───────────────────────┘
+```
+
+### Voice Commands
+
+| Command | State | Response |
+|---------|-------|----------|
+| "start workout" | Inactive | "Strength A. 45 minutes. First exercise: Goblet Squat. 3 sets of 6. Say ready when set up." |
+| "30 kilos" | Pending | "Got it. 30 kilos. Say ready to begin." |
+| "ready" | Pending | "Set 1 at 30 kilos. Begin." |
+| "done" / "finished" | Set active | "Set 1 complete. Rest 90 seconds." |
+| "how long" | Resting | "45 seconds left." |
+| "skip" | Any | "Skipping Goblet Squat. Next: Floor Press..." |
+| "stop workout" | Active | "Workout stopped. 3 exercises completed." |
+
+### Countdown Beeps
+
+Rest timer plays audio beeps:
+- **30 seconds**: Low pitch (550Hz)
+- **15 seconds**: Medium pitch (660Hz)
+- **5 seconds**: High pitch (880Hz), louder
+
+### Usage
+
+```python
+# Voice activation (primary method)
+# Say: "start workout"
+# ATLAS: "Strength A. 45 minutes. First exercise..."
+
+# The workout state is managed in BridgeFileServer:
+# - _workout_active: bool
+# - _workout_exercise_pending: bool
+# - _workout_set_active: bool
+# - _workout_rest_active: bool
+# - _workout_current_weight: float | None
+# - _workout_log: list[dict]  # Completed exercises
+```
+
+### Intent Detection Priority
+
+Interactive workout has HIGH priority (stateful):
+1. Assessment active (higher)
+2. **Interactive workout active** ← handles ready/done/skip
+3. **Interactive workout start** ← "start workout"
+4. Other intents...
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `atlas/voice/bridge_file_server.py` | State machine, handlers, voice patterns |
+| `atlas/voice/audio_utils.py` | Countdown beep generation (440Hz-880Hz) |
+| `atlas/voice/number_parser.py` | `parse_weight_value()` for weight input |
+| `atlas/health/workout_runner.py` | `get_todays_protocol()`, WorkoutExercise |
+| `config/workouts/phase1.json` | Workout protocols with exercises |
+
+### Voice Patterns
+
+```python
+# In bridge_file_server.py
+WORKOUT_START_PATTERNS = ["start workout", "begin workout", "let's workout", ...]
+WORKOUT_READY_PATTERNS = ["ready", "start", "begin", "let's go", ...]
+WORKOUT_SET_DONE_PATTERNS = ["done", "finished", "racked", "got it", ...]
+WORKOUT_SKIP_PATTERNS = ["skip", "skip this", "next exercise", ...]
+WORKOUT_STOP_PATTERNS = ["stop workout", "end workout", "cancel workout", ...]
+```
+
+### Testing
+
+```bash
+# Start the voice bridge server
+python -m atlas.voice.bridge_file_server
+
+# Then via voice:
+# 1. "start workout"
+# 2. "30 kilos"  (or just "ready" to skip weight)
+# 3. "ready"
+# 4. (do your set)
+# 5. "done"
+# 6. (wait for rest or say "ready" to skip)
+# 7. Repeat until workout complete
+# 8. "finished my workout" (logs to database)
+```
+
+### Future Enhancements (Out of Scope)
+
+1. ~~**Progressive Overload System**~~: ✅ IMPLEMENTED - see ProgressionService
+2. **Rep Counting**: "I got 5 reps" during set - ✅ IMPLEMENTED (AMRAP on final set)
+3. **Garmin HR Integration**: Real-time HR during sets
+4. **Tempo Guidance**: Audio cues for lifting cadence
+
+---
+
+## 13. Workout Scheduler (January 2026)
+
+The WorkoutScheduler tracks program progress and handles missed workouts intelligently.
+
+### The Problem
+
+Calendar-only scheduling doesn't handle real life:
+- Missed workouts compound ("you're 5 workouts behind")
+- No tracking of program day/week
+- User doesn't know if they're on track
+
+### The Solution
+
+```python
+from atlas.health.scheduler import WorkoutScheduler
+
+scheduler = WorkoutScheduler()
+
+# Get next workout (handles catch-ups)
+next_workout = scheduler.get_next_workout()
+# Returns: ScheduledWorkout with protocol_id, program_day, is_catch_up, etc.
+
+# Start program (Day 1)
+scheduler.start_phase("phase_1")  # Sets today as Day 1
+
+# Log completed workout
+scheduler.log_workout(
+    protocol_id="strength_a",
+    duration_minutes=45,
+    traffic_light="GREEN",
+)
+
+# Check status
+status = scheduler.get_status()
+# {'program_day': 10, 'program_week': 2, 'workouts_completed': 8, 'on_track': True}
+```
+
+### Sequential Mode (Default)
+
+Missed workouts are caught up in order:
+
+```
+Phase starts Monday Jan 13
+User misses Mon, Tue
+Says "start workout" on Wednesday
+
+Scheduler returns:
+  - protocol_id: "strength_a" (Monday's workout)
+  - is_catch_up: True
+  - days_behind: 2
+  - message: "Catching up from Monday. Strength A..."
+```
+
+### Voice Integration
+
+```bash
+# Program management
+"start program"     → Starts Phase 1 from today
+"schedule status"   → "Week 2, Day 10. On track. 8 workouts completed."
+"what day am I on"  → Same as schedule status
+"reset my program"  → Requires confirmation (shows workout count)
+
+# Traffic light override
+"green day"         → Starts workout with GREEN override
+"yellow day"        → Starts workout with YELLOW override
+
+# Rest day handling
+"start workout" (on Sunday) → "Today is a recovery day. No workout scheduled."
+
+# Catch-up announcement
+"start workout" (behind) → "Week 2, Day 10. Catching up from Monday. Strength A..."
+```
+
+### Database Schema
+
+```sql
+CREATE TABLE workout_sessions (
+    id INTEGER PRIMARY KEY,
+    date DATE NOT NULL,
+    protocol_id TEXT NOT NULL,     -- 'strength_a', 'zone2_cardio', etc.
+    protocol_name TEXT,
+    program_day INTEGER,           -- Day 1, Day 2, etc.
+    program_week INTEGER,          -- Week 1, Week 2, etc.
+    phase TEXT DEFAULT 'phase_1',
+    duration_minutes INTEGER,
+    traffic_light TEXT,            -- GREEN/YELLOW/RED
+    garmin_activity_id TEXT,
+    notes TEXT,
+    created_at TIMESTAMP,
+    UNIQUE(date, protocol_id)
+);
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `atlas/health/scheduler.py` | WorkoutScheduler class |
+| `atlas/voice/bridge_file_server.py` | Voice intent handling |
+| `config/workouts/phase1.json` | Schedule configuration |
+
+---
+
+## 14. Interactive Morning Routine (January 2026)
+
+Voice-guided 18-minute morning protocol with timer control and form cues.
+
+### Voice Commands
+
+```bash
+"start routine"       → Begins morning protocol
+"ready" / "begin"     → Starts exercise timer
+"pause" / "hold on"   → Pauses timer
+"resume" / "continue" → Resumes timer
+"form" / "setup"      → Shows form cues (auto-pauses)
+"skip" / "next"       → Skips to next exercise
+"finished" / "done"   → Completes routine (on last exercise)
+```
+
+### Flow
+
+```
+1. "start routine"
+   → "Starting ATLAS Morning Protocol. 18 minutes. First: Plantar Fascia Ball Roll..."
+
+2. "ready"
+   → "60 seconds. Begin." (timer starts, chime at end)
+
+3. [Timer ends]
+   → Chime plays, advances to next exercise
+
+4. "form"
+   → "Plantar Fascia Ball Roll. Apply moderate pressure. Roll heel to toes..."
+   → Auto-pauses, says "Say resume when ready"
+
+5. [Last exercise]
+   → "finished"
+   → "Morning routine complete. Green light. Today: Strength A. Say start workout."
+```
+
+### Form Guides
+
+Form cues are loaded from `config/exercises/routine_form_guides.json`:
+
+```json
+{
+  "exercises": {
+    "plantar_ball_roll": {
+      "name": "Plantar Fascia Ball Roll",
+      "setup": "Stand near wall for balance. Place lacrosse ball under foot.",
+      "cues": [
+        "Apply moderate pressure",
+        "Roll heel to toes slowly",
+        "Pause 5 seconds on tender spots"
+      ],
+      "common_mistakes": [
+        {"mistake": "Too much pressure", "fix": "Start light, increase gradually"}
+      ]
+    }
+  }
+}
+```
 
 ---
 

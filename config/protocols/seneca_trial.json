@@ -1,0 +1,79 @@
+{
+  "name": "Seneca Trial",
+  "description": "Stoic evening reflection based on Seneca's nightly practice",
+  "voice_triggers": ["start reflection", "seneca trial", "evening reflection", "reflection"],
+  "quick_triggers": ["quick reflection", "quick review", "brief reflection"],
+  "versions": {
+    "full": {
+      "duration_minutes": 10,
+      "xp_award": 60,
+      "xp_source": "evening_audit",
+      "skill": "reflection",
+      "phases": [
+        {
+          "name": "Prosecution",
+          "prompt": "Where did you fall short today? What actions did not align with your values?",
+          "voice_prompt": "Let's begin your trial. The prosecution speaks first. Where did you fall short today?",
+          "follow_up": "What led to this? Be honest with yourself.",
+          "duration_seconds": 120
+        },
+        {
+          "name": "Judgment",
+          "prompt": "What's the truth of your actions? Neither condemn nor excuse.",
+          "voice_prompt": "Now the judgment. What is the truth of your actions today? Neither condemn nor excuse yourself.",
+          "follow_up": "What would the Lethal Gentleman do differently?",
+          "duration_seconds": 120
+        },
+        {
+          "name": "Advocacy",
+          "prompt": "What did you do well? Where did you show up as the man you want to be?",
+          "voice_prompt": "The advocacy. What did you do well today? Where did you show up as the man you want to be?",
+          "follow_up": "Acknowledge your victories, however small.",
+          "duration_seconds": 90
+        },
+        {
+          "name": "Tomorrow",
+          "prompt": "What are your intentions for tomorrow? What one thing will you focus on?",
+          "voice_prompt": "Looking ahead. What is your one intention for tomorrow?",
+          "follow_up": "Be specific. A vague intention is no intention.",
+          "duration_seconds": 60
+        },
+        {
+          "name": "Memento Mori",
+          "prompt": "Remember you will die. Did you live today as if it could be your last?",
+          "voice_prompt": "Memento mori. Remember, you will die. Did you live today as if it could be your last?",
+          "optional": true,
+          "bonus_xp": 25,
+          "duration_seconds": 30
+        }
+      ],
+      "closing": "Your trial is complete. Rest well. Tomorrow, we begin again."
+    },
+    "quick": {
+      "duration_minutes": 3,
+      "xp_award": 35,
+      "xp_source": "journal_entry",
+      "skill": "reflection",
+      "phases": [
+        {
+          "name": "Brief Review",
+          "prompt": "One thing you did well, one thing to improve.",
+          "voice_prompt": "Quick reflection. One thing you did well today, and one thing to improve.",
+          "duration_seconds": 90
+        },
+        {
+          "name": "Tomorrow",
+          "prompt": "Your one focus for tomorrow?",
+          "voice_prompt": "What is your one focus for tomorrow?",
+          "duration_seconds": 30
+        }
+      ],
+      "closing": "Noted. Rest well."
+    }
+  },
+  "voice_persona": {
+    "tone": "Stoic mentor",
+    "style": "Direct but compassionate",
+    "avoid": ["judgment", "excessive praise", "generic motivation"]
+  }
+}

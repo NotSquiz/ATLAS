@@ -1,0 +1,110 @@
+{
+  "_comment": "Sprite mappings for OSRS-style Command Centre. Edit paths to customize visuals.",
+  "_sprite_dir": "assets/sprites/",
+  "_fallback": "placeholder.png",
+
+  "skills": {
+    "_comment": "12 skills across BODY/MIND/SOUL domains. Use OSRS skill icons or custom.",
+    "strength": "strength.png",
+    "endurance": "agility.png",
+    "mobility": "fletching.png",
+    "nutrition": "cooking.png",
+    "focus": "magic.png",
+    "learning": "runecraft.png",
+    "reflection": "prayer.png",
+    "creation": "crafting.png",
+    "presence": "firemaking.png",
+    "service": "smithing.png",
+    "courage": "attack.png",
+    "consistency": "defence.png"
+  },
+
+  "orbs": {
+    "_comment": "HUD orbs - circular status indicators",
+    "body_battery": "hitpoints_orb.png",
+    "sleep_score": "prayer_orb.png",
+    "hrv_status": "run_orb.png",
+    "streak": "special_orb.png"
+  },
+
+  "inventory": {
+    "_comment": "28 inventory slots mapped to actions. Row by row.",
+
+    "row1_workouts": {
+      "strength_a": "granite_maul.png",
+      "strength_b": "abyssal_whip.png",
+      "strength_c": "dragon_scimitar.png",
+      "zone2_cardio": "boots_of_lightness.png"
+    },
+
+    "row2_supplements": {
+      "morning": "super_combat.png",
+      "breakfast": "saradomin_brew.png",
+      "bedtime": "prayer_potion.png",
+      "ice_bath": "ice_gloves.png"
+    },
+
+    "row3_nutrition": {
+      "healthy_meal": "shark.png",
+      "protein": "cooked_karambwan.png",
+      "quick_meal": "lobster.png",
+      "snack": "banana.png"
+    },
+
+    "row4_mind": {
+      "deep_work": "ancient_staff.png",
+      "learning": "book_of_knowledge.png",
+      "journal": "enchanted_quill.png",
+      "focus_timer": "magic_hourglass.png"
+    },
+
+    "row5_routines": {
+      "morning_routine": "amulet_of_glory.png",
+      "assessment": "crystal_ball.png",
+      "sauna": "fire_cape.png",
+      "weight_log": "gold_bar.png"
+    },
+
+    "row6_soul": {
+      "dad_time": "ring_of_life.png",
+      "conversation": "games_necklace.png",
+      "service": "holy_symbol.png",
+      "courage": "berserker_ring.png"
+    },
+
+    "row7_meta": {
+      "rest_day": "bed.png",
+      "achievements": "quest_cape.png",
+      "stats": "coins.png",
+      "streak_freeze": "icicle.png"
+    }
+  },
+
+  "tabs": {
+    "_comment": "Bottom panel tab icons",
+    "inventory": "inventory_tab.png",
+    "equipment": "equipment_tab.png",
+    "skills": "skills_tab.png",
+    "quests": "quests_tab.png",
+    "settings": "settings_tab.png"
+  },
+
+  "nav_buttons": {
+    "_comment": "Quick navigation buttons around minimap",
+    "baby_brains": "baby_brains_icon.png",
+    "tactical": "tactical_icon.png",
+    "reflections": "reflections_icon.png",
+    "settings": "settings_icon.png",
+    "health": "health_icon.png"
+  },
+
+  "misc": {
+    "_comment": "Other UI elements",
+    "compass": "compass.png",
+    "minimap_frame": "minimap_frame.png",
+    "chat_frame": "chat_frame.png",
+    "inventory_frame": "inventory_frame.png",
+    "slot_background": "slot_bg.png",
+    "slot_highlight": "slot_highlight.png"
+  }
+}

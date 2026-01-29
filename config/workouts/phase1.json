@@ -1,0 +1,596 @@
+{
+  "metadata": {
+    "phase": 1,
+    "name": "Shoulder Rehab Phase 1",
+    "weeks": [1, 4],
+    "focus": "Re-align Supraspinatus collagen. Fix aching back via glute/hamstring strength.",
+    "source": "docs/FITNESS/Shoulder Rehab Protocol.md"
+  },
+  "schedule": {
+    "0": "strength_a",
+    "1": "zone2_cardio",
+    "2": "strength_b",
+    "3": "active_mobility",
+    "4": "strength_c",
+    "5": "zone2_extended",
+    "6": "recovery"
+  },
+  "daily_routine": {
+    "name": "ATLAS Morning Protocol",
+    "duration_minutes": 18,
+    "frequency": "daily",
+    "description": "Perform upon waking (7 days/week). Addresses all injury sites systematically.",
+    "sections": [
+      {
+        "name": "Feet & Plantar Fascia",
+        "duration_minutes": 4,
+        "exercises": [
+          {
+            "id": "plantar_ball_roll",
+            "name": "Plantar Fascia Ball Roll",
+            "duration_seconds": 60,
+            "per_side": true,
+            "cues": ["Apply moderate pressure", "Roll heel to toes slowly", "Pause 5s on tender spots"]
+          },
+          {
+            "id": "toe_yoga",
+            "name": "Toe Yoga",
+            "duration_seconds": 30,
+            "cues": ["Big toe up, others down", "Then reverse", "Control each toe independently"]
+          },
+          {
+            "id": "short_foot",
+            "name": "Short Foot Exercise",
+            "reps": 10,
+            "cues": ["Dome the arch without curling toes", "Hold 5 seconds each", "Feel intrinsic foot muscles"]
+          },
+          {
+            "id": "calf_stretch",
+            "name": "Calf Stretch (Wall)",
+            "duration_seconds": 45,
+            "per_side": true,
+            "cues": ["Straight back leg", "Heel pressed to floor", "Lean in gently"]
+          }
+        ]
+      },
+      {
+        "name": "Ankle Mobility",
+        "duration_minutes": 4,
+        "exercises": [
+          {
+            "id": "ankle_cars",
+            "name": "Ankle CARs",
+            "reps": 5,
+            "per_side": true,
+            "cues": ["Full circles", "Maximize range each direction", "Control the movement"]
+          },
+          {
+            "id": "banded_ankle_mob",
+            "name": "Banded Ankle Mobilization",
+            "reps": 15,
+            "per_side": true,
+            "cues": ["Band around front of ankle", "Drive knee forward over toes", "Keep heel down"]
+          },
+          {
+            "id": "eccentric_calf_raise",
+            "name": "Eccentric Calf Raises",
+            "sets": 3,
+            "reps": 15,
+            "per_side": true,
+            "cues": ["Rise on both feet", "Lower on one foot slowly (4 sec)", "Go below step level for stretch", "Alfredson protocol: 3x15 per side for tendon adaptation"]
+          },
+          {
+            "id": "ankle_alphabet",
+            "name": "Ankle Alphabet",
+            "duration_seconds": 60,
+            "per_side": true,
+            "cues": ["Trace A-Z with big toe", "Full range of motion", "Left ankle priority (old break)"]
+          }
+        ]
+      },
+      {
+        "name": "Lower Back & Hips",
+        "duration_minutes": 4,
+        "exercises": [
+          {
+            "id": "cat_cow",
+            "name": "Cat-Cow",
+            "reps": 10,
+            "cues": ["Slow controlled reps", "Inhale arch (cow)", "Exhale round (cat)"]
+          },
+          {
+            "id": "dead_bug",
+            "name": "Dead Bug",
+            "reps": 10,
+            "cues": ["Opposite arm/leg extends", "Keep lower back pressed to floor", "Exhale on extension"]
+          },
+          {
+            "id": "hip_flexor_stretch",
+            "name": "Hip Flexor Stretch",
+            "duration_seconds": 60,
+            "per_side": true,
+            "cues": ["Rear knee on pad", "Squeeze glute of back leg", "Slight posterior pelvic tilt"]
+          },
+          {
+            "id": "glute_bridge",
+            "name": "Glute Bridge",
+            "reps": 15,
+            "cues": ["Drive through heels", "Squeeze glutes at top", "Hold 2 sec each rep"]
+          },
+          {
+            "id": "clamshells",
+            "name": "Clamshells (Glute Med Activation)",
+            "sets": 2,
+            "reps": 15,
+            "per_side": true,
+            "cues": ["Side-lying, knees bent", "Lift top knee keeping feet together", "Feel glute med burn", "RIGHT SIDE PRIORITY - do extra set if time"]
+          },
+          {
+            "id": "bird_dog",
+            "name": "Bird-Dog",
+            "reps": 8,
+            "per_side": true,
+            "cues": ["Extend opposite arm/leg", "Keep hips level", "McGill essential for back pain"]
+          }
+        ]
+      },
+      {
+        "name": "Shoulder Rehab",
+        "duration_minutes": 4,
+        "exercises": [
+          {
+            "id": "doorframe_ext_rotation",
+            "name": "Doorframe External Rotation",
+            "sets": 1,
+            "duration_seconds": 180,
+            "per_side": false,
+            "cues": ["Elbow at 90 tucked into ribs", "Press back of hand into frame at 40-70% MVC", "Right side only (injured)", "3-minute continuous isometric hold"]
+          },
+          {
+            "id": "towel_crush",
+            "name": "Towel Crush",
+            "sets": 5,
+            "duration_seconds": 10,
+            "cues": ["Rolled towel between elbow and ribs", "Squeeze elbow into side", "Activates rotator cuff"]
+          },
+          {
+            "id": "band_pull_apart",
+            "name": "Band Pull-Aparts",
+            "reps": 20,
+            "cues": ["Palms up grip", "Don't shrug shoulders", "Squeeze shoulder blades together"]
+          },
+          {
+            "id": "wall_slides",
+            "name": "Scapular Wall Slides",
+            "reps": 10,
+            "cues": ["Back, head, arms against wall", "Slide arms up and down", "Maintain contact throughout"]
+          }
+        ]
+      },
+      {
+        "name": "Posture Reset",
+        "duration_minutes": 2,
+        "exercises": [
+          {
+            "id": "thoracic_extension",
+            "name": "Thoracic Extensions (Foam Roller)",
+            "reps": 10,
+            "cues": ["Roller at mid-back", "Hands behind head", "Extend over roller, don't arch lower back"]
+          },
+          {
+            "id": "chin_tucks",
+            "name": "Chin Tucks",
+            "reps": 10,
+            "hold_seconds": 5,
+            "cues": ["Double chin motion", "Lengthen back of neck", "Hold 5 seconds each"]
+          },
+          {
+            "id": "morning_sunlight",
+            "name": "Morning Sunlight",
+            "type": "reminder",
+            "cues": ["Outside, no sunglasses", "5-10 mins optimal", "Circadian reset + Vitamin D"]
+          }
+        ]
+      }
+    ]
+  },
+  "protocols": {
+    "strength_a": {
+      "id": "strength_a",
+      "name": "Strength A (Legs & Back)",
+      "type": "strength",
+      "day_of_week": 0,
+      "duration_minutes": 45,
+      "goal": "Fix aching back by strengthening glutes/hamstrings and mobilizing hips.",
+      "warmup": [
+        "Perform Daily Non-Negotiables"
+      ],
+      "exercises": [
+        {
+          "id": "ankle_balance",
+          "name": "Single-leg Balance on Pillow",
+          "sets": 3,
+          "duration_seconds": 30,
+          "per_side": true,
+          "rest_seconds": 0,
+          "notes": "Per leg. Eyes open -> Eyes closed progression. NO REST - continuous switching."
+        },
+        {
+          "id": "goblet_squat",
+          "name": "Goblet Squat",
+          "sets": 4,
+          "reps": 10,
+          "rest_seconds": 90,
+          "notes": "Heels elevated if ankle mobility limited. Week 1-4: 8-12 reps. Push knees OUT over toes."
+        },
+        {
+          "id": "rdl",
+          "name": "Romanian Deadlift",
+          "sets": 3,
+          "reps": 10,
+          "rest_seconds": 90,
+          "notes": "Dumbbell or barbell. Hinge at hips, soft knee bend. Feel hamstrings stretch. Don't round lower back."
+        },
+        {
+          "id": "kb_swings",
+          "name": "Kettlebell Swings",
+          "sets": 4,
+          "reps": 15,
+          "rest_seconds": 60,
+          "notes": "Hip snap, not squat. Provides some Zone 4 HR work. Hinge pattern reinforcement."
+        },
+        {
+          "id": "split_squat",
+          "name": "Split Squats (Bodyweight/Light DB)",
+          "sets": 3,
+          "reps": 10,
+          "per_side": true,
+          "rest_seconds": 60,
+          "notes": "Per leg. Opens tight hip flexors dynamically. Drive front knee OUT."
+        },
+        {
+          "id": "bird_dog",
+          "name": "Bird-Dog",
+          "sets": 3,
+          "reps": 10,
+          "rest_seconds": 30,
+          "notes": "Per side. Brace core. Do not let lower back arch. McGill Big 3 component."
+        },
+        {
+          "id": "mcgill_curl_up",
+          "name": "McGill Curl-Up",
+          "sets": 3,
+          "reps": 10,
+          "hold_seconds": 8,
+          "rest_seconds": 45,
+          "notes": "Hands under lower back. Brace. Lift head/shoulders only. 8-10 second holds. McGill Big 3 component."
+        },
+        {
+          "id": "ankle_df_mobilization",
+          "name": "Banded Ankle Dorsiflexion Mobilization",
+          "sets": 3,
+          "reps": 10,
+          "per_side": false,
+          "rest_seconds": 30,
+          "notes": "RIGHT ANKLE ONLY. Band above ankle, drive knee forward over toes. 3s hold at end range. Priority exercise for 4cm deficit."
+        },
+        {
+          "id": "single_leg_rdl",
+          "name": "Single-Leg RDL (Right Side Priority)",
+          "sets": 3,
+          "reps": 8,
+          "rest_seconds": 60,
+          "notes": "RIGHT leg standing. Light weight. Focus on hip hinge + ankle stability. Keep standing knee slightly pushed out. Addresses compensation patterns."
+        }
+      ],
+      "cooldown": [
+        "Pigeon Stretch (2 mins/side)"
+      ]
+    },
+    "strength_b": {
+      "id": "strength_b",
+      "name": "Strength B (Shoulder Rehab)",
+      "type": "strength",
+      "day_of_week": 2,
+      "duration_minutes": 40,
+      "goal": "Re-align Supraspinatus collagen. NO PULL-UPS/CHIN-UPS YET.",
+      "contraindications": ["pullups", "chinups", "upright_rows", "wide_grip_pullups"],
+      "warmup": [
+        "Perform Daily Non-Negotiables"
+      ],
+      "exercises": [
+        {
+          "id": "floor_press",
+          "name": "Floor Press (Dumbbells)",
+          "sets": 3,
+          "reps": 12,
+          "rest_seconds": 90,
+          "notes": "Floor stops elbows from going too deep and straining the capsule."
+        },
+        {
+          "id": "chest_supported_row",
+          "name": "Chest-Supported Row (Incline Bench)",
+          "sets": 3,
+          "reps": 12,
+          "rest_seconds": 90,
+          "notes": "Supports lower back. Focus on squeezing shoulder blades DOWN and back."
+        },
+        {
+          "id": "side_lying_wiper",
+          "name": "Side-Lying Wiper (Eccentric Focus)",
+          "sets": 3,
+          "reps": 10,
+          "rest_seconds": 60,
+          "notes": "THE HEALER. Use light weight (1-2kg). Lift up with help, lower down SLOWLY (4 seconds) on your own."
+        },
+        {
+          "id": "band_pull_apart",
+          "name": "Band Pull-Aparts",
+          "sets": 3,
+          "reps": 20,
+          "rest_seconds": 30,
+          "notes": "Palms up. Don't shrug shoulders."
+        },
+        {
+          "id": "face_pulls",
+          "name": "Face Pulls (Band/Cable)",
+          "sets": 3,
+          "reps": 15,
+          "rest_seconds": 30,
+          "notes": "External rotate at top. Targets rear delts and external rotators. Light weight. Evidence: adds back pulling volume."
+        }
+      ],
+      "cooldown": []
+    },
+    "strength_c": {
+      "id": "strength_c",
+      "name": "Strength C (Full Body + Neck)",
+      "type": "strength",
+      "day_of_week": 4,
+      "duration_minutes": 45,
+      "goal": "Functional carrying capacity and Blueprint neck standards.",
+      "warmup": [
+        "Perform Daily Non-Negotiables"
+      ],
+      "exercises": [
+        {
+          "id": "sumo_deadlift",
+          "name": "Sumo Deadlift (DB/KB)",
+          "sets": 4,
+          "reps": 6,
+          "rest_seconds": 120,
+          "notes": "Wide stance, toes out 45°. More upright torso than conventional. Drive knees out, chest up. Heavy compound - progress weight weekly."
+        },
+        {
+          "id": "goblet_squat_heavy",
+          "name": "Goblet Squat (Heavy)",
+          "sets": 3,
+          "reps": 8,
+          "rest_seconds": 90,
+          "notes": "Heavier than Monday, lower reps. Push knees OUT over toes."
+        },
+        {
+          "id": "kb_clean_press",
+          "name": "KB Clean & Press",
+          "sets": 3,
+          "reps": 6,
+          "per_side": true,
+          "rest_seconds": 90,
+          "notes": "Power from hips, press from shoulder. Week 1-4: Substitute Landmine Press if shoulder not ready."
+        },
+        {
+          "id": "suitcase_carry",
+          "name": "Suitcase Carries",
+          "sets": 3,
+          "distance_meters": 30,
+          "rest_seconds": 45,
+          "notes": "Heavy DB in one hand. Walk perfectly straight. Anti-lateral flexion."
+        },
+        {
+          "id": "turkish_getup",
+          "name": "Turkish Get-Up",
+          "sets": 2,
+          "reps": 3,
+          "per_side": true,
+          "rest_seconds": 120,
+          "notes": "Start light, focus on each position. Week 1-4: Half get-up only (to elbow)."
+        },
+        {
+          "id": "neck_harness",
+          "name": "Neck Harness (Flexion/Extension)",
+          "sets": 2,
+          "reps": 15,
+          "rest_seconds": 45,
+          "notes": "Bryan Johnson Standard. Start very light. Control the tempo."
+        },
+        {
+          "id": "side_plank",
+          "name": "Side Plank",
+          "sets": 3,
+          "duration_seconds": 30,
+          "per_side": true,
+          "rest_seconds": 45,
+          "notes": "McGill Big 3 component. Elbow under shoulder. Straight line from head to feet."
+        },
+        {
+          "id": "inverted_row",
+          "name": "Inverted Rows (TRX/Bar)",
+          "sets": 3,
+          "reps": 12,
+          "rest_seconds": 90,
+          "notes": "Horizontal pulling. Feet on floor, body at angle. Squeeze shoulder blades. Addresses back pulling volume gap."
+        },
+        {
+          "id": "lateral_band_walks",
+          "name": "Lateral Band Walks",
+          "sets": 3,
+          "distance_steps": 10,
+          "per_direction": true,
+          "rest_seconds": 30,
+          "notes": "Band above knees. Stay low in quarter squat. 10 steps each direction. Burn in glute med = good. Fixes knee valgus pattern."
+        }
+      ],
+      "cooldown": []
+    },
+    "zone2_cardio": {
+      "id": "zone2_cardio",
+      "name": "Zone 2 Cardio (The Engine)",
+      "type": "cardio",
+      "day_of_week": 1,
+      "duration_minutes": 50,
+      "goal": "Increase mitochondrial density and clear lactate.",
+      "target_hr_pct": [60, 70],
+      "modalities": ["jog", "bike", "ruck"],
+      "exercises": [
+        {
+          "id": "zone2_session",
+          "name": "Zone 2 Session",
+          "duration_minutes": 50,
+          "notes": "Heart Rate 60-70% Max (Conversation pace). Can talk in full sentences."
+        }
+      ]
+    },
+    "active_mobility": {
+      "id": "active_mobility",
+      "name": "Active Mobility (The Anti-Aging Flow)",
+      "type": "mobility",
+      "day_of_week": 3,
+      "duration_minutes": 45,
+      "goal": "HUSTL Style / Back Decompression. Thoracic mobility and hip flexor opening.",
+      "exercises": [
+        {
+          "id": "light_zone2",
+          "name": "Light Zone 2 Jog",
+          "duration_minutes": 20,
+          "notes": "Easy warmup pace."
+        },
+        {
+          "id": "wgs_flow",
+          "name": "World's Greatest Stretch",
+          "reps": 10,
+          "notes": "10 reps per side."
+        },
+        {
+          "id": "deep_squat_hold",
+          "name": "Deep Squat Hold",
+          "duration_minutes": 2,
+          "notes": "Accumulate 2 minutes total. Can break into sets."
+        },
+        {
+          "id": "thoracic_rotations",
+          "name": "Thoracic Rotations",
+          "reps": 10,
+          "notes": "Open the desk-posture hunch."
+        },
+        {
+          "id": "couch_stretch",
+          "name": "Couch Stretch",
+          "duration_minutes": 2,
+          "notes": "2 mins per side. Aggressive hip flexor opening."
+        }
+      ]
+    },
+    "zone2_extended": {
+      "id": "zone2_extended",
+      "name": "Zone 2 Extended (Aerobic Build)",
+      "type": "cardio",
+      "day_of_week": 5,
+      "duration_minutes": 50,
+      "goal": "Build aerobic base. No HIIT until GATE 1 cleared.",
+      "target_hr_pct": [60, 70],
+      "modalities": ["ruck", "brisk_walk", "hike", "swim", "bike"],
+      "hiit_clearance_requirements": [
+        "GATE 1 passed (all criteria met)",
+        "Pain ≤2/10 for 2+ weeks on shoulder AND ankle",
+        "LSI ≥90% on heel raises",
+        "25 single-leg heel raises each side",
+        "30-min brisk walk pain-free"
+      ],
+      "exercises": [
+        {
+          "id": "zone2_extended_session",
+          "name": "Zone 2 Extended Session",
+          "duration_minutes": 50,
+          "notes": "Ruck walk (10-15kg) preferred. Brisk walk or hike acceptable. HR 109-127 bpm. Conversation pace. No jogging until passing walk test pain-free."
+        }
+      ],
+      "alternatives": {
+        "ruck_walk": {
+          "name": "Ruck Walk (Preferred)",
+          "duration_minutes": 50,
+          "notes": "10-15kg backpack. Flat to moderate terrain. Great for core/posture."
+        },
+        "brisk_incline_walk": {
+          "name": "Brisk Incline Walk",
+          "duration_minutes": 50,
+          "notes": "Treadmill at 10-15% incline OR hilly route. Zero ankle impact."
+        },
+        "family_hike": {
+          "name": "Family Hike",
+          "duration_minutes": 75,
+          "notes": "Mixed terrain. Keep HR in Zone 2. Combines exercise with family time."
+        }
+      }
+    },
+    "recovery": {
+      "id": "recovery",
+      "name": "Recovery Day",
+      "type": "recovery",
+      "day_of_week": 6,
+      "duration_minutes": 30,
+      "goal": "System reset. Family time.",
+      "exercises": [
+        {
+          "id": "nsdr",
+          "name": "NSDR (Non-Sleep Deep Rest)",
+          "duration_minutes": 20,
+          "notes": "Yoga Nidra or similar protocol."
+        },
+        {
+          "id": "family_walk",
+          "name": "Family Walk",
+          "duration_minutes": 30,
+          "notes": "Light movement with family."
+        }
+      ]
+    }
+  },
+  "red_day_override": {
+    "description": "When Traffic Light is RED, replace scheduled workout with this recovery protocol.",
+    "protocol": {
+      "id": "red_day",
+      "name": "RED DAY Protocol",
+      "type": "recovery",
+      "duration_minutes": 40,
+      "exercises": [
+        {
+          "id": "zone2_walk",
+          "name": "Zone 2 Walk",
+          "duration_minutes": 20,
+          "notes": "Light walking only. No intensity."
+        },
+        {
+          "id": "nsdr",
+          "name": "NSDR (Non-Sleep Deep Rest)",
+          "duration_minutes": 20,
+          "notes": "Essential for recovery."
+        }
+      ]
+    }
+  },
+  "injury_context": {
+    "diagnosis": "Grade 1 Supraspinatus Tendinopathy (Rotator Cuff)",
+    "mechanism": "Double Crush Injury - Chronic (repetitive overhead loading) + Acute (soccer fall)",
+    "side": "right",
+    "contraindicated_exercises": [
+      "pullups",
+      "chinups",
+      "wide_grip_pullups",
+      "upright_rows"
+    ],
+    "phase1_restrictions": [
+      "No vertical pulling movements",
+      "No sleeping on injured side"
+    ]
+  }
+}

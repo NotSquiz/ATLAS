@@ -1,0 +1,1694 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "created": "2026-01-16",
+    "updated": "2026-01-16",
+    "author": "Claude (Opus Web)",
+    "purpose": "ATLAS voice assistant comprehensive exercise form library",
+    "personality": "Lethal Gentleman - direct, efficient, no-nonsense coaching with dry wit",
+    "context": {
+      "user_injuries": ["Grade 1 rotator cuff tear (suspected)", "Ankle recovery"],
+      "equipment": "Home gym - dumbbells, kettlebells, bench, resistance bands, foam roller",
+      "training_phase": "Phase 1 Foundation & Rehab"
+    },
+    "usage_notes": {
+      "voice_response": "Keep responses concise for voice - setup + 2-3 key cues + main mistake",
+      "pain_rule": "ALL exercises: if pain >3/10, stop and modify or skip",
+      "tempo_default": "Controlled movement always - rushing is for amateurs"
+    }
+  },
+
+  "exercises": {
+    
+    "goblet_squat": {
+      "name": "Goblet Squat",
+      "aliases": ["goblet", "goblet squat", "kb squat", "dumbbell squat"],
+      "category": "lower_body",
+      "movement_pattern": "squat",
+      "equipment": ["dumbbell", "kettlebell"],
+      "muscles_primary": ["quadriceps", "glutes"],
+      "muscles_secondary": ["core", "upper_back", "hamstrings", "adductors"],
+      
+      "setup": "Hold weight at chest height with elbows tucked. Feet shoulder-width or slightly wider, toes turned out 15-30 degrees.",
+      
+      "execution": [
+        "Big breath into belly, brace core like you're about to get punched",
+        "Break at hips AND knees together - don't just push hips back",
+        "Push knees out in same direction as toes, don't let them cave",
+        "Lower until thighs parallel or just below - elbows between knees at bottom",
+        "Drive through whole foot to stand, squeeze glutes at top"
+      ],
+      
+      "cues": [
+        "Spread the floor with your feet - creates hip tension",
+        "Proud chest, weight stays glued to sternum",
+        "Sit down between your legs, not back behind them",
+        "Think about pushing the floor away as you stand"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Weight shifts to toes / heels rise",
+          "fix": "Drive through whole foot. If mobility is the issue, elevate heels on a 1-inch plate or wedge."
+        },
+        {
+          "mistake": "Knees cave inward",
+          "fix": "Screw feet into floor, actively push knees out. Consider a resistance band above knees as a cue."
+        },
+        {
+          "mistake": "Torso tips forward / lower back rounds",
+          "fix": "Keep chest up, elbows high. Weight acts as counterbalance - use it."
+        }
+      ],
+      
+      "breathing": "Inhale at top, hold breath and brace during descent, exhale forcefully as you drive up",
+      
+      "modifications": {
+        "easier": "Box squat - sit to a bench or box behind you for depth reference",
+        "harder": "Pause 2-3 seconds at bottom, or add slow 4-second descent",
+        "ankle_friendly": "Elevate heels 1-2 inches on plates or squat wedge"
+      },
+      
+      "phase1_notes": "Perfect for Phase 1 - teaches squat mechanics with lighter load. Elevate heels if ankle dorsiflexion is limited."
+    },
+
+    "rdl": {
+      "name": "Romanian Deadlift",
+      "aliases": ["rdl", "romanian deadlift", "romanian", "db rdl", "dumbbell rdl"],
+      "category": "lower_body",
+      "movement_pattern": "hip_hinge",
+      "equipment": ["dumbbells", "kettlebell", "barbell"],
+      "muscles_primary": ["hamstrings", "glutes"],
+      "muscles_secondary": ["lower_back", "upper_back", "core", "grip"],
+      
+      "setup": "Stand tall, feet hip-width, weights held at thighs. Slight bend in knees that STAYS FIXED throughout.",
+      
+      "execution": [
+        "Unlock knees slightly - this angle doesn't change during the lift",
+        "Initiate by pushing hips BACK, not by bending forward",
+        "Let weights slide down thighs - keep them close",
+        "Lower until you feel strong hamstring stretch - stop before back rounds",
+        "Drive hips forward to stand, squeeze glutes hard at top"
+      ],
+      
+      "cues": [
+        "Imagine closing a car door with your arse",
+        "Hips back like someone's pulling you by a belt",
+        "Weights paint your thighs - never lose contact",
+        "Neutral spine is non-negotiable - stop when it wants to round"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Turning it into a squat - bending knees too much",
+          "fix": "Set slight knee bend at start and FREEZE it. The movement is a hip hinge, not a squat."
+        },
+        {
+          "mistake": "Rounding lower back to get more range",
+          "fix": "Your range is determined by hamstring flexibility. Stop when spine wants to flex."
+        },
+        {
+          "mistake": "Weights drift away from body",
+          "fix": "Engage lats, pull weights into thighs. Think about bending the bar around your legs."
+        }
+      ],
+      
+      "breathing": "Breath in at top, brace core, hold during descent, exhale as you drive hips forward",
+      
+      "modifications": {
+        "easier": "Use blocks or plates as targets - tap them at bottom for feedback",
+        "harder": "Slow 4-second descent, 2-second pause at bottom stretch",
+        "single_leg": "Single-leg RDL for balance and asymmetry correction"
+      },
+      
+      "phase1_notes": "Essential hip hinge pattern. Use tempo to ingrain proper mechanics."
+    },
+
+    "floor_press": {
+      "name": "Dumbbell Floor Press",
+      "aliases": ["floor press", "db floor press", "chest press", "press"],
+      "category": "upper_body",
+      "movement_pattern": "horizontal_push",
+      "equipment": ["dumbbells"],
+      "muscles_primary": ["chest", "triceps"],
+      "muscles_secondary": ["anterior_deltoids", "core"],
+      
+      "setup": "Lie on back, knees bent, feet flat. Dumbbells at chest height, elbows on floor at 45-degree angle to torso - NOT flared at 90 degrees.",
+      
+      "execution": [
+        "Squeeze shoulder blades together, press them into floor",
+        "Grip dumbbells tight, wrists neutral - not bent back",
+        "Press up and slightly in - weights meet above chest, not face",
+        "Lower with control until upper arms touch floor - don't bounce",
+        "Brief pause on floor, then press again"
+      ],
+      
+      "cues": [
+        "45-degree elbow angle - protects your shoulder",
+        "Drive shoulder blades into the floor",
+        "Squeeze glutes and brace core for stability",
+        "Control the descent - floor is not a trampoline"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Elbows flared at 90 degrees to body",
+          "fix": "Tuck to 45 degrees. This is shoulder-safe pressing - critical with your rotator cuff."
+        },
+        {
+          "mistake": "Bouncing elbows off floor",
+          "fix": "Touch floor gently, pause, then press. The pause removes momentum."
+        },
+        {
+          "mistake": "Lower back arched off floor",
+          "fix": "Squeeze glutes, press lower back toward floor."
+        }
+      ],
+      
+      "breathing": "Inhale as you lower, exhale as you press",
+      
+      "modifications": {
+        "easier": "Lighter weights, focus on slow negatives",
+        "harder": "3-second pause on floor between reps",
+        "neutral_grip": "Palms facing each other - even more shoulder friendly"
+      },
+      
+      "phase1_notes": "YOUR go-to pressing movement. Floor limits range of motion - protects shoulder. 45-degree elbows are mandatory with your rotator cuff situation."
+    },
+
+    "chest_supported_row": {
+      "name": "Chest-Supported Row",
+      "aliases": ["chest supported row", "incline row", "incline dumbbell row", "supported row", "row"],
+      "category": "upper_body",
+      "movement_pattern": "horizontal_pull",
+      "equipment": ["dumbbells", "incline_bench"],
+      "muscles_primary": ["lats", "rhomboids", "rear_deltoids"],
+      "muscles_secondary": ["biceps", "traps", "forearms"],
+      
+      "setup": "Set bench to 30-45 degrees. Lie chest on pad, feet planted firmly. Let arms hang straight down with dumbbells, head neutral looking at floor.",
+      
+      "execution": [
+        "Keep chest pressed into bench throughout - no lifting up",
+        "Initiate row by driving elbows back and up toward ceiling",
+        "Squeeze shoulder blades together at top - hold for a beat",
+        "Lower with control - full arm extension at bottom",
+        "Arms travel at slight angle toward hips, not straight out"
+      ],
+      
+      "cues": [
+        "Elbows lead the way - think puppeteer pulling strings attached to elbows",
+        "Row to your hips, not your armpits",
+        "Squeeze shoulder blades like you're cracking a walnut between them",
+        "Chest stays glued to bench - if it lifts, weight is too heavy"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Lifting chest off bench to get more range",
+          "fix": "Keep chest planted. If you need to lift off, the weight is too heavy. Ego down."
+        },
+        {
+          "mistake": "Shrugging shoulders to ears",
+          "fix": "Pull shoulder blades DOWN and BACK. Think about putting them in your back pockets."
+        },
+        {
+          "mistake": "Using momentum / jerking weights",
+          "fix": "Slow and controlled. 2 seconds up, squeeze, 2 seconds down. No exceptions."
+        },
+        {
+          "mistake": "Elbows flaring wide",
+          "fix": "Angle elbows toward hips for lat focus. Wide elbows shift to upper back only."
+        }
+      ],
+      
+      "breathing": "Exhale as you row up, inhale as you lower",
+      
+      "modifications": {
+        "wider_grip": "Elbows out wider for more upper back and rear delt focus",
+        "neutral_grip": "Palms facing each other - easier on elbows",
+        "single_arm": "One arm at a time for asymmetry correction"
+      },
+      
+      "phase1_notes": "Safe for your shoulder because bench supports you - no strain on rotator cuff from stabilizing. Build your back without aggravating the shoulder."
+    },
+
+    "kettlebell_swing": {
+      "name": "Kettlebell Swing",
+      "aliases": ["kb swing", "kettlebell swing", "swing", "russian swing"],
+      "category": "full_body",
+      "movement_pattern": "hip_hinge_ballistic",
+      "equipment": ["kettlebell"],
+      "muscles_primary": ["glutes", "hamstrings", "core"],
+      "muscles_secondary": ["lats", "shoulders", "forearms", "lower_back"],
+      
+      "setup": "KB on floor about 12 inches in front of you. Feet slightly wider than shoulder width. Hinge at hips to grip handle with both hands.",
+      
+      "execution": [
+        "Hike KB back between legs - high on inner thighs, wrists touching",
+        "Snap hips forward explosively - this is where power comes from",
+        "Let arms float up naturally - chest height max for Russian swing",
+        "At top: standing tall, glutes squeezed HARD, core braced like a plank",
+        "Wait until KB starts falling, then hinge at LAST second - play chicken with your hips"
+      ],
+      
+      "cues": [
+        "It's a hip hinge, not a squat - your arms are just ropes holding the bell",
+        "Hips do 100% of the work - arms do 0%",
+        "Squeeze glutes like you're cracking a walnut at top",
+        "Plank at the top - don't lean back",
+        "Attack your zipper with your wrists on the backswing"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Turning it into a squat - knees bending too much",
+          "fix": "Keep shins vertical. Hinge at hips, don't squat down. Put a foam roller between feet - if you hit it, you're squatting."
+        },
+        {
+          "mistake": "Using arms to lift the bell",
+          "fix": "Arms are just hooks. If your shoulders are burning, your hips aren't doing the work. Go heavier - forces proper form."
+        },
+        {
+          "mistake": "Leaning back at top",
+          "fix": "Stand tall like a plank. Squeeze glutes to STOP the movement, don't hyperextend spine."
+        },
+        {
+          "mistake": "Hinging too early on the way down",
+          "fix": "Play chicken - wait until bell is almost at your hips before hinging back. Early hinge = back pain."
+        }
+      ],
+      
+      "breathing": "Sharp exhale at top (like a punch), inhale on backswing",
+      
+      "modifications": {
+        "easier": "Dead-stop swings - set bell down between each rep to reset",
+        "harder": "Single-arm swings, or heavier bell",
+        "towel_swing": "Loop towel through handle - forces you to use hips, can't cheat with arms"
+      },
+      
+      "phase1_notes": "Powerful hip hinge pattern. Start with dead-stop single swings until form is locked. Do NOT let ego drive weight selection."
+    },
+
+    "plank": {
+      "name": "Plank",
+      "aliases": ["plank", "forearm plank", "front plank", "prone bridge"],
+      "category": "core",
+      "movement_pattern": "isometric_anti_extension",
+      "equipment": ["none", "mat"],
+      "muscles_primary": ["transverse_abdominis", "rectus_abdominis", "obliques"],
+      "muscles_secondary": ["glutes", "shoulders", "lats", "quads"],
+      
+      "setup": "Forearms on floor, elbows directly under shoulders. Toes tucked, legs straight. Body forms straight line from head to heels.",
+      
+      "execution": [
+        "Squeeze glutes - this protects lower back",
+        "Brace core like you're about to get punched in the gut",
+        "Push forearms into floor - creates lat engagement",
+        "Tuck pelvis slightly - eliminates low back sag",
+        "Eyes on floor, neutral neck - not looking forward"
+      ],
+      
+      "cues": [
+        "Squeeze your arse - this is non-negotiable",
+        "Think about pulling elbows toward toes (they won't move, but the intent creates tension)",
+        "Straight line from ears to ankles - broomstick test",
+        "Breathe. Don't hold your breath like an idiot."
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Hips sagging toward floor",
+          "fix": "Squeeze glutes harder. If they still sag, you're done - end the set. Quality over quantity."
+        },
+        {
+          "mistake": "Hips piked up (bum in air)",
+          "fix": "You're not doing downward dog. Lower hips until body is straight line."
+        },
+        {
+          "mistake": "Head drooping or looking forward",
+          "fix": "Neutral neck. Look at floor between forearms. Ears in line with shoulders."
+        },
+        {
+          "mistake": "Holding breath",
+          "fix": "Breathe normally. Core should stay braced while breathing - that's the skill you're building."
+        }
+      ],
+      
+      "breathing": "Normal, continuous breathing - maintain brace while breathing",
+      
+      "modifications": {
+        "easier": "From knees, or elevated hands on bench",
+        "harder": "Add arm reaches, leg lifts, or body saw movement",
+        "high_plank": "From hands - more shoulder involvement"
+      },
+      
+      "duration": {
+        "beginner": "20-30 seconds",
+        "intermediate": "45-60 seconds",
+        "advanced": "60-90 seconds"
+      },
+      
+      "phase1_notes": "Quality over time. 30 seconds with perfect form beats 2 minutes of garbage form. End set when form breaks."
+    },
+
+    "dead_bug": {
+      "name": "Dead Bug",
+      "aliases": ["dead bug", "deadbug", "supine march"],
+      "category": "core",
+      "movement_pattern": "anti_extension",
+      "equipment": ["none", "mat"],
+      "muscles_primary": ["transverse_abdominis", "rectus_abdominis"],
+      "muscles_secondary": ["hip_flexors", "obliques"],
+      
+      "setup": "Lie on back, arms pointing to ceiling. Legs in tabletop - hips and knees at 90 degrees. Press lower back INTO floor - no gap.",
+      
+      "execution": [
+        "Press lower back firmly into floor - this is the key",
+        "Slowly lower opposite arm and leg toward floor",
+        "Arm goes overhead, leg extends straight out",
+        "Stop BEFORE lower back lifts off floor",
+        "Return to start with control, switch sides"
+      ],
+      
+      "cues": [
+        "Flatten your lower back into the mat - imagine you're squashing a blueberry",
+        "Move slow - this isn't a race",
+        "If back lifts off floor, you've gone too far",
+        "Think about resisting your limbs moving - not just moving them"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Lower back arches off floor",
+          "fix": "Reduce range of motion. Only go as far as you can while keeping back flat. That's your working range."
+        },
+        {
+          "mistake": "Moving too fast",
+          "fix": "2-3 seconds each direction. Control is the point. Speed kills the benefit."
+        },
+        {
+          "mistake": "Holding breath",
+          "fix": "Exhale as you extend limbs, inhale as you return. Breathing while bracing is the skill."
+        },
+        {
+          "mistake": "Extending same-side arm and leg",
+          "fix": "OPPOSITE arm and leg. Right arm with left leg. Cross-body pattern."
+        }
+      ],
+      
+      "breathing": "Exhale as limbs extend away, inhale as they return",
+      
+      "modifications": {
+        "easier": "Move only legs (arms stay up), or only arms (legs stay in tabletop)",
+        "harder": "Hold light dumbbells, or add resistance band around feet",
+        "stability_ball": "Press ball between one knee and one hand - maintains tension"
+      },
+      
+      "phase1_notes": "Foundation exercise. Teaches core bracing while limbs move - exactly what you need for all other lifts. Do this daily as warmup."
+    },
+
+    "bird_dog": {
+      "name": "Bird Dog",
+      "aliases": ["bird dog", "birddog", "quadruped", "contralateral reach"],
+      "category": "core",
+      "movement_pattern": "anti_rotation",
+      "equipment": ["none", "mat"],
+      "muscles_primary": ["erector_spinae", "multifidus", "glutes"],
+      "muscles_secondary": ["transverse_abdominis", "deltoids", "hamstrings"],
+      
+      "setup": "Hands and knees position. Hands under shoulders, knees under hips. Flat back - spine neutral. Eyes looking at floor.",
+      
+      "execution": [
+        "Engage core and squeeze glutes before moving",
+        "Slowly extend opposite arm and leg simultaneously",
+        "Reach arm forward, leg back - both parallel to floor",
+        "Hold for 1-2 seconds at full extension",
+        "Return with control, switch sides"
+      ],
+      
+      "cues": [
+        "Imagine balancing a glass of water on your lower back - don't let it spill",
+        "Reach LONG - arm forward, leg back, like someone's stretching you",
+        "Hips and shoulders stay SQUARE - no rotation",
+        "Squeeze glute of extending leg HARD"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Lower back sags or arches",
+          "fix": "Engage core BEFORE moving limbs. If back moves, range of motion is too big."
+        },
+        {
+          "mistake": "Hip rotates/opens to side",
+          "fix": "Keep knee of extending leg pointing DOWN at floor. Don't let it rotate outward."
+        },
+        {
+          "mistake": "Rushing through reps",
+          "fix": "Slow and controlled. 2 seconds out, hold, 2 seconds back. This builds control, not cardio."
+        },
+        {
+          "mistake": "Head lifting up",
+          "fix": "Eyes on floor. Neutral neck in line with spine. Not looking at the wall ahead."
+        }
+      ],
+      
+      "breathing": "Exhale as you extend, inhale as you return",
+      
+      "modifications": {
+        "easier": "Move only arm OR only leg - not both together",
+        "harder": "Add 3-second hold at top, or loop resistance band around feet",
+        "elevated": "Hands on bench for more challenge to stability"
+      },
+      
+      "phase1_notes": "Part of Stuart McGill's 'Big 3' for back health. Essential for your program. Teaches spine stability while limbs move - carry over to every other exercise."
+    },
+
+    "glute_bridge": {
+      "name": "Glute Bridge",
+      "aliases": ["glute bridge", "bridge", "hip bridge", "glute raise"],
+      "category": "lower_body",
+      "movement_pattern": "hip_extension",
+      "equipment": ["none", "mat"],
+      "muscles_primary": ["glutes", "hamstrings"],
+      "muscles_secondary": ["core", "lower_back"],
+      
+      "setup": "Lie on back, knees bent, feet flat on floor hip-width apart. Feet close enough that fingertips can touch heels. Arms at sides, palms down.",
+      
+      "execution": [
+        "Push through heels - not toes",
+        "Squeeze glutes to lift hips off floor",
+        "Lift until body forms straight line from knees to shoulders",
+        "Squeeze glutes HARD at top - 1 second hold",
+        "Lower with control - don't just drop"
+      ],
+      
+      "cues": [
+        "Drive through heels - toes can even lift slightly",
+        "Squeeze glutes like you're pinching a coin between your cheeks",
+        "Straight line from knees to shoulders - no excessive arch",
+        "Don't push through lower back - push through glutes"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Pushing through toes instead of heels",
+          "fix": "Lift toes off floor slightly if needed. Heel drive activates glutes properly."
+        },
+        {
+          "mistake": "Hyperextending lower back at top",
+          "fix": "Stop when body is straight line. If you feel it in lower back, you've gone too high."
+        },
+        {
+          "mistake": "Not squeezing glutes at top",
+          "fix": "The squeeze is the point. Without it, hamstrings take over. Squeeze like your life depends on it."
+        },
+        {
+          "mistake": "Feet too far from bum",
+          "fix": "Bring feet closer. Should be able to touch heels with fingertips from starting position."
+        }
+      ],
+      
+      "breathing": "Exhale as you lift, inhale as you lower",
+      
+      "modifications": {
+        "easier": "Smaller range of motion, feet wider",
+        "harder": "Single leg, or add band around knees, or add weight on hips",
+        "march": "At top, march knees up alternating - adds stability challenge"
+      },
+      
+      "phase1_notes": "Perfect warmup exercise. Activates glutes before squats, deadlifts, and any lower body work. Do 10-15 in every warmup."
+    },
+
+    "cat_cow": {
+      "name": "Cat-Cow",
+      "aliases": ["cat cow", "cat-cow", "catcow", "spinal waves"],
+      "category": "mobility",
+      "movement_pattern": "spinal_flexion_extension",
+      "equipment": ["none", "mat"],
+      "muscles_primary": ["erector_spinae", "rectus_abdominis"],
+      "muscles_secondary": ["hip_flexors", "neck_muscles", "shoulders"],
+      
+      "setup": "Hands and knees. Hands under shoulders, knees under hips. Start with neutral spine.",
+      
+      "execution": [
+        "COW: Inhale, drop belly toward floor, lift tailbone and chest, eyes forward",
+        "Initiate from pelvis - tailbone tilts up first, then wave travels up spine",
+        "CAT: Exhale, round spine toward ceiling, tuck tailbone, chin to chest",
+        "Again, initiate from pelvis - tailbone tucks first, then wave up spine",
+        "Move slowly between positions - feel each vertebra"
+      ],
+      
+      "cues": [
+        "Move from the pelvis first - let the wave travel up",
+        "Slow and controlled - this isn't a race",
+        "Feel each segment of your spine moving",
+        "Don't force end ranges - go only where comfortable"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Moving too fast",
+          "fix": "3-4 seconds each direction. The slow movement is what mobilizes the spine."
+        },
+        {
+          "mistake": "Only moving at waist / lower back",
+          "fix": "Move through entire spine - from tailbone to skull. Include neck in the movement."
+        },
+        {
+          "mistake": "Holding breath",
+          "fix": "Inhale to cow (belly drops), exhale to cat (back rounds). Breath drives movement."
+        },
+        {
+          "mistake": "Pushing through pain",
+          "fix": "If any position hurts, reduce range. Only move through pain-free range."
+        }
+      ],
+      
+      "breathing": "Inhale for cow (arch), exhale for cat (round)",
+      
+      "modifications": {
+        "seated": "Can do in chair - hands on thighs, same spinal movement",
+        "standing": "Hands on wall - similar movement pattern"
+      },
+      
+      "phase1_notes": "Do 10 reps every morning and before every workout. Wakes up the spine, prepares it for movement. Non-negotiable daily mobility."
+    },
+
+    "worlds_greatest_stretch": {
+      "name": "World's Greatest Stretch",
+      "aliases": ["worlds greatest stretch", "wgs", "greatest stretch", "lunge with rotation"],
+      "category": "mobility",
+      "movement_pattern": "multi_joint_dynamic",
+      "equipment": ["none", "mat"],
+      "muscles_primary": ["hip_flexors", "hamstrings", "thoracic_spine"],
+      "muscles_secondary": ["glutes", "adductors", "chest", "shoulders"],
+      
+      "setup": "Start in high plank position or standing.",
+      
+      "execution": [
+        "Step right foot outside right hand into deep lunge",
+        "Left knee can rest on floor for support if needed",
+        "Place left hand firmly on floor for stability",
+        "Rotate torso to right, reach right arm to ceiling",
+        "Eyes follow right hand - feel thoracic rotation",
+        "Return hand to floor, step back to plank, switch sides"
+      ],
+      
+      "cues": [
+        "Front knee tracks over ankle - not past toes",
+        "Twist comes from mid-back (thoracic), not lower back",
+        "Keep back leg active - don't just let it hang there",
+        "Really reach for the ceiling - maximize rotation"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Front knee collapsing inward",
+          "fix": "Push knee OUT toward pinky toe side. Engages glutes and protects knee."
+        },
+        {
+          "mistake": "Rushing through it",
+          "fix": "3-5 seconds per position. This is a stretch, not cardio. Slow wins."
+        },
+        {
+          "mistake": "Twisting from lower back",
+          "fix": "Lower back stays stable. Rotation comes from upper back. Think about opening chest to sky."
+        },
+        {
+          "mistake": "Not opening hip enough",
+          "fix": "Drop back hip down and forward. That's where the hip flexor stretch comes from."
+        }
+      ],
+      
+      "breathing": "Exhale as you rotate up, inhale as you return",
+      
+      "modifications": {
+        "easier": "Back knee down on mat, use yoga block under hand",
+        "add_hamstring": "After rotation, rock back and straighten front leg - stretch hamstring"
+      },
+      
+      "phase1_notes": "If you only do ONE warmup stretch, this is it. Hits ankles, hips, thoracic spine all at once. 5 per side before every workout."
+    },
+
+    "band_pull_apart": {
+      "name": "Band Pull-Apart",
+      "aliases": ["band pull apart", "pull apart", "band pulls"],
+      "category": "shoulder_rehab",
+      "movement_pattern": "horizontal_abduction",
+      "equipment": ["resistance_band"],
+      "muscles_primary": ["rear_deltoids", "rhomboids"],
+      "muscles_secondary": ["traps", "rotator_cuff"],
+      
+      "setup": "Stand tall, hold band in front at shoulder height. Arms straight, palms down, band taut but not stretched.",
+      
+      "execution": [
+        "Keep arms straight throughout",
+        "Pull band apart by squeezing shoulder blades together",
+        "Drive hands out to sides until band touches chest",
+        "Squeeze shoulder blades HARD at end position - 1 second hold",
+        "Return slowly with control - don't let band snap back"
+      ],
+      
+      "cues": [
+        "Pull with your back, not your arms - elbows stay straight",
+        "Shoulder blades go DOWN and BACK - not UP toward ears",
+        "Control the return - eccentric is half the exercise",
+        "Think about trying to touch your shoulder blades together"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Bending elbows to cheat",
+          "fix": "Lock elbows straight. If you can't complete rep, use lighter band."
+        },
+        {
+          "mistake": "Shrugging shoulders up",
+          "fix": "Actively depress shoulders DOWN before pulling. Shoulders stay away from ears."
+        },
+        {
+          "mistake": "Letting band snap back",
+          "fix": "Control the return. Eccentric strengthening is crucial for shoulder health."
+        }
+      ],
+      
+      "breathing": "Exhale as you pull apart, inhale as you return",
+      
+      "modifications": {
+        "easier": "Lighter band, smaller range of motion",
+        "higher": "Pull to face level for upper traps emphasis",
+        "lower": "Pull to belly level for different angle"
+      },
+      
+      "phase1_notes": "CRITICAL for your shoulder rehab. 15-20 reps in warmup, 20 reps in shoulder rehab block. Builds posterior shoulder strength that counteracts internal rotation dominance."
+    },
+
+    "face_pull": {
+      "name": "Face Pull",
+      "aliases": ["face pull", "face pulls", "high pull"],
+      "category": "shoulder_rehab",
+      "movement_pattern": "horizontal_pull_external_rotation",
+      "equipment": ["resistance_band", "cable"],
+      "muscles_primary": ["rear_deltoids", "external_rotators"],
+      "muscles_secondary": ["traps", "rhomboids"],
+      
+      "setup": "Band attached at face height (door anchor, pull-up bar). Hold ends with overhand grip, arms extended, palms facing down.",
+      
+      "execution": [
+        "Pull band toward face - elbows go high and wide",
+        "As you pull, rotate hands outward - finish with thumbs pointing back",
+        "End position: hands beside ears, elbows high, external rotation",
+        "Squeeze shoulder blades together at end - hold 1 second",
+        "Return with control"
+      ],
+      
+      "cues": [
+        "Pull to your ears, not your chin",
+        "Elbows stay HIGH - above wrist level",
+        "End with external rotation - thumbs pointing behind you",
+        "Don't lean back to cheat - stay tall"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Pulling to chin/chest level",
+          "fix": "Pull to EAR level. This is what hits the external rotators."
+        },
+        {
+          "mistake": "No external rotation at end",
+          "fix": "Rotate hands back at top - like you're doing a double bicep pose. This is the money position."
+        },
+        {
+          "mistake": "Leaning back to complete rep",
+          "fix": "Stay vertical. If you need to lean, use lighter band."
+        }
+      ],
+      
+      "breathing": "Exhale as you pull, inhale as you return",
+      
+      "phase1_notes": "Essential for rotator cuff health. The external rotation at top specifically targets the muscles you need to rehab. Do these 3x weekly minimum. THE HEALER exercise."
+    },
+
+    "side_lying_external_rotation": {
+      "name": "Side-Lying External Rotation",
+      "aliases": ["side lying external rotation", "sidelying ER", "external rotation", "the healer"],
+      "category": "shoulder_rehab",
+      "movement_pattern": "external_rotation",
+      "equipment": ["light_dumbbell", "resistance_band"],
+      "muscles_primary": ["infraspinatus", "teres_minor"],
+      "muscles_secondary": ["posterior_deltoid"],
+      
+      "setup": "Lie on uninvolved side. Involved arm on top, elbow bent 90 degrees, elbow pinned to side with rolled towel if needed.",
+      
+      "execution": [
+        "Keep elbow PINNED to side throughout",
+        "Rotate forearm UP toward ceiling - external rotation",
+        "Go only as high as comfortable - don't force",
+        "SLOW 4-second lowering (eccentric) - this is where the magic happens",
+        "Return to start, repeat"
+      ],
+      
+      "cues": [
+        "Elbow stays glued to your side - it doesn't move",
+        "The SLOW lowering is the rehab - don't drop it fast",
+        "Pain-free range only - stop before pain starts",
+        "Think about your forearm as a door hinge rotating on your elbow"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Elbow drifting away from body",
+          "fix": "Put rolled towel under elbow - keeps it in correct position."
+        },
+        {
+          "mistake": "Going too heavy",
+          "fix": "This is rehab, not strength training. 1-2kg max. Control beats load."
+        },
+        {
+          "mistake": "Fast lowering phase",
+          "fix": "4-second eccentric minimum. The slow lowering is what heals the tendon."
+        },
+        {
+          "mistake": "Pushing through pain",
+          "fix": "STOP before pain. Work in pain-free range. Painful rehab is counterproductive."
+        }
+      ],
+      
+      "breathing": "Normal breathing throughout",
+      
+      "phase1_notes": "THE exercise for rotator cuff rehab. Eccentric loading is proven for tendon healing. 3 sets of 10-15 daily. Very light weight - 1-2kg. Slow 4-second lowering."
+    },
+
+    "doorframe_external_rotation": {
+      "name": "Doorframe External Rotation Isometric",
+      "aliases": ["doorframe ER", "isometric ER", "shoulder painkiller", "doorframe hold"],
+      "category": "shoulder_rehab",
+      "movement_pattern": "isometric_external_rotation",
+      "equipment": ["doorframe"],
+      "muscles_primary": ["infraspinatus", "teres_minor"],
+      "muscles_secondary": ["posterior_deltoid"],
+      
+      "setup": "Stand in doorframe. Elbow bent 90 degrees, pinned to side. Back of wrist against door frame.",
+      
+      "execution": [
+        "Push back of wrist INTO doorframe - external rotation force",
+        "Use submaximal effort - 30-50% max, not all-out",
+        "Hold for 45 seconds",
+        "Breathe normally throughout",
+        "Release, rest, repeat"
+      ],
+      
+      "cues": [
+        "Gentle push - not maximum effort",
+        "No pain - if it hurts, reduce force",
+        "Elbow stays glued to side",
+        "Keep breathing - don't hold breath"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Pushing too hard",
+          "fix": "Submaximal effort only. This is activation and neural drive, not strength test."
+        },
+        {
+          "mistake": "Elbow drifting out",
+          "fix": "Keep elbow pinned to side. Put towel under elbow if needed."
+        },
+        {
+          "mistake": "Holding breath",
+          "fix": "Normal breathing. Breath holding spikes blood pressure unnecessarily."
+        }
+      ],
+      
+      "breathing": "Normal, continuous breathing",
+      
+      "duration": "45 seconds per hold, 2 holds per session",
+      
+      "phase1_notes": "Pain-killing isometric. Do BEFORE workouts to 'wake up' rotator cuff. Also good when shoulder is cranky - activates the muscles without aggravating tendon."
+    },
+
+    "towel_crush": {
+      "name": "Towel Crush",
+      "aliases": ["towel crush", "towel squeeze", "shoulder squeeze"],
+      "category": "shoulder_rehab",
+      "movement_pattern": "isometric_adduction",
+      "equipment": ["rolled_towel"],
+      "muscles_primary": ["pectorals", "anterior_deltoid"],
+      "muscles_secondary": ["serratus_anterior"],
+      
+      "setup": "Stand or sit. Roll small towel. Place between elbow and side body. Arm at side, elbow bent 90 degrees.",
+      
+      "execution": [
+        "Squeeze elbow into towel/body - adduction force",
+        "Hold for 10 seconds",
+        "Release, rest 2-3 seconds",
+        "Repeat 5 times"
+      ],
+      
+      "cues": [
+        "Moderate squeeze - not maximum effort",
+        "Should feel front of shoulder working",
+        "No pain - if painful, reduce force"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Squeezing too hard",
+          "fix": "50% effort max. This is activation, not strength training."
+        }
+      ],
+      
+      "breathing": "Normal breathing",
+      
+      "duration": "10 seconds per squeeze, 5 squeezes per set",
+      
+      "phase1_notes": "Pairs with doorframe ER. Activates anterior shoulder to balance the posterior work. Part of your shoulder rehab block."
+    },
+
+    "scapular_wall_slide": {
+      "name": "Scapular Wall Slide",
+      "aliases": ["wall slide", "wall angel", "scapular slide"],
+      "category": "shoulder_rehab",
+      "movement_pattern": "scapular_elevation_depression",
+      "equipment": ["wall"],
+      "muscles_primary": ["serratus_anterior", "lower_traps"],
+      "muscles_secondary": ["rhomboids", "rotator_cuff"],
+      
+      "setup": "Stand with back flat against wall. Feet few inches from wall. Arms at sides, elbows and backs of hands against wall.",
+      
+      "execution": [
+        "Slide arms up wall - keep elbows and hands touching wall",
+        "Go as high as you can while maintaining wall contact",
+        "At top, push hands INTO wall slightly - activates serratus",
+        "Slide back down with control",
+        "Keep entire back flat against wall throughout"
+      ],
+      
+      "cues": [
+        "Elbows AND hands stay on wall - both points of contact",
+        "If something comes off wall, that's your current range limit",
+        "Slight push into wall at top - serratus activation",
+        "Core stays braced - no arching away from wall"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Lower back arching off wall",
+          "fix": "Brace core, flatten lower back into wall. If arch happens, reduce range."
+        },
+        {
+          "mistake": "Elbows or hands losing wall contact",
+          "fix": "That's your limit. Only go as high as you can maintain contact."
+        },
+        {
+          "mistake": "Shrugging shoulders to get higher",
+          "fix": "Keep shoulders DOWN. Range is limited - that's fine. Don't compensate."
+        }
+      ],
+      
+      "breathing": "Exhale as you slide up, inhale as you slide down",
+      
+      "phase1_notes": "Teaches proper scapular mechanics. Critical for shoulder health. If you can't do this clean, your shoulder blade isn't moving properly."
+    },
+
+    "hip_flexor_stretch": {
+      "name": "Hip Flexor Stretch",
+      "aliases": ["hip flexor stretch", "kneeling hip flexor", "couch stretch", "psoas stretch"],
+      "category": "mobility",
+      "movement_pattern": "static_stretch",
+      "equipment": ["mat", "optional_couch"],
+      "muscles_primary": ["psoas", "rectus_femoris"],
+      "muscles_secondary": ["quadriceps", "TFL"],
+      
+      "setup": "Half-kneeling position. Back knee on pad, front foot flat on floor. Torso upright.",
+      
+      "execution": [
+        "Tuck pelvis UNDER - posterior pelvic tilt",
+        "Squeeze glute of back leg HARD",
+        "Shift weight gently forward while maintaining tuck",
+        "You should feel stretch in front of back hip",
+        "Hold for 60 seconds minimum"
+      ],
+      
+      "cues": [
+        "Tuck tailbone UNDER - this is what unlocks the stretch",
+        "If you don't squeeze glute, you're not stretching hip flexor properly",
+        "Don't lean forward at waist - stay upright",
+        "Stretch is in FRONT of hip, not lower back"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Arching lower back to feel stretch",
+          "fix": "That's lower back extension, not hip flexor stretch. Tuck pelvis, squeeze glute."
+        },
+        {
+          "mistake": "Leaning torso forward",
+          "fix": "Stay upright. Lean is cheating - reduces stretch on hip flexor."
+        },
+        {
+          "mistake": "Not squeezing glute",
+          "fix": "Glute squeeze is mandatory. It's what creates reciprocal inhibition of the hip flexor."
+        }
+      ],
+      
+      "breathing": "Deep, relaxed breathing - no breath holding",
+      
+      "modifications": {
+        "couch_stretch": "Back foot elevated on couch/wall behind you - more intense",
+        "standing": "Modified lunge position if kneeling is uncomfortable"
+      },
+      
+      "duration": "60 seconds per side minimum",
+      
+      "phase1_notes": "Tight hip flexors are probably contributing to your issues. 60 seconds per side daily. Do in rehab block AND cooldown."
+    },
+
+    "single_leg_balance": {
+      "name": "Single Leg Balance",
+      "aliases": ["single leg balance", "balance", "one leg stand", "proprioception"],
+      "category": "balance",
+      "movement_pattern": "stability",
+      "equipment": ["none"],
+      "muscles_primary": ["ankle_stabilizers", "glute_medius", "core"],
+      "muscles_secondary": ["hip_stabilizers", "quadriceps", "calves"],
+      
+      "setup": "Stand tall on one leg. Other knee lifted to hip height. Arms wherever helps balance.",
+      
+      "execution": [
+        "Stand on one leg - foot pointing straight ahead",
+        "Slight bend in standing knee - not locked out",
+        "Engage core, squeeze glute of standing leg",
+        "Hold position - minimize wobbling",
+        "Eyes forward on fixed point"
+      ],
+      
+      "cues": [
+        "Root through whole foot - tripod stance (heel, big toe, little toe)",
+        "Standing knee tracks over toes",
+        "Hip stays level - don't let it drop on lifted side",
+        "Breathe normally - don't hold breath"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Locking out standing knee",
+          "fix": "Slight bend. Locked knee reduces proprioceptive feedback."
+        },
+        {
+          "mistake": "Hip drops on lifted leg side",
+          "fix": "Engage glute med on standing leg. Keep pelvis level."
+        },
+        {
+          "mistake": "Weight shifts to edge of foot",
+          "fix": "Spread through whole foot. Rolling = ankle/hip weakness."
+        }
+      ],
+      
+      "progression": {
+        "eyes_open_firm_surface": "Starting point - 60 seconds goal (GATE 1 requirement)",
+        "eyes_closed_firm_surface": "Harder - 30 seconds goal (GATE 1 requirement)",
+        "eyes_open_unstable": "Pillow, foam pad, or wobble cushion",
+        "eyes_closed_unstable": "Advanced balance work"
+      },
+      
+      "phase1_notes": "GATE 1 REQUIREMENT: 60 seconds eyes open, 30 seconds eyes closed. Essential for ankle rehab. Train daily."
+    },
+
+    "heel_raises": {
+      "name": "Single Leg Heel Raises",
+      "aliases": ["heel raise", "calf raise", "single leg calf raise", "ankle strength"],
+      "category": "rehab",
+      "movement_pattern": "plantar_flexion",
+      "equipment": ["none", "step"],
+      "muscles_primary": ["gastrocnemius", "soleus"],
+      "muscles_secondary": ["tibialis_posterior", "peroneals"],
+      
+      "setup": "Stand on one leg, ball of foot on edge of step (optional). Hand on wall for light balance support only.",
+      
+      "execution": [
+        "Push through ball of foot to raise heel as high as possible",
+        "Pause at top - full contraction",
+        "Lower slowly with control (3-4 seconds)",
+        "Go below step level if using step (full stretch)",
+        "Use hand for balance only - not to push yourself up"
+      ],
+      
+      "cues": [
+        "Push up through big toe, not rolling to outside of foot",
+        "Straight ankle - don't let it wobble side to side",
+        "Full range of motion - bottom to top",
+        "Control the eccentric - lowering builds strength"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Using hand to pull up",
+          "fix": "Light fingertip touch only. The calf does the work."
+        },
+        {
+          "mistake": "Not going to full height",
+          "fix": "Rise onto tiptoes - full plantar flexion."
+        },
+        {
+          "mistake": "Dropping down fast",
+          "fix": "Control the lowering - this eccentric portion is crucial for tendon health."
+        }
+      ],
+      
+      "breathing": "Exhale as you rise, inhale as you lower",
+      
+      "phase1_notes": "GATE 1 REQUIREMENT: 25 reps each leg, LSI ≥90%. Critical for ankle return to sport."
+    },
+
+    "ankle_cars": {
+      "name": "Ankle CARs",
+      "aliases": ["ankle CARs", "ankle circles", "controlled articular rotations"],
+      "category": "mobility",
+      "movement_pattern": "joint_circles",
+      "equipment": ["none"],
+      "muscles_primary": ["ankle_stabilizers"],
+      "muscles_secondary": ["calves", "shin_muscles"],
+      
+      "setup": "Seated or standing (holding support). Lift one foot off ground.",
+      
+      "execution": [
+        "Point toes down (plantar flexion)",
+        "Roll foot inward (inversion)",
+        "Pull toes up (dorsiflexion)",
+        "Roll foot outward (eversion)",
+        "Complete full circles - both directions"
+      ],
+      
+      "cues": [
+        "Make the BIGGEST circle possible",
+        "Move through every degree of the range",
+        "Slow and controlled - no jerky movements",
+        "End range is where the work happens - push into it gently"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Small, lazy circles",
+          "fix": "Make them HUGE. Push into end ranges. That's the whole point."
+        },
+        {
+          "mistake": "Moving the whole leg",
+          "fix": "Keep leg still. Only the ankle moves."
+        },
+        {
+          "mistake": "Moving too fast",
+          "fix": "5-10 seconds per full circle. Slow reveals where you're restricted."
+        }
+      ],
+      
+      "breathing": "Normal breathing",
+      
+      "reps": "5 circles each direction, each ankle",
+      
+      "phase1_notes": "Daily ankle maintenance. Restores and maintains full ankle range. Do every morning and before any lower body work."
+    },
+
+    "eccentric_calf_raises": {
+      "name": "Eccentric Calf Raises",
+      "aliases": ["eccentric calf raise", "negative calf raise", "alfredson protocol"],
+      "category": "rehab",
+      "movement_pattern": "eccentric_plantar_flexion",
+      "equipment": ["step"],
+      "muscles_primary": ["gastrocnemius", "soleus", "achilles_tendon"],
+      "muscles_secondary": ["ankle_stabilizers"],
+      
+      "setup": "Stand on step, balls of both feet on edge. Rise up on toes using both legs.",
+      
+      "execution": [
+        "Rise up on toes using BOTH legs - this is the easy part",
+        "At top, lift one foot off step",
+        "Lower SLOWLY on single leg over 3-5 seconds",
+        "Go below step level - full stretch on achilles",
+        "Put other foot back down, rise on both, repeat"
+      ],
+      
+      "cues": [
+        "The LOWERING is the exercise - go slow",
+        "Control through entire range - no dropping",
+        "Full stretch at bottom - heel below step level",
+        "Rise on two, lower on one"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Lowering too fast",
+          "fix": "3-5 seconds down. The eccentric loading is the rehab stimulus."
+        },
+        {
+          "mistake": "Not going below step level",
+          "fix": "Full stretch is important. Heel must drop below step."
+        },
+        {
+          "mistake": "Trying to rise on one leg",
+          "fix": "Rise on TWO legs. Only the lowering is single-leg. This is eccentric protocol."
+        }
+      ],
+      
+      "breathing": "Inhale at top, exhale during lowering",
+      
+      "reps": "15 reps per leg, 2-3 sets, daily for tendon rehab",
+      
+      "phase1_notes": "Gold standard for achilles/calf tendon rehab. The slow eccentric loading stimulates tendon remodeling. Part of your daily ankle work."
+    },
+
+    "banded_ankle_mobilization": {
+      "name": "Banded Ankle Mobilization",
+      "aliases": ["banded ankle mob", "ankle mob", "band distraction"],
+      "category": "mobility",
+      "movement_pattern": "joint_mobilization",
+      "equipment": ["resistance_band"],
+      "muscles_primary": ["ankle_joint"],
+      "muscles_secondary": ["calves"],
+      
+      "setup": "Loop heavy band around fixed point at ankle height. Step into band so it wraps around front of ankle. Step forward to create tension.",
+      
+      "execution": [
+        "Band pulls ankle joint backward (posterior glide)",
+        "Drive knee forward over toes - into dorsiflexion",
+        "Hold at end range for 15-30 seconds",
+        "Oscillate gently in and out of end range",
+        "Band distraction creates space in joint for movement"
+      ],
+      
+      "cues": [
+        "Band should pull ankle BACK, not up",
+        "Keep heel DOWN on floor",
+        "Drive knee forward AND slightly out",
+        "Gentle oscillations, not forcing"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Heel lifting off floor",
+          "fix": "Keep heel planted. If it lifts, you're not mobilizing the ankle."
+        },
+        {
+          "mistake": "Band placed too high",
+          "fix": "Band should be at ankle crease, not on shin."
+        }
+      ],
+      
+      "breathing": "Deep, relaxed breathing",
+      
+      "duration": "15-30 seconds per side, 2-3 sets",
+      
+      "phase1_notes": "Key for improving dorsiflexion. If your ankle dorsiflexion is limited, this is how you improve it. Do before any squat work."
+    },
+
+    "plantar_fascia_ball_roll": {
+      "name": "Plantar Fascia Ball Roll",
+      "aliases": ["foot roll", "plantar fascia roll", "ball roll", "arch massage"],
+      "category": "rehab",
+      "movement_pattern": "self_massage",
+      "equipment": ["lacrosse_ball", "golf_ball", "tennis_ball"],
+      "muscles_primary": ["plantar_fascia"],
+      "muscles_secondary": ["intrinsic_foot_muscles"],
+      
+      "setup": "Stand or sit. Place ball under arch of foot.",
+      
+      "execution": [
+        "Apply moderate pressure through foot onto ball",
+        "Roll ball from heel to toes",
+        "Pause on tender spots for 10-15 seconds",
+        "Cover entire sole - arch, heel, ball of foot",
+        "60 seconds per foot"
+      ],
+      
+      "cues": [
+        "Moderate pressure - should feel 'good pain', not agony",
+        "Slow rolling - not just skating over surface",
+        "Spend extra time on tight/tender spots",
+        "Breathe and relax into it"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Too much pressure",
+          "fix": "Back off. Should be uncomfortable but not agonizing."
+        },
+        {
+          "mistake": "Rolling too fast",
+          "fix": "Slow down. Let the ball work into the tissue."
+        }
+      ],
+      
+      "breathing": "Deep, relaxed breathing",
+      
+      "duration": "60 seconds per foot",
+      
+      "phase1_notes": "Daily foot maintenance. Keeps plantar fascia happy. Do first thing in the morning before standing."
+    },
+
+    "toe_yoga": {
+      "name": "Toe Yoga",
+      "aliases": ["toe yoga", "toe lifts", "toe control"],
+      "category": "rehab",
+      "movement_pattern": "motor_control",
+      "equipment": ["none"],
+      "muscles_primary": ["intrinsic_foot_muscles"],
+      "muscles_secondary": ["toe_flexors", "toe_extensors"],
+      
+      "setup": "Barefoot, standing or seated. Feet flat on floor.",
+      
+      "execution": [
+        "Lift big toe only while pressing other 4 toes into floor",
+        "Then press big toe down and lift other 4 toes",
+        "Alternate back and forth",
+        "Keep foot stationary - only toes move"
+      ],
+      
+      "cues": [
+        "Isolate the movements - this is harder than it sounds",
+        "Don't let foot roll or move",
+        "Go slowly - it's a motor control exercise"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Moving whole foot",
+          "fix": "Anchor the foot. Only toes should move."
+        },
+        {
+          "mistake": "Can't isolate big toe",
+          "fix": "Use hand to help initially. Build the neural pathway."
+        }
+      ],
+      
+      "breathing": "Normal breathing",
+      
+      "duration": "30 seconds per foot",
+      
+      "phase1_notes": "Builds foot control and intrinsic muscle strength. Supports ankle stability from the ground up."
+    },
+
+    "short_foot_exercise": {
+      "name": "Short Foot Exercise",
+      "aliases": ["short foot", "foot doming", "arch lift"],
+      "category": "rehab",
+      "movement_pattern": "isometric_arch_activation",
+      "equipment": ["none"],
+      "muscles_primary": ["intrinsic_foot_muscles"],
+      "muscles_secondary": ["tibialis_posterior"],
+      
+      "setup": "Barefoot, standing or seated. Feet flat on floor.",
+      
+      "execution": [
+        "Keep toes relaxed and flat on floor",
+        "Draw ball of foot toward heel WITHOUT curling toes",
+        "This 'domes' the arch - shortens the foot",
+        "Hold for 10 seconds",
+        "Release and repeat"
+      ],
+      
+      "cues": [
+        "Toes stay FLAT - no gripping or curling",
+        "Think about 'shortening' your foot",
+        "Arch lifts up, foot gets shorter",
+        "Should feel deep foot muscles working"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Curling toes to create dome",
+          "fix": "Toes must stay flat and relaxed. The arch lifts from within."
+        },
+        {
+          "mistake": "Can't feel arch working",
+          "fix": "Start seated, foot on towel. Try to 'gather' towel without curling toes."
+        }
+      ],
+      
+      "breathing": "Normal breathing",
+      
+      "duration": "10 second holds, 5 reps per foot",
+      
+      "phase1_notes": "Activates intrinsic foot muscles that support the arch. Foundation for ankle stability. Do daily."
+    },
+
+    "calf_stretch_wall": {
+      "name": "Wall Calf Stretch",
+      "aliases": ["calf stretch", "wall stretch", "gastroc stretch", "runner stretch"],
+      "category": "mobility",
+      "movement_pattern": "static_stretch",
+      "equipment": ["wall"],
+      "muscles_primary": ["gastrocnemius"],
+      "muscles_secondary": ["soleus", "achilles"],
+      
+      "setup": "Face wall, hands on wall at shoulder height. Step one foot back, keeping heel on floor.",
+      
+      "execution": [
+        "Back leg straight, heel pressed into floor",
+        "Lean into wall, keeping back leg straight",
+        "Feel stretch in upper calf of back leg",
+        "Hold 45-60 seconds",
+        "For soleus: bend back knee slightly while keeping heel down"
+      ],
+      
+      "cues": [
+        "Heel must stay DOWN - no cheating",
+        "Back leg stays STRAIGHT for gastroc",
+        "Lean from ankles, not waist",
+        "Both feet pointing forward"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Back heel lifting",
+          "fix": "Keep heel down. If it lifts, step closer to wall."
+        },
+        {
+          "mistake": "Back knee bending (for gastroc stretch)",
+          "fix": "Straight leg targets gastrocnemius. Bent knee targets soleus. Know which you're doing."
+        }
+      ],
+      
+      "breathing": "Deep, relaxed breathing",
+      
+      "duration": "45-60 seconds per leg",
+      
+      "phase1_notes": "Essential for ankle dorsiflexion. Tight calves limit ankle mobility. Do daily, plus after any calf work."
+    },
+
+    "thoracic_extension_foam_roller": {
+      "name": "Thoracic Extension on Foam Roller",
+      "aliases": ["thoracic extension", "t-spine extension", "foam roller extension", "upper back extension"],
+      "category": "mobility",
+      "movement_pattern": "thoracic_extension",
+      "equipment": ["foam_roller"],
+      "muscles_primary": ["thoracic_spine"],
+      "muscles_secondary": ["pec_minor", "intercostals"],
+      
+      "setup": "Lie on foam roller placed horizontally across mid-back. Knees bent, feet flat. Hands behind head to support neck.",
+      
+      "execution": [
+        "Start with roller at bra-line level (mid-thoracic)",
+        "Let upper back extend over roller - don't force",
+        "Exhale and relax into extension",
+        "Move roller up slightly, repeat at new segment",
+        "Work from mid-back to upper back"
+      ],
+      
+      "cues": [
+        "Keep butt on floor - no bridging up",
+        "Support head with hands - don't strain neck",
+        "Extend from mid-back, NOT lower back",
+        "Breathe and relax - don't fight it"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Extending from lower back",
+          "fix": "Lower back stays neutral. Only thoracic spine moves. Keep abs engaged."
+        },
+        {
+          "mistake": "Holding breath",
+          "fix": "Exhale into the extension. Breath helps release tension."
+        },
+        {
+          "mistake": "Rolling up and down",
+          "fix": "This isn't rolling. It's targeted extension at each segment. Move roller, then extend."
+        }
+      ],
+      
+      "breathing": "Exhale as you extend over roller",
+      
+      "reps": "5 breaths at each position, 3-4 positions up the spine",
+      
+      "phase1_notes": "Essential for posture and shoulder health. Thoracic stiffness causes shoulder compensation. Do daily in rehab block."
+    },
+
+    "chin_tuck": {
+      "name": "Chin Tuck",
+      "aliases": ["chin tuck", "cervical retraction", "neck reset"],
+      "category": "mobility",
+      "movement_pattern": "cervical_retraction",
+      "equipment": ["none"],
+      "muscles_primary": ["deep_neck_flexors"],
+      "muscles_secondary": ["cervical_extensors"],
+      
+      "setup": "Sitting or standing tall. Shoulders relaxed. Looking straight ahead.",
+      
+      "execution": [
+        "Draw chin straight BACK (not down)",
+        "Imagine making a double chin",
+        "Head moves back, not tilting",
+        "Hold 5-10 seconds",
+        "Release and repeat"
+      ],
+      
+      "cues": [
+        "Make a 'double chin' - that's the movement",
+        "Head slides back on a shelf - doesn't tilt",
+        "Gentle stretch at base of skull",
+        "Don't tuck chin to chest - horizontal movement"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Looking down",
+          "fix": "Eyes stay level. Head moves horizontally back, not down."
+        },
+        {
+          "mistake": "Lifting chin",
+          "fix": "No extension. Pure retraction - chin slides back."
+        }
+      ],
+      
+      "breathing": "Normal breathing",
+      
+      "reps": "10 reps, hold each for 5 seconds",
+      
+      "phase1_notes": "Counteracts forward head posture. Do every few hours if you work at a computer. Part of posture reset block."
+    },
+
+    "pigeon_stretch": {
+      "name": "Pigeon Stretch",
+      "aliases": ["pigeon stretch", "pigeon pose", "hip opener", "glute stretch"],
+      "category": "mobility",
+      "movement_pattern": "static_stretch",
+      "equipment": ["mat"],
+      "muscles_primary": ["piriformis", "glutes"],
+      "muscles_secondary": ["hip_external_rotators"],
+      
+      "setup": "Start in all-fours. Bring one knee forward behind same-side wrist. Extend other leg straight back.",
+      
+      "execution": [
+        "Front shin angled across body (more angle = more intense)",
+        "Back leg extends straight behind",
+        "Square hips toward floor as much as possible",
+        "Stay upright or fold forward over front leg",
+        "Hold for 90 seconds minimum"
+      ],
+      
+      "cues": [
+        "Front shin doesn't need to be parallel to front edge of mat - angle is individual",
+        "Keep hips square - don't let back hip rotate open",
+        "Breathe and sink into stretch over time",
+        "Stretch should be in glute/hip of front leg"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Hip of back leg lifting/rotating",
+          "fix": "Square hips. Use yoga block under front hip if needed for support."
+        },
+        {
+          "mistake": "Pain in front knee",
+          "fix": "Keep front foot flexed to protect knee. Reduce angle of front shin."
+        }
+      ],
+      
+      "breathing": "Deep, relaxed breathing",
+      
+      "duration": "90 seconds per side",
+      
+      "phase1_notes": "Deep glute and hip stretch. Essential cooldown. Hold for full 90 seconds - the magic happens after 60 seconds."
+    },
+
+    "lat_stretch": {
+      "name": "Lat Stretch",
+      "aliases": ["lat stretch", "overhead stretch", "side stretch"],
+      "category": "mobility",
+      "movement_pattern": "static_stretch",
+      "equipment": ["none", "doorframe_or_pole"],
+      "muscles_primary": ["latissimus_dorsi"],
+      "muscles_secondary": ["teres_major", "obliques"],
+      
+      "setup": "Stand next to doorframe or pole. Grab with near hand overhead. Step feet away.",
+      
+      "execution": [
+        "Grab overhead anchor with one hand",
+        "Step feet away from anchor",
+        "Let body hang sideways - stretching lat",
+        "Lean hips away from anchor to increase stretch",
+        "Hold 60 seconds"
+      ],
+      
+      "cues": [
+        "Feel stretch along side of back and ribcage",
+        "Push hips AWAY from anchor",
+        "Let shoulder stretch overhead",
+        "Breathe into the stretch"
+      ],
+      
+      "breathing": "Deep breathing into ribcage",
+      
+      "duration": "60 seconds per side",
+      
+      "phase1_notes": "Essential if your lats are tight. Tight lats affect shoulder overhead motion. Part of cooldown."
+    },
+
+    "hamstring_stretch": {
+      "name": "Hamstring Stretch",
+      "aliases": ["hamstring stretch", "forward fold", "toe touch"],
+      "category": "mobility",
+      "movement_pattern": "static_stretch",
+      "equipment": ["mat", "strap_optional"],
+      "muscles_primary": ["hamstrings"],
+      "muscles_secondary": ["glutes", "calves"],
+      
+      "setup": "Seated on floor. One leg extended, other leg bent with foot against inner thigh of straight leg. Sit tall.",
+      
+      "execution": [
+        "Hinge at hips - not waist",
+        "Reach toward foot of extended leg",
+        "Keep back FLAT as you fold - don't round",
+        "Stop when you feel stretch in back of thigh",
+        "Hold 60 seconds"
+      ],
+      
+      "cues": [
+        "Lead with chest, not head",
+        "Flat back - don't round to reach further",
+        "Stretch is in hamstring, not lower back",
+        "Use strap around foot if can't reach"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Rounding back to reach further",
+          "fix": "Keep back flat. Less range with flat back is better than more range with rounded back."
+        },
+        {
+          "mistake": "Bouncing to get deeper",
+          "fix": "Static hold only. Bouncing triggers stretch reflex and reduces effectiveness."
+        }
+      ],
+      
+      "breathing": "Deep, relaxed breathing",
+      
+      "duration": "60 seconds per side",
+      
+      "phase1_notes": "Your hamstring flexibility affects hip hinge (RDL) quality. Stretch them after every workout."
+    },
+
+    "pec_stretch": {
+      "name": "Pec Stretch",
+      "aliases": ["pec stretch", "chest stretch", "doorway stretch"],
+      "category": "mobility",
+      "movement_pattern": "static_stretch",
+      "equipment": ["doorframe"],
+      "muscles_primary": ["pectoralis_major"],
+      "muscles_secondary": ["anterior_deltoid", "biceps"],
+      
+      "setup": "Stand in doorway. Place forearm against doorframe, elbow at shoulder height, 90-degree bend in elbow.",
+      
+      "execution": [
+        "Forearm against doorframe, elbow at shoulder height",
+        "Step through doorway with same-side foot",
+        "Rotate torso AWAY from arm - feel chest stretch",
+        "Don't lean forward - stay upright",
+        "Hold 60 seconds"
+      ],
+      
+      "cues": [
+        "Elbow at shoulder height or slightly higher",
+        "Step THROUGH and PAST the doorframe",
+        "Turn body away - stretch is in chest, not shoulder",
+        "Should feel stretch across chest, not front of shoulder"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Feeling stretch in front of shoulder only",
+          "fix": "Adjust elbow height and rotation angle. If shoulder hurts, back off."
+        },
+        {
+          "mistake": "Leaning forward",
+          "fix": "Stay upright. Step through further if needed."
+        }
+      ],
+      
+      "breathing": "Deep, relaxed breathing",
+      
+      "duration": "60 seconds per side",
+      
+      "phase1_notes": "Important for shoulder health. Tight pecs pull shoulders forward. Stretch after any pressing work."
+    },
+
+    "spine_decompression_hang": {
+      "name": "Spine Decompression Hang",
+      "aliases": ["dead hang", "spinal hang", "decompression", "bar hang"],
+      "category": "mobility",
+      "movement_pattern": "traction",
+      "equipment": ["pull_up_bar"],
+      "muscles_primary": ["grip", "lats"],
+      "muscles_secondary": ["spine", "shoulders"],
+      
+      "setup": "Grip pull-up bar with overhand grip, shoulder width. Let body hang freely. Feet can touch floor lightly if needed.",
+      
+      "execution": [
+        "Grip bar firmly",
+        "Let body hang - allow spine to decompress",
+        "Keep shoulders engaged (not just hanging from joints)",
+        "Relax everything else - let gravity stretch you",
+        "Hold as long as comfortable"
+      ],
+      
+      "cues": [
+        "Relax your lower body - let it hang heavy",
+        "Active shoulders - don't just hang from joints",
+        "Feel space being created between vertebrae",
+        "Breathe deeply and relax"
+      ],
+      
+      "common_mistakes": [
+        {
+          "mistake": "Hanging from shoulder joints passively",
+          "fix": "Keep slight shoulder engagement. Think about 'pulling shoulder blades down' slightly."
+        },
+        {
+          "mistake": "Swinging",
+          "fix": "Stay still. The decompression requires stillness."
+        }
+      ],
+      
+      "breathing": "Deep, relaxed breathing",
+      
+      "duration": "30-60 seconds, or accumulate 2-3 minutes total",
+      
+      "phase1_notes": "Great end-of-workout cooldown. Decompresses spine after loaded exercises. Grip work bonus. Be gentle with shoulder - stop if painful."
+    }
+  },
+
+  "quick_reference": {
+    "shoulder_safe_pressing": "Neutral grip floor press with 45-degree elbow angle",
+    "shoulder_rehab_priority": ["side_lying_external_rotation", "face_pull", "band_pull_apart", "scapular_wall_slide"],
+    "ankle_rehab_priority": ["single_leg_balance", "heel_raises", "ankle_cars", "eccentric_calf_raises"],
+    "ankle_mobility_help": "Elevate heels for goblet squats and split squats if dorsiflexion limited",
+    "gate_1_exercises": ["single_leg_balance", "heel_raises"],
+    "daily_non_negotiables": ["cat_cow", "single_leg_balance", "plantar_fascia_ball_roll", "shoulder_rehab_block"],
+    "warmup_sequence": ["cat_cow", "worlds_greatest_stretch", "glute_bridge", "band_pull_apart", "bodyweight_squat"]
+  },
+
+  "voice_response_format": {
+    "short": "{name}. {setup} Key cues: {cues[0:2]}. Watch out: {common_mistakes[0].mistake}",
+    "medium": "{name}. {setup} Execution: {execution[0:3]}. Key cues: {cues[0:3]}. Common mistake: {common_mistakes[0].mistake} - fix: {common_mistakes[0].fix}",
+    "full": "Return all fields formatted for voice"
+  }
+}

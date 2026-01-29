@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "atlas": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["-m", "atlas.mcp.server"],
+      "env": {
+        "PYTHONPATH": "/home/squiz/ATLAS"
+      }
+    }
+  }
+}

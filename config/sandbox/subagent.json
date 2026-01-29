@@ -5,7 +5,7 @@
   },
   "filesystem": {
     "denyRead": ["~/.ssh", "~/.aws", "~/.gnupg", "~/.config/gh"],
-    "allowWrite": ["/home/squiz/ATLAS", "/home/squiz/code"],
+    "allowWrite": ["/home/squiz/ATLAS", "/home/squiz/code", "/home/squiz/.claude.json", "/home/squiz/.claude"],
     "denyWrite": [".env*", "*.key", "*.pem", "credentials*"]
   }
 }

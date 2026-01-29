@@ -119,7 +119,9 @@ class ActivityConversionPipeline:
     KNOWLEDGE_REPO = Path("/home/squiz/code/knowledge")
 
     # Valid domains for activities
+    # Includes both raw source domains and canonical output domains
     VALID_DOMAINS = {
+        # Raw source domains
         "cognitive",
         "motor_fine",
         "language",
@@ -130,7 +132,33 @@ class ActivityConversionPipeline:
         "art_creative",
         "social_emotional",
         "nature_culture",
+        # Canonical output domains (used in 23 Grade A activities)
+        "movement",              # Replaces motor_fine, motor_gross
+        "prepared_environment",  # Environment setup activities
+        "feeding",               # Feeding and nutrition activities
+        "art",                   # Simplified from art_creative
+        "regulation",            # Self-regulation activities
+        "motor_refinement",      # Fine motor activities
+        "independence",          # Independence-focused activities
+        "order",                 # Order and routine activities
     }
+
+    # Age label patterns for parsing (D36: Age Range Normalization)
+    # Implements ingest_activity.md line 111: "Always trust the label and recalculate"
+    AGE_LABEL_PATTERNS = [
+        # Prenatal: min=-9, max=0
+        (r"^prenatal$", -9, 0),
+        # X-Ym format: 0-6m, 6-12m, 12-24m etc.
+        (r"^(\d+)-(\d+)\s*m$", None, None),  # Dynamic parsing
+        # X-Y months format
+        (r"^(\d+)-(\d+)\s*months?$", None, None),  # Dynamic parsing
+        # X.X-Y years format: 1.5-3 years, 2-3 years
+        (r"^(\d+(?:\.\d+)?)-(\d+)\s*years?$", None, None),  # Dynamic parsing
+        # X+ months format: 18+ months
+        (r"^(\d+)\+\s*months?$", None, 72),  # Dynamic min, max=72
+        # 0-X format (shorthand): 0-3, 0-6, 0-12
+        (r"^0-(\d+)$", 0, None),  # min=0, dynamic max
+    ]
 
     def __init__(self):
         """Initialize the pipeline with all required components."""
@@ -182,8 +210,10 @@ class ActivityConversionPipeline:
                     )
 
                 # Build dict with defensive parsing (skip activities without id)
+                # G1: Add duplicate detection - keep first, warn on duplicates
                 self.raw_activities = {}
                 skipped_count = 0
+                duplicate_count = 0
                 for a in activities:
                     if not isinstance(a, dict):
                         logger.warning(f"Skipping non-dict activity: {type(a)}")
@@ -195,12 +225,21 @@ class ActivityConversionPipeline:
                         )
                         skipped_count += 1
                         continue
+                    # G1: Check for duplicate IDs before loading
+                    if a["id"] in self.raw_activities:
+                        logger.warning(
+                            f"Duplicate activity ID found: {a['id']} - keeping first occurrence"
+                        )
+                        duplicate_count += 1
+                        continue
                     self.raw_activities[a["id"]] = a
 
-                logger.info(
-                    f"Loaded {len(self.raw_activities)} raw activities"
-                    + (f" (skipped {skipped_count})" if skipped_count else "")
-                )
+                log_parts = [f"Loaded {len(self.raw_activities)} raw activities"]
+                if skipped_count:
+                    log_parts.append(f"skipped {skipped_count}")
+                if duplicate_count:
+                    log_parts.append(f"duplicates {duplicate_count}")
+                logger.info(" (".join(log_parts) + (")" if len(log_parts) > 1 else ""))
             except (yaml.YAMLError, ValueError) as e:
                 logger.error(f"Failed to load raw activities: {e}")
                 raise
@@ -235,7 +274,13 @@ class ActivityConversionPipeline:
             return
 
         try:
-            content = self.PROGRESS_PATH.read_text()
+            # D88: Add shared lock for reading to prevent race conditions
+            with open(self.PROGRESS_PATH, "r") as f:
+                fcntl.flock(f.fileno(), fcntl.LOCK_SH)  # Shared lock for reading
+                try:
+                    content = f.read()
+                finally:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
             # Find table rows using regex
             # Pattern matches: | num | raw_id | domain | age_range | status | date | notes |
@@ -244,6 +289,8 @@ class ActivityConversionPipeline:
                 re.MULTILINE,
             )
 
+            # G2: Track duplicates in progress file
+            duplicate_count = 0
             for match in table_pattern.finditer(content):
                 row_num = match.group(1).strip()
                 raw_id = match.group(2).strip()
@@ -257,6 +304,14 @@ class ActivityConversionPipeline:
                 if raw_id.lower() == "raw id" or raw_id == "---":
                     continue
 
+                # G2: Check for duplicate entries - keep first, warn on duplicates
+                if raw_id in self.progress_data:
+                    logger.warning(
+                        f"Duplicate entry in progress file: {raw_id} (row {row_num}) - keeping first"
+                    )
+                    duplicate_count += 1
+                    continue
+
                 self.progress_data[raw_id] = {
                     "row_num": row_num,
                     "domain": domain,
@@ -266,10 +321,129 @@ class ActivityConversionPipeline:
                     "notes": notes,
                 }
 
-            logger.info(f"Parsed {len(self.progress_data)} entries from progress file")
+            log_msg = f"Parsed {len(self.progress_data)} entries from progress file"
+            if duplicate_count:
+                log_msg += f" ({duplicate_count} duplicates ignored)"
+            logger.info(log_msg)
 
         except OSError as e:
             logger.error(f"Failed to read progress file: {e}")
+
+    def _validate_conversion_map(self) -> list[str]:
+        """
+        Validate all references in conversion map exist in raw activities.
+
+        G3: Catches bad references early before processing.
+
+        Returns:
+            List of validation issues (empty if all valid)
+        """
+        issues = []
+
+        # Check skip list
+        for raw_id in self.conversion_map.get("skip", []):
+            if raw_id not in self.raw_activities:
+                issues.append(f"Skip list references unknown activity: {raw_id}")
+
+        # Check groups
+        for group_id, group_data in self.conversion_map.get("groups", {}).items():
+            for source_id in group_data.get("sources", []):
+                if source_id not in self.raw_activities:
+                    issues.append(
+                        f"Group '{group_id}' references unknown activity: {source_id}"
+                    )
+
+        # Check domain corrections
+        for raw_id in self.conversion_map.get("domain_corrections", {}):
+            if raw_id not in self.raw_activities:
+                issues.append(
+                    f"Domain correction references unknown activity: {raw_id}"
+                )
+
+        return issues
+
+    def _get_group_info(self, raw_id: str) -> Optional[dict]:
+        """
+        Get group info if activity is a group primary.
+
+        G5: Provides explicit group context for grouped conversions.
+
+        Args:
+            raw_id: Activity raw ID
+
+        Returns:
+            Group info dict if activity is a group primary, None otherwise
+        """
+        groups = self.conversion_map.get("groups", {})
+        for group_id, group_data in groups.items():
+            sources = group_data.get("sources", [])
+            if sources and sources[0] == raw_id:
+                # This is the primary - load all source activities
+                source_activities = [
+                    self.raw_activities.get(s)
+                    for s in sources
+                    if s in self.raw_activities
+                ]
+                return {
+                    "group_id": group_id,
+                    "sources": sources,
+                    "source_activities": source_activities,
+                    "domain": group_data.get("domain"),
+                    "age_range": group_data.get("age_range"),
+                }
+        return None
+
+    def get_deduplication_report(self) -> dict:
+        """
+        Generate a deduplication/grouping report.
+
+        G4: Provides visibility into the dedup/grouping before batch processing.
+
+        Returns:
+            Dict with deduplication statistics and details
+        """
+        skip_list = self.conversion_map.get("skip", [])
+        groups = self.conversion_map.get("groups", {})
+
+        # Count activities in groups
+        grouped_count = 0
+        group_atoms = 0
+        group_details = []
+        for group_id, group_data in groups.items():
+            sources = group_data.get("sources", [])
+            grouped_count += len(sources)
+            group_atoms += 1
+            group_details.append({
+                "group_id": group_id,
+                "source_count": len(sources),
+                "sources": sources,
+                "domain": group_data.get("domain"),
+                "age_range": group_data.get("age_range"),
+            })
+
+        # Calculate standalone count
+        # Standalone = total - skip - grouped (but grouped contributes 1 each as group_atoms)
+        total_raw = len(self.raw_activities)
+        skip_count = len([s for s in skip_list if s in self.raw_activities])
+        standalone_count = total_raw - skip_count - grouped_count + group_atoms
+
+        # Expected canonical atoms = standalone + group_atoms
+        expected_canonical = standalone_count
+
+        # Validation issues
+        validation_issues = self._validate_conversion_map()
+
+        return {
+            "raw_activities": total_raw,
+            "skip_count": skip_count,
+            "grouped_count": grouped_count,
+            "group_atoms": group_atoms,
+            "standalone_count": standalone_count - group_atoms,  # True standalone
+            "expected_canonical": expected_canonical,
+            "groups": group_details,
+            "skip_list": [s for s in skip_list if s in self.raw_activities],
+            "validation_issues": validation_issues,
+        }
 
     def _update_progress_file(
         self,
@@ -322,16 +496,30 @@ class ActivityConversionPipeline:
                             parts = [p.strip() for p in line.split("|")]
                             if len(parts) >= 8:
                                 # parts: ['', num, raw_id, domain, age_range, status, date, notes, '']
-                                parts[5] = f" {status_str} "
-                                parts[6] = f" {date_str} "
+                                # Update status, date, notes
+                                parts[5] = status_str
+                                parts[6] = date_str
                                 if notes:
-                                    parts[7] = f" {notes} "
-                                lines[i] = "|".join(parts)
+                                    parts[7] = notes
+                                # Re-add spaces to ALL parts for consistent formatting
+                                # Format: | num | raw_id | domain | age_range | status | date | notes |
+                                formatted_parts = ['']  # Leading empty
+                                for j, part in enumerate(parts[1:-1], start=1):
+                                    formatted_parts.append(f" {part} ")
+                                formatted_parts.append('')  # Trailing empty
+                                lines[i] = "|".join(formatted_parts)
                                 updated = True
                                 break
 
                     if updated:
-                        # Update summary counts
+                        # Update local cache FIRST (D83: fix stale cache bug)
+                        if raw_id in self.progress_data:
+                            self.progress_data[raw_id]["status"] = status_str
+                            self.progress_data[raw_id]["date"] = date_str
+                            if notes:
+                                self.progress_data[raw_id]["notes"] = notes
+
+                        # Update summary counts (now uses current cache)
                         content = "\n".join(lines)
                         content = self._update_summary_counts(content)
 
@@ -340,13 +528,6 @@ class ActivityConversionPipeline:
                         f.write(content)
                         f.truncate()
                         logger.info(f"Updated progress for {raw_id}: {status_str}")
-
-                        # Update local cache
-                        if raw_id in self.progress_data:
-                            self.progress_data[raw_id]["status"] = status_str
-                            self.progress_data[raw_id]["date"] = date_str
-                            if notes:
-                                self.progress_data[raw_id]["notes"] = notes
 
                         return True
                     else:
@@ -395,6 +576,28 @@ class ActivityConversionPipeline:
                 pending.append(raw_id)
         return pending
 
+    def get_next_available_activity(self) -> Optional[str]:
+        """
+        Get the next truly available activity for conversion.
+
+        Unlike get_pending_activities(), this method filters out:
+        - Activities in the skip list (duplicates/merged)
+        - Non-primary activities in groups
+
+        Returns:
+            Raw ID of next convertible activity, or None if all done
+        """
+        pending = self.get_pending_activities()
+
+        for raw_id in pending:
+            should_skip, reason = self._should_skip(raw_id)
+            if not should_skip:
+                return raw_id
+            else:
+                logger.debug(f"Skipping {raw_id}: {reason}")
+
+        return None
+
     def _should_skip(self, raw_id: str) -> tuple[bool, Optional[str]]:
         """
         Check if activity should be skipped based on conversion map.
@@ -425,6 +628,114 @@ class ActivityConversionPipeline:
         corrections = self.conversion_map.get("domain_corrections", {})
         return corrections.get(raw_id)
 
+    def _parse_age_label(self, label: str) -> tuple[Optional[int], Optional[int]]:
+        """
+        Parse an age range label into min/max months.
+
+        D36: Age Range Normalization
+        Implements ingest_activity.md line 111: "Always trust the label and recalculate"
+
+        Args:
+            label: Age label string (e.g., "2-3 years", "0-6m", "Prenatal")
+
+        Returns:
+            Tuple of (min_months, max_months) or (None, None) if parsing fails
+        """
+        if not label:
+            return None, None
+
+        label_lower = label.lower().strip()
+
+        for pattern, static_min, static_max in self.AGE_LABEL_PATTERNS:
+            match = re.match(pattern, label_lower, re.IGNORECASE)
+            if match:
+                groups = match.groups()
+
+                # Static values (e.g., prenatal)
+                if static_min is not None and static_max is not None:
+                    return static_min, static_max
+
+                # Dynamic parsing based on pattern type
+                if "years" in label_lower:
+                    # X.X-Y years format: convert to months
+                    min_years = float(groups[0])
+                    max_years = float(groups[1]) if len(groups) > 1 else 6.0
+                    return int(min_years * 12), int(max_years * 12)
+                elif "+" in label_lower:
+                    # X+ months format
+                    return int(groups[0]), static_max or 72
+                elif len(groups) >= 2:
+                    # X-Y format (months)
+                    return int(groups[0]), int(groups[1])
+                elif len(groups) == 1:
+                    # 0-X shorthand
+                    return static_min or 0, int(groups[0])
+
+        # Special case: "All ages" or similar
+        if "all" in label_lower:
+            return 0, 72
+
+        logger.warning(f"Could not parse age label: '{label}'")
+        return None, None
+
+    def _normalize_age_range(self, output: dict, raw_id: str) -> dict:
+        """
+        Normalize age range by trusting the label over raw min_months.
+
+        D36: Age Range Normalization
+        Implements ingest_activity.md line 111: "Always trust the label and recalculate"
+
+        If raw data has min_months=0 but label says "2-3 years", this corrects
+        to min_months=24, max_months=36.
+
+        Args:
+            output: INGEST output containing age_range dict
+            raw_id: Activity ID for logging
+
+        Returns:
+            Updated output dict with corrected age_range if needed
+        """
+        age_range = output.get("age_range", {})
+        if not age_range:
+            # Try to get from raw_activity
+            raw_activity = output.get("raw_activity", {})
+            age_range = raw_activity.get("age_range", {})
+            if age_range:
+                output["age_range"] = age_range.copy()
+
+        if not age_range:
+            return output
+
+        label = age_range.get("label", "")
+        raw_min = age_range.get("min_months", 0)
+        raw_max = age_range.get("max_months", 72)
+
+        # Parse label to calculate expected min/max
+        expected_min, expected_max = self._parse_age_label(label)
+
+        if expected_min is None:
+            # Could not parse label, keep raw values
+            return output
+
+        # Check for mismatch and correct
+        if expected_min != raw_min or expected_max != raw_max:
+            logger.warning(
+                f"[{raw_id}] Age range correction: label '{label}' → {expected_min}-{expected_max}m "
+                f"(raw data had {raw_min}-{raw_max}m)"
+            )
+            output["age_range"] = {
+                "min_months": expected_min,
+                "max_months": expected_max,
+                "label": label,
+            }
+            output["age_range_corrected"] = True
+            output["age_range_original"] = {
+                "min_months": raw_min,
+                "max_months": raw_max,
+            }
+
+        return output
+
     async def _execute_ingest(self, raw_id: str) -> tuple[bool, dict, Optional[str]]:
         """
         Execute the ingest_activity skill.
@@ -454,10 +765,22 @@ class ActivityConversionPipeline:
             raw_activity["domain"] = domain_correction
             logger.info(f"Applied domain correction: {domain_correction}")
 
-        # Execute skill
+        # G5: Get group info if this is a group primary
+        group_info = self._get_group_info(raw_id)
+        if group_info:
+            logger.info(
+                f"Group primary detected: {group_info['group_id']} "
+                f"({len(group_info['sources'])} sources)"
+            )
+
+        # Execute skill with explicit group context
+        input_data = {"raw_id": raw_id, "raw_activity": raw_activity}
+        if group_info:
+            input_data["group_info"] = group_info
+
         result = await self.skill_executor.execute(
             skill_name="activity/ingest_activity",
-            input_data={"raw_id": raw_id, "raw_activity": raw_activity},
+            input_data=input_data,
             validate=True,
         )
 
@@ -467,6 +790,9 @@ class ActivityConversionPipeline:
         output = result.output or {}
         output["raw_activity"] = raw_activity
         output["activity_id"] = raw_id
+
+        # D36: Age Range Normalization - trust the label over raw min_months
+        output = self._normalize_age_range(output, raw_id)
 
         return True, output, None
 
@@ -538,18 +864,53 @@ class ActivityConversionPipeline:
 
         Returns:
             Tuple of (success, output_data, error_message)
+
+        Note:
+            The manual process (Jan 1-4, 2026) that produced 23 Grade A activities
+            loaded the full voice standard and rubric BEFORE elevation. This method
+            replicates that by pre-loading and passing the content directly.
         """
         if feedback:
             logger.info("[ELEVATE] Starting voice elevation WITH FEEDBACK (retry)")
         else:
             logger.info("[ELEVATE] Starting voice elevation")
 
-        # Build input data with voice standard path and optional feedback
-        # The voice_standard_path enables the skill to load BabyBrains-Writer.md
-        # which is the 1713-line master voice standard used for all 23 Grade A elevations
+        # Pre-load voice standard extract and rubric
+        # D40: Use focused extract (~50KB) instead of full voice standard (~95KB)
+        # Extract contains only soul-carrying sections needed for Activity elevation
+        # (philosophy, Australian voice, craft, transformation demos)
+        # Removed: format_adaptations, evidence_framework, video/caption specs
+        voice_standard_path = Path("/home/squiz/code/babybrains-os/skills/activity/ELEVATE_VOICE_EXTRACT.md")
+        rubric_path = Path("/home/squiz/code/knowledge/coverage/VOICE_ELEVATION_RUBRIC.md")
+
+        voice_standard_content = ""
+        rubric_content = ""
+
+        try:
+            if voice_standard_path.exists():
+                voice_standard_content = voice_standard_path.read_text()
+                logger.info(f"[ELEVATE] Loaded voice standard: {len(voice_standard_content)} chars")
+            else:
+                logger.warning(f"[ELEVATE] Voice standard not found: {voice_standard_path}")
+
+            if rubric_path.exists():
+                rubric_content = rubric_path.read_text()
+                logger.info(f"[ELEVATE] Loaded rubric: {len(rubric_content)} chars")
+            else:
+                logger.warning(f"[ELEVATE] Rubric not found: {rubric_path}")
+        except Exception as e:
+            logger.warning(f"[ELEVATE] Error loading context files: {e}")
+
+        # Pre-elevation em-dash removal (deterministic, not LLM-dependent)
+        # The manual process checked for these BEFORE elevation
+        canonical_yaml = self._remove_em_dashes(canonical_yaml)
+
+        # Build input data with full context (matching manual process)
         input_data = {
             "canonical_yaml": canonical_yaml,
-            "voice_standard_path": "/home/squiz/code/web/.claude/agents/BabyBrains-Writer.md",
+            "voice_standard_path": str(voice_standard_path),
+            "voice_standard_content": voice_standard_content,
+            "rubric_content": rubric_content,
         }
         if feedback:
             input_data["retry_feedback"] = feedback
@@ -564,7 +925,302 @@ class ActivityConversionPipeline:
         if not result.success:
             return False, {}, result.error or "Elevate skill failed"
 
-        return True, result.output or {}, None
+        # D38: Validate output has required fields - don't silently return empty dict
+        output = result.output
+        if not output or not isinstance(output, dict):
+            return False, {}, f"Elevate returned invalid output: {type(output)}"
+
+        if "elevated_yaml" not in output:
+            return False, {}, "Elevate output missing 'elevated_yaml' field"
+
+        return True, output, None
+
+    def _remove_em_dashes(self, content: str) -> str:
+        """
+        Pre-process content to remove em-dashes before elevation.
+
+        This is a deterministic step that doesn't rely on LLM compliance.
+        Em-dashes (—) are replaced with periods followed by space.
+
+        Args:
+            content: YAML content that may contain em-dashes
+
+        Returns:
+            Content with em-dashes replaced
+        """
+        import re
+
+        original_count = content.count("—")
+        if original_count > 0:
+            logger.info(f"[ELEVATE] Pre-processing: removing {original_count} em-dashes")
+            # Replace em-dash followed by space with ". "
+            content = re.sub(r"—\s*", ". ", content)
+            # Replace any remaining em-dashes with "."
+            content = content.replace("—", ".")
+        return content
+
+    def _quick_validate(self, yaml_content: str) -> list[dict]:
+        """
+        Quick regex check for common anti-patterns before full QC.
+
+        D36: Pre-Validation Quick Check
+        Catches the most common failures early to enable quick retry with
+        targeted feedback, without running the full QC hook.
+
+        Args:
+            yaml_content: Elevated YAML content to check
+
+        Returns:
+            List of issue dicts (empty if no issues found)
+        """
+        issues = []
+
+        # Common anti-patterns with their codes
+        quick_checks = [
+            (r"\byou\s+need\s+to\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'you need to'"),
+            (r"\byou\s+must\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'you must'"),
+            (r"\byou\s+have\s+to\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'you have to'"),
+            (r"\bnever\s+allow\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'never allow'"),
+            (r"\bmake\s+sure\s+to\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'make sure to'"),
+            (r"\byou\s+should\s+always\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'you should always'"),
+            (r"\b(amazing|incredible|wonderful|fantastic)\b", "VOICE_SUPERLATIVE", "superlative", "Found superlative"),
+            (r"\b(perfect|optimal|best|ideal)\b", "VOICE_SUPERLATIVE", "superlative", "Found superlative"),
+            (r"—", "VOICE_EM_DASH", "emdash", "Found em-dash character"),
+        ]
+
+        for pattern, code, category, base_msg in quick_checks:
+            matches = re.findall(pattern, yaml_content, re.IGNORECASE)
+            if matches:
+                # Include the actual matched text in the message
+                match_text = matches[0] if isinstance(matches[0], str) else matches[0][0]
+                issues.append({
+                    "code": code,
+                    "category": category,
+                    "issue": f"{base_msg}: '{match_text}'",
+                    "severity": "block",
+                })
+
+        if issues:
+            logger.info(f"[QUICK-VALIDATE] Found {len(issues)} anti-patterns before full QC")
+
+        return issues
+
+    def _fix_canonical_slug(self, content: str, canonical_id: str) -> str:
+        """
+        Fix canonical_slug to match the deterministic derivation from canonical_id.
+
+        This ensures canonical_slug is always: canonical_id.lower().replace('_', '-')
+        LLMs sometimes generate incorrect formats (e.g., adding -au suffix).
+
+        Args:
+            content: YAML content that may have incorrect canonical_slug
+            canonical_id: The canonical ID to derive slug from
+
+        Returns:
+            Content with corrected canonical_slug
+        """
+        import re
+
+        expected_slug = canonical_id.lower().replace("_", "-")
+
+        # Match canonical_slug: followed by any value
+        pattern = r"(canonical_slug:\s*)([^\n]+)"
+
+        def replacer(match):
+            current_slug = match.group(2).strip().strip('"').strip("'")
+            if current_slug != expected_slug:
+                logger.info(f"[TRANSFORM] Fixing canonical_slug: '{current_slug}' -> '{expected_slug}'")
+                return f"{match.group(1)}{expected_slug}"
+            return match.group(0)
+
+        return re.sub(pattern, replacer, content)
+
+    def _fix_principle_slugs(self, content: str) -> str:
+        """
+        D35: Fix principle slugs to use underscores instead of hyphens.
+
+        LLMs sometimes generate slugs like 'practical-life' instead of 'practical_life'.
+        This post-processes to ensure consistency with VALID_PRINCIPLES in QC.
+        """
+        # Known principle slugs that might be hyphenated
+        principle_mappings = {
+            "practical-life": "practical_life",
+            "absorbent-mind": "absorbent_mind",
+            "sensitive-periods": "sensitive_periods",
+            "prepared-environment": "prepared_environment",
+            "freedom-within-limits": "freedom_within_limits",
+            "grace-and-courtesy": "grace_and_courtesy",
+            "maximum-effort": "maximum_effort",
+            "work-of-the-child": "work_of_the_child",
+            "cosmic-view": "cosmic_view",
+            "spiritual-embryo": "spiritual_embryo",
+            "follow-the-child": "follow_the_child",
+            "freedom-of-movement": "freedom_of_movement",
+            "care-of-environment": "care_of_environment",
+            "hand-mind-connection": "hand_mind_connection",
+            "self-correcting-materials": "self_correcting_materials",
+            "concrete-to-abstract": "concrete_to_abstract",
+            "sensory-exploration": "sensory_exploration",
+            "inner-teacher": "inner_teacher",
+            "risk-competence": "risk_competence",
+            "refinement-of-movement": "refinement_of_movement",
+            "language-development": "language_development",
+            "respect-for-the-child": "respect_for_the_child",
+            "respect-for-the-individual": "respect_for_the_individual",
+            "hand-as-instrument-of-intelligence": "hand_as_instrument_of_intelligence",
+        }
+
+        fixed_content = content
+        for wrong, correct in principle_mappings.items():
+            if wrong in fixed_content:
+                logger.info(f"[POST-PROCESS] Fixing principle slug: '{wrong}' -> '{correct}'")
+                fixed_content = fixed_content.replace(wrong, correct)
+
+        return fixed_content
+
+    def _fix_age_range(self, elevated_yaml: str, original_yaml: str) -> str:
+        """
+        D90: Preserve ALL critical metadata fields from original file.
+
+        ELEVATE regenerates the entire YAML and can corrupt non-prose fields.
+        This post-processes to ensure all metadata is preserved exactly.
+
+        Critical fields preserved:
+        - type, canonical_id, canonical_slug, version, last_updated, canonical
+        - age_months_min, age_months_max
+        - domain (list)
+        - evidence_strength, priority_ranking, query_frequency_estimate
+
+        Args:
+            elevated_yaml: YAML content after elevation
+            original_yaml: Original YAML content before elevation
+
+        Returns:
+            YAML content with all metadata preserved from original
+        """
+        import re
+
+        try:
+            original_data = yaml.safe_load(original_yaml)
+            elevated_data = yaml.safe_load(elevated_yaml)
+
+            if not original_data or not elevated_data:
+                return elevated_yaml
+
+            # Track what we fix for logging
+            fixes = []
+
+            # Critical scalar fields that must be preserved exactly
+            scalar_fields = [
+                "type",
+                "canonical_id",
+                "canonical_slug",
+                "version",
+                "last_updated",
+                "canonical",
+                "age_months_min",
+                "age_months_max",
+                "evidence_strength",
+                "priority_ranking",
+                "query_frequency_estimate",
+            ]
+
+            fixed = elevated_yaml
+            for field in scalar_fields:
+                original_val = original_data.get(field)
+                if original_val is not None:
+                    # Use regex to preserve YAML structure
+                    if isinstance(original_val, bool):
+                        val_str = "true" if original_val else "false"
+                        pattern = rf'^({field}:\s*)(true|false|\w+)'
+                    elif isinstance(original_val, int):
+                        val_str = str(original_val)
+                        pattern = rf'^({field}:\s*)[\d\-]+'
+                    elif isinstance(original_val, float):
+                        val_str = str(original_val)
+                        pattern = rf'^({field}:\s*)[\d\.\-]+'
+                    else:
+                        # String - handle quoted and unquoted
+                        val_str = f'"{original_val}"' if ' ' in str(original_val) or '-' in str(original_val) else str(original_val)
+                        pattern = rf'^({field}:\s*)["\']?[^"\'\n]+["\']?'
+
+                    new_fixed = re.sub(pattern, rf'\g<1>{val_str}', fixed, flags=re.MULTILINE)
+                    if new_fixed != fixed:
+                        fixes.append(field)
+                        fixed = new_fixed
+
+            # Preserve domain list (special handling for YAML list)
+            original_domains = original_data.get("domain", [])
+            if original_domains and isinstance(original_domains, list):
+                # Check if domain was corrupted
+                elevated_domains = elevated_data.get("domain", [])
+                if set(original_domains) != set(elevated_domains):
+                    fixes.append("domain")
+                    # Rebuild domain section
+                    domain_yaml = "domain:\n" + "\n".join(f"  - {d}" for d in original_domains)
+                    # Replace domain section
+                    fixed = re.sub(
+                        r'^domain:\n(?:  - [^\n]+\n)*',
+                        domain_yaml + "\n",
+                        fixed,
+                        flags=re.MULTILINE
+                    )
+
+            if fixes:
+                logger.info(f"[POST-PROCESS] Preserved metadata fields: {', '.join(fixes)}")
+
+            return fixed
+
+        except Exception as e:
+            logger.warning(f"[POST-PROCESS] Metadata preservation failed: {e}")
+            return elevated_yaml
+
+    def _detect_truncation(self, yaml_content: str) -> tuple[bool, str]:
+        """
+        Detect if Activity Atom YAML output is truncated.
+
+        All canonical Activity Atoms end with the parent_search_terms field,
+        which is a YAML list. Truncation is detected when:
+        - parent_search_terms section is missing
+        - Last line is not a list item (- "...")
+        - Required top-level fields are missing
+        - Output is suspiciously short
+
+        Returns:
+            (is_truncated: bool, reason: str)
+        """
+        if not yaml_content or not yaml_content.strip():
+            return (True, "Empty output")
+
+        lines = yaml_content.strip().split('\n')
+
+        # Check 1: Minimum length (shortest canonical is ~200 lines)
+        if len(lines) < 150:
+            return (True, f"Output too short ({len(lines)} lines, expected 150+)")
+
+        # Check 2: parent_search_terms section must exist
+        if 'parent_search_terms:' not in yaml_content:
+            return (True, "Missing parent_search_terms section (final field)")
+
+        # Check 3: Must end with a parent_search_terms list item
+        # Valid endings: '  - "search term"' or "  - 'search term'"
+        last_line = lines[-1].strip()
+        if not (last_line.startswith('- "') or last_line.startswith("- '")):
+            # Allow for trailing empty lines
+            for i in range(min(3, len(lines))):
+                check_line = lines[-(i+1)].strip()
+                if check_line.startswith('- "') or check_line.startswith("- '"):
+                    break
+                if check_line and not check_line.startswith('#'):
+                    return (True, f"Last content line is not a search term: '{check_line[:50]}...'")
+
+        # Check 4: Required top-level fields
+        required_fields = ['type: Activity', 'canonical_id:', 'priority_ranking:', 'query_frequency_estimate:']
+        for field in required_fields:
+            if field not in yaml_content:
+                return (True, f"Missing required field: {field}")
+
+        return (False, "Output appears complete")
 
     async def _execute_validate(
         self,
@@ -661,7 +1317,9 @@ class ActivityConversionPipeline:
                 except OSError:
                     pass
 
-    async def audit_quality(self, elevated_yaml: str, activity_id: str) -> dict:
+    async def audit_quality(
+        self, elevated_yaml: str, activity_id: str, is_final_attempt: bool = False
+    ) -> dict:
         """
         Audit activity quality using BabyBrains voice standards.
 
@@ -672,6 +1330,7 @@ class ActivityConversionPipeline:
         Args:
             elevated_yaml: The elevated YAML content to audit
             activity_id: Activity ID for logging
+            is_final_attempt: If True, use extended timeout (10 min vs 5 min) - D28
 
         Returns:
             dict with grade, passed, issues, philosophy info, and recommendation
@@ -727,7 +1386,9 @@ class ActivityConversionPipeline:
             logger.warning(f"Reference activity not found: {reference_path}")
             reference = "Reference not found - grade based on rubric only"
 
-        audit_prompt = f"""You are a quality auditor for BabyBrains Activity Atoms.
+        audit_prompt = f"""You are a SKEPTICAL quality auditor for BabyBrains Activity Atoms.
+
+Your job is to FIND REAL PROBLEMS, not rubber-stamp approval. Be adversarial but fair.
 
 ## GRADING RUBRIC
 {rubric}
@@ -742,86 +1403,121 @@ class ActivityConversionPipeline:
 {elevated_yaml}
 ```
 
-## YOUR TASK
-Grade this activity using the Voice Elevation Rubric. Check:
+## BLOCKING vs ADVISORY ISSUES
 
-1. **Anti-Pattern Check**: Any em-dashes (—), formal transitions (Moreover, Furthermore, etc.), superlatives (amazing, incredible)?
-2. **Philosophy Integration**: Which of the 6 Montessori principles are present?
-   - Cosmic View (connects to meaningful work)
-   - Spiritual Embryo (child develops from within)
-   - Adult as Obstacle (parent self-reflection prompts)
-   - Freedom Within Limits (boundaries as loving structure)
-   - Transformed Adult (adult self-regulation matters)
-   - Creating Conditions Not Outcomes (anxiety-reducing)
-3. **Australian Voice**: Understated confidence, tall poppy safe, cost-aware, correct vocab (mum, nappy, cot)?
-4. **Rationale Field**: Does it follow the A+ pattern? (Observable → Philosophy → Parent psychology → Reassurance)
-5. **Science Weaving**: Observable → Invisible → Meaningful pattern?
+### BLOCKING ISSUES (must fail - Grade B+ maximum):
+- **Em-dashes (—)**: ANY em-dash = automatic B+ max. No exceptions.
+- **Superlatives**: amazing, incredible, perfect, best, wonderful, fantastic, extraordinary
+  - EXCEPTIONS (these are OK): "works best", "try your best", "best interests of the child", "best practices", "not perfect", "doesn't need to be perfect", "perfect the skill", "extraordinary absorptive", "extraordinary to your baby", "incredible focus"
+- **Pressure language**: "you need to", "you must", "never allow", "always ensure", "crucial that you"
+- **Formal transitions at sentence START**: Moreover, Furthermore, Additionally, Consequently, Nevertheless
+  - OK mid-sentence: "this is furthermore supported by..."
+- **American spelling**: mom (should be mum), diaper (nappy), stroller (pram), pacifier (dummy)
+- **Missing philosophy in rationale**: Rationale MUST connect to at least one Montessori principle
+- **Sales-y language**: "unlock your baby's potential", "supercharge development", "transform your parenting"
 
-**IMPORTANT**: Grade A requires ALL checks to pass. Any em-dash = automatic B+ maximum.
+### ADVISORY ISSUES (note but do NOT fail):
+- Minor word choice preferences
+- Slight variations in sentence length
+- Stylistic differences that don't violate explicit rubric rules
+- Sentence structure you might write differently
+- Field ordering within YAML
+
+## AUDIT CHECKLIST (answer each honestly)
+
+1. **Em-dash scan**: Search EVERY field. Found any (—)? If yes: BLOCKING.
+2. **Superlative scan**: Check for forbidden words. Context matters - check exceptions list.
+3. **Pressure language**: Any guilt-inducing "you must/need to" phrasing?
+4. **Formal transitions**: Do sentences START with Moreover/Furthermore/Additionally?
+5. **Spelling check**: Any American spellings slip through?
+6. **Philosophy in rationale**: Does rationale connect observable to philosophy? If just "this helps development" with no Montessori principle = BLOCKING.
+7. **Australian voice**: Understated confidence, not preachy? Cost-aware where relevant?
+
+## PHILOSOPHY CHECK
+Which of these 6 principles appear (need at least 2 for Grade A)?
+- Cosmic View (meaningful work, contribution)
+- Spiritual Embryo (child develops from within)
+- Adult as Obstacle (parent self-reflection)
+- Freedom Within Limits (boundaries as loving structure)
+- Transformed Adult (adult self-regulation)
+- Creating Conditions Not Outcomes (reduce anxiety)
+
+## GRADING LOGIC
+- **Grade A**: Zero BLOCKING issues + philosophy integrated + Australian voice
+- **Grade B+**: 1-2 minor BLOCKING issues (fixable in one pass)
+- **Grade B**: Multiple BLOCKING issues or weak philosophy
+- **Grade C**: Significant problems across multiple areas
+- **Grade F**: Audit failure or unusable content
+
+**CRITICAL**: Do NOT approve Grade A unless you can honestly say "I searched for problems and found none."
 
 Return ONLY valid JSON (no markdown, no explanation):
 {{
   "grade": "A",
   "passed": true,
   "issues": [],
+  "blocking_issues": [],
+  "advisory_notes": [],
   "philosophy_found": ["cosmic_view", "spiritual_embryo", "adult_as_obstacle", "freedom_within_limits", "transformed_adult", "creating_conditions"],
   "philosophy_missing": [],
   "australian_voice": true,
   "rationale_quality": "excellent",
-  "recommendation": "Ready for production"
+  "recommendation": "Ready for production - passed adversarial review"
 }}
 
-OR if issues found:
+OR if blocking issues found:
 {{
   "grade": "B+",
   "passed": false,
   "issues": [
-    {{"category": "anti-pattern", "issue": "Em-dash found in description", "fix": "Replace with period or comma"}},
-    {{"category": "philosophy", "issue": "Missing 'Adult as Obstacle' reflection", "fix": "Add prompt for parent self-awareness"}}
+    {{"category": "anti-pattern", "issue": "Em-dash found in description field", "fix": "Replace with period or comma", "blocking": true}},
+    {{"category": "philosophy", "issue": "Rationale lacks Montessori connection", "fix": "Add 'Spiritual Embryo' principle - child developing from within", "blocking": true}}
   ],
-  "philosophy_found": ["cosmic_view", "spiritual_embryo"],
-  "philosophy_missing": ["adult_as_obstacle", "transformed_adult"],
+  "blocking_issues": ["em-dash in description", "rationale missing philosophy"],
+  "advisory_notes": ["Could vary sentence length more in tips"],
+  "philosophy_found": ["cosmic_view"],
+  "philosophy_missing": ["spiritual_embryo", "adult_as_obstacle", "transformed_adult"],
   "australian_voice": true,
-  "rationale_quality": "needs_work",
-  "recommendation": "Needs elevation - add philosophy integration and fix anti-patterns"
+  "rationale_quality": "needs_philosophy",
+  "recommendation": "Fix 2 blocking issues: em-dash removal + add philosophy to rationale"
 }}
 """
 
-        logger.info(f"Running quality audit for {activity_id}")
+        # D28: Use extended timeout for final retry to avoid truncation
+        effective_timeout = 600 if is_final_attempt else 300  # 10 min vs 5 min
+        logger.info(f"Running quality audit for {activity_id} (timeout={effective_timeout}s, final={is_final_attempt})")
 
         # Use SubAgentExecutor for fresh context
+        # D34: sandbox=False - sandboxing causes EROFS errors with claude CLI config
         result = await self.sub_executor.spawn(
             task=audit_prompt,
             context={"activity_id": activity_id, "audit_type": "voice_quality"},
-            timeout=300,  # 5 min for quality audit
-            sandbox=True,
+            timeout=effective_timeout,
+            sandbox=False,
         )
 
-        # Parse JSON response
-        if result.success and result.output:
-            try:
-                output = result.output.strip()
-                # Handle potential markdown code blocks
-                if "```json" in output:
-                    output = output.split("```json")[1].split("```")[0].strip()
-                elif "```" in output:
-                    output = output.split("```")[1].split("```")[0].strip()
+        # D28: Robust JSON extraction with truncation detection
+        parsed_result, error = self._extract_audit_json(result.output if result.output else "")
 
-                audit_result = json.loads(output)
-                logger.info(f"Quality audit result: Grade {audit_result.get('grade')}")
-                return audit_result
-            except json.JSONDecodeError as e:
-                logger.error(f"Failed to parse audit response: {e}")
-                logger.debug(f"Raw response: {result.output[:500]}")
+        if parsed_result:
+            logger.info(f"Quality audit result: Grade {parsed_result.get('grade')}")
+            return parsed_result
 
-        # Fallback on failure
+        # Log full response on failure for diagnostics
+        if result.output:
+            logger.error(f"Failed to parse audit response: {error}")
+            logger.error(f"Full raw response ({len(result.output)} chars):\n{result.output}")
+        else:
+            logger.error(f"No audit output received. Error: {result.error}")
+
+        # Fallback on failure with diagnostics
         return {
             "grade": "F",
             "passed": False,
             "issues": [
                 {
                     "category": "audit",
-                    "issue": "Audit failed - could not parse response",
+                    "issue": f"Audit parse failed: {error or result.error or 'unknown error'}",
                     "fix": "Manual review required",
                 }
             ],
@@ -830,10 +1526,79 @@ OR if issues found:
             "australian_voice": False,
             "rationale_quality": "unknown",
             "recommendation": "Audit failed - requires manual review",
+            "raw_output_length": len(result.output) if result.output else 0,
         }
 
+    def _extract_audit_json(self, raw_output: str) -> tuple[Optional[dict], Optional[str]]:
+        """
+        D28: Extract and validate JSON from audit response with truncation detection.
+
+        Returns:
+            Tuple of (parsed_dict, error_message)
+        """
+        if not raw_output:
+            return None, "Empty output received"
+
+        output = raw_output.strip()
+        json_content = output
+
+        # Handle markdown code blocks robustly
+        if "```json" in output:
+            parts = output.split("```json", 1)
+            if len(parts) > 1:
+                remaining = parts[1]
+                if "```" in remaining:
+                    json_content = remaining.split("```", 1)[0].strip()
+                else:
+                    # Truncation detected: no closing ```
+                    logger.warning("Truncation detected: no closing ``` found after ```json")
+                    json_content = remaining.strip()
+        elif "```" in output:
+            parts = output.split("```", 1)
+            if len(parts) > 1:
+                remaining = parts[1]
+                if "```" in remaining:
+                    json_content = remaining.split("```", 1)[0].strip()
+                else:
+                    json_content = remaining.strip()
+
+        # Pre-validate JSON structure
+        json_content = json_content.strip()
+        if not json_content.startswith("{"):
+            return None, f"JSON doesn't start with '{{': {json_content[:100]}"
+
+        # Check for truncation (unbalanced braces)
+        open_braces = json_content.count("{")
+        close_braces = json_content.count("}")
+        if open_braces != close_braces:
+            logger.warning(f"Truncated JSON detected: {open_braces} open braces, {close_braces} close braces")
+            # Attempt to repair by adding missing close braces
+            if close_braces < open_braces:
+                missing = open_braces - close_braces
+                json_content = json_content.rstrip() + ("}" * missing)
+                logger.info(f"Attempted JSON repair: added {missing} closing braces")
+
+        # Check for unbalanced brackets
+        open_brackets = json_content.count("[")
+        close_brackets = json_content.count("]")
+        if close_brackets < open_brackets:
+            missing = open_brackets - close_brackets
+            # Find last ] or } and insert before final }
+            json_content = json_content.rstrip().rstrip("}") + ("]" * missing) + "}"
+            logger.info(f"Attempted JSON repair: added {missing} closing brackets")
+
+        try:
+            result = json.loads(json_content)
+            return result, None
+        except json.JSONDecodeError as e:
+            # Log context around error for debugging
+            start = max(0, e.pos - 50)
+            end = min(len(json_content), e.pos + 50)
+            context = json_content[start:end]
+            return None, f"Invalid JSON at position {e.pos}: {e.msg}. Context: ...{context}..."
+
     async def convert_activity(
-        self, raw_id: str, feedback: Optional[str] = None
+        self, raw_id: str, feedback: Optional[str] = None, is_final_attempt: bool = False
     ) -> ConversionResult:
         """
         Run the full conversion pipeline for a single activity.
@@ -945,6 +1710,10 @@ OR if issues found:
                     error=error_msg,
                 )
 
+            # A-3: DETERMINISTIC FIX - Ensure canonical_slug matches canonical_id
+            # LLMs sometimes generate incorrect formats (e.g., adding -au suffix)
+            canonical_yaml = self._fix_canonical_slug(canonical_yaml, canonical_id)
+
             # Stage 4: ELEVATE VOICE
             # Pass feedback from previous attempt if this is a retry
             success, elevate_output, error = await self._execute_elevate(
@@ -965,6 +1734,22 @@ OR if issues found:
                 skill_name="elevate_voice_activity",
             )
 
+            # D38: Validate elevate_output has required fields
+            if not elevate_output or not isinstance(elevate_output, dict):
+                return ConversionResult(
+                    activity_id=raw_id,
+                    status=ActivityStatus.FAILED,
+                    error=f"Elevate returned invalid output type: {type(elevate_output)}",
+                )
+
+            elevated_yaml = elevate_output.get("elevated_yaml")
+            if not elevated_yaml:
+                return ConversionResult(
+                    activity_id=raw_id,
+                    status=ActivityStatus.FAILED,
+                    error="Elevate output missing 'elevated_yaml' - no content generated",
+                )
+
             # Check voice grade
             grade = elevate_output.get("grade", "")
             if grade and grade != "A":
@@ -972,16 +1757,36 @@ OR if issues found:
                     activity_id=raw_id,
                     status=ActivityStatus.REVISION_NEEDED,
                     error=f"Voice grade {grade}: {elevate_output.get('issues', [])}",
-                    elevated_yaml=elevate_output.get("elevated_yaml"),
+                    elevated_yaml=elevated_yaml,
                 )
 
-            elevated_yaml = elevate_output.get("elevated_yaml", canonical_yaml)
+            # D36: DETERMINISTIC FIX - Ensure canonical_slug is correct after ELEVATE
+            # ELEVATE regenerates YAML, so we need to fix slug again
+            elevated_yaml = self._fix_canonical_slug(elevated_yaml, canonical_id)
+
+            # D35: DETERMINISTIC FIX - Ensure principle slugs use underscores
+            # LLMs sometimes generate slugs like 'practical-life' instead of 'practical_life'
+            elevated_yaml = self._fix_principle_slugs(elevated_yaml)
+
+            # D78: Early truncation detection - check before expensive QC/AUDIT stages
+            # All canonical Activity Atoms end with parent_search_terms list
+            is_truncated, truncation_reason = self._detect_truncation(elevated_yaml)
+            if is_truncated:
+                logger.warning(f"[TRUNCATION] Detected: {truncation_reason}")
+                return ConversionResult(
+                    activity_id=raw_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=[f"Output truncated: {truncation_reason}"],
+                    elevated_yaml=elevated_yaml,
+                )
 
             # C-1: SPEC COMPLIANCE - Adversarial verification via SubAgentExecutor
             # Per masterclass [4147s]: Use fresh context to verify work
             try:
                 verification = await self.sub_executor.verify_adversarially(
-                    output={"yaml": elevated_yaml[:5000], "grade": grade or "A"},
+                    output={"yaml": elevated_yaml[:15000], "grade": grade or "A"},
                     skill_name="elevate_voice_activity",
                     persona="senior Montessori education specialist",
                 )
@@ -1046,10 +1851,11 @@ OR if issues found:
                 )
 
             # Stage 7: QUALITY AUDIT
-            logger.info(f"Stage 7: QUALITY AUDIT for {raw_id}")
+            logger.info(f"Stage 7: QUALITY AUDIT for {raw_id} (final={is_final_attempt})")
             audit = await self.audit_quality(
                 elevated_yaml=elevated_yaml,
                 activity_id=raw_id,
+                is_final_attempt=is_final_attempt,  # D28: Extended timeout on final attempt
             )
 
             # Store audit results in scratch pad for retry reflection
@@ -1137,6 +1943,122 @@ OR if issues found:
             except Exception as sess_err:
                 logger.warning(f"Failed to end session: {sess_err}")
 
+    def _format_issue_feedback(self, issues: list[dict]) -> str:
+        """
+        Format QC issues into specific, actionable feedback with examples.
+
+        D36: Specific Wait Pattern Feedback
+        Groups issues by type and provides before/after examples.
+
+        Args:
+            issues: List of issue dicts from QC hook
+
+        Returns:
+            Formatted feedback string with specific fix instructions
+        """
+        # Group issues by category
+        pressure_issues = []
+        superlative_issues = []
+        emdash_issues = []
+        other_issues = []
+
+        for issue in issues:
+            code = issue.get("code", "").upper()
+            category = issue.get("category", "").lower()
+            msg = issue.get("issue", issue.get("msg", ""))
+
+            if "PRESSURE" in code or "pressure" in category:
+                pressure_issues.append(msg)
+            elif "SUPERLATIVE" in code or "superlative" in category:
+                superlative_issues.append(msg)
+            elif "EM_DASH" in code or "emdash" in category or "em-dash" in msg.lower():
+                emdash_issues.append(msg)
+            else:
+                other_issues.append(f"[{category}] {msg}")
+
+        sections = []
+
+        if pressure_issues:
+            section = """### PRESSURE LANGUAGE - MUST FIX (Automatic Failure)
+
+Found instances:
+"""
+            for issue in pressure_issues[:5]:
+                section += f"- {issue}\n"
+
+            section += """
+REPLACEMENTS TO USE:
+- "You need to" → "It helps to" OR "Try" OR just describe what happens
+- "You must" → "What works is" OR omit entirely
+- "Never allow" → "Avoid" OR phrase as positive guidance
+- "Make sure to" → "When you can" OR just state the action
+- "You should always" → "It often helps to" OR describe benefits
+
+EXAMPLE TRANSFORMS:
+- BEFORE: "You need to watch closely during this activity."
+- AFTER: "Watching closely lets you see the small moments of discovery."
+
+- BEFORE: "Never allow your child to..."
+- AFTER: "If your child shows frustration, that's a signal to..."
+"""
+            sections.append(section)
+
+        if superlative_issues:
+            section = """### SUPERLATIVES - MUST FIX (Automatic Failure)
+
+Found instances:
+"""
+            for issue in superlative_issues[:5]:
+                section += f"- {issue}\n"
+
+            section += """
+BANNED WORDS (automatic QC failure):
+amazing, incredible, wonderful, fantastic, extraordinary, perfect, optimal,
+best, ideal, exceptional, remarkable, outstanding, superb, brilliant, tremendous
+
+REPLACEMENTS TO USE:
+- "the best" → "an effective" OR "what works well"
+- "perfect" → "good" OR "suitable" OR just omit
+- "optimal" → "effective" OR "helpful"
+- "amazing/incredible/extraordinary" → describe the observation factually
+- "essential" → "important" OR "helpful"
+- "remarkable/outstanding" → "noticeable" OR describe what you observed
+
+EXAMPLE TRANSFORMS:
+- BEFORE: "This is the perfect time to introduce..."
+- AFTER: "Around this age, many children show readiness for..."
+
+- BEFORE: "The extraordinary capacity of..."
+- AFTER: "The capacity of..." (just omit the superlative)
+
+- BEFORE: "The best approach is to..."
+- AFTER: "What often works is to..."
+
+CRITICAL: Before outputting, search for ALL these words and remove them.
+"""
+            sections.append(section)
+
+        if emdash_issues:
+            section = """### EM-DASHES - MUST FIX (Automatic Failure)
+
+Found em-dashes (—) in the output. Replace with:
+- Comma for short pauses
+- Period and new sentence for longer breaks
+- Parentheses for asides
+- Colon for explanations
+
+NEVER use the em-dash character (—).
+"""
+            sections.append(section)
+
+        if other_issues:
+            section = "### OTHER ISSUES\n\n"
+            for issue in other_issues[:5]:
+                section += f"- {issue}\n"
+            sections.append(section)
+
+        return "\n".join(sections)
+
     async def reflect_on_failure(
         self,
         failed_yaml: str,
@@ -1146,8 +2068,8 @@ OR if issues found:
         """
         Apply the "Wait" pattern to reflect on why an activity failed quality audit.
 
-        Uses Anthropic introspection research (89.3% blind spot reduction) to
-        generate intelligent feedback for retry attempts.
+        D36: Enhanced with specific feedback and before/after examples.
+        Uses Anthropic introspection research (89.3% blind spot reduction).
 
         Args:
             failed_yaml: The YAML that failed quality audit
@@ -1166,47 +2088,50 @@ OR if issues found:
         if not grade:
             grade = "Unknown"
 
-        # Format issues for reflection
-        issues_text = "\n".join(
-            f"- [{i.get('category', 'unknown')}] {i.get('issue', 'No description')}"
-            + (f"\n  Fix: {i.get('fix')}" if i.get("fix") else "")
-            for i in valid_issues
-        )
-        if len(issues) > 20:
-            issues_text += f"\n... and {len(issues) - 20} more issues"
+        # D36: Format issues with specific, actionable feedback
+        specific_feedback = self._format_issue_feedback(valid_issues)
 
-        # The "Wait" pattern from Anthropic introspection research
-        reflection_prompt = f"""Wait. Before re-elevating this activity, pause and consider:
+        # If no specific feedback generated, use generic format
+        if not specific_feedback.strip():
+            specific_feedback = "\n".join(
+                f"- [{i.get('category', 'unknown')}] {i.get('issue', 'No description')}"
+                for i in valid_issues
+            )
 
-## Failed Activity (Grade {grade})
-The previous elevation attempt received Grade {grade} instead of the required A.
+        # D36: Enhanced "Wait" pattern with specific fix instructions
+        reflection_prompt = f"""## CRITICAL: RE-ELEVATION INSTRUCTIONS
 
-## Specific Issues Found
-{issues_text}
+The previous attempt received **Grade {grade}** (required: A).
 
-## Reflection Questions
-- What assumptions did the previous elevation make that led to these issues?
-- Why did these specific anti-patterns or gaps occur?
-- What would I tell another agent who made these same mistakes?
+{specific_feedback}
 
-## Your Task
-Based on this reflection, provide specific guidance for the re-elevation:
-1. What MUST change to achieve Grade A?
-2. Which Montessori principles need stronger integration?
-3. What Australian voice elements need adjustment?
-4. Any anti-patterns that must be eliminated?
+## WHAT YOU MUST DO
 
-Be specific and actionable. This feedback will guide the next elevation attempt.
+1. **SEARCH your output** for each banned word/phrase before submitting
+2. **REPLACE** every instance using the alternatives above
+3. **DO NOT** use pressure language even when the source material does
+4. **DO NOT** add superlatives for emphasis - describe observations factually
+
+## BEFORE SUBMITTING
+
+Run this mental check:
+- [ ] No "you need to", "you must", "never allow", "make sure"
+- [ ] No "best", "perfect", "optimal", "amazing", "incredible"
+- [ ] No em-dashes (—)
+- [ ] No "Moreover", "Furthermore", "Additionally" at sentence start
+
+If ANY of these appear, rewrite that sentence before outputting.
 """
 
-        logger.info(f"Applying 'Wait' pattern reflection for Grade {grade}")
+        logger.info(f"Applying enhanced 'Wait' pattern reflection for Grade {grade}")
 
         # Use SubAgentExecutor for fresh reflection
+        # D34: sandbox=False - sandboxing causes EROFS errors
         result = await self.sub_executor.spawn(
             task=reflection_prompt,
             context={"grade": grade, "issue_count": len(valid_issues)},
             timeout=120,  # 2 min for reflection
-            sandbox=True,
+            sandbox=False,
         )
 
         if result.success and result.output:
@@ -1215,7 +2140,187 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
         else:
             # Fallback to formatted issues if reflection fails
             logger.warning("Reflection failed, using formatted issues as feedback")
-            return f"Previous attempt failed with Grade {grade}. Issues:\n{issues_text}"
+            return f"Previous attempt failed with Grade {grade}.\n\n{specific_feedback}"
+
+    async def _convert_from_cached_transform(
+        self,
+        raw_id: str,
+        cached_transform: dict,
+        feedback: Optional[str] = None,
+        is_final_attempt: bool = False,
+    ) -> ConversionResult:
+        """
+        D78: Run stages 4-7 from cached transform output.
+
+        This method is used on retry to skip the expensive INGEST/RESEARCH/TRANSFORM
+        stages which produce identical output. Only ELEVATE uses the feedback.
+
+        Args:
+            raw_id: Activity ID
+            cached_transform: Dict with canonical_yaml, canonical_id, file_path
+            feedback: Feedback from previous attempt
+            is_final_attempt: Whether this is the final retry attempt
+
+        Returns:
+            ConversionResult with status
+        """
+        canonical_yaml = cached_transform["canonical_yaml"]
+        canonical_id = cached_transform["canonical_id"]
+        file_path = cached_transform["file_path"]
+
+        logger.info(f"[CACHED] Starting from stage 4 (ELEVATE) for {raw_id}")
+
+        # Stage 4: ELEVATE VOICE (with feedback)
+        success, elevate_output, error = await self._execute_elevate(
+            canonical_yaml, feedback=feedback
+        )
+        self.session.record_skill("elevate_voice_activity")
+        if not success:
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.FAILED,
+                error=f"Elevate failed: {error}",
+            )
+
+        self.scratch_pad.add(
+            "elevate_output",
+            elevate_output,
+            step=4,
+            skill_name="elevate_voice_activity",
+        )
+
+        # D38: Validate elevate_output
+        if not elevate_output or not isinstance(elevate_output, dict):
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.FAILED,
+                error=f"Elevate returned invalid output type: {type(elevate_output)}",
+            )
+
+        elevated_yaml = elevate_output.get("elevated_yaml")
+        if not elevated_yaml:
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.FAILED,
+                error="Elevate output missing 'elevated_yaml' - no content generated",
+            )
+
+        # Check voice grade from ELEVATE self-assessment
+        grade = elevate_output.get("grade", "")
+        if grade and grade != "A":
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.REVISION_NEEDED,
+                error=f"Voice grade {grade}: {elevate_output.get('issues', [])}",
+                elevated_yaml=elevated_yaml,
+            )
+
+        # Deterministic fixes
+        elevated_yaml = self._fix_canonical_slug(elevated_yaml, canonical_id)
+        elevated_yaml = self._fix_principle_slugs(elevated_yaml)
+
+        # D78: Early truncation detection
+        is_truncated, truncation_reason = self._detect_truncation(elevated_yaml)
+        if is_truncated:
+            logger.warning(f"[TRUNCATION] Detected: {truncation_reason}")
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.QC_FAILED,
+                canonical_id=canonical_id,
+                file_path=file_path,
+                qc_issues=[f"Output truncated: {truncation_reason}"],
+                elevated_yaml=elevated_yaml,
+            )
+
+        # Adversarial check (non-blocking)
+        try:
+            verification = await self.sub_executor.verify_adversarially(
+                output={"yaml": elevated_yaml[:15000], "grade": grade or "A"},
+                skill_name="elevate_voice_activity",
+                persona="senior Montessori education specialist",
+            )
+            if not verification.passed:
+                logger.warning(f"Adversarial check found issues: {verification.issues}")
+        except Exception as adv_err:
+            logger.warning(f"Adversarial verification skipped: {adv_err}")
+
+        # Stage 5: VALIDATE
+        success, validate_output, error = await self._execute_validate(
+            elevated_yaml, file_path, canonical_id
+        )
+        self.session.record_skill("validate_activity")
+        if not success:
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.FAILED,
+                error=f"Validate failed: {error}",
+            )
+
+        validation_result = validate_output.get("validation_result", {})
+        if not validation_result.get("passed", False):
+            blocking_issues = validation_result.get("blocking_issues", [])
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.FAILED,
+                error=f"Validation failed: {blocking_issues}",
+                elevated_yaml=elevated_yaml,
+            )
+
+        # Stage 6: QC HOOK
+        qc_passed, qc_issues, qc_warnings = await self._run_qc_hook(elevated_yaml)
+        if not qc_passed:
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.QC_FAILED,
+                canonical_id=canonical_id,
+                file_path=file_path,
+                qc_issues=qc_issues,
+                qc_warnings=qc_warnings,
+                elevated_yaml=elevated_yaml,
+            )
+
+        # Stage 7: QUALITY AUDIT
+        logger.info(f"Stage 7: QUALITY AUDIT for {raw_id} (final={is_final_attempt})")
+        audit = await self.audit_quality(
+            elevated_yaml=elevated_yaml,
+            activity_id=raw_id,
+            is_final_attempt=is_final_attempt,
+        )
+
+        self.scratch_pad.add("quality_audit", audit, step=7, skill_name="quality_audit")
+        self.scratch_pad.add("elevated_yaml", elevated_yaml, step=7, skill_name="quality_audit")
+
+        # Check grade
+        audit_grade = audit.get("grade", "Unknown")
+        grade_str = str(audit_grade).strip().upper() if audit_grade else ""
+        is_grade_a = grade_str.startswith("A") and grade_str not in ("AB", "AC", "AD", "AF")
+
+        if not audit.get("passed") or not is_grade_a:
+            logger.warning(f"Quality audit: Grade {audit_grade} (requires A/A+/A-)")
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.REVISION_NEEDED,
+                canonical_id=canonical_id,
+                file_path=file_path,
+                error=f"Quality audit: Grade {audit_grade} (need A/A+/A-)",
+                qc_warnings=[
+                    f"[{i.get('category')}] {i.get('issue')}"
+                    for i in audit.get("issues", [])
+                    if isinstance(i, dict)
+                ],
+                elevated_yaml=elevated_yaml,
+            )
+
+        logger.info(f"Quality audit PASSED: Grade {audit_grade}")
+        return ConversionResult(
+            activity_id=raw_id,
+            status=ActivityStatus.DONE,
+            canonical_id=canonical_id,
+            file_path=file_path,
+            qc_issues=[],
+            qc_warnings=qc_warnings,
+            elevated_yaml=elevated_yaml,
+        )
 
     async def convert_with_retry(
         self,
@@ -1224,6 +2329,9 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
     ) -> ConversionResult:
         """
         Convert activity with intelligent retry using the "Wait" pattern.
+
+        D78: Uses stage caching - INGEST/RESEARCH/TRANSFORM run once, only
+        ELEVATE onward is retried. This reduces retry time by ~60-70%.
 
         If quality audit fails (not Grade A), applies reflection to understand
         why and retries with learned context. Each retry learns from what
@@ -1247,6 +2355,7 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
 
         last_result: Optional[ConversionResult] = None
         feedback: Optional[str] = None
+        cached_transform: Optional[dict] = None  # D78: Cache for retries
 
         for attempt in range(max_retries + 1):
             if attempt > 0:
@@ -1254,8 +2363,35 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
                 print(f"\nApplying 'Wait' pattern reflection...")
                 print(f"Retry attempt {attempt}/{max_retries} with learned context\n")
 
-            # Run conversion with any feedback from previous attempt
-            result = await self.convert_activity(raw_id, feedback=feedback)
+            # D28: Mark final attempt for extended timeout in quality audit
+            is_final = (attempt >= max_retries)
+
+            # D78: First attempt runs full pipeline, retries use cached transform
+            if attempt == 0 or cached_transform is None:
+                # Full pipeline - stages 1-7
+                result = await self.convert_activity(raw_id, feedback=feedback, is_final_attempt=is_final)
+
+                # Cache transform output for potential retries
+                if self.scratch_pad:
+                    transform_output = self.scratch_pad.get("transform_output")
+                    if transform_output and isinstance(transform_output, dict):
+                        cached_transform = {
+                            "canonical_yaml": transform_output.get("canonical_yaml", ""),
+                            "canonical_id": transform_output.get("canonical_id", ""),
+                            "file_path": transform_output.get("file_path", ""),
+                        }
+                        # Only cache if all fields present
+                        if not all(cached_transform.values()):
+                            cached_transform = None
+                        else:
+                            logger.info(f"[D78] Cached transform output for retries")
+            else:
+                # D78: Cached retry - stages 4-7 only (skips INGEST/RESEARCH/TRANSFORM)
+                logger.info(f"[D78] Using cached transform - skipping stages 1-3")
+                result = await self._convert_from_cached_transform(
+                    raw_id, cached_transform, feedback=feedback, is_final_attempt=is_final
+                )
+
             last_result = result
 
             # Success - Grade A achieved
@@ -1287,7 +2423,7 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
                 grade = "QC_FAILED"
             else:
                 # Get audit results from scratch pad
-                audit = self.scratch_pad.get(f"quality_audit") if self.scratch_pad else {}
+                audit = self.scratch_pad.get("quality_audit") if self.scratch_pad else {}
                 if not audit:
                     audit = {"issues": [], "grade": "Unknown"}
                 issues = audit.get("issues", [])
@@ -1299,7 +2435,7 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
                 grade=grade,
             )
 
-            logger.info(f"Will retry with reflection feedback")
+            logger.info("Will retry with reflection feedback")
             # Show issues from either QC or quality audit
             display_issues = result.qc_issues if result.qc_issues else result.qc_warnings
             if display_issues:
@@ -1419,6 +2555,210 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
         )
         print("Too many invalid inputs. Skipping activity.")
         return "skip"
+
+    async def elevate_existing_file(
+        self, yaml_path: str, max_retries: int = 2
+    ) -> ConversionResult:
+        """
+        Elevate an existing YAML file through stages 4-7.
+
+        For pioneer/staging files that have content but need voice elevation.
+        Runs: ELEVATE → VALIDATE → QC_HOOK → QUALITY_AUDIT
+
+        Args:
+            yaml_path: Path to existing YAML file
+            max_retries: Max retry attempts for non-A grades
+
+        Returns:
+            ConversionResult with elevated_yaml if successful
+        """
+        path = Path(yaml_path)
+        if not path.exists():
+            return ConversionResult(
+                activity_id=path.stem,
+                status=ActivityStatus.FAILED,
+                error=f"File not found: {yaml_path}",
+            )
+
+        # Extract canonical_id from filename
+        canonical_id = path.stem
+        activity_id = canonical_id  # Use canonical_id as activity_id for tracking
+
+        # Read existing content
+        try:
+            existing_yaml = path.read_text()
+        except Exception as e:
+            return ConversionResult(
+                activity_id=activity_id,
+                status=ActivityStatus.FAILED,
+                error=f"Failed to read file: {e}",
+            )
+
+        logger.info(f"[ELEVATE-EXISTING] Processing: {canonical_id}")
+        logger.info(f"[ELEVATE-EXISTING] Input size: {len(existing_yaml)} chars")
+
+        # Determine output path based on domain in file
+        try:
+            parsed = yaml.safe_load(existing_yaml)
+            domains = parsed.get("domain", [])
+            domain = domains[0] if isinstance(domains, list) and domains else "unknown"
+            # Map domain names to directory names
+            domain_map = {
+                "practical_life": "practical_life",
+                "prepared_environment": "prepared_environment",
+                "feeding": "feeding",
+                "movement": "movement",
+                "language": "language",
+                "sensory": "sensory",
+                "cognitive": "cognitive",
+            }
+            domain_dir = domain_map.get(domain, domain)
+        except Exception:
+            domain_dir = "unknown"
+
+        file_path = str(self.CANONICAL_OUTPUT_DIR / domain_dir / f"{canonical_id}.yaml")
+
+        feedback = None
+        for attempt in range(max_retries + 1):
+            is_final_attempt = attempt == max_retries
+
+            if attempt > 0:
+                logger.info(f"[ELEVATE-EXISTING] Retry {attempt}/{max_retries}")
+
+            # Stage 4: ELEVATE VOICE
+            success, elevate_output, error = await self._execute_elevate(
+                existing_yaml, feedback=feedback
+            )
+            if not success:
+                logger.warning(f"[ELEVATE-EXISTING] Elevate failed: {error}")
+                if not is_final_attempt:
+                    feedback = f"Previous attempt failed: {error}. Please try again."
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.FAILED,
+                    error=f"Elevate failed: {error}",
+                )
+
+            elevated_yaml = elevate_output.get("elevated_yaml")
+            if not elevated_yaml:
+                logger.warning("[ELEVATE-EXISTING] Elevate output missing 'elevated_yaml'")
+                if not is_final_attempt:
+                    feedback = "Previous attempt produced no output. Please generate complete elevated YAML."
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.FAILED,
+                    error="Elevate output missing 'elevated_yaml'",
+                )
+
+            # Fix canonical_slug
+            elevated_yaml = self._fix_canonical_slug(elevated_yaml, canonical_id)
+            elevated_yaml = self._fix_principle_slugs(elevated_yaml)
+
+            # Fix age range to match original file (ELEVATE may incorrectly change it)
+            elevated_yaml = self._fix_age_range(elevated_yaml, existing_yaml)
+
+            # Check for truncation
+            is_truncated, truncation_reason = self._detect_truncation(elevated_yaml)
+            if is_truncated:
+                logger.warning(f"[TRUNCATION] Detected: {truncation_reason}")
+                if not is_final_attempt:
+                    feedback = f"Output was truncated: {truncation_reason}. Ensure complete output."
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=[f"Output truncated: {truncation_reason}"],
+                    elevated_yaml=elevated_yaml,
+                )
+
+            # Stage 5: VALIDATE
+            success, validate_output, error = await self._execute_validate(
+                elevated_yaml, file_path, canonical_id
+            )
+            if not success:
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.FAILED,
+                    error=f"Validate failed: {error}",
+                )
+
+            validation_result = validate_output.get("validation_result", {})
+            if not validation_result.get("passed", False):
+                blocking_issues = validation_result.get("blocking_issues", [])
+                if not is_final_attempt:
+                    feedback = f"Validation issues: {blocking_issues}"
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.FAILED,
+                    error=f"Validation failed: {blocking_issues}",
+                    elevated_yaml=elevated_yaml,
+                )
+
+            # Stage 6: QC HOOK
+            qc_passed, qc_issues, qc_warnings = await self._run_qc_hook(elevated_yaml)
+            if not qc_passed:
+                if not is_final_attempt:
+                    feedback = f"QC issues: {qc_issues}"
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=qc_issues,
+                    qc_warnings=qc_warnings,
+                    elevated_yaml=elevated_yaml,
+                )
+
+            # Stage 7: QUALITY AUDIT
+            audit = await self.audit_quality(
+                elevated_yaml=elevated_yaml,
+                activity_id=activity_id,
+                is_final_attempt=is_final_attempt,
+            )
+
+            grade = audit.get("grade", "Unknown")
+            grade_str = str(grade).strip().upper() if grade else ""
+            is_grade_a = grade_str.startswith("A") and grade_str not in ("AB", "AC", "AD", "AF")
+
+            if not audit.get("passed") or not is_grade_a:
+                logger.warning(f"Quality audit: Grade {grade} (requires A/A+/A-)")
+                if not is_final_attempt:
+                    issues_text = "; ".join(
+                        str(i.get("issue", i)) for i in audit.get("issues", [])
+                    )
+                    feedback = f"Grade {grade}. Issues: {issues_text}"
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.REVISION_NEEDED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    error=f"Quality audit: Grade {grade}",
+                    elevated_yaml=elevated_yaml,
+                )
+
+            # Success - Grade A achieved
+            logger.info(f"[ELEVATE-EXISTING] Grade {grade} achieved for {canonical_id}")
+            return ConversionResult(
+                activity_id=activity_id,
+                status=ActivityStatus.DONE,
+                canonical_id=canonical_id,
+                file_path=file_path,
+                elevated_yaml=elevated_yaml,
+            )
+
+        # Should not reach here, but handle edge case
+        return ConversionResult(
+            activity_id=activity_id,
+            status=ActivityStatus.FAILED,
+            error="Unexpected: exhausted retries without return",
+        )
 
     def write_canonical_file(self, result: ConversionResult) -> bool:
         """
@@ -1593,8 +2933,8 @@ Be specific and actionable. This feedback will guide the next elevation attempt.
             # Update progress to in_progress
             self._update_progress_file(raw_id, ActivityStatus.IN_PROGRESS)
 
-            # Run conversion
-            result = await self.convert_activity(raw_id)
+            # Run conversion with retry logic (D85: batch mode now uses retry)
+            result = await self.convert_with_retry(raw_id, max_retries=2)
 
             # Handle based on status
             if result.status == ActivityStatus.SKIPPED:
@@ -1718,6 +3058,9 @@ async def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+  # Verify deduplication/grouping before processing
+  python -m atlas.pipelines.activity_conversion --verify
+
   # Convert single activity (primary mode - no API key needed)
   python -m atlas.pipelines.activity_conversion --activity tummy-time
 
@@ -1752,6 +3095,18 @@ Quality audit requires Grade A to proceed to human review.
     action.add_argument(
         "--list-pending", action="store_true",
         help="List pending activities"
+    )
+    action.add_argument(
+        "--verify", action="store_true",
+        help="Verify deduplication/grouping without processing (G4)"
+    )
+    action.add_argument(
+        "--next", action="store_true",
+        help="Find and convert the next truly available activity (skips duplicates/grouped)"
+    )
+    action.add_argument(
+        "--elevate-existing", metavar="YAML_PATH",
+        help="Elevate an existing YAML file through stages 4-7 (ELEVATE → VALIDATE → QC → AUDIT)"
     )
 
     # Options
@@ -1789,7 +3144,46 @@ Quality audit requires Grade A to proceed to human review.
         sys.exit(1)
 
     # Execute action
-    if args.list_pending:
+    if args.verify:
+        # G4: Deduplication/grouping verification report
+        report = pipeline.get_deduplication_report()
+
+        print("\n" + "=" * 60)
+        print("ACTIVITY DEDUPLICATION REPORT")
+        print("=" * 60)
+        print()
+        print(f"Raw activities loaded:        {report['raw_activities']}")
+        print(f"Explicit duplicates (skip):   {report['skip_count']}")
+        print(f"Grouped activities:           {report['grouped_count']} → {report['group_atoms']} atoms")
+        print(f"Standalone activities:        {report['standalone_count']}")
+        print("-" * 40)
+        print(f"Expected canonical atoms:     {report['expected_canonical']}")
+        print()
+
+        if report['groups']:
+            print("Groups:")
+            for g in report['groups']:
+                print(f"  {g['group_id']}: {g['source_count']} sources → 1 atom")
+                print(f"    Domain: {g['domain']}, Age: {g['age_range']}")
+            print()
+
+        if report['skip_list']:
+            print("Skip list (duplicates):")
+            for s in report['skip_list']:
+                print(f"  - {s}")
+            print()
+
+        if report['validation_issues']:
+            print("VALIDATION ISSUES:")
+            for issue in report['validation_issues']:
+                print(f"  ⚠ {issue}")
+            print()
+            sys.exit(1)
+        else:
+            print("✓ All conversion map references validated")
+            print()
+
+    elif args.list_pending:
         pending = pipeline.get_pending_activities()
         if pending:
             print(f"Pending activities ({len(pending)}):")
@@ -1799,6 +3193,82 @@ Quality audit requires Grade A to proceed to human review.
                 print(f"  ... and {len(pending) - 20} more")
         else:
             print("No pending activities.")
+
+    elif args.next:
+        # Find next truly available activity (not in skip list, not non-primary)
+        raw_id = pipeline.get_next_available_activity()
+
+        if not raw_id:
+            print("No available activities to convert!")
+            print("All pending activities are either duplicates or non-primary group members.")
+            sys.exit(0)
+
+        print(f"\n{'='*60}")
+        print(f"NEXT AVAILABLE: {raw_id}")
+        print(f"Max retries: {args.retry}")
+        print(f"{'='*60}\n")
+
+        # Update progress to in_progress
+        pipeline._update_progress_file(raw_id, ActivityStatus.IN_PROGRESS)
+
+        # Run conversion with retry
+        result = await pipeline.convert_with_retry(raw_id, max_retries=args.retry)
+
+        # Print result
+        print(f"\n{'='*60}")
+        print(f"RESULT: {result.status.value.upper()}")
+
+        if result.status == ActivityStatus.DONE:
+            print(f"Grade A - Ready for human review!")
+            print(f"Canonical ID: {result.canonical_id}")
+            print(f"File path: {result.file_path}")
+
+            # D81: Add auto-approve handling for --next path
+            if args.auto_approve:
+                if pipeline.write_canonical_file(result):
+                    pipeline._update_progress_file(raw_id, ActivityStatus.DONE, "Converted")
+                    print("\n[Auto-approved and saved]")
+                else:
+                    pipeline._update_progress_file(raw_id, ActivityStatus.FAILED, "Write failed")
+                    print("\nFailed to write file")
+                    sys.exit(1)
+        elif result.status == ActivityStatus.FAILED:
+            print("Failed")
+            if result.error:
+                print(f"Error: {result.error}")
+            if result.qc_issues:
+                print("QC Issues:")
+                for issue in result.qc_issues[:5]:
+                    print(f"  - {issue}")
+            pipeline._update_progress_file(raw_id, ActivityStatus.FAILED, result.error or "Failed")
+            sys.exit(1)  # D84: Exit with error code on failure
+
+        # D82: Add missing status handlers for --next path
+        elif result.status == ActivityStatus.REVISION_NEEDED:
+            print("Revision needed")
+            if result.error:
+                print(f"Error: {result.error}")
+            if result.qc_warnings:
+                print("Issues:")
+                for w in result.qc_warnings[:5]:
+                    print(f"  - {w}")
+            pipeline._update_progress_file(raw_id, ActivityStatus.REVISION_NEEDED, result.error or "Needs revision")
+            sys.exit(1)  # D84: Exit with error code on revision needed
+
+        elif result.status == ActivityStatus.QC_FAILED:
+            print("QC Failed")
+            if result.qc_issues:
+                print("QC Issues:")
+                for issue in result.qc_issues[:5]:
+                    print(f"  - {issue}")
+            pipeline._update_progress_file(raw_id, ActivityStatus.QC_FAILED, "QC failed")
+            sys.exit(1)  # D84: Exit with error code on QC failure
+
+        elif result.status == ActivityStatus.SKIPPED:
+            print(f"Skipped: {result.skip_reason}")
+            pipeline._update_progress_file(raw_id, ActivityStatus.SKIPPED, result.skip_reason or "Skipped")
+
+        print(f"{'='*60}\n")
 
     elif args.activity or args.single:
         # Single activity processing with quality audit
@@ -1825,10 +3295,15 @@ Quality audit requires Grade A to proceed to human review.
             if result.file_path:
                 print(f"File path: {result.file_path}")
 
-            # Present for human review
-            decision = pipeline.present_for_review(
-                result, result.elevated_yaml or ""
-            )
+            # Present for human review (or auto-approve)
+            if args.auto_approve:
+                # Auto-approve without interactive prompt
+                decision = "approve"
+                print("\n[Auto-approved]")
+            else:
+                decision = pipeline.present_for_review(
+                    result, result.elevated_yaml or ""
+                )
 
             if decision == "approve":
                 if pipeline.write_canonical_file(result):
@@ -1866,6 +3341,11 @@ Quality audit requires Grade A to proceed to human review.
             )
             sys.exit(1)
 
+        elif result.status == ActivityStatus.SKIPPED:
+            print(f"Skipped: {result.skip_reason}")
+            pipeline._update_progress_file(raw_id, ActivityStatus.SKIPPED, result.skip_reason or "Skipped")
+            sys.exit(0)  # SKIPPED is not an error, exit cleanly
+
         else:
             print(f"Status: {result.status.value}")
             if result.error:
@@ -1887,6 +3367,87 @@ Quality audit requires Grade A to proceed to human review.
                 pipeline._update_progress_file(
                     raw_id, ActivityStatus.QC_FAILED, "QC failed"
                 )
+            sys.exit(1)
+
+        print(f"{'='*60}\n")
+
+    elif getattr(args, 'elevate_existing', None):
+        # Elevate existing file through stages 4-7
+        yaml_path = args.elevate_existing
+
+        print(f"\n{'='*60}")
+        print(f"ELEVATE EXISTING: {yaml_path}")
+        print(f"Stages: ELEVATE → VALIDATE → QC → AUDIT")
+        print(f"Max retries: {args.retry}")
+        print(f"{'='*60}\n")
+
+        result = await pipeline.elevate_existing_file(yaml_path, max_retries=args.retry)
+
+        print(f"\n{'='*60}")
+        print(f"RESULT: {result.status.value.upper()}")
+
+        if result.status == ActivityStatus.DONE:
+            print(f"Grade A achieved!")
+            print(f"Canonical ID: {result.canonical_id}")
+
+            # Determine target path
+            from pathlib import Path
+            source_path = Path(yaml_path)
+
+            if args.auto_approve and result.elevated_yaml:
+                # Write directly to canonical location
+                target_dir = Path(result.file_path).parent
+                target_dir.mkdir(parents=True, exist_ok=True)
+                target_path = Path(result.file_path)
+                target_path.write_text(result.elevated_yaml)
+
+                # Remove from staging if it was there
+                if source_path.exists() and "staging" in str(source_path):
+                    source_path.unlink()
+                    print(f"Removed from staging: {source_path.name}")
+
+                print(f"Saved to: {target_path}")
+                print("[Auto-approved and saved]")
+            else:
+                decision = pipeline.present_for_review(result, result.elevated_yaml or "")
+
+                if decision == "approve" and result.elevated_yaml:
+                    target_dir = Path(result.file_path).parent
+                    target_dir.mkdir(parents=True, exist_ok=True)
+                    target_path = Path(result.file_path)
+                    target_path.write_text(result.elevated_yaml)
+
+                    if source_path.exists() and "staging" in str(source_path):
+                        source_path.unlink()
+                        print(f"Removed from staging: {source_path.name}")
+
+                    print(f"Approved and saved: {target_path}")
+                elif decision == "reject":
+                    print("Rejected - file not moved")
+                elif decision == "skip":
+                    print("Skipped for later")
+                elif decision == "quit":
+                    print("Cancelled")
+                    sys.exit(0)
+
+        elif result.status == ActivityStatus.REVISION_NEEDED:
+            print(f"Needs revision - Grade not achieved")
+            if result.error:
+                print(f"Error: {result.error}")
+            sys.exit(1)
+
+        elif result.status == ActivityStatus.QC_FAILED:
+            print("QC Failed")
+            if result.qc_issues:
+                print("QC Issues:")
+                for issue in result.qc_issues[:5]:
+                    print(f"  - {issue}")
+            sys.exit(1)
+
+        else:
+            print(f"Status: {result.status.value}")
+            if result.error:
+                print(f"Error: {result.error}")
             sys.exit(1)
 
         print(f"{'='*60}\n")

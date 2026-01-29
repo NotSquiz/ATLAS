@@ -44,6 +44,8 @@ class DailyMetrics:
     resting_hr: Optional[int] = None
     hrv_avg: Optional[int] = None
     hrv_morning: Optional[int] = None
+    hrv_status: Optional[str] = None  # "BALANCED", "UNBALANCED", "LOW"
+    body_battery: Optional[int] = None  # 0-100 from Garmin
     weight_kg: Optional[float] = None
     body_fat_pct: Optional[float] = None
     energy_level: Optional[int] = None  # 1-10
@@ -102,6 +104,39 @@ class WorkoutExercise:
     notes: Optional[str] = None
     order_index: Optional[int] = None
     id: Optional[int] = None
+    # New fields for Phase 1 exercise support
+    per_side: bool = False  # If true, exercise was performed per side
+    hold_seconds: Optional[int] = None  # For isometric holds
+    side: Optional[str] = None  # 'left', 'right', 'both' for unilateral tracking
+    distance_steps: Optional[int] = None  # For step-based exercises
+    per_direction: bool = False  # If true, exercise was performed each direction
+
+
+@dataclass
+class WorkoutExerciseSet:
+    """Individual set within a workout exercise."""
+    workout_exercise_id: int
+    set_number: int
+    reps_actual: int
+    weight_kg: Optional[float] = None
+    reps_target: Optional[int] = None
+    rpe: Optional[int] = None  # 1-10 rating of perceived exertion
+    tempo_achieved: bool = True
+    notes: Optional[str] = None
+    id: Optional[int] = None
+
+
+@dataclass
+class ExercisePerformance:
+    """Summary of last workout performance for an exercise."""
+    exercise_id: str
+    date: date
+    weight_kg: Optional[float]
+    sets_completed: int
+    reps_per_set: list[int]  # Actual reps per set
+    avg_reps: float
+    all_sets_hit_target: bool
+    workout_id: int
 
 
 @dataclass
@@ -198,6 +233,8 @@ class BlueprintAPI:
                     resting_hr = COALESCE(?, resting_hr),
                     hrv_avg = COALESCE(?, hrv_avg),
                     hrv_morning = COALESCE(?, hrv_morning),
+                    hrv_status = COALESCE(?, hrv_status),
+                    body_battery = COALESCE(?, body_battery),
                     weight_kg = COALESCE(?, weight_kg),
                     body_fat_pct = COALESCE(?, body_fat_pct),
                     energy_level = COALESCE(?, energy_level),
@@ -210,6 +247,7 @@ class BlueprintAPI:
                 metrics.sleep_hours, metrics.sleep_score,
                 metrics.deep_sleep_minutes, metrics.rem_sleep_minutes,
                 metrics.resting_hr, metrics.hrv_avg, metrics.hrv_morning,
+                metrics.hrv_status, metrics.body_battery,
                 metrics.weight_kg, metrics.body_fat_pct,
                 metrics.energy_level, metrics.mood, metrics.stress_level,
                 metrics.notes, metrics.date.isoformat()
@@ -222,14 +260,16 @@ class BlueprintAPI:
                 INSERT INTO daily_metrics (
                     date, sleep_hours, sleep_score, deep_sleep_minutes,
                     rem_sleep_minutes, resting_hr, hrv_avg, hrv_morning,
+                    hrv_status, body_battery,
                     weight_kg, body_fat_pct, energy_level, mood,
                     stress_level, notes
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 metrics.date.isoformat(),
                 metrics.sleep_hours, metrics.sleep_score,
                 metrics.deep_sleep_minutes, metrics.rem_sleep_minutes,
                 metrics.resting_hr, metrics.hrv_avg, metrics.hrv_morning,
+                metrics.hrv_status, metrics.body_battery,
                 metrics.weight_kg, metrics.body_fat_pct,
                 metrics.energy_level, metrics.mood, metrics.stress_level,
                 metrics.notes
@@ -274,6 +314,8 @@ class BlueprintAPI:
                 resting_hr=row["resting_hr"],
                 hrv_avg=row["hrv_avg"],
                 hrv_morning=row["hrv_morning"],
+                hrv_status=row["hrv_status"] if "hrv_status" in row.keys() else None,
+                body_battery=row["body_battery"] if "body_battery" in row.keys() else None,
                 weight_kg=row["weight_kg"],
                 body_fat_pct=row["body_fat_pct"],
                 energy_level=row["energy_level"],
@@ -449,6 +491,219 @@ class BlueprintAPI:
             )
             for row in cursor.fetchall()
         ]
+
+    # ==================== WORKOUT EXERCISE SETS ====================
+
+    def add_workout_exercise_set(self, exercise_set: WorkoutExerciseSet) -> int:
+        """Add an individual set record to a workout exercise."""
+        cursor = self.store.conn.execute("""
+            INSERT INTO workout_exercise_sets (
+                workout_exercise_id, set_number, reps_target, reps_actual,
+                weight_kg, rpe, tempo_achieved, notes
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            exercise_set.workout_exercise_id,
+            exercise_set.set_number,
+            exercise_set.reps_target,
+            exercise_set.reps_actual,
+            exercise_set.weight_kg,
+            exercise_set.rpe,
+            exercise_set.tempo_achieved,
+            exercise_set.notes
+        ))
+        self.store.conn.commit()
+        return cursor.lastrowid
+
+    def get_workout_exercise_sets(self, workout_exercise_id: int) -> list[WorkoutExerciseSet]:
+        """Get all sets for a workout exercise."""
+        cursor = self.store.conn.execute("""
+            SELECT * FROM workout_exercise_sets
+            WHERE workout_exercise_id = ?
+            ORDER BY set_number
+        """, (workout_exercise_id,))
+
+        return [
+            WorkoutExerciseSet(
+                id=row["id"],
+                workout_exercise_id=row["workout_exercise_id"],
+                set_number=row["set_number"],
+                reps_target=row["reps_target"],
+                reps_actual=row["reps_actual"],
+                weight_kg=row["weight_kg"],
+                rpe=row["rpe"],
+                tempo_achieved=bool(row["tempo_achieved"]),
+                notes=row["notes"]
+            )
+            for row in cursor.fetchall()
+        ]
+
+    def get_last_performance(self, exercise_id: str, days: int = 30) -> Optional[ExercisePerformance]:
+        """
+        Get the most recent performance for an exercise.
+
+        Looks for workout_exercise_sets data first, falls back to workout_exercises.
+
+        Args:
+            exercise_id: Exercise identifier
+            days: How far back to look
+
+        Returns:
+            ExercisePerformance or None if no data
+        """
+        # First try to get set-level data
+        cursor = self.store.conn.execute("""
+            SELECT
+                we.exercise_id,
+                w.date,
+                we.weight_kg as exercise_weight,
+                we.id as workout_exercise_id,
+                w.id as workout_id,
+                wes.weight_kg as set_weight,
+                wes.reps_actual,
+                wes.reps_target,
+                wes.set_number
+            FROM workout_exercises we
+            JOIN workouts w ON we.workout_id = w.id
+            LEFT JOIN workout_exercise_sets wes ON wes.workout_exercise_id = we.id
+            WHERE we.exercise_id = ?
+            AND w.date >= date('now', ?)
+            ORDER BY w.date DESC, wes.set_number ASC
+        """, (exercise_id, f"-{days} days"))
+
+        rows = cursor.fetchall()
+        if not rows:
+            return None
+
+        # Group by workout (first row is most recent)
+        workout_id = rows[0]["workout_id"]
+        workout_date = date.fromisoformat(rows[0]["date"])
+        exercise_weight = rows[0]["exercise_weight"]
+
+        # Collect sets for this workout
+        reps_per_set = []
+        set_weight = None
+        reps_target = None
+
+        for row in rows:
+            if row["workout_id"] != workout_id:
+                break  # Only process most recent workout
+            if row["reps_actual"] is not None:
+                reps_per_set.append(row["reps_actual"])
+                if row["set_weight"]:
+                    set_weight = row["set_weight"]
+                if row["reps_target"]:
+                    reps_target = row["reps_target"]
+
+        # If no set data, fall back to workout_exercises.reps
+        if not reps_per_set:
+            reps_str = rows[0].get("reps") if "reps" in rows[0].keys() else None
+            if reps_str:
+                # Parse reps string like "8,8,8" or "10-12"
+                try:
+                    reps_per_set = [int(r.strip()) for r in reps_str.split(",")]
+                except ValueError:
+                    reps_per_set = []
+
+        if not reps_per_set:
+            return None
+
+        weight = set_weight or exercise_weight
+        avg_reps = sum(reps_per_set) / len(reps_per_set)
+
+        # Check if all sets hit target (for double progression)
+        all_hit_target = False
+        if reps_target:
+            all_hit_target = all(r >= reps_target for r in reps_per_set)
+
+        return ExercisePerformance(
+            exercise_id=exercise_id,
+            date=workout_date,
+            weight_kg=weight,
+            sets_completed=len(reps_per_set),
+            reps_per_set=reps_per_set,
+            avg_reps=avg_reps,
+            all_sets_hit_target=all_hit_target,
+            workout_id=workout_id,
+        )
+
+    def get_exercise_history(
+        self,
+        exercise_id: str,
+        limit: int = 10
+    ) -> list[ExercisePerformance]:
+        """Get exercise performance history for progression analysis."""
+        cursor = self.store.conn.execute("""
+            SELECT DISTINCT w.id as workout_id, w.date
+            FROM workout_exercises we
+            JOIN workouts w ON we.workout_id = w.id
+            WHERE we.exercise_id = ?
+            ORDER BY w.date DESC
+            LIMIT ?
+        """, (exercise_id, limit))
+
+        workouts = cursor.fetchall()
+        history = []
+
+        for workout_row in workouts:
+            perf = self.get_last_performance(exercise_id, days=365)
+            if perf and perf.workout_id == workout_row["workout_id"]:
+                history.append(perf)
+            # Otherwise, need to query specifically for this workout
+            else:
+                cursor2 = self.store.conn.execute("""
+                    SELECT
+                        we.exercise_id,
+                        w.date,
+                        we.weight_kg as exercise_weight,
+                        we.id as workout_exercise_id,
+                        w.id as workout_id,
+                        wes.weight_kg as set_weight,
+                        wes.reps_actual,
+                        wes.reps_target,
+                        wes.set_number
+                    FROM workout_exercises we
+                    JOIN workouts w ON we.workout_id = w.id
+                    LEFT JOIN workout_exercise_sets wes ON wes.workout_exercise_id = we.id
+                    WHERE we.exercise_id = ? AND w.id = ?
+                    ORDER BY wes.set_number ASC
+                """, (exercise_id, workout_row["workout_id"]))
+
+                rows = cursor2.fetchall()
+                if rows:
+                    workout_date = date.fromisoformat(rows[0]["date"])
+                    exercise_weight = rows[0]["exercise_weight"]
+                    reps_per_set = []
+                    set_weight = None
+
+                    for row in rows:
+                        if row["reps_actual"] is not None:
+                            reps_per_set.append(row["reps_actual"])
+                            if row["set_weight"]:
+                                set_weight = row["set_weight"]
+
+                    if reps_per_set:
+                        history.append(ExercisePerformance(
+                            exercise_id=exercise_id,
+                            date=workout_date,
+                            weight_kg=set_weight or exercise_weight,
+                            sets_completed=len(reps_per_set),
+                            reps_per_set=reps_per_set,
+                            avg_reps=sum(reps_per_set) / len(reps_per_set),
+                            all_sets_hit_target=False,  # Unknown without target
+                            workout_id=workout_row["workout_id"],
+                        ))
+
+        return history
+
+    def count_yellow_days(self, window_days: int = 10) -> int:
+        """Count YELLOW traffic light days in recent period (for deload trigger)."""
+        cursor = self.store.conn.execute("""
+            SELECT COUNT(*) as count FROM daily_metrics
+            WHERE date >= date('now', ?)
+            AND hrv_status = 'UNBALANCED'
+        """, (f"-{window_days} days",))
+        row = cursor.fetchone()
+        return row["count"] if row else 0
 
     # ==================== LAB RESULTS ====================
 

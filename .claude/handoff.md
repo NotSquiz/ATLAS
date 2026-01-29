@@ -1,85 +1,200 @@
 # ATLAS Session Handoff
 
-## Last Session: January 9, 2026 (Phase 4 - Pipeline Testing & Timeout Fixes)
+**Date:** January 26, 2026
+**Status:** Strategic Research Complete — ATLAS 3.0 Planning
 
-### Completed This Session
-- **CLI Timeout Fixes** for full pipeline execution:
-  - SkillExecutor CLI: 300s → 600s (10 min per skill)
-  - SubAgentExecutor init: 120s → 300s
-  - audit_quality spawn: 120s → 300s
-  - reflect_on_failure spawn: 60s → 120s
+---
 
-- **QC_FAILED Retry Loop** - QC failures now trigger intelligent retry:
-  - Added QC_FAILED to retryable statuses
-  - QC issues converted to reflection format for Wait pattern
-  - Better CLI output showing detailed QC issues on failure
+## What Was Accomplished This Session
 
-- **End-to-End Pipeline Testing**:
-  - Pipeline runs successfully (12+ minutes per attempt)
-  - Reaches QC stage and correctly identifies issues
-  - Retry with Wait pattern triggers on QC failure
-  - Skills need tuning to pass QC (current issues below)
+### Personal AI Landscape Research (Comprehensive)
 
-### Test Results (tummy-time activity)
+Deep analysis of the personal AI assistant ecosystem in January 2026:
+
+**Key Discoveries:**
+1. **Clawdbot** — 9.7k GitHub stars, viral adoption, self-hosted AI assistant
+2. **Claude Skills Marketplace** — 71,000+ skills, but security concerns (ransomware demonstrated)
+3. **Levangie Labs/BlevLabs** — Cognitive Agentic Framework with episodic memory
+4. **Brian Roemmele's Love Equation** — `dE/dt = β(C-D)E` for AI alignment
+5. **/last30days skill** — Trend research across Reddit/X
+6. **WooYun Legacy** — 88,636 vulnerability cases as Claude skill
+
+**Strategic Conclusion:** Don't adopt Clawdbot — evolve ATLAS with Clawdbot's best patterns while preserving unique strengths (voice-first, health tracking, Baby Brains pipeline).
+
+---
+
+## Documents Created
+
+| Document | Purpose |
+|----------|---------|
+| `docs/research/R31.Personal AI Assistant Landscape January 2026 - Clawdbot Era.md` | **Comprehensive research document** — Clawdbot analysis, competitive landscape, Love Equation, security architecture, ATLAS 3.0 strategy, 90-day roadmap |
+| `.claude/plans/transient-rolling-hamming.md` | Active strategic plan with implementation details |
+| `docs/Clawdbot Trend Analysis - Comprehensive .md` | Raw Clawdbot trend data (5,620 posts analyzed) |
+
+---
+
+## ATLAS 3.0 Vision
+
+A 24/7 AI partner that:
+1. **Manages health** (current strength)
+2. **Runs Baby Brains** as business workforce
+3. **Handles life admin** (email, calendar, tasks)
+4. **Is reachable anywhere** (voice, Telegram, email)
+5. **Improves itself** over time
+
+### Architecture Summary
+
 ```
-QC Issues Found:
-- [VOICE_SUPERLATIVE] 'perfect' at line 32, 104
-- [VOICE_SUPERLATIVE] 'optimal' at line 155
-- [STRUCTURE_MISSING_SECTION] Missing 'au_cultural_adaptation.au_resources'
-- [CROSS_REF_INVALID_PRINCIPLE] Invalid slug 'freedom_of_movement' (should be 'movement')
+Voice Bridge (current) + Messaging Bridge (new) + Daemon Mode (new)
+                              ↓
+                    Intent Dispatcher (unified)
+                              ↓
+         Health Services | Baby Brains Workforce | Life Admin
+                              ↓
+                    Model Router (multi-model)
+                              ↓
+                    Persistent Memory
 ```
 
-### Files Changed
-- `atlas/orchestrator/skill_executor.py` - CLI timeout 600s
-- `atlas/pipelines/activity_conversion.py` - QC retry loop, CLI output
-- `docs/HANDOVER_TIMEOUT_FIX.md` - Timeout documentation
+---
 
-### Commits Made
+## Implementation Phases (Not Started)
+
+| Phase | Description | Duration |
+|-------|-------------|----------|
+| 1 | Telegram bridge | 1-2 weeks |
+| 2 | Daemon mode + Ralph loop | 1-2 weeks |
+| 3 | Model router | 1 week |
+| 4 | Self-improvement layer | 2-3 weeks |
+| 5 | Life admin (email, calendar) | 2-3 weeks |
+
+---
+
+## Key Concepts to Remember
+
+### Love Equation (Brian Roemmele)
 ```
-270d1d1 Increase CLI timeouts for full pipeline execution
-50a7ccd Add QC_FAILED to retry loop and improve CLI output
+dE/dt = β(C - D)E
+```
+- E = emotional complexity / "love" level
+- C = cooperative interactions, D = defective/toxic
+- If C > D: Love grows exponentially
+- **Application:** Design ATLAS interactions as relationship, not transaction. Store positive memories. Proactive care.
+
+### Security Architecture
+- Clawdbot/Skills ecosystem has real attack vectors (MedusaLocker demonstrated)
+- Use OS-level sandboxing (bubblewrap/Docker)
+- Deny rules for curl, fetch, .env
+- Whitelist-only skill installation
+- Monthly audits
+
+### ATLAS Advantages (Don't Lose)
+- Voice-first <1.8s latency
+- 0-token intent matching (95%+ local)
+- Traffic Light + GATE system
+- Baby Brains quality pipeline
+- Ethical gamification
+
+---
+
+## How to Resume
+
+```
+Read these files:
+1. .claude/handoff.md (this file)
+2. docs/research/R31.Personal AI Assistant Landscape January 2026 - Clawdbot Era.md
+
+Then:
+- For implementation: Start with Phase 1 (Telegram bridge)
+- For more research: User has more X.com discoveries to share
+- For Baby Brains focus: Activity pipeline automation via Ralph loop
 ```
 
-### Key Commands
+---
+
+## Quick Reference: Key External Resources
+
+| Resource | URL | Purpose |
+|----------|-----|---------|
+| Clawdbot | https://github.com/clawdbot/clawdbot | Reference architecture |
+| /last30days | https://github.com/mvanhorn/last30days-skill | Trend research for Baby Brains |
+| WooYun Security | https://github.com/tanweai/wooyun-legacy | Security auditing skill |
+| Claude Sandboxing | https://code.claude.com/docs/en/sandboxing | Security implementation |
+| Levangie Labs | https://levangielabs.com/ | Cognitive architecture reference |
+
+---
+
+## User Context
+
+**Goal:** Build AI system that acts as life assistant and business partner for Baby Brains.
+
+**Stakes:** User explicitly stated this is about providing a better life for their family. The personal AI assistant opportunity is seen as critical path to financial improvement.
+
+**Baby Brains:** Evidence-based Montessori parenting platform with:
+- Knowledge repo (175+ activities to convert)
+- Web platform (pre-launch)
+- Marketing OS (content generation)
+
+---
+
+## This Session: Qwen3-TTS Voice Cloning (January 26, 2026)
+
+### What Was Done
+1. **Qwen3-TTS Installation** - Installed qwen-tts, flash-attn, openai-whisper, ffmpeg
+2. **Voice Cloning Testing** - Tested multiple voices:
+   - **Jeremy Irons** (interview audio) - WORKS WELL, adopted as default
+   - **Thomas Shelby/Cillian Murphy** (TV audio) - FAILED, TV audio too processed
+3. **Module Integration** - Fixed `atlas/voice/tts_qwen.py`:
+   - Changed from CustomVoice to Base model (ICL mode)
+   - Added correct API calls (`generate_voice_clone` with `ref_text`)
+   - Added x-vector fallback mode
+4. **Bridge Integration** - Updated `atlas/voice/bridge_file_server.py`:
+   - Default voice changed to `jeremy_irons`
+   - Removed thomas_shelby from QWEN_VOICES (didn't work)
+5. **Documentation** - Updated CLAUDE.md, V2_ORCHESTRATOR_GUIDE.md, DECISIONS.md
+
+### Key Files
+| File | Purpose |
+|------|---------|
+| `config/voice/jeremy_irons.wav` | Reference audio (11 seconds) |
+| `config/voice/qwen_tts_voices.json` | Voice cloning config |
+| `atlas/voice/tts_qwen.py` | Qwen3TTS wrapper |
+| `atlas/voice/bridge_file_server.py` | Voice bridge (uses Qwen3TTS) |
+
+### Voice Cloning Learnings
+- Clean interview/podcast audio works best
+- TV/film dialogue fails (reverb, EQ, background score)
+- Regional accents (Birmingham) harder than RP British
+- Transcription accuracy critical for ICL mode
+- Punctuation controls pacing (commas, ellipses)
+
+### Testing the Voice
 ```bash
-# Run single activity (primary mode)
-python -m atlas.pipelines.activity_conversion --activity tummy-time
+# Start voice bridge
+cd /home/squiz/ATLAS && source venv/bin/activate
+python -m atlas.voice.bridge_file_server
 
-# With retry count
-python -m atlas.pipelines.activity_conversion --activity tummy-time --retry 3
+# First response will be slow (~30s) as model loads
+# Subsequent responses faster
 ```
 
-### Pending for Next Session
-- [ ] **Tune ELEVATE skill** to avoid superlatives (perfect, optimal)
-- [ ] **Tune ELEVATE skill** to use valid principle slugs (movement not freedom_of_movement)
-- [ ] **Add au_cultural_adaptation.au_resources** section in ELEVATE output
-- [ ] First successful Grade A production activity
+---
 
-### Pipeline Status
-| Stage | Status | Notes |
-|-------|--------|-------|
-| INGEST | Working | Loads raw activity from knowledge repo |
-| RESEARCH | Working | Fetches evidence and sources |
-| TRANSFORM | Working | Creates canonical YAML structure |
-| ELEVATE | Working | Voice elevation (needs tuning for QC) |
-| VALIDATE | Working | Schema validation |
-| QC_HOOK | Working | Catches voice/structure issues |
-| QUALITY_AUDIT | Not reached | Blocked by QC failures |
+## Previous Session Work (Preserved)
 
-### Root Cause
-Skills produce content that fails QC validation:
-1. Uses superlatives ("perfect", "optimal") - Voice Rubric violation
-2. Uses wrong principle slugs - Knowledge schema violation
-3. Missing AU resources section - Structure violation
+### UI & Voice Pipeline
+- Tab order fixed, HUD gauge sizes increased
+- Visual workout display in main zone
+- Seneca Trial protocol (Full/Quick modes)
+- Combat level formula: `(skill_sum // 2) + 3`
 
-### Next Steps (Priority Order)
-1. Review ELEVATE skill prompts in babybrains-os
-2. Add explicit instructions to avoid superlatives
-3. Add valid principle slug reference list
-4. Ensure AU sections are fully populated
-5. Re-test pipeline
+### Pending
+- White background on Focus/Learning icons (need GIMP fix)
+- Combat level display in HUD
+- XP balancing values
+- Test voice bridge with Qwen3-TTS live
 
-### Context Notes
-- Quality Audit uses Voice Rubric at `/home/squiz/code/knowledge/coverage/VOICE_ELEVATION_RUBRIC.md`
-- Valid principles: absorbent_mind, concentration, cosmic_view, freedom_within_limits, grace_and_courtesy, independence, maximum_effort, movement, normalization, observation, order, practical_life, prepared_environment, repetition, sensitive_periods, sensorial, spiritual_embryo, work_of_the_child
-- Pipeline takes 10-15 minutes per attempt (CLI mode)
+---
+
+*Session ended: January 26, 2026*
+*Qwen3-TTS integration complete, ready for live testing*

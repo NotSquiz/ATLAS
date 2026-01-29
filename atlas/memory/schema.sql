@@ -68,6 +68,8 @@ CREATE TABLE IF NOT EXISTS daily_metrics (
     resting_hr INTEGER,
     hrv_avg INTEGER,
     hrv_morning INTEGER,
+    hrv_status TEXT,  -- "BALANCED", "UNBALANCED", "LOW"
+    body_battery INTEGER CHECK(body_battery >= 0 AND body_battery <= 100),
 
     -- Body
     weight_kg REAL,

@@ -1,0 +1,222 @@
+{
+  "metadata": {
+    "version": "1.1",
+    "description": "Maps workout exercises to baseline assessments for progressive overload",
+    "default_intensity": 0.70,
+    "staleness_warning_days": 28,
+    "progression_model": "double_progression"
+  },
+  "exercises": {
+    "sumo_deadlift": {
+      "derived_from": "rdl",
+      "ratio": 1.15,
+      "rep_range": [6, 10],
+      "increment_kg": 2.5,
+      "notes": "Derived from RDL baseline - sumo with DB/KB ~15% higher. More upright torso, good for rehab."
+    },
+    "goblet_squat": {
+      "assessment_id": "goblet_squat_5rm",
+      "test_reps": 5,
+      "intensity": 0.70,
+      "rep_range": [8, 12],
+      "increment_kg": 2.5,
+      "notes": "Based on 5RM baseline test"
+    },
+    "floor_press": {
+      "assessment_id": "floor_press_8rm",
+      "test_reps": 8,
+      "intensity": 0.70,
+      "rep_range": [8, 12],
+      "increment_kg": 2.5,
+      "notes": "Floor limits ROM - safer for shoulder impingement"
+    },
+    "split_squat": {
+      "assessment_id": "split_squat_8rm",
+      "test_reps": 8,
+      "intensity": 0.70,
+      "per_side": true,
+      "rep_range": [8, 12],
+      "increment_kg": 2.5,
+      "notes": "Direct baseline from 8RM test"
+    },
+    "chest_supported_row": {
+      "assessment_id": "chest_supported_row_8rm",
+      "test_reps": 8,
+      "intensity": 0.70,
+      "rep_range": [8, 12],
+      "increment_kg": 2.5,
+      "notes": "Direct baseline from 8RM test"
+    },
+    "landmine_press": {
+      "assessment_id": "landmine_press_8rm",
+      "test_reps": 8,
+      "intensity": 0.70,
+      "per_side": true,
+      "rep_range": [8, 12],
+      "increment_kg": 2.5,
+      "notes": "Direct baseline from 8RM test"
+    },
+    "suitcase_carry": {
+      "derived_from": "sumo_deadlift",
+      "ratio": 0.25,
+      "per_side": true,
+      "rep_range": null,
+      "increment_kg": 2.5,
+      "notes": "Distance-based: 30m per side. Derives from sumo deadlift weight."
+    },
+    "rdl": {
+      "assessment_id": "rdl_5rm",
+      "test_reps": 5,
+      "intensity": 0.70,
+      "rep_range": [8, 12],
+      "increment_kg": 2.5,
+      "notes": "Romanian deadlift - direct baseline from 5RM test"
+    },
+    "side_lying_wiper": {
+      "type": "rpe_based",
+      "target_rpe": 6,
+      "max_weight_kg": 2.0,
+      "rep_range": [10, 15],
+      "increment_kg": 0.5,
+      "notes": "THE HEALER - very light, eccentric focus for shoulder rehab"
+    },
+    "neck_harness": {
+      "type": "rpe_based",
+      "target_rpe": 6,
+      "rep_range": [15, 20],
+      "increment_kg": 0.5,
+      "notes": "Bryan Johnson Standard - start very light"
+    },
+    "ankle_balance": {
+      "type": "bodyweight",
+      "no_weight_tracking": true,
+      "stages": ["eyes_open", "eyes_closed", "unstable_surface"],
+      "notes": "Progression via difficulty not weight"
+    },
+    "bird_dog": {
+      "type": "bodyweight",
+      "no_weight_tracking": true,
+      "notes": "Core stability - McGill essential"
+    },
+    "dead_bug": {
+      "type": "bodyweight",
+      "no_weight_tracking": true,
+      "notes": "Core stability progression"
+    },
+    "glute_bridge": {
+      "type": "bodyweight",
+      "no_weight_tracking": true,
+      "stages": ["bodyweight", "single_leg", "hip_thrust_barbell"],
+      "notes": "Progress through stages before adding weight"
+    },
+    "band_pull_apart": {
+      "type": "band",
+      "no_weight_tracking": true,
+      "notes": "Band resistance progression (light -> medium -> heavy)"
+    },
+    "face_pulls": {
+      "type": "band",
+      "no_weight_tracking": true,
+      "notes": "Band/cable resistance - shoulder health"
+    },
+    "pallof_press": {
+      "type": "band",
+      "no_weight_tracking": true,
+      "notes": "Anti-rotation core work"
+    },
+    "kb_swings": {
+      "type": "rpe_based",
+      "target_rpe": 7,
+      "rep_range": [12, 20],
+      "increment_kg": 2.0,
+      "notes": "Kettlebell swings - hip snap, not squat. Progress via weight or reps."
+    },
+    "mcgill_curl_up": {
+      "type": "bodyweight",
+      "no_weight_tracking": true,
+      "hold_seconds": [8, 10],
+      "notes": "McGill Big 3 - core stability. 8-10 second holds."
+    },
+    "ankle_df_mobilization": {
+      "type": "mobility",
+      "no_weight_tracking": true,
+      "notes": "Banded ankle dorsiflexion mobilization - RIGHT ANKLE priority"
+    },
+    "single_leg_rdl": {
+      "derived_from": "rdl",
+      "ratio": 0.40,
+      "per_side": true,
+      "rep_range": [6, 10],
+      "increment_kg": 2.5,
+      "notes": "Single-leg RDL - derives from bilateral RDL at ~40%"
+    },
+    "goblet_squat_heavy": {
+      "assessment_id": "goblet_squat_5rm",
+      "test_reps": 5,
+      "intensity": 0.80,
+      "rep_range": [6, 10],
+      "increment_kg": 2.5,
+      "notes": "Heavy goblet squat variant - higher intensity than standard"
+    },
+    "kb_clean_press": {
+      "assessment_id": "landmine_press_8rm",
+      "test_reps": 8,
+      "intensity": 0.65,
+      "per_side": true,
+      "rep_range": [5, 8],
+      "increment_kg": 2.0,
+      "notes": "KB clean & press - derives from landmine press at reduced intensity"
+    },
+    "turkish_getup": {
+      "type": "rpe_based",
+      "target_rpe": 6,
+      "per_side": true,
+      "rep_range": [2, 4],
+      "increment_kg": 2.0,
+      "notes": "Turkish get-up - start light, focus on positions. Half get-up in Phase 1."
+    },
+    "side_plank": {
+      "type": "bodyweight",
+      "no_weight_tracking": true,
+      "per_side": true,
+      "stages": ["knee", "feet", "elevated_feet", "star"],
+      "notes": "McGill Big 3 - lateral stability. Progress via duration then difficulty."
+    },
+    "inverted_row": {
+      "type": "bodyweight",
+      "no_weight_tracking": true,
+      "stages": ["high_bar", "low_bar", "feet_elevated", "weighted"],
+      "notes": "Horizontal pulling - progress via angle then add weight"
+    },
+    "lateral_band_walks": {
+      "type": "band",
+      "no_weight_tracking": true,
+      "per_direction": true,
+      "notes": "Lateral band walks - glute med activation. Progress via band resistance."
+    }
+  },
+  "progression_rules": {
+    "double_progression": {
+      "description": "Hit top of rep range on all sets before increasing weight",
+      "trigger": "all_sets_hit_top_of_range",
+      "increment": "use exercise increment_kg",
+      "reset_reps_to": "bottom_of_range"
+    },
+    "rpe_based": {
+      "description": "Increase weight when RPE drops below target",
+      "trigger": "rpe_below_target",
+      "increment": "use exercise increment_kg"
+    }
+  },
+  "deload_rules": {
+    "scheduled_weeks": [4, 8],
+    "volume_reduction": 0.60,
+    "weight_reduction": 0.70,
+    "cooldown_days": 14,
+    "triggers": [
+      {"name": "pain_spike", "threshold": 6, "priority": 1},
+      {"name": "fatigue_accumulated", "yellow_days": 4, "window_days": 10, "priority": 2},
+      {"name": "stalled_progress", "consecutive_sessions": 3, "priority": 3}
+    ]
+  }
+}

@@ -1,0 +1,675 @@
+{
+  "metadata": {
+    "version": "4.1",
+    "name": "Blueprint Longevity + Combat Ready Training System",
+    "subtitle": "Integrated Strength, Cardio, Recovery, Skin & Running Protocol",
+    "created_date": "2026-01-12",
+    "updated_date": "2026-01-12",
+    "framework": "Bryan Johnson Blueprint + Combat Sports Preparation",
+    "companion_modules": {
+      "running_protocol": "running_sprint_reintroduction_v1.json",
+      "running_cheatsheet": "running_cheatsheet_v1.md"
+    },
+    "subject": {
+      "name": "Alexander",
+      "age": 38,
+      "height_cm": 180,
+      "weight_kg": 72,
+      "location": "Sunshine Coast, Australia",
+      "wake_time": "05:00",
+      "training_window": "05:55-07:00"
+    }
+  },
+
+  "research_foundation": {
+    "interference_effect_key_findings": {
+      "source": "Wilson et al. 2012 Meta-Analysis (21 studies, 422 effect sizes)",
+      "key_insight": "Cycling produces LESS interference than running for hypertrophy and strength",
+      "power_most_affected": "Power is most negatively affected by concurrent training",
+      "hypertrophy_strength": "Less affected with moderate cardio volume (2-3 sessions, 20-60 min)",
+      "frequency_correlation": "Negative relationship between cardio frequency and strength gains",
+      "optimal_approach": "Zone 2 (MICT) causes LESS interference than HIIT due to different adaptation sites",
+      "mechanism": "Zone 2 = central cardiovascular adaptation. Strength = peripheral neural/muscular. Different targets = less conflict"
+    },
+    "blueprint_targets": {
+      "zone_2_weekly": "150 minutes minimum",
+      "vigorous_weekly": "75 minutes",
+      "total_cardio": "225 minutes (3.75 hours)",
+      "strength_sessions": "3 per week minimum",
+      "total_training_hours": "6 hours per week"
+    },
+    "optimal_sequencing": {
+      "same_day": "Strength BEFORE cardio (if unavoidable)",
+      "separation": "6+ hours between strength and cardio on same day",
+      "best_practice": "Separate days when possible",
+      "cardio_modality": "Cycling preferred over running (less eccentric stress, protects ankles)"
+    }
+  },
+
+  "weekly_training_architecture": {
+    "design_philosophy": "Minimize interference while maximizing both combat readiness AND longevity benefits",
+    "sessions_per_week": 6,
+    "structure": "3 Strength/Power + 3 Cardio/Conditioning",
+    "weekly_targets": {
+      "zone_2_cardio": {
+        "target_minutes": 150,
+        "heart_rate_zone": "60-70% max HR",
+        "description": "Conversational pace - should be able to talk",
+        "max_hr_estimate": 182,
+        "zone_2_hr_range": "109-127 bpm"
+      },
+      "vigorous_exercise": {
+        "target_minutes": 75,
+        "heart_rate_zone": "80-90% max HR (Zone 4-5)",
+        "description": "Hard to talk, 1-2 word responses only",
+        "zone_4_hr_range": "146-164 bpm",
+        "zone_5_hr_range": "164-182 bpm"
+      },
+      "strength_training": {
+        "target_minutes": 135,
+        "sessions": 3,
+        "duration_per_session": 45
+      },
+      "mobility_flexibility": {
+        "target_minutes": 70,
+        "daily_morning_routine": 10,
+        "total_weekly": 70
+      }
+    },
+    "injury_considerations": {
+      "ankles": "Cycling preferred over running - no impact stress",
+      "shoulder": "Neutral grip pressing, isometric ER protocol continues",
+      "back": "McGill Big 3 daily, avoid loaded spinal flexion",
+      "hands": "Grip work with modifications, hook grip for pulling"
+    }
+  },
+
+  "weekly_schedule": {
+    "monday": {
+      "type": "STRENGTH - Lower Body Power",
+      "duration_minutes": 55,
+      "time": "05:55-06:50",
+      "focus": "Explosive lower body, KB swings, squats",
+      "zone_contribution": "Anaerobic + Strength",
+      "key_exercises": [
+        "Goblet Squat 4x8",
+        "KB Swings 4x15",
+        "Romanian Deadlift 3x10",
+        "Nordic Curl Eccentric 3x5",
+        "Box Jumps 3x5 (when cleared)"
+      ],
+      "notes": "No cardio today - full strength focus"
+    },
+    "tuesday": {
+      "type": "ZONE 2 CARDIO - Aerobic Base",
+      "duration_minutes": 50,
+      "time": "05:55-06:45",
+      "modality": "Stationary Bike OR Outdoor Cycling",
+      "zone_contribution": "+50 min Zone 2",
+      "heart_rate_target": "109-127 bpm (60-70% max)",
+      "protocol": {
+        "warmup": "5 min easy (Zone 1)",
+        "main_set": "40 min Zone 2 steady state",
+        "cooldown": "5 min easy"
+      },
+      "why_cycling": "Protects ankle injuries. Less interference than running. Lower eccentric stress.",
+      "ice_bath_allowed": "YES - 4+ hours from any strength work",
+      "notes": "Watch a documentary, listen to audiobook - make it enjoyable"
+    },
+    "wednesday": {
+      "type": "STRENGTH - Upper Body + Core",
+      "duration_minutes": 55,
+      "time": "05:55-06:50",
+      "focus": "Push/Pull, shoulder rehab, core stability",
+      "zone_contribution": "Anaerobic + Strength",
+      "key_exercises": [
+        "Floor Press 4x8",
+        "Pull-ups or Lat Pulldown 4x8",
+        "Face Pulls 3x15",
+        "Landmine Press 3x10",
+        "McGill Big 3 Circuit",
+        "Pallof Press 3x12 each side"
+      ],
+      "notes": "Neutral grip pressing for shoulder protection"
+    },
+    "thursday": {
+      "type": "ACTIVE RECOVERY + ZONE 2",
+      "duration_minutes": 45,
+      "time": "05:55-06:40",
+      "modality": "Easy Cycling OR Hiking",
+      "zone_contribution": "+30-40 min Zone 1-2",
+      "heart_rate_target": "100-120 bpm",
+      "protocol": {
+        "extended_mobility": "20 min yoga flow / mobility",
+        "easy_cardio": "25 min Zone 1-2 cycling or walking",
+        "optional": "Ice bath post-session (optimal day)"
+      },
+      "notes": "TRUE recovery - if fatigued, do NSDR instead of cardio"
+    },
+    "friday": {
+      "type": "STRENGTH - Full Body + Power",
+      "duration_minutes": 55,
+      "time": "05:55-06:50",
+      "focus": "Compound movements, explosive elements",
+      "zone_contribution": "Anaerobic + Strength",
+      "key_exercises": [
+        "Deadlift 4x5",
+        "Contrast Training: Heavy Goblet Squat → Box Jump",
+        "KB Clean & Press 3x6 each",
+        "Farmers Walk 3x40m",
+        "Turkish Get-Up 2x3 each"
+      ],
+      "notes": "Peak power day - ensure good sleep night before"
+    },
+    "saturday": {
+      "type": "VIGOROUS CARDIO - HIIT or Tempo",
+      "duration_minutes": 60,
+      "time": "05:55-06:55 (can be flexible on weekend)",
+      "modality": "Cycling Intervals OR Rucking OR Sports",
+      "zone_contribution": "+30 min Zone 4-5 + 30 min Zone 2",
+      "protocol_options": {
+        "option_a_norwegian_intervals": {
+          "description": "4x4 minute intervals - proven VO2max builder",
+          "warmup": "10 min Zone 2",
+          "intervals": "4 min at 85-95% HR max, 3 min recovery at 60-70%",
+          "sets": 4,
+          "cooldown": "10 min Zone 2",
+          "total_vigorous": "16 min Zone 5",
+          "total_zone_2": "~25 min"
+        },
+        "option_b_tempo_ride": {
+          "description": "Sustained threshold work",
+          "warmup": "10 min Zone 2",
+          "tempo": "30 min Zone 3-4 (75-85% HR max)",
+          "cooldown": "10 min Zone 2",
+          "total_vigorous": "30 min Zone 3-4"
+        },
+        "option_c_outdoor_activity": {
+          "description": "Weekend sport or hiking",
+          "examples": ["Hike with elevation gain", "Soccer/Football", "Pickleball", "Beach walk with incline"],
+          "duration": "60-90 min varied intensity",
+          "notes": "Bryan Johnson does hiking, basketball, pickleball on weekends"
+        }
+      },
+      "notes": "This is the 'vigorous' component. Finish by midday - 6+ hours before bed."
+    },
+    "sunday": {
+      "type": "ZONE 2 CARDIO - Long Aerobic Session",
+      "duration_minutes": 60,
+      "time": "Flexible - morning preferred",
+      "modality": "Long Ride, Hike, or Swim",
+      "zone_contribution": "+50-60 min Zone 2",
+      "heart_rate_target": "109-127 bpm",
+      "protocol": {
+        "warmup": "5 min easy",
+        "main_set": "50 min Zone 2 steady state",
+        "cooldown": "5 min easy"
+      },
+      "family_friendly_option": "Family hike or beach walk",
+      "notes": "Longer duration, true aerobic work. Can combine with family time."
+    },
+    "weekly_totals": {
+      "strength_sessions": 3,
+      "strength_minutes": 165,
+      "zone_2_minutes": "~160 (exceeds 150 target)",
+      "vigorous_minutes": "~45-75 (meets 75 target with Saturday HIIT + some Friday power work)",
+      "total_training_minutes": 380,
+      "total_training_hours": 6.3,
+      "mobility_minutes": 70,
+      "rest_days": 0,
+      "recovery_sessions": 1
+    }
+  },
+
+  "cardio_zone_reference": {
+    "max_hr_formula": "220 - age = 220 - 38 = 182 bpm (estimate)",
+    "zones": {
+      "zone_1_recovery": {
+        "percent_max": "50-60%",
+        "hr_range": "91-109 bpm",
+        "feel": "Very easy, could sing",
+        "use": "Active recovery, warmup/cooldown"
+      },
+      "zone_2_aerobic": {
+        "percent_max": "60-70%",
+        "hr_range": "109-127 bpm",
+        "feel": "Comfortable, can hold conversation",
+        "use": "Fat oxidation, mitochondrial density, longevity",
+        "target_weekly": "150+ minutes"
+      },
+      "zone_3_tempo": {
+        "percent_max": "70-80%",
+        "hr_range": "127-146 bpm",
+        "feel": "Moderate, can speak in sentences",
+        "use": "Lactate threshold development"
+      },
+      "zone_4_threshold": {
+        "percent_max": "80-90%",
+        "hr_range": "146-164 bpm",
+        "feel": "Hard, only 1-2 words at a time",
+        "use": "VO2max improvement, performance"
+      },
+      "zone_5_max": {
+        "percent_max": "90-100%",
+        "hr_range": "164-182 bpm",
+        "feel": "Very hard, cannot talk",
+        "use": "Peak power, neuromuscular adaptation"
+      }
+    },
+    "garmin_integration": {
+      "key_metrics_to_track": [
+        "HRV Status (overnight)",
+        "Recovery Time",
+        "Training Load (acute load)",
+        "Training Status",
+        "VO2 Max estimate",
+        "Body Battery",
+        "Sleep Score"
+      ],
+      "atlas_agent_triggers": {
+        "low_hrv_status": "Reduce intensity, consider NSDR",
+        "recovery_time_remaining": "Adjust next session intensity",
+        "training_load_high": "Insert deload or recovery session",
+        "vo2_max_declining": "Increase Zone 2 volume",
+        "body_battery_low": "Skip vigorous work, extend recovery"
+      }
+    }
+  },
+
+  "phase_integration": {
+    "phase_1_weeks_1_12_rehab": {
+      "cardio_modification": "Zone 2 only - no HIIT until cleared",
+      "modality": "Cycling exclusively - protect ankles",
+      "vigorous_substitute": "KB swings and power work count toward 'vigorous' heart rate",
+      "weekly_zone_2": "120-150 min (build gradually)",
+      "progression": "Add 10 min Zone 2 every 2 weeks"
+    },
+    "phase_2_weeks_13_24_combat_ready": {
+      "cardio_escalation": "Full HIIT integration",
+      "modality_options": ["Cycling intervals", "Rower intervals", "Assault bike", "Running (if cleared)"],
+      "vigorous_target": "75+ min weekly",
+      "sport_specific": "Add agility, combat conditioning, reaction drills"
+    }
+  },
+
+  "skin_longevity_protocol": {
+    "research_foundation": {
+      "ontrac_study": {
+        "source": "New England Journal of Medicine 2015, Australian research",
+        "participants": 386,
+        "intervention": "500mg nicotinamide (vitamin B3) twice daily for 12 months",
+        "results": {
+          "new_skin_cancers": "23% reduction vs placebo (p=0.02)",
+          "squamous_cell_carcinoma": "30% reduction (p=0.05)",
+          "basal_cell_carcinoma": "20% reduction",
+          "actinic_keratoses": "11-20% reduction at various timepoints"
+        },
+        "mechanism": "Nicotinamide replenishes cellular ATP, prevents UV-induced energy crisis, enhances DNA repair",
+        "safety": "No significant side effects. Unlike niacin, does NOT cause flushing.",
+        "cost": "Less than $10/month"
+      },
+      "red_light_therapy_skin": {
+        "source": "PMC3926176 - Controlled trial, 136 subjects",
+        "wavelengths": "611-650nm (red) + 570-850nm (NIR)",
+        "results": {
+          "collagen_density": "Significant increase (ultrasound measured)",
+          "wrinkle_reduction": "Significant improvement",
+          "patient_satisfaction": "High across treatment groups"
+        },
+        "protocol": "2x weekly, 30 sessions total"
+      },
+      "oral_collagen": {
+        "source": "Meta-analysis of 26 RCTs, n=1721",
+        "dose": "2.5-15g daily hydrolyzed collagen",
+        "results": "Significant improvement in skin hydration and elasticity",
+        "duration": "8-12 weeks for visible results",
+        "synergy": "Vitamin C enhances collagen synthesis"
+      }
+    },
+    "daily_protocol": {
+      "oral_supplements": {
+        "nicotinamide_B3": {
+          "dose": "500mg twice daily",
+          "timing": "Morning with breakfast + Evening with dinner",
+          "critical_note": "NICOTINAMIDE not niacin - different forms. Niacin causes flushing, nicotinamide does not.",
+          "priority": "HIGH for Australian sun exposure",
+          "when_to_add": "Immediately - cheap, effective, excellent safety profile"
+        },
+        "collagen_peptides": {
+          "dose": "15g daily",
+          "timing": {
+            "training_days": "Morning 05:10 with vitamin C (45 min pre-training)",
+            "recovery_days": "Evening (glycine aids sleep)"
+          },
+          "already_in_stack": true
+        }
+      },
+      "topical_protocol_morning": {
+        "step_1_cleanser": "Gentle face wash",
+        "step_2_vitamin_c": "10-20% L-ascorbic acid serum (antioxidant, collagen synthesis)",
+        "step_3_moisturizer": "Hydrating moisturizer",
+        "step_4_sunscreen": "SPF 50+ broad spectrum (CRITICAL for Australia)",
+        "notes": "Vitamin C best applied morning - antioxidant protection for day"
+      },
+      "topical_protocol_evening": {
+        "step_1_cleanser": "Gentle face wash",
+        "step_2_retinol": "0.25-1% retinol or prescription tretinoin (start low, build tolerance)",
+        "step_3_moisturizer": "Hydrating moisturizer",
+        "notes": "Retinol increases photosensitivity - never use in morning without sunscreen"
+      },
+      "red_light_therapy_for_skin": {
+        "frequency": "Daily during morning protocol (already doing this)",
+        "duration": "10-20 min face exposure during session",
+        "wavelength": "Your 660nm + 850nm panel is ideal",
+        "synergy": "RLT + topical vitamin C + oral collagen = multi-pathway collagen support"
+      }
+    },
+    "weekly_additions": {
+      "exfoliation": "1-2x weekly gentle chemical exfoliant (glycolic or lactic acid) - NOT on retinol nights",
+      "mask": "1x weekly hydrating mask (hyaluronic acid based)",
+      "face_massage": "2-3 min daily during RLT - improves circulation, lymphatic drainage"
+    },
+    "supplement_addition_for_jade": {
+      "nicotinamide_500mg": {
+        "dose": "500mg twice daily",
+        "form": "Nicotinamide / Niacinamide (NOT niacin, NOT nicotinic acid)",
+        "priority": "HIGH - add immediately",
+        "cost": "$10-15/month",
+        "notes": "Available OTC from chemist or iHerb"
+      }
+    }
+  },
+
+  "supplement_stack_update_v4": {
+    "morning_fasted_05_10": {
+      "training_days": [
+        {"name": "Creatine", "dose": "5g"},
+        {"name": "NR (Nicotinamide Riboside)", "dose": "1 cap"},
+        {"name": "TMG", "dose": "500mg", "note": "Pairs with NR"},
+        {"name": "Tongkat Ali", "dose": "5g", "cycle": "3 on / 1 off"},
+        {"name": "Collagen", "dose": "15g", "with": "Vitamin C / lemon juice"}
+      ],
+      "recovery_days": [
+        {"name": "Creatine", "dose": "5g"},
+        {"name": "NR", "dose": "1 cap"},
+        {"name": "TMG", "dose": "500mg"},
+        {"name": "Tongkat Ali", "dose": "5g"},
+        {"name": "NAC", "dose": "1 tsp"}
+      ]
+    },
+    "with_breakfast_07_00": [
+      {"name": "L-Theanine", "dose": "1/4 tsp", "with": "coffee"},
+      {"name": "Allimax (Garlic)", "dose": "1 cap"},
+      {"name": "Preconception Multi", "dose": "2 caps"},
+      {"name": "Nicotinamide (B3)", "dose": "500mg", "note": "NEW - skin protection", "priority": "ADD NOW"}
+    ],
+    "with_dinner": [
+      {"name": "Nicotinamide (B3)", "dose": "500mg", "note": "Second dose for skin protection"}
+    ],
+    "evening_before_bed_21_00": {
+      "training_days": [
+        {"name": "Magnesium Glycinate", "dose": "300-400mg"},
+        {"name": "NAC", "dose": "1 tsp"},
+        {"name": "Inositol", "dose": "1 tsp"},
+        {"name": "L-Theanine", "dose": "1/4 tsp"}
+      ],
+      "recovery_days": [
+        {"name": "Magnesium Glycinate", "dose": "300-400mg"},
+        {"name": "Collagen", "dose": "15g"},
+        {"name": "Inositol", "dose": "1 tsp"},
+        {"name": "L-Theanine", "dose": "1/4 tsp"}
+      ]
+    }
+  },
+
+  "garmin_atlas_integration": {
+    "forerunner_165_metrics": {
+      "hrv_status": {
+        "what": "7-day HRV trend based on overnight readings",
+        "states": ["Balanced", "Unbalanced", "Poor", "Low"],
+        "agent_action": {
+          "balanced": "Full training as programmed",
+          "unbalanced": "Reduce intensity 15%, skip vigorous intervals",
+          "poor": "Recovery day, NSDR, Zone 1-2 only",
+          "low": "Medical review if persistent"
+        }
+      },
+      "recovery_time": {
+        "what": "Hours until full recovery (max 4 days)",
+        "agent_action": {
+          "0_hours": "Ready for any training",
+          "12_24_hours": "Light to moderate training OK",
+          "24_48_hours": "Zone 2 only, skip strength",
+          "48_plus": "Active recovery or rest only"
+        }
+      },
+      "training_load": {
+        "what": "7-day training stress (EPOC-based)",
+        "states": ["Low", "Optimal", "High", "Very High"],
+        "agent_action": {
+          "low": "Increase volume/intensity",
+          "optimal": "Maintain current program",
+          "high": "Consider deload soon",
+          "very_high": "Immediate deload - reduce 40% volume"
+        }
+      },
+      "body_battery": {
+        "what": "0-100 energy score",
+        "agent_action": {
+          "80_100": "Full training",
+          "50_79": "Training with awareness",
+          "25_49": "Recovery day recommended",
+          "under_25": "Rest required"
+        }
+      },
+      "vo2_max": {
+        "what": "Estimated maximum oxygen consumption",
+        "baseline_target": "Track trend, aim for improvement",
+        "agent_action": "If declining for 2+ weeks, increase Zone 2 volume"
+      }
+    },
+    "daily_agent_workflow": {
+      "morning_check": [
+        "Read overnight HRV status",
+        "Check recovery time remaining",
+        "Note body battery level",
+        "Review previous day's training load",
+        "Check sleep score"
+      ],
+      "decision_tree": {
+        "all_green": "Execute programmed workout",
+        "one_yellow": "Reduce intensity 10-15%, proceed",
+        "two_yellow": "Substitute Zone 2 for strength, or vice versa",
+        "any_red": "Recovery protocol (NSDR, mobility, Zone 1 walk)"
+      },
+      "post_workout": [
+        "Log session RPE",
+        "Note any pain/injury concerns",
+        "Check recovery time estimate",
+        "Compare actual HR zones to targets"
+      ]
+    },
+    "sync_schedule": {
+      "garmin_connect": "Syncs automatically via Bluetooth",
+      "atlas_api_pull": "Every 6 hours OR on-demand before training decisions",
+      "data_points_to_extract": [
+        "HRV_status",
+        "recovery_time_hours",
+        "body_battery_current",
+        "training_load_7day",
+        "vo2_max_current",
+        "resting_hr",
+        "sleep_score",
+        "sleep_hours",
+        "stress_level"
+      ]
+    }
+  },
+
+  "running_reintroduction_module": {
+    "module_reference": "See: running_sprint_reintroduction_v1.json for full protocol",
+    "cheatsheet_reference": "See: running_cheatsheet_v1.md for quick reference",
+    "critical_principle": "Running is ESSENTIAL for combat readiness and soccer - TIMING and READINESS determine success",
+    "current_status": {
+      "phase": "Phase 1 - Rehab",
+      "running_allowed": false,
+      "next_gate_test": "Week 12 (GATE 1)"
+    },
+    "phase_summary": {
+      "phase_1": {"weeks": "1-12", "running": "NO", "cardio": "Cycling only", "gate": "GATE 1 at end"},
+      "phase_2a": {"weeks": "13-16", "running": "Walk-Jog Levels 1-8", "gate": "GATE 2 at end"},
+      "phase_2b": {"weeks": "17-20", "running": "Tempo + Strides", "gate": "GATE 3 at end"},
+      "phase_2c": {"weeks": "21-24", "running": "Sprint 70%→95%", "gate": "GATE 4 at end"},
+      "phase_3": {"weeks": "25+", "running": "Full sprint/agility/sport", "gate": "Ongoing monitoring"}
+    },
+    "gate_1_summary": {
+      "name": "Ready to Start Running",
+      "earliest_week": 12,
+      "key_tests": [
+        "Pain ≤2/10 for 2+ weeks",
+        "WBLT ≥10cm AND within 2cm of uninjured side",
+        "Single-leg balance 60s eyes open",
+        "25 single-leg heel raises each side (LSI ≥90%)",
+        "30-min brisk walk pain-free",
+        "20 double-leg hops pain-free"
+      ],
+      "pass_action": "Begin walk-jog progression",
+      "fail_action": "Continue cycling, address deficits, retest 1-2 weeks"
+    },
+    "agent_running_checks": {
+      "before_any_run": [
+        "Ankle pain ≤2/10",
+        "No swelling from previous session",
+        "Adequate rest (48h walk-jog, 72h sprints)",
+        "HRV not Poor, Body Battery >40"
+      ],
+      "red_flags_abort": [
+        "Sharp pain during running",
+        "Giving way/instability",
+        "Developing limp",
+        "Pain increasing during run"
+      ]
+    },
+    "why_cycling_now": {
+      "reasons": [
+        "Protects ankle healing (no impact stress)",
+        "Less interference with strength gains (Wilson 2012)",
+        "Builds aerobic base that transfers to running",
+        "Faster recovery between sessions"
+      ],
+      "transfer": "Zone 2 adaptations are modality-independent - you lose NOTHING by deferring running"
+    }
+  },
+
+  "critical_timing_rules_v4": {
+    "training": {
+      "no_vigorous_6h_before_bed": "Complete all HIIT by 15:00 if bedtime is 21:00",
+      "strength_before_cardio_same_day": "If unavoidable, strength first",
+      "6h_separation_ideal": "Separate strength and cardio by 6+ hours when possible"
+    },
+    "ice_bath": {
+      "never_within_4h_of_strength": "Blunts adaptation",
+      "ideal_days": ["Tuesday (after Zone 2)", "Thursday (recovery day)", "Saturday (after conditioning)"]
+    },
+    "supplements": {
+      "NAC_never_near_training": "4+ hours separation - blunts adaptation",
+      "collagen_45min_pre_training": "Peaks in blood at training time for collagen synthesis",
+      "nicotinamide_with_meals": "500mg breakfast + 500mg dinner"
+    }
+  },
+
+  "shopping_list_for_jade_v4": {
+    "priority_HIGH_add_now": [
+      {"name": "Nicotinamide (Vitamin B3)", "dose": "500mg caps or tablets", "frequency": "2x daily", "cost": "$10-15/month", "source": "Chemist, iHerb, bulk suppliers", "reason": "ONTRAC study - 23% skin cancer reduction"},
+      {"name": "TMG (Trimethylglycine)", "dose": "500mg-1g/day", "reason": "Pair with NR to prevent methylation crash"},
+      {"name": "Magnesium Glycinate", "dose": "300-400mg elemental", "reason": "Sleep support - multi only has 32mg"}
+    ],
+    "priority_MEDIUM_skin_topicals": [
+      {"name": "Vitamin C serum", "strength": "10-20% L-ascorbic acid", "use": "Morning", "reason": "Collagen synthesis, photoprotection"},
+      {"name": "Retinol serum", "strength": "0.25-0.5% to start", "use": "Evening", "reason": "Gold standard anti-aging, build tolerance gradually"},
+      {"name": "SPF 50+ sunscreen", "type": "Broad spectrum, zinc or chemical", "reason": "Critical for Australian sun exposure"}
+    ],
+    "equipment_for_cardio": [
+      {"name": "Stationary Bike or Trainer", "priority": "HIGH", "reason": "Zone 2 cardio without ankle impact"},
+      {"name": "Heart Rate Monitor", "type": "Garmin Forerunner 165", "status": "Obtaining", "reason": "Zone training accuracy, HRV tracking"}
+    ]
+  },
+
+  "agent_daily_log_template_v4": {
+    "morning_metrics": {
+      "wake_time": "HH:MM",
+      "sleep_hours": "number",
+      "sleep_quality": "1-10",
+      "interruptions": "count",
+      "garmin_metrics": {
+        "hrv_status": "Balanced | Unbalanced | Poor",
+        "recovery_time_hours": "number",
+        "body_battery": "0-100",
+        "resting_hr": "bpm",
+        "sleep_score": "0-100"
+      },
+      "pain_levels": {
+        "shoulder": "0-10",
+        "left_ankle": "0-10",
+        "right_ankle": "0-10",
+        "lower_back": "0-10",
+        "left_thumb": "0-10",
+        "right_finger": "0-10",
+        "feet": "0-10"
+      },
+      "energy": "1-10",
+      "traffic_light": "GREEN | YELLOW | RED"
+    },
+    "training_log": {
+      "session_type": "Strength | Zone 2 | HIIT | Recovery | Rest",
+      "completed": "yes | no | modified",
+      "duration_minutes": "number",
+      "exercises_logged": "list",
+      "session_rpe": "1-10",
+      "heart_rate_zones": {
+        "zone_1_minutes": "number",
+        "zone_2_minutes": "number",
+        "zone_3_minutes": "number",
+        "zone_4_minutes": "number",
+        "zone_5_minutes": "number"
+      },
+      "notes": "text"
+    },
+    "supplement_tracking": {
+      "morning_fasted": "list",
+      "with_breakfast": "list including nicotinamide",
+      "with_dinner": "nicotinamide 500mg",
+      "evening": "list",
+      "tongkat_ali_cycle_week": "1 | 2 | 3 | OFF"
+    },
+    "skin_protocol": {
+      "morning_topicals": "yes | no",
+      "sunscreen_applied": "yes | no",
+      "evening_retinol": "yes | no",
+      "nicotinamide_doses": "2 | 1 | 0"
+    }
+  },
+
+  "weekly_review_metrics_v4": {
+    "training_volume": {
+      "strength_sessions": "count (target: 3)",
+      "zone_2_minutes": "total (target: 150+)",
+      "vigorous_minutes": "total (target: 75)",
+      "total_training_hours": "sum (target: 6)"
+    },
+    "recovery_indicators": {
+      "red_days": "count",
+      "nsdr_sessions": "count",
+      "average_hrv_status": "trend",
+      "average_body_battery": "number"
+    },
+    "pain_trend": "improving | stable | worsening per injury",
+    "garmin_trends": {
+      "vo2_max_change": "number",
+      "training_load_trend": "building | maintaining | recovering",
+      "hrv_trend": "improving | stable | declining"
+    },
+    "key_wins": "text",
+    "areas_for_improvement": "text"
+  }
+}

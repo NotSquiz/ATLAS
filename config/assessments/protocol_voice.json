@@ -1,0 +1,912 @@
+{
+  "metadata": {
+    "name": "ATLAS Voice Assessment Protocol",
+    "version": "2.0",
+    "description": "Voice-guided baseline assessment with P0/P1 fixes from Opus verification",
+    "total_tests": 75,
+    "session_count": 3
+  },
+
+  "stop_commands": ["stop", "done", "finished", "end", "halt", "fell", "stopped"],
+  "start_commands": ["go", "start"],
+  "skip_commands": ["skip", "next", "pass"],
+  "undo_commands": ["correct that", "undo", "wrong", "that's wrong", "fix that"],
+  "repeat_commands": ["repeat that", "say again", "what was that", "repeat"],
+  "status_commands": ["status", "where am i", "how much longer", "progress"],
+  "equipment_commands": ["what equipment", "what do i need", "equipment"],
+
+  "sessions": {
+    "1": {
+      "name": "Body Composition & Movement",
+      "aliases": ["body comp", "movement", "first one", "the first", "session 1", "session one"],
+      "duration_minutes": 45,
+      "equipment": ["scale", "tape measure", "stopwatch", "wall"],
+      "sections": [
+        {
+          "name": "Anthropometrics",
+          "equipment_reminder": "Grab your scale and tape measure for the next 12 tests.",
+          "tests": [
+            {
+              "id": "weight_kg",
+              "name": "Weight",
+              "voice_prompt": "Weight in kilograms?",
+              "voice_setup": "Step on scale. Morning, post-bathroom, minimal clothing. Same conditions each time.",
+              "unit": "kg",
+              "input_type": "numeric",
+              "valid_range": [30, 200]
+            },
+            {
+              "id": "body_fat_pct",
+              "name": "Body Fat Percentage",
+              "voice_prompt": "Body fat percentage?",
+              "voice_setup": "Use scale or calipers. Same method each time for consistency.",
+              "unit": "%",
+              "input_type": "numeric",
+              "valid_range": [3, 50]
+            },
+            {
+              "id": "waist_navel_cm",
+              "name": "Waist at Navel",
+              "voice_prompt": "Waist at navel in centimeters?",
+              "voice_setup": "Measure at navel level. Relaxed exhale. Tape horizontal, snug not tight.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [50, 150]
+            },
+            {
+              "id": "hips_cm",
+              "name": "Hip Circumference",
+              "voice_prompt": "Hip circumference in centimeters?",
+              "voice_setup": "Widest point of glutes. Tape horizontal.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [60, 150]
+            },
+            {
+              "id": "chest_cm",
+              "name": "Chest Circumference",
+              "voice_prompt": "Chest circumference in centimeters?",
+              "voice_setup": "At nipple line. Relaxed exhale.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [60, 150]
+            },
+            {
+              "id": "thigh_right_cm",
+              "name": "Right Thigh",
+              "voice_prompt": "Right thigh circumference?",
+              "voice_setup": "Midpoint between hip crease and kneecap. Standing relaxed.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [30, 90]
+            },
+            {
+              "id": "thigh_left_cm",
+              "name": "Left Thigh",
+              "voice_prompt": "Left thigh circumference?",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [30, 90]
+            },
+            {
+              "id": "calf_right_cm",
+              "name": "Right Calf",
+              "voice_prompt": "Right calf circumference?",
+              "voice_setup": "Widest point of calf muscle.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [20, 60]
+            },
+            {
+              "id": "calf_left_cm",
+              "name": "Left Calf",
+              "voice_prompt": "Left calf circumference?",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [20, 60]
+            },
+            {
+              "id": "arm_right_cm",
+              "name": "Right Arm",
+              "voice_prompt": "Right arm circumference? Flexed.",
+              "voice_setup": "Arm at 90 degrees, flex bicep, measure peak.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [20, 55]
+            },
+            {
+              "id": "arm_left_cm",
+              "name": "Left Arm",
+              "voice_prompt": "Left arm circumference? Flexed.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [20, 55]
+            }
+          ]
+        },
+        {
+          "name": "Resting Vitals",
+          "equipment_reminder": "Sit quietly for 2 minutes before vitals.",
+          "tests": [
+            {
+              "id": "resting_hr",
+              "name": "Resting Heart Rate",
+              "voice_prompt": "Resting heart rate in BPM?",
+              "voice_setup": "Sit quietly 2 minutes. Count pulse for 60 seconds or use device.",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [35, 120],
+              "lower_is_better": true
+            },
+            {
+              "id": "blood_pressure",
+              "name": "Blood Pressure",
+              "voice_prompt": "Blood pressure. Systolic first?",
+              "voice_setup": "Sit with arm supported at heart level. Wait 5 minutes of rest.",
+              "input_type": "compound",
+              "fields": [
+                {"name": "systolic", "prompt": "Systolic?", "unit": "mmHg", "valid_range": [70, 200]},
+                {"name": "diastolic", "prompt": "Diastolic?", "unit": "mmHg", "valid_range": [40, 130]}
+              ]
+            },
+            {
+              "id": "hrv_ms",
+              "name": "HRV Average",
+              "voice_prompt": "HRV in milliseconds? From Garmin or device.",
+              "unit": "ms",
+              "input_type": "numeric",
+              "valid_range": [10, 150]
+            },
+            {
+              "id": "body_battery",
+              "name": "Body Battery",
+              "voice_prompt": "Body battery level? Zero to 100.",
+              "unit": "score",
+              "input_type": "numeric",
+              "valid_range": [0, 100]
+            }
+          ]
+        },
+        {
+          "name": "Flexibility",
+          "equipment_reminder": "You'll need a wall and tape measure for these tests.",
+          "tests": [
+            {
+              "id": "ankle_dorsiflexion_right",
+              "name": "Ankle Dorsiflexion Right (WBLT)",
+              "voice_prompt": "Ankle dorsiflexion, right. Knee to wall distance in centimeters?",
+              "voice_setup": "Barefoot, big toe about 10 centimeters from wall. Knee drives straight forward to touch wall, heel stays down. If knee touches, move foot back and retry. Measure the max distance from big toe to wall where knee still touches without heel lifting. 10 centimeters is a pass.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [0, 25],
+              "gate_test": "gate_1"
+            },
+            {
+              "id": "ankle_dorsiflexion_left",
+              "name": "Ankle Dorsiflexion Left (WBLT)",
+              "voice_prompt": "Ankle dorsiflexion, left. Centimeters?",
+              "voice_setup": "Same test, left foot. Max distance from big toe to wall where knee touches without heel lifting.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [0, 25],
+              "gate_test": "gate_1",
+              "lsi_pair": "ankle_dorsiflexion_right"
+            },
+            {
+              "id": "sit_and_reach",
+              "name": "Sit and Reach",
+              "voice_prompt": "Sit and reach. Best of three. First attempt in centimeters?",
+              "voice_setup": "Sit with legs straight, reach forward. Positive if past toes, negative if short.",
+              "unit": "cm",
+              "input_type": "multi_attempt",
+              "attempts": 3,
+              "record": "best",
+              "valid_range": [-30, 30]
+            },
+            {
+              "id": "shoulder_flexion_right",
+              "name": "Shoulder Flexion Right",
+              "voice_prompt": "Shoulder flexion, right arm. Degrees from vertical?",
+              "voice_setup": "Lie on back, raise arm overhead along floor. Zero is flat on floor, measure gap.",
+              "unit": "degrees",
+              "input_type": "numeric",
+              "valid_range": [0, 90]
+            },
+            {
+              "id": "shoulder_flexion_left",
+              "name": "Shoulder Flexion Left",
+              "voice_prompt": "Shoulder flexion, left arm. Degrees?",
+              "unit": "degrees",
+              "input_type": "numeric",
+              "valid_range": [0, 90],
+              "lsi_pair": "shoulder_flexion_right"
+            },
+            {
+              "id": "thomas_test_right",
+              "name": "Thomas Test Right Hip",
+              "voice_prompt": "Thomas test, right hip. Is thigh flat or raised?",
+              "voice_setup": "Lie on bench with tailbone at edge. Pull left knee to chest, hold it there. Let right leg hang relaxed. Check if right thigh is parallel to bench or floating above it. Flat means good hip flexor length. Raised means tight. Severely raised if thigh is well above horizontal.",
+              "input_type": "categorical",
+              "options": ["flat", "raised", "severely raised"]
+            },
+            {
+              "id": "thomas_test_left",
+              "name": "Thomas Test Left Hip",
+              "voice_prompt": "Thomas test, left hip. Flat or raised?",
+              "voice_setup": "Same test, opposite side. Pull right knee to chest, let left leg hang. Check if left thigh is flat or raised.",
+              "input_type": "categorical",
+              "options": ["flat", "raised", "severely raised"]
+            }
+          ]
+        },
+        {
+          "name": "Balance Tests",
+          "equipment_reminder": "You'll need a foam balance pad and clear space near a wall for safety.",
+          "tests": [
+            {
+              "id": "single_leg_foam_right",
+              "name": "Single Leg Foam Pad Right (Eyes Closed)",
+              "voice_prompt": "Foam pad balance, right leg, eyes closed. Say go when ready.",
+              "voice_setup": "Stand on foam pad on right leg, hands on hips. Close eyes. Hold as long as you can up to 60 seconds. Say stop when you lose balance.",
+              "unit": "seconds",
+              "input_type": "timed",
+              "max_time": 60,
+              "beep_intervals": [15, 30, 45],
+              "gate_test": "gate_1"
+            },
+            {
+              "id": "single_leg_foam_left",
+              "name": "Single Leg Foam Pad Left (Eyes Closed)",
+              "voice_prompt": "Foam pad balance, left leg, eyes closed. Say go when ready.",
+              "voice_setup": "Same test, left leg on foam pad, eyes closed.",
+              "unit": "seconds",
+              "input_type": "timed",
+              "max_time": 60,
+              "beep_intervals": [15, 30, 45],
+              "gate_test": "gate_1",
+              "lsi_pair": "single_leg_foam_right"
+            },
+            {
+              "id": "sit_to_stand",
+              "name": "Sit to Stand Test",
+              "voice_prompt": "Sit to stand test. How many in 30 seconds? Say go when ready.",
+              "voice_setup": "Sit in chair, feet flat on floor, arms crossed on chest. On go, stand up fully straight, then sit back down completely. That's one rep. Repeat as fast as you can with good form for 30 seconds. Count your reps. Say go when ready, tell me the count when done.",
+              "unit": "reps",
+              "input_type": "countdown_reps",
+              "countdown_seconds": 30
+            }
+          ]
+        },
+        {
+          "name": "Functional Movement Screen",
+          "equipment_reminder": "Clear floor space. Score each movement zero to three.",
+          "tests": [
+            {
+              "id": "fms_deep_squat",
+              "name": "Deep Squat",
+              "voice_prompt": "Deep squat. Score zero to three. Zero if any pain.",
+              "voice_setup": "Arms overhead holding dowel. Squat deep, heels down. Three is thighs below parallel with good form.",
+              "input_type": "fms",
+              "scoring": {
+                "0": "Pain during movement",
+                "1": "Cannot complete pattern",
+                "2": "Completes with compensation",
+                "3": "Perfect form"
+              }
+            },
+            {
+              "id": "fms_hurdle_step",
+              "name": "Hurdle Step",
+              "voice_prompt": "Hurdle step. Score zero to three.",
+              "voice_setup": "Use a string or stick at knee cap height. Stand on one leg, lift other leg over the hurdle, tap heel on far side, return without touching hurdle. Keep hips level, torso upright. Do 3 reps each leg. Score the worst side. Three is smooth with no wobble. Two if hips shift or torso leans. One if you touch the hurdle or lose balance.",
+              "input_type": "fms",
+              "scoring": {
+                "0": "Pain during movement",
+                "1": "Cannot complete pattern",
+                "2": "Completes with compensation",
+                "3": "Perfect form"
+              }
+            },
+            {
+              "id": "fms_inline_lunge",
+              "name": "Inline Lunge",
+              "voice_prompt": "Inline lunge. Score zero to three.",
+              "voice_setup": "Place tape on floor. Stand with both feet on the line, one in front of the other. Front heel touches back toe, like a tightrope. Hold stick behind back touching head, upper back, and tailbone. Lunge down until back knee touches floor behind front heel, then stand back up. Torso stays vertical, stick stays in contact all three points. Do 3 reps each side. Three is perfect balance and stick contact. Two if you wobble or stick loses contact. One if you step off line or can't touch knee down.",
+              "input_type": "fms",
+              "scoring": {
+                "0": "Pain during movement",
+                "1": "Cannot complete pattern",
+                "2": "Completes with compensation",
+                "3": "Perfect form"
+              }
+            },
+            {
+              "id": "fms_aslr",
+              "name": "Active Straight Leg Raise",
+              "voice_prompt": "Active straight leg raise. Score zero to three.",
+              "voice_setup": "Lie flat on back, legs straight, arms at sides. Keep one leg flat on floor, raise the other leg as high as you can with knee locked straight. Non-moving leg must stay flat, toes up. Imagine vertical lines up from your down leg's knee and mid-thigh. Three if raised ankle passes mid-thigh line. Two if ankle is between knee and mid-thigh. One if ankle can't reach past the knee. Test both legs, score the worst side.",
+              "input_type": "fms",
+              "scoring": {
+                "0": "Pain during movement",
+                "1": "Ankle below knee line",
+                "2": "Ankle between knee and mid-thigh",
+                "3": "Ankle passes mid-thigh line"
+              }
+            },
+            {
+              "id": "fms_trunk_stability_pushup",
+              "name": "Trunk Stability Push-up",
+              "voice_prompt": "Trunk stability push-up. Score zero to three.",
+              "voice_setup": "Lie face down, hands at chin level, thumbs in line with forehead. Perform ONE push-up, body rising as a unit, no sag or pike. If you can do it with hands at chin level, score 3. If not, move hands down to shoulder level and try again. If you can do it there, score 2. If you can't do it at shoulder level either, score 1. Score 0 if any pain.",
+              "input_type": "fms",
+              "scoring": {
+                "0": "Pain during movement",
+                "1": "Cannot complete even at shoulder level",
+                "2": "Completes with hands at shoulder level",
+                "3": "Completes with hands at chin level (thumbs at forehead)"
+              }
+            },
+            {
+              "id": "fms_rotary_stability",
+              "name": "Rotary Stability",
+              "voice_prompt": "Rotary stability. Score zero to three.",
+              "voice_setup": "On hands and knees, hands under shoulders, knees under hips. First try SAME SIDE: extend right arm and right leg straight out, then bring right elbow to right knee under your body. One clean rep without wobbling or falling is a 3. If you can't do same side, try OPPOSITE: right arm and left leg, touch elbow to knee. If you can do that cleanly, score 2. Test both sides, score the worst. Can't do either, score 1. Pain is 0.",
+              "input_type": "fms",
+              "scoring": {
+                "0": "Pain during movement",
+                "1": "Cannot complete either pattern",
+                "2": "Completes diagonal (opposite arm/leg)",
+                "3": "Completes unilateral (same side arm/leg)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rehab Specific",
+          "equipment_reminder": "Clear space for hopping. Stop immediately if pain.",
+          "tests": [
+            {
+              "id": "double_leg_hops_pain_free",
+              "name": "Double Leg Hops",
+              "voice_prompt": "Twenty double leg hops. Were they pain-free? Yes or no.",
+              "voice_setup": "Twenty continuous small hops. Stop if any pain.",
+              "input_type": "boolean"
+            },
+            {
+              "id": "ankle_pain_worst_24h",
+              "name": "Worst Ankle Pain (24h)",
+              "voice_prompt": "Worst ankle pain in the last 24 hours. Zero to ten?",
+              "voice_setup": "Think about the worst moment in the last day. Zero is no pain at all, ten is worst imaginable.",
+              "unit": "score",
+              "input_type": "numeric",
+              "valid_range": [0, 10],
+              "lower_is_better": true
+            }
+          ]
+        }
+      ]
+    },
+
+    "2": {
+      "name": "Strength Baselines",
+      "aliases": ["strength", "second one", "lifting", "session 2", "session two", "two"],
+      "duration_minutes": 50,
+      "equipment": ["dumbbells", "kettlebells", "pull-up bar", "bench", "stopwatch"],
+      "sections": [
+        {
+          "name": "Lower Body Strength",
+          "equipment_reminder": "Warm up with bodyweight squats first. Have your dumbbells and kettlebells ready.",
+          "tests": [
+            {
+              "id": "goblet_squat_5rm",
+              "name": "Goblet Squat 5RM",
+              "voice_prompt": "Goblet squat 5-rep max. Weight used in kilos?",
+              "voice_setup": "Hold dumbbell or kettlebell at chest, elbows pointing down. Feet shoulder width, toes slightly out. Squat deep, elbows track inside knees, chest up, heels down. Full depth is hip crease below knee. Warm up with light weight, then find the heaviest you can do for 5 clean reps.",
+              "input_type": "compound",
+              "fields": [
+                {"name": "weight", "prompt": "Weight in kilos?", "unit": "kg", "valid_range": [4, 60]},
+                {"name": "reps", "prompt": "How many reps?", "unit": "reps", "valid_range": [1, 20]}
+              ],
+              "calculate": "1rm_brzycki"
+            },
+            {
+              "id": "rdl_5rm",
+              "name": "Romanian Deadlift 5RM",
+              "voice_prompt": "Romanian deadlift 5-rep max. Weight in kilos?",
+              "voice_setup": "Dumbbells or barbell. Hinge at hips, slight knee bend, feel hamstrings.",
+              "input_type": "compound",
+              "fields": [
+                {"name": "weight", "prompt": "Weight in kilos?", "unit": "kg", "valid_range": [10, 150]},
+                {"name": "reps", "prompt": "How many reps?", "unit": "reps", "valid_range": [1, 20]}
+              ],
+              "calculate": "1rm_brzycki"
+            },
+            {
+              "id": "kb_swing_30s",
+              "name": "Kettlebell Swing 30s",
+              "voice_prompt": "KB swing. What weight? Then 30 seconds max reps. Say go when ready.",
+              "voice_setup": "Hip hinge, explosive drive. Count reps in 30 seconds.",
+              "input_type": "countdown_reps",
+              "countdown_seconds": 30,
+              "pre_prompt": "What KB weight in kilos?"
+            },
+            {
+              "id": "split_squat_8rm",
+              "name": "Split Squat 8RM",
+              "voice_prompt": "Split squat 8-rep max each leg. Weight in kilos?",
+              "voice_setup": "Rear foot elevated or floor. 8 reps per side, same weight.",
+              "input_type": "compound",
+              "fields": [
+                {"name": "weight", "prompt": "Weight in kilos?", "unit": "kg", "valid_range": [0, 50]},
+                {"name": "reps", "prompt": "How many reps?", "unit": "reps", "valid_range": [1, 20]}
+              ],
+              "calculate": "1rm_brzycki"
+            }
+          ]
+        },
+        {
+          "name": "Upper Body Strength",
+          "equipment_reminder": "Set up your bench or floor press station.",
+          "tests": [
+            {
+              "id": "floor_press_8rm",
+              "name": "Floor Press 8RM",
+              "voice_prompt": "Floor press 8-rep max. Weight each hand in kilos?",
+              "voice_setup": "Lie on floor, dumbbells at chest. Press up. Floor limits range for shoulder safety.",
+              "input_type": "compound",
+              "fields": [
+                {"name": "weight", "prompt": "Weight each dumbbell in kilos?", "unit": "kg", "valid_range": [2, 50]},
+                {"name": "reps", "prompt": "How many reps?", "unit": "reps", "valid_range": [1, 20]}
+              ],
+              "calculate": "1rm_brzycki"
+            },
+            {
+              "id": "chest_supported_row_8rm",
+              "name": "Chest-Supported Row 8RM",
+              "voice_prompt": "Chest-supported row 8-rep max. Weight each hand?",
+              "voice_setup": "Incline bench, chest down. Row dumbbells to hips.",
+              "input_type": "compound",
+              "fields": [
+                {"name": "weight", "prompt": "Weight each dumbbell?", "unit": "kg", "valid_range": [2, 50]},
+                {"name": "reps", "prompt": "How many reps?", "unit": "reps", "valid_range": [1, 20]}
+              ],
+              "calculate": "1rm_brzycki"
+            },
+            {
+              "id": "landmine_press_8rm",
+              "name": "Landmine Press 8RM",
+              "voice_prompt": "Landmine or single-arm press 8-rep max. Weight in kilos?",
+              "voice_setup": "Bar in landmine or corner. One hand at end. Staggered stance. Press up following the arc. Say form for full cues.",
+              "input_type": "compound",
+              "fields": [
+                {"name": "weight", "prompt": "Weight in kilos?", "unit": "kg", "valid_range": [5, 60]},
+                {"name": "reps", "prompt": "How many reps?", "unit": "reps", "valid_range": [1, 20]}
+              ],
+              "calculate": "1rm_brzycki"
+            }
+          ]
+        },
+        {
+          "name": "Bodyweight Strength",
+          "equipment_reminder": "Pull-up bar needed. Can use band assistance.",
+          "tests": [
+            {
+              "id": "pushups_max",
+              "name": "Push-ups Max",
+              "voice_prompt": "Push-ups to failure. How many with good form?",
+              "voice_setup": "Full range of motion. Chest to floor, arms locked out. Stop when form breaks.",
+              "unit": "reps",
+              "input_type": "numeric",
+              "valid_range": [0, 100]
+            },
+            {
+              "id": "pullups_max",
+              "name": "Pull-ups Max",
+              "voice_prompt": "Pull-ups to failure. How many? Zero is fine. Note if assisted.",
+              "voice_setup": "Full hang to chin over bar. Can use band assistance - note the band used.",
+              "unit": "reps",
+              "input_type": "numeric",
+              "valid_range": [0, 50]
+            },
+            {
+              "id": "inverted_rows_max",
+              "name": "Inverted Rows Max",
+              "voice_prompt": "Inverted rows to failure. How many?",
+              "voice_setup": "Bar at waist height, body straight, pull chest to bar.",
+              "unit": "reps",
+              "input_type": "numeric",
+              "valid_range": [0, 50]
+            }
+          ]
+        },
+        {
+          "name": "Endurance Holds",
+          "equipment_reminder": "I'll time these holds. Say go when ready, stop or fell when done.",
+          "tests": [
+            {
+              "id": "plank_hold",
+              "name": "Plank Hold",
+              "voice_prompt": "Front plank. Max hold. Say go when ready.",
+              "voice_setup": "Forearms and toes. Body straight. No sagging or piking.",
+              "unit": "seconds",
+              "input_type": "timed",
+              "max_time": 180,
+              "beep_intervals": [30, 60, 90, 120]
+            },
+            {
+              "id": "side_plank_right",
+              "name": "Side Plank Right",
+              "voice_prompt": "Side plank, right side. Say go when ready.",
+              "voice_setup": "Elbow under shoulder, feet stacked, hips high.",
+              "unit": "seconds",
+              "input_type": "timed",
+              "max_time": 90,
+              "beep_intervals": [30, 60]
+            },
+            {
+              "id": "side_plank_left",
+              "name": "Side Plank Left",
+              "voice_prompt": "Side plank, left side. Say go when ready.",
+              "unit": "seconds",
+              "input_type": "timed",
+              "max_time": 90,
+              "beep_intervals": [30, 60],
+              "lsi_pair": "side_plank_right"
+            },
+            {
+              "id": "wall_sit",
+              "name": "Wall Sit",
+              "voice_prompt": "Wall sit. Thighs parallel. Say go when ready.",
+              "voice_setup": "Back flat on wall, thighs parallel to floor, 90-degree knee bend.",
+              "unit": "seconds",
+              "input_type": "timed",
+              "max_time": 180,
+              "beep_intervals": [30, 60, 90, 120]
+            },
+            {
+              "id": "dead_hang",
+              "name": "Dead Hang",
+              "voice_prompt": "Dead hang from bar. Say go when ready.",
+              "voice_setup": "Full hang, arms straight, shoulders packed.",
+              "unit": "seconds",
+              "input_type": "timed",
+              "max_time": 120,
+              "beep_intervals": [30, 60, 90]
+            }
+          ]
+        },
+        {
+          "name": "Grip Strength",
+          "equipment_reminder": "Grip dynamometer if available, otherwise estimate.",
+          "tests": [
+            {
+              "id": "grip_strength_right",
+              "name": "Grip Strength Right",
+              "voice_prompt": "Grip strength, right hand. Kilograms or say skip if no dynamometer.",
+              "voice_setup": "Squeeze dynamometer maximally. Best of 3 attempts.",
+              "unit": "kg",
+              "input_type": "numeric",
+              "valid_range": [10, 100],
+              "optional": true
+            },
+            {
+              "id": "grip_strength_left",
+              "name": "Grip Strength Left",
+              "voice_prompt": "Grip strength, left hand. Kilograms?",
+              "unit": "kg",
+              "input_type": "numeric",
+              "valid_range": [10, 100],
+              "optional": true,
+              "lsi_pair": "grip_strength_right"
+            }
+          ]
+        },
+        {
+          "name": "Calf Strength (Rehab)",
+          "equipment_reminder": "Find a step and wall for support.",
+          "tests": [
+            {
+              "id": "heel_raises_right",
+              "name": "Single Leg Heel Raises Right",
+              "voice_prompt": "Single leg heel raises, right foot. How many at 2-second tempo?",
+              "voice_setup": "Stand on step edge, right foot only. Rise fully, lower below step. 2-second up, 2-second down. Count until form breaks.",
+              "unit": "reps",
+              "input_type": "numeric",
+              "valid_range": [0, 50],
+              "gate_test": "gate_1"
+            },
+            {
+              "id": "heel_raises_left",
+              "name": "Single Leg Heel Raises Left",
+              "voice_prompt": "Single leg heel raises, left foot. How many?",
+              "unit": "reps",
+              "input_type": "numeric",
+              "valid_range": [0, 50],
+              "gate_test": "gate_1",
+              "lsi_pair": "heel_raises_right"
+            }
+          ]
+        },
+        {
+          "name": "Y-Balance Test",
+          "equipment_reminder": "Clear floor space. Tape measure or Y-Balance kit. Measure leg length from hip to ankle first.",
+          "tests": [
+            {
+              "id": "leg_length_right",
+              "name": "Right Leg Length",
+              "voice_prompt": "Right leg length in centimeters? Hip bone to ankle.",
+              "voice_setup": "Measure from ASIS, the bony point at front of hip, down to the ankle bone. This normalizes your reach scores.",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [70, 110]
+            },
+            {
+              "id": "leg_length_left",
+              "name": "Left Leg Length",
+              "voice_prompt": "Left leg length in centimeters?",
+              "unit": "cm",
+              "input_type": "numeric",
+              "valid_range": [70, 110]
+            },
+            {
+              "id": "ybal_right_anterior",
+              "name": "Y-Balance Right Anterior",
+              "voice_prompt": "Y-Balance, standing on right leg, reach forward. Best of 3 in centimeters?",
+              "voice_setup": "Stance foot toe at center point. Hands on hips. Reach forward with left foot as far as possible. Tap lightly, return without losing balance. Measure from center to tap point. Best of 3.",
+              "unit": "cm",
+              "input_type": "multi_attempt",
+              "attempts": 3,
+              "record": "best",
+              "valid_range": [30, 120],
+              "gate_test": "gate_2"
+            },
+            {
+              "id": "ybal_right_posteromedial",
+              "name": "Y-Balance Right Posteromedial",
+              "voice_prompt": "Y-Balance, right leg, reach back and inside. Best of 3?",
+              "voice_setup": "Same stance. Reach back and to the inside, behind your standing leg. Best of 3.",
+              "unit": "cm",
+              "input_type": "multi_attempt",
+              "attempts": 3,
+              "record": "best",
+              "valid_range": [30, 140],
+              "gate_test": "gate_2"
+            },
+            {
+              "id": "ybal_right_posterolateral",
+              "name": "Y-Balance Right Posterolateral",
+              "voice_prompt": "Y-Balance, right leg, reach back and outside. Best of 3?",
+              "voice_setup": "Same stance. Reach back and to the outside. Best of 3.",
+              "unit": "cm",
+              "input_type": "multi_attempt",
+              "attempts": 3,
+              "record": "best",
+              "valid_range": [30, 140],
+              "gate_test": "gate_2"
+            },
+            {
+              "id": "ybal_left_anterior",
+              "name": "Y-Balance Left Anterior",
+              "voice_prompt": "Y-Balance, standing on left leg, reach forward. Best of 3?",
+              "voice_setup": "Now left leg. Toe at center. Reach forward with right foot. Measure center to tap. Best of 3.",
+              "unit": "cm",
+              "input_type": "multi_attempt",
+              "attempts": 3,
+              "record": "best",
+              "valid_range": [30, 120],
+              "gate_test": "gate_2",
+              "lsi_pair": "ybal_right_anterior"
+            },
+            {
+              "id": "ybal_left_posteromedial",
+              "name": "Y-Balance Left Posteromedial",
+              "voice_prompt": "Y-Balance, left leg, reach back and inside. Best of 3?",
+              "unit": "cm",
+              "input_type": "multi_attempt",
+              "attempts": 3,
+              "record": "best",
+              "valid_range": [30, 140],
+              "gate_test": "gate_2",
+              "lsi_pair": "ybal_right_posteromedial"
+            },
+            {
+              "id": "ybal_left_posterolateral",
+              "name": "Y-Balance Left Posterolateral",
+              "voice_prompt": "Y-Balance, left leg, reach back and outside. Best of 3?",
+              "unit": "cm",
+              "input_type": "multi_attempt",
+              "attempts": 3,
+              "record": "best",
+              "valid_range": [30, 140],
+              "gate_test": "gate_2",
+              "lsi_pair": "ybal_right_posterolateral"
+            }
+          ]
+        }
+      ]
+    },
+
+    "3": {
+      "name": "Cardio & Endurance",
+      "aliases": ["cardio", "third one", "endurance", "session 3", "session three", "three"],
+      "duration_minutes": 40,
+      "equipment": ["heart rate monitor", "bike or treadmill", "stopwatch", "step"],
+      "sections": [
+        {
+          "name": "Resting Cardio",
+          "equipment_reminder": "Sit quietly for 5 minutes before these tests.",
+          "tests": [
+            {
+              "id": "resting_hr_seated",
+              "name": "Resting HR Seated",
+              "voice_prompt": "Resting heart rate after 5 minutes seated. BPM?",
+              "voice_setup": "Sit quietly, no stimulants. Wait 5 minutes, then count or use device.",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [35, 120],
+              "lower_is_better": true
+            },
+            {
+              "id": "blood_pressure_resting",
+              "name": "Blood Pressure Resting",
+              "voice_prompt": "Resting blood pressure. Systolic first?",
+              "input_type": "compound",
+              "fields": [
+                {"name": "systolic", "prompt": "Systolic?", "unit": "mmHg", "valid_range": [70, 200]},
+                {"name": "diastolic", "prompt": "Diastolic?", "unit": "mmHg", "valid_range": [40, 130]}
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Zone 2 Test",
+          "equipment_reminder": "20-minute bike or walk. Keep HR monitor on.",
+          "tests": [
+            {
+              "id": "zone2_test_type",
+              "name": "Zone 2 Activity Type",
+              "voice_prompt": "Zone 2 test. Bike or walk?",
+              "input_type": "categorical",
+              "options": ["bike", "walk", "elliptical", "rowing"]
+            },
+            {
+              "id": "zone2_hr_5min",
+              "name": "Zone 2 HR at 5 Minutes",
+              "voice_prompt": "Heart rate at 5 minutes?",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [60, 180]
+            },
+            {
+              "id": "zone2_hr_10min",
+              "name": "Zone 2 HR at 10 Minutes",
+              "voice_prompt": "Heart rate at 10 minutes?",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [60, 180]
+            },
+            {
+              "id": "zone2_hr_15min",
+              "name": "Zone 2 HR at 15 Minutes",
+              "voice_prompt": "Heart rate at 15 minutes?",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [60, 180]
+            },
+            {
+              "id": "zone2_hr_20min",
+              "name": "Zone 2 HR at 20 Minutes",
+              "voice_prompt": "Heart rate at 20 minutes?",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [60, 180]
+            },
+            {
+              "id": "zone2_rpe",
+              "name": "Zone 2 RPE",
+              "voice_prompt": "Rate of perceived exertion? One to ten.",
+              "voice_setup": "How hard did that feel? 1 is sitting, 10 is max effort.",
+              "unit": "score",
+              "input_type": "numeric",
+              "valid_range": [1, 10]
+            },
+            {
+              "id": "zone2_could_talk",
+              "name": "Zone 2 Talk Test",
+              "voice_prompt": "Could you hold a conversation? Yes or no.",
+              "input_type": "boolean"
+            }
+          ]
+        },
+        {
+          "name": "Step Test",
+          "equipment_reminder": "Standard step, 8-inch height. 3 minutes up and down.",
+          "tests": [
+            {
+              "id": "step_test_hr_peak",
+              "name": "Step Test HR Peak",
+              "voice_prompt": "3-minute step test. Heart rate immediately after?",
+              "voice_setup": "Step up and down at 96 steps per minute for 3 minutes. Record HR immediately after.",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [80, 200]
+            },
+            {
+              "id": "step_test_hr_1min",
+              "name": "Step Test HR at 1 Minute Recovery",
+              "voice_prompt": "Heart rate after 1 minute of rest?",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [60, 180]
+            },
+            {
+              "id": "hr_recovery_drop",
+              "name": "HR Recovery Drop",
+              "voice_prompt": "I'll calculate the drop. Moving on.",
+              "input_type": "calculated",
+              "formula": "step_test_hr_peak - step_test_hr_1min",
+              "unit": "bpm"
+            }
+          ]
+        },
+        {
+          "name": "Walk Test",
+          "equipment_reminder": "Find a flat 1km route or track.",
+          "tests": [
+            {
+              "id": "walk_1km_time",
+              "name": "1km Walk Time",
+              "voice_prompt": "1 kilometer fast walk. Time in minutes and seconds?",
+              "voice_setup": "Walk as fast as you can for 1km. Time yourself.",
+              "input_type": "duration",
+              "format": "mm:ss"
+            },
+            {
+              "id": "walk_1km_hr_avg",
+              "name": "1km Walk Average HR",
+              "voice_prompt": "Average heart rate during the walk?",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [60, 180]
+            },
+            {
+              "id": "walk_1km_hr_peak",
+              "name": "1km Walk Peak HR",
+              "voice_prompt": "Peak heart rate during the walk?",
+              "unit": "bpm",
+              "input_type": "numeric",
+              "valid_range": [60, 200]
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  "quick_protocols": {
+    "gate_1_check": {
+      "name": "GATE 1 Quick Check",
+      "aliases": ["gate 1", "gate one", "running readiness"],
+      "duration_minutes": 15,
+      "tests": [
+        "ankle_dorsiflexion_right",
+        "ankle_dorsiflexion_left",
+        "single_leg_foam_right",
+        "single_leg_foam_left",
+        "heel_raises_right",
+        "heel_raises_left"
+      ]
+    },
+    "morning_movement": {
+      "name": "Morning Movement Screen",
+      "aliases": ["morning check", "morning screen"],
+      "duration_minutes": 5,
+      "tests": [
+        "ankle_pain_worst_24h",
+        "fms_deep_squat",
+        "single_leg_foam_right",
+        "single_leg_foam_left"
+      ]
+    }
+  }
+}

@@ -1,0 +1,917 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created": "2026-01-19",
+    "author": "Claude (Opus 4.5)",
+    "purpose": "ATLAS Morning Protocol form guides for voice-guided execution",
+    "personality": "Lethal Gentleman - direct, efficient, no-nonsense coaching",
+    "usage_notes": {
+      "voice_response": "Cues are designed to be spoken via TTS. Keep concise and actionable.",
+      "pain_rule": "ALL exercises: if pain greater than 3 out of 10, stop and modify or skip."
+    }
+  },
+
+  "exercises": {
+
+    "plantar_fascia_ball_roll": {
+      "name": "Plantar Fascia Ball Roll",
+      "aliases": ["ball roll", "foot roll", "fascia roll", "golf ball roll"],
+      "category": "feet_plantar_fascia",
+      "equipment": ["golf ball", "lacrosse ball", "tennis ball"],
+      "muscles_primary": ["plantar fascia"],
+      "muscles_secondary": ["intrinsic foot muscles"],
+
+      "setup": "Sit in a chair with feet flat on the floor. Place a golf ball or lacrosse ball under the arch of one foot.",
+
+      "execution": [
+        "Apply moderate pressure through your foot onto the ball.",
+        "Slowly roll the ball from just below the ball of your foot to just before your heel.",
+        "Focus on tender spots. Hold for 10-20 seconds on tight areas.",
+        "Continue rolling for 2-3 minutes per foot."
+      ],
+
+      "cues": [
+        "Gentle pressure. Not pain.",
+        "Roll slowly. This is not a race.",
+        "Focus on the arch. Avoid the heel bone.",
+        "Breathe through tender spots."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Applying too much pressure or rolling aggressively.",
+          "fix": "Gentle and slow. Too much pressure increases inflammation. You want to break up adhesions, not create new ones."
+        },
+        {
+          "mistake": "Rolling directly on the heel bone.",
+          "fix": "Stay on soft tissue. Stop just before the heel."
+        },
+        {
+          "mistake": "Rushing through the exercise.",
+          "fix": "Slow, methodical rolling is more effective. Spend time on tight spots."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Use a tennis ball for softer pressure.",
+        "harder": "Stand and apply bodyweight through the ball. Or use a frozen golf ball for combined ice therapy."
+      }
+    },
+
+    "toe_yoga": {
+      "name": "Toe Yoga",
+      "aliases": ["toe raises", "toe independence", "big toe lifts"],
+      "category": "feet_plantar_fascia",
+      "equipment": ["none"],
+      "muscles_primary": ["intrinsic foot muscles", "extensor hallucis longus"],
+      "muscles_secondary": ["extensor digitorum"],
+
+      "setup": "Sit or stand with feet flat on the floor. Weight distributed evenly.",
+
+      "execution": [
+        "Lift only your big toe while keeping the other four toes pressed into the floor.",
+        "Lower the big toe, then lift only the four smaller toes while keeping the big toe down.",
+        "Alternate between these two movements.",
+        "Perform 15 repetitions of each movement per foot."
+      ],
+
+      "cues": [
+        "Big toe up, others down. Then switch.",
+        "Keep the ball of foot grounded.",
+        "Control is the goal. Not speed.",
+        "If stuck, tap the top of your big toe to activate it."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Lifting all toes together instead of isolating.",
+          "fix": "Start by physically pressing down the toes that should stay down. Build the mind-muscle connection."
+        },
+        {
+          "mistake": "Allowing the ball of the foot to lift.",
+          "fix": "Keep the forefoot anchored. Only the toes move."
+        },
+        {
+          "mistake": "Getting frustrated when it doesn't work immediately.",
+          "fix": "This is a neuromuscular exercise. Proprioception improves with practice."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Rub the top of each toe before the movement to stimulate the muscles.",
+        "harder": "Perform while standing with full bodyweight through the foot."
+      }
+    },
+
+    "short_foot_exercise": {
+      "name": "Short Foot Exercise",
+      "aliases": ["short foot", "foot doming", "arch activation"],
+      "category": "feet_plantar_fascia",
+      "equipment": ["none"],
+      "muscles_primary": ["abductor hallucis", "flexor digitorum brevis", "quadratus plantae"],
+      "muscles_secondary": ["intrinsic foot muscles"],
+
+      "setup": "Sit with feet flat on the floor, shoulder-width apart. Establish a tripod position: weight on big toe ball, little toe ball, and heel.",
+
+      "execution": [
+        "Lift all toes off the ground while keeping the tripod points grounded.",
+        "While toes are raised, feel your arch naturally lift.",
+        "Slowly lower your toes back down while actively pulling the ball of your foot toward your heel.",
+        "Maintain the raised arch position with toes flat. Do not curl toes."
+      ],
+
+      "cues": [
+        "Dome the arch. Do not curl the toes.",
+        "Pull metatarsals toward heel.",
+        "Keep toes flat and straight.",
+        "Hold for 30 seconds. Breathe normally."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Curling or gripping with the toes.",
+          "fix": "Toes stay flat and long. The movement comes from the intrinsic foot muscles pulling the ball of foot toward the heel."
+        },
+        {
+          "mistake": "Using calf muscles to create the arch.",
+          "fix": "Keep calves relaxed. The work is all in the foot."
+        },
+        {
+          "mistake": "Losing the arch when lowering toes.",
+          "fix": "Maintain active contraction as you lower. The arch should stay elevated."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Keep toes slightly lifted throughout. Focus on the pulling sensation.",
+        "harder": "Progress to single-leg standing while maintaining the short foot position."
+      }
+    },
+
+    "calf_stretch_wall": {
+      "name": "Calf Stretch (Wall)",
+      "aliases": ["wall calf stretch", "gastrocnemius stretch", "calf stretch", "gastroc stretch"],
+      "category": "feet_plantar_fascia",
+      "equipment": ["wall"],
+      "muscles_primary": ["gastrocnemius", "soleus"],
+      "muscles_secondary": ["achilles tendon"],
+
+      "setup": "Stand facing a wall, arm's length away. Step one foot back into a lunge position. Hands on wall at shoulder height.",
+
+      "execution": [
+        "For gastrocnemius: Keep back leg straight, heel on floor. Lean forward until you feel stretch in upper calf.",
+        "For soleus: Bend the back knee slightly while keeping heel down. Feel stretch in lower calf.",
+        "Hold each position for 30 seconds.",
+        "Repeat 3 times per leg, per variation."
+      ],
+
+      "cues": [
+        "Straight knee targets upper calf.",
+        "Bent knee targets lower calf.",
+        "Heel stays glued to floor.",
+        "Lean until stretch. No pain."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Back heel lifting off the floor.",
+          "fix": "Reduce forward lean. Only go as far as you can with heel down."
+        },
+        {
+          "mistake": "Bending the back knee during gastrocnemius stretch.",
+          "fix": "Lock out that back knee completely for the straight-leg variation."
+        },
+        {
+          "mistake": "Bouncing or forcing the stretch.",
+          "fix": "Static hold. Breathe into the stretch. Let it release naturally."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Reduce forward lean. Smaller range is fine to start.",
+        "harder": "Elevate front foot on a step for deeper stretch. Or add a calf raise between stretches."
+      }
+    },
+
+    "ankle_cars": {
+      "name": "Ankle CARs (Controlled Articular Rotations)",
+      "aliases": ["ankle cars", "ankle circles", "ankle rotations", "controlled articular rotations"],
+      "category": "ankle_mobility",
+      "equipment": ["none"],
+      "muscles_primary": ["ankle joint complex"],
+      "muscles_secondary": ["tibialis anterior", "peroneals", "gastrocnemius"],
+
+      "setup": "Sit or stand. Lift one foot off the ground. Keep the leg still from the knee up.",
+
+      "execution": [
+        "Slowly trace the largest possible circle with your toes.",
+        "Move through full plantarflexion, inversion, dorsiflexion, and eversion.",
+        "Use muscular control, not momentum. Take 5-10 seconds per full rotation.",
+        "Complete 3-5 circles in each direction per ankle."
+      ],
+
+      "cues": [
+        "Biggest circle possible.",
+        "Slow and controlled. No momentum.",
+        "Isolate the ankle. Knee stays still.",
+        "Explore the edges of your range."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Moving too fast or using momentum.",
+          "fix": "CARs are about control at end ranges. Slower is harder and more effective."
+        },
+        {
+          "mistake": "Letting the knee or hip move to cheat range of motion.",
+          "fix": "Isolate the ankle completely. The movement is ONLY at the ankle joint."
+        },
+        {
+          "mistake": "Making small, lazy circles.",
+          "fix": "Push into the fullest range at every point. Expand your circle over time."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Seated with foot hanging freely removes balance demands.",
+        "harder": "Add 50-100% tension. Act as if someone is resisting the movement with their hands."
+      }
+    },
+
+    "banded_ankle_mobilization": {
+      "name": "Banded Ankle Mobilization (Posterior Talar Glide)",
+      "aliases": ["banded ankle mob", "ankle mob", "mwm ankle", "talar glide"],
+      "category": "ankle_mobility",
+      "equipment": ["resistance band", "sturdy anchor point"],
+      "muscles_primary": ["talocrural joint"],
+      "muscles_secondary": ["gastrocnemius", "soleus"],
+
+      "setup": "Anchor a strong resistance band low to the ground. Loop it around the front of your ankle, just below the ankle bones. Face away from the anchor with band pulling backward.",
+
+      "execution": [
+        "Place foot on ground in half-kneeling or split stance position.",
+        "The band should be pulling the talus posteriorly (back toward the anchor).",
+        "Keeping heel down, drive your knee forward over your toes.",
+        "Hold end range for 2-3 seconds, then return. Perform 10-15 repetitions."
+      ],
+
+      "cues": [
+        "Band pulls the ankle bone back.",
+        "Drive knee forward over toes.",
+        "Heel stays glued to floor.",
+        "Feel the front of ankle open up."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Band placed too high on the shin instead of at the ankle joint.",
+          "fix": "Band goes just below the ankle bones, directly on the talus."
+        },
+        {
+          "mistake": "Heel lifting as knee drives forward.",
+          "fix": "Reduce depth. Only go as far as you can with heel down."
+        },
+        {
+          "mistake": "Using a band that is too light.",
+          "fix": "You need substantial resistance to create the posterior glide. Use a thick band."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Use a lighter band or reduce forward knee drive.",
+        "harder": "Add weight by holding a kettlebell or dumbbell in goblet position."
+      }
+    },
+
+    "eccentric_calf_raises": {
+      "name": "Eccentric Calf Raises",
+      "aliases": ["eccentric calf raise", "alfredson heel drops", "heel drops", "calf eccentrics"],
+      "category": "ankle_mobility",
+      "equipment": ["step", "stair", "elevated surface"],
+      "muscles_primary": ["gastrocnemius", "soleus"],
+      "muscles_secondary": ["achilles tendon"],
+
+      "setup": "Stand on a step with heels hanging off the edge. Use a wall or rail for balance. Start in the raised position (on tiptoes).",
+
+      "execution": [
+        "Use BOTH legs to raise up onto tiptoes (concentric phase is easy).",
+        "Shift weight to ONE leg and slowly lower that heel below the step level.",
+        "Take 3-5 seconds to lower (the eccentric phase is the work).",
+        "Return to start using both legs. Perform 3 sets of 15 reps per leg."
+      ],
+
+      "cues": [
+        "Both legs up. One leg down.",
+        "Slow controlled lower. 3 to 5 seconds.",
+        "Drop heel below step level.",
+        "Do not bounce at the bottom."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Lowering too fast.",
+          "fix": "Count 3-5 seconds on every single rep. The slow eccentric is the entire point."
+        },
+        {
+          "mistake": "Not going through full range of motion.",
+          "fix": "Lower until heel is below the step. Full stretch at bottom."
+        },
+        {
+          "mistake": "Using the same leg to raise as to lower.",
+          "fix": "Bilateral concentric, unilateral eccentric. This is the Alfredson protocol."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Perform bilateral eccentrics. Both legs lower together.",
+        "harder": "Add load by holding dumbbells. Or perform bent-knee version for soleus emphasis."
+      }
+    },
+
+    "ankle_alphabet": {
+      "name": "Ankle Alphabet",
+      "aliases": ["ankle abcs", "toe writing", "foot alphabet"],
+      "category": "ankle_mobility",
+      "equipment": ["none"],
+      "muscles_primary": ["tibialis anterior", "peroneals"],
+      "muscles_secondary": ["ankle joint complex", "intrinsic foot muscles"],
+
+      "setup": "Sit or lie down with one leg extended. Foot should hang freely without touching the ground.",
+
+      "execution": [
+        "Use your big toe as a pen to trace each letter of the alphabet in the air.",
+        "Make letters as large as possible to maximize range of motion.",
+        "Move only from the ankle. Keep shin and calf still.",
+        "Complete the entire alphabet per foot."
+      ],
+
+      "cues": [
+        "Big toe is your pen.",
+        "Large letters. Full range.",
+        "Move from the ankle only.",
+        "No rushing. Each letter counts."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Making tiny, lazy letters.",
+          "fix": "Exaggerate each letter. Larger movements mean more mobility work."
+        },
+        {
+          "mistake": "Moving the entire leg instead of isolating the ankle.",
+          "fix": "Keep the shin completely still. All movement comes from the ankle down."
+        },
+        {
+          "mistake": "Rushing through the alphabet.",
+          "fix": "This is rehabilitation, not a race. Quality over speed."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Sit with leg supported. Less demand on hip flexors.",
+        "harder": "Write in cursive. Or try lowercase and uppercase separately."
+      }
+    },
+
+    "cat_cow": {
+      "name": "Cat-Cow",
+      "aliases": ["cat cow", "cat-cow", "spinal wave", "cat camel"],
+      "category": "lower_back_hips",
+      "equipment": ["mat or soft surface"],
+      "muscles_primary": ["erector spinae", "rectus abdominis"],
+      "muscles_secondary": ["hip flexors", "multifidus", "obliques"],
+
+      "setup": "Start on all fours. Hands directly under shoulders, knees directly under hips. Spine in neutral.",
+
+      "execution": [
+        "COW: Inhale, drop belly toward floor, lift chest and tailbone, gaze forward.",
+        "CAT: Exhale, round spine toward ceiling, tuck chin to chest, tuck tailbone.",
+        "Flow smoothly between positions with your breath.",
+        "Perform 7-10 cycles."
+      ],
+
+      "cues": [
+        "Inhale for cow. Exhale for cat.",
+        "Move like a wave through your spine.",
+        "Don't fling your head back.",
+        "Smooth and controlled. No jerky movements."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Throwing head back during cow pose.",
+          "fix": "Keep neck long and in line with spine. Gentle gaze forward, not at ceiling."
+        },
+        {
+          "mistake": "Only moving at one hinge point instead of the whole spine.",
+          "fix": "Feel each vertebra move sequentially. The wave should travel through entire spine."
+        },
+        {
+          "mistake": "Holding breath.",
+          "fix": "Breath drives the movement. Inhale to extension, exhale to flexion."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Reduce range of motion. Smaller movements are fine.",
+        "harder": "Add a pause at end range of each position. Or perform seated version for different angle."
+      }
+    },
+
+    "dead_bug": {
+      "name": "Dead Bug",
+      "aliases": ["dead bug", "deadbug", "supine alternating reach"],
+      "category": "lower_back_hips",
+      "equipment": ["mat or soft surface"],
+      "muscles_primary": ["transverse abdominis", "rectus abdominis"],
+      "muscles_secondary": ["obliques", "multifidus", "hip flexors"],
+
+      "setup": "Lie on back. Knees bent at 90 degrees, thighs perpendicular to floor. Arms straight up toward ceiling, palms facing each other. Lower back pressed flat into floor.",
+
+      "execution": [
+        "Brace core by drawing belly button toward spine.",
+        "Simultaneously extend right arm overhead and left leg forward, lowering both toward floor.",
+        "Keep lower back pressed into floor throughout.",
+        "Return to start and repeat with opposite arm and leg. That's one rep."
+      ],
+
+      "cues": [
+        "Back stays glued to floor.",
+        "Opposite arm, opposite leg.",
+        "Slow and controlled. No rushing.",
+        "Exhale as you extend."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Lower back arching off the floor.",
+          "fix": "Reduce range of motion. Don't extend as far until you can maintain flat back."
+        },
+        {
+          "mistake": "Moving too fast.",
+          "fix": "Speed kills form. Slower movement means more core work."
+        },
+        {
+          "mistake": "Holding breath.",
+          "fix": "Exhale as you extend limbs. Inhale as you return to start."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Move only legs while arms stay up. Or move only arms while legs stay in tabletop.",
+        "harder": "Add resistance band around feet. Or hold light weight in hands."
+      }
+    },
+
+    "hip_flexor_stretch": {
+      "name": "Hip Flexor Stretch",
+      "aliases": ["hip flexor stretch", "kneeling hip flexor", "psoas stretch", "lunge stretch"],
+      "category": "lower_back_hips",
+      "equipment": ["mat or soft surface for knee"],
+      "muscles_primary": ["iliopsoas", "rectus femoris"],
+      "muscles_secondary": ["hip flexor group"],
+
+      "setup": "Half-kneeling position. Front foot flat on floor, knee at 90 degrees. Back knee on mat directly under hip. Torso tall.",
+
+      "execution": [
+        "Tuck pelvis under (posterior pelvic tilt) by squeezing the glute of the back leg.",
+        "Gently shift weight forward while maintaining the pelvic tilt.",
+        "Feel stretch in front of back hip. Hold 30 seconds.",
+        "Repeat 2-3 times per side."
+      ],
+
+      "cues": [
+        "Tuck tailbone under first.",
+        "Squeeze back glute hard.",
+        "Stay tall. Do not lean forward.",
+        "Shift forward. Not down."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Leaning torso forward to feel the stretch.",
+          "fix": "Stay vertical. The stretch comes from the posterior pelvic tilt and forward shift, not from leaning."
+        },
+        {
+          "mistake": "Anterior pelvic tilt (arching lower back).",
+          "fix": "Tuck pelvis under aggressively. Squeeze that back glute. This is the key to the stretch."
+        },
+        {
+          "mistake": "Knee sliding forward past toes.",
+          "fix": "Maintain a stable front shin angle. Shift hips forward, don't collapse into front knee."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Keep hands on front thigh for balance support.",
+        "harder": "Reach same-side arm overhead for increased stretch. Or elevate back foot on a couch for couch stretch variation."
+      }
+    },
+
+    "glute_bridge": {
+      "name": "Glute Bridge",
+      "aliases": ["glute bridge", "bridge", "hip bridge", "floor bridge"],
+      "category": "lower_back_hips",
+      "equipment": ["mat or soft surface"],
+      "muscles_primary": ["gluteus maximus"],
+      "muscles_secondary": ["hamstrings", "core", "erector spinae"],
+
+      "setup": "Lie on back, knees bent, feet flat on floor hip-width apart. Heels about 6-8 inches from glutes. Arms at sides, palms up.",
+
+      "execution": [
+        "Flatten lower back into floor with a slight posterior pelvic tilt.",
+        "Drive through heels and squeeze glutes to lift hips toward ceiling.",
+        "Raise until body forms straight line from knees to shoulders.",
+        "Hold for 2-3 seconds at top, squeezing glutes hard. Lower with control."
+      ],
+
+      "cues": [
+        "Drive through heels. Not toes.",
+        "Squeeze glutes at the top.",
+        "Straight line from knee to shoulder.",
+        "Don't arch your back at top."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Arching lower back at the top instead of bridging with glutes.",
+          "fix": "Think about bringing ribs toward pelvis. Stop when body is straight, not when back is arched."
+        },
+        {
+          "mistake": "Feeling it in hamstrings instead of glutes.",
+          "fix": "Bring feet closer to glutes. Focus on squeezing glutes before lifting."
+        },
+        {
+          "mistake": "Pushing through toes.",
+          "fix": "Drive through heels. You should be able to lift your toes off the ground."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Reduce range of motion. Don't lift as high.",
+        "harder": "Single leg bridge. Or add band around knees and push out against resistance. Or add a pause at top."
+      }
+    },
+
+    "clamshells": {
+      "name": "Clamshells (Glute Med Activation)",
+      "aliases": ["clamshell", "clamshells", "clam", "side lying hip abduction"],
+      "category": "lower_back_hips",
+      "equipment": ["mat or soft surface", "optional: mini band"],
+      "muscles_primary": ["gluteus medius", "gluteus minimus"],
+      "muscles_secondary": ["external hip rotators"],
+
+      "setup": "Lie on side with hips and knees bent at 90 degrees, knees stacked. Head rested on bottom arm. Top hand on hip to monitor for cheating.",
+
+      "execution": [
+        "Keep feet together throughout the movement.",
+        "Rotate top knee toward ceiling as far as possible without letting hips roll backward.",
+        "Pause at top, squeezing glute med.",
+        "Lower with control. Perform 15-20 reps per side."
+      ],
+
+      "cues": [
+        "Feet stay together.",
+        "Rotate from the hip. Not the back.",
+        "Top hand checks for hip roll.",
+        "Slow controlled lift. Pause at top."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Rolling hips backward to cheat more range.",
+          "fix": "Top hand monitors hip. Zero rotation backward. If you can't lift high with stable hips, reduce range."
+        },
+        {
+          "mistake": "Using momentum to swing knee up.",
+          "fix": "Slow and controlled. 2 seconds up, 2 seconds down."
+        },
+        {
+          "mistake": "Not feeling it in the glute med (side of hip).",
+          "fix": "Roll forward slightly so top hand is in front of hip bone. This targets glutes, not hip flexors."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Start with smaller range of motion. Build up over time.",
+        "harder": "Add a mini band above knees for resistance."
+      }
+    },
+
+    "bird_dog": {
+      "name": "Bird-Dog",
+      "aliases": ["bird dog", "birddog", "quadruped reach"],
+      "category": "lower_back_hips",
+      "equipment": ["mat or soft surface"],
+      "muscles_primary": ["erector spinae", "multifidus", "gluteus maximus"],
+      "muscles_secondary": ["transverse abdominis", "obliques", "hamstrings"],
+
+      "setup": "Start on all fours in tabletop position. Hands directly under shoulders, knees directly under hips. Spine in neutral.",
+
+      "execution": [
+        "Brace core. Maintain neutral spine throughout.",
+        "Simultaneously extend right arm forward and left leg backward.",
+        "Keep arm and leg parallel to floor. Hold 2-5 seconds.",
+        "Return to start with control. Repeat with opposite arm and leg."
+      ],
+
+      "cues": [
+        "Opposite arm and leg.",
+        "Reach long. Fingers and toes away from each other.",
+        "No rotation. Hips and shoulders stay level.",
+        "If your water bottle would roll off your back, you're rotating."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Arching lower back when extending leg.",
+          "fix": "Don't lift leg higher than hip level. Focus on reaching long, not high."
+        },
+        {
+          "mistake": "Rotating hips or shoulders.",
+          "fix": "Imagine balancing a water bottle on your lower back. It shouldn't roll off."
+        },
+        {
+          "mistake": "Rushing through repetitions.",
+          "fix": "Quality over quantity. Hold each position for 2-5 seconds with perfect form."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Move only one limb at a time. Arm only, then leg only.",
+        "harder": "Add a pause at end range. Or draw small circles with extended hand and foot."
+      }
+    },
+
+    "doorframe_external_rotation": {
+      "name": "Doorframe External Rotation (Isometric)",
+      "aliases": ["doorframe er", "isometric external rotation", "wall er", "shoulder external rotation"],
+      "category": "shoulder_rehab",
+      "equipment": ["doorframe or wall"],
+      "muscles_primary": ["infraspinatus", "teres minor"],
+      "muscles_secondary": ["posterior deltoid", "rotator cuff"],
+
+      "setup": "Stand INSIDE doorframe facing out. Elbow bent 90 degrees, pinned to side, forearm points forward. Position BACK of wrist (knuckle side) against inside edge of doorframe. Palm faces your body.",
+
+      "execution": [
+        "Try to rotate forearm outward like opening a door. Doorframe blocks the movement.",
+        "Push back of wrist into the frame. 30-40% effort. Gentle sustained push.",
+        "Elbow stays pinned to your side. Don't let it drift.",
+        "Hold for 45 seconds. Breathe normally throughout.",
+        "Rest 15-30 seconds. Repeat second hold."
+      ],
+
+      "cues": [
+        "30 percent effort. Like pressing into a balloon.",
+        "Elbow stays glued to your side.",
+        "Hold. Do not pulse.",
+        "Breathe normally. No holding breath."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Pushing too hard.",
+          "fix": "This is rotator cuff activation, not a strength test. 30-40% effort maximum."
+        },
+        {
+          "mistake": "Elbow drifting away from body.",
+          "fix": "Keep elbow pinned to your side throughout. Consider placing a towel between elbow and ribs."
+        },
+        {
+          "mistake": "Shrugging shoulder up toward ear.",
+          "fix": "Keep shoulder blade down and back. Relaxed shoulder position."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Use a folded towel between wrist and doorframe for comfort.",
+        "harder": "Increase hold time to 30-60 seconds. Or progress to banded external rotation with movement."
+      }
+    },
+
+    "towel_crush": {
+      "name": "Towel Crush (Isometric Internal Rotation)",
+      "aliases": ["towel squeeze", "isometric ir", "internal rotation isometric"],
+      "category": "shoulder_rehab",
+      "equipment": ["rolled towel"],
+      "muscles_primary": ["subscapularis"],
+      "muscles_secondary": ["pectoralis major", "latissimus dorsi"],
+
+      "setup": "Stand or sit with good posture. Roll a towel and place it between your elbow and your side. Elbow bent to 90 degrees.",
+
+      "execution": [
+        "Squeeze the towel between your arm and your body.",
+        "While squeezing, gently press palm toward your stomach.",
+        "Hold for 5-10 seconds at 30-40% effort.",
+        "Perform 6-10 repetitions. Repeat 2-3 times daily."
+      ],
+
+      "cues": [
+        "Squeeze towel. Then rotate inward.",
+        "Elbow stays at 90 degrees.",
+        "Light pressure. Not max effort.",
+        "Shoulder blade down and back."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Letting elbow drift forward.",
+          "fix": "Elbow stays in line with torso. The towel helps keep position honest."
+        },
+        {
+          "mistake": "Using too much force.",
+          "fix": "Isometric activation only. 30-40% max effort."
+        },
+        {
+          "mistake": "Rounding shoulders forward.",
+          "fix": "Stand tall with shoulder blades lightly retracted. Good posture throughout."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Perform seated for better body awareness.",
+        "harder": "Progress to banded internal rotation with controlled movement."
+      }
+    },
+
+    "band_pull_aparts": {
+      "name": "Band Pull-Aparts",
+      "aliases": ["pull aparts", "band pull apart", "banded pull aparts"],
+      "category": "shoulder_rehab",
+      "equipment": ["light resistance band"],
+      "muscles_primary": ["rear deltoids", "rhomboids"],
+      "muscles_secondary": ["trapezius", "rotator cuff"],
+
+      "setup": "Stand tall with feet shoulder-width apart. Hold a light resistance band at arms length in front of you. Hands shoulder-width apart, palms down.",
+
+      "execution": [
+        "Keep arms straight throughout the movement.",
+        "Pull the band apart by squeezing shoulder blades together.",
+        "Continue until band touches chest and arms are out to sides.",
+        "Return with control. Perform 15-20 repetitions."
+      ],
+
+      "cues": [
+        "Squeeze shoulder blades together.",
+        "Arms stay straight. No bending elbows.",
+        "Shoulders down. Not shrugged.",
+        "Control both directions."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Shrugging shoulders up toward ears.",
+          "fix": "Keep shoulders depressed throughout. Think shoulder blades into back pockets."
+        },
+        {
+          "mistake": "Bending elbows to cheat the movement.",
+          "fix": "Arms locked straight. All movement is from the shoulder blades."
+        },
+        {
+          "mistake": "Using too heavy of a band.",
+          "fix": "This is a warm-up and activation exercise. Light band, high reps."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Widen grip on band for less resistance.",
+        "harder": "Narrow grip for more resistance. Or pause at end position for 2-3 seconds."
+      }
+    },
+
+    "scapular_wall_slides": {
+      "name": "Scapular Wall Slides",
+      "aliases": ["wall slides", "wall angels", "serratus slides"],
+      "category": "shoulder_rehab",
+      "equipment": ["wall", "optional: foam roller"],
+      "muscles_primary": ["serratus anterior", "lower trapezius"],
+      "muscles_secondary": ["rhomboids", "rotator cuff"],
+
+      "setup": "Stand with back against wall. Feet about 6 inches from wall. Back of head, upper back, and lower back touching wall. Arms at 90 degrees like a goal post, forearms on wall.",
+
+      "execution": [
+        "Press forearms and backs of hands into the wall.",
+        "Slide arms up the wall while maintaining contact with forearms and hands.",
+        "Reach as high as possible while keeping all contact points.",
+        "Slide back down with control. Perform 10-15 repetitions."
+      ],
+
+      "cues": [
+        "Forearms and hands stay on wall.",
+        "Push upper back away from wall as you slide up.",
+        "Reach. Feel serratus working.",
+        "Don't arch lower back off wall."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Losing contact between arms and wall.",
+          "fix": "Reduce range of motion. Only go as high as you can maintain contact."
+        },
+        {
+          "mistake": "Arching lower back off the wall.",
+          "fix": "Keep core braced. Lower back maintains contact throughout."
+        },
+        {
+          "mistake": "Shrugging shoulders toward ears.",
+          "fix": "Depress shoulder blades. Think shoulders away from ears."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Move away from wall and use a foam roller against it for feedback. More room to move.",
+        "harder": "Add a mini band around wrists and maintain outward tension throughout the slide."
+      }
+    },
+
+    "thoracic_extensions": {
+      "name": "Thoracic Extensions (Foam Roller)",
+      "aliases": ["thoracic extension", "foam roller extension", "t-spine extension", "upper back extension"],
+      "category": "posture_reset",
+      "equipment": ["foam roller"],
+      "muscles_primary": ["thoracic spine"],
+      "muscles_secondary": ["erector spinae", "intercostals"],
+
+      "setup": "Lie on back with foam roller perpendicular under upper back, just below shoulder blades. Knees bent, feet flat on floor. Hands behind head to support neck.",
+
+      "execution": [
+        "Keep chin tucked slightly like holding an egg under chin.",
+        "Let upper back extend over the foam roller. Reach back without forcing.",
+        "Hold for 2-3 breaths. Feel upper back opening.",
+        "Move roller slightly up or down to target different segments. Repeat at 3-4 positions."
+      ],
+
+      "cues": [
+        "Chin stays tucked.",
+        "Extend upper back only. Not lower back.",
+        "Gentle stretch. Not aggressive crunching.",
+        "Breathe into the extension."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Letting head fall back and hyperextending neck.",
+          "fix": "Hands support head. Chin stays tucked. Only upper back extends."
+        },
+        {
+          "mistake": "Placing roller on lower back.",
+          "fix": "Foam roller stays on thoracic spine (upper back). Never on lower back."
+        },
+        {
+          "mistake": "Forcing range of motion.",
+          "fix": "Relax and breathe. Let gravity do the work. Don't push into pain."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Use a softer roller or a rolled towel instead.",
+        "harder": "Extend arms overhead during the stretch to increase the opening."
+      }
+    },
+
+    "chin_tucks": {
+      "name": "Chin Tucks",
+      "aliases": ["chin tuck", "cervical retraction", "neck retraction"],
+      "category": "posture_reset",
+      "equipment": ["none"],
+      "muscles_primary": ["deep cervical flexors"],
+      "muscles_secondary": ["lower cervical extensors", "scalenes"],
+
+      "setup": "Sit or stand tall with shoulders relaxed. Look straight ahead with ears over shoulders. Place a finger on your chin as a reference point.",
+
+      "execution": [
+        "Without moving your finger, pull your chin straight back as if making a double chin.",
+        "Keep looking forward. Don't tilt head up or down.",
+        "Feel gentle stretch at base of skull and back of neck.",
+        "Hold 5-10 seconds. Perform 10-15 repetitions."
+      ],
+
+      "cues": [
+        "Pull chin straight back. Not down.",
+        "Make a double chin.",
+        "Eyes stay level. No tilting.",
+        "Gentle stretch at skull base."
+      ],
+
+      "common_mistakes": [
+        {
+          "mistake": "Tilting head down toward chest.",
+          "fix": "This is a retraction, not flexion. Pull chin straight back on a horizontal plane."
+        },
+        {
+          "mistake": "Using too much force.",
+          "fix": "Gentle movement. You should feel a mild stretch, not strain."
+        },
+        {
+          "mistake": "Holding breath or tensing shoulders.",
+          "fix": "Stay relaxed. Breathe normally. Only the neck moves."
+        }
+      ],
+
+      "modifications": {
+        "easier": "Lie on back with rolled towel under neck. Perform the same retraction motion.",
+        "harder": "Add gentle overpressure with fingers on chin to increase range."
+      }
+    }
+  }
+}

@@ -194,11 +194,18 @@ class SubAgentExecutor:
         self,
         cmd: list[str],
         timeout: int,
+        input_text: Optional[str] = None,
     ) -> tuple[Optional[subprocess.CompletedProcess], Optional[str]]:
         """
         CRITICAL #2: Run subprocess with proper timeout handling and resource cleanup.
 
         Uses Popen to ensure process is killed on timeout (no resource leak).
+        Supports passing input via stdin to avoid ARG_MAX limits (D24).
+
+        Args:
+            cmd: Command to execute
+            timeout: Timeout in seconds
+            input_text: Optional text to pass via stdin
 
         Returns:
             Tuple of (CompletedProcess or None, error message or None)
@@ -206,9 +213,11 @@ class SubAgentExecutor:
         proc = None
         try:
             # Use Popen for explicit control over process lifecycle
+            # Include stdin pipe if we have input to send
             proc = await asyncio.to_thread(
                 lambda: subprocess.Popen(
                     cmd,
+                    stdin=subprocess.PIPE if input_text else None,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     text=True,
@@ -216,9 +225,10 @@ class SubAgentExecutor:
             )
 
             # Wait for completion with timeout
+            # Pass input_text via stdin if provided
             try:
                 stdout, stderr = await asyncio.wait_for(
-                    asyncio.to_thread(proc.communicate),
+                    asyncio.to_thread(proc.communicate, input=input_text),
                     timeout=timeout,
                 )
 
@@ -331,12 +341,12 @@ class SubAgentExecutor:
 
 Task: {task}"""
 
-        # Build command
+        # Build command - prompt passed via stdin to avoid ARG_MAX limits (D24)
         cmd = [
             "claude",
             "-p",  # Print mode (non-interactive, isolated context)
             "--output-format", "text",
-            prompt,
+            # prompt passed via stdin, not as positional arg
         ]
 
         # Wrap with sandbox if enabled and available
@@ -352,7 +362,8 @@ Task: {task}"""
         effective_timeout = timeout or self.timeout
 
         # CRITICAL #2: Use subprocess with proper timeout and cleanup
-        result, error = await self._run_subprocess_with_timeout(cmd, effective_timeout)
+        # Pass prompt via stdin to avoid ARG_MAX limits (D24)
+        result, error = await self._run_subprocess_with_timeout(cmd, effective_timeout, input_text=prompt)
 
         duration_ms = (time.perf_counter() - start) * 1000
 
@@ -380,6 +391,19 @@ Task: {task}"""
             )
 
         raw_output = result.stdout.strip() if result.stdout else ""
+
+        # D38: Detect empty stdout even when exit code is 0
+        if not raw_output:
+            stderr_hint = result.stderr.strip()[:200] if result.stderr else "no stderr"
+            error_msg = f"CLI returned exit code 0 but empty stdout. stderr: {stderr_hint}"
+            logger.error(error_msg)
+            return SubAgentResult(
+                success=False,
+                task=task,
+                output=None,
+                error=error_msg,
+                duration_ms=duration_ms,
+            )
 
         # HIGH #3: Handle multiline output - use lstrip() before checking for JSON
         parsed = None

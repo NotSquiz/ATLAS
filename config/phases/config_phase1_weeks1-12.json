@@ -1,0 +1,551 @@
+{
+  "metadata": {
+    "phase": 1,
+    "name": "Foundation & Rehab",
+    "weeks": "1-12",
+    "version": "1.0",
+    "created": "2026-01-20",
+    "gates": {
+      "entry": "Baseline Assessment Complete",
+      "exit": "GATE 1 - Ready to Run"
+    }
+  },
+
+  "phase_rules": {
+    "running_allowed": false,
+    "hiit_allowed": false,
+    "box_jumps_allowed": false,
+    "max_intensity": "85%",
+    "deload_weeks": [4, 8],
+    "cardio_modality": "cycling_only",
+    "notes": "Focus on movement quality over load. Build habits first."
+  },
+
+  "weekly_targets": {
+    "zone_2_minutes": 120,
+    "zone_2_target_week_12": 150,
+    "strength_sessions": 3,
+    "mobility_minutes_daily": 18,
+    "vigorous_minutes": 0,
+    "notes": "No HIIT in Phase 1. KB swings provide some vigorous HR work within strength sessions."
+  },
+
+  "progression_scheme": {
+    "weeks_1_4": {
+      "name": "Foundation",
+      "focus": "Movement quality, habit building",
+      "strength_intensity": "60-70% estimated capacity",
+      "rep_ranges": "10-12 reps",
+      "rest_periods": "60-90 seconds",
+      "progression": "Add 1-2 reps per week if form is solid"
+    },
+    "weeks_5_8": {
+      "name": "Building",
+      "focus": "Progressive overload begins",
+      "strength_intensity": "70-80% estimated capacity",
+      "rep_ranges": "8-10 reps",
+      "rest_periods": "90-120 seconds",
+      "progression": "Add 2.5-5kg when hitting top of rep range"
+    },
+    "weeks_9_12": {
+      "name": "Consolidation",
+      "focus": "Strength gains, GATE 1 prep",
+      "strength_intensity": "75-85% estimated capacity",
+      "rep_ranges": "6-8 reps",
+      "rest_periods": "120 seconds",
+      "progression": "Test estimated 1RM at week 12"
+    }
+  },
+
+  "deload_protocol": {
+    "weeks": [4, 8],
+    "volume_reduction": "50%",
+    "intensity_reduction": "20%",
+    "structure": "Same exercises, fewer sets (2 instead of 3-4), lighter weight",
+    "purpose": "Recovery, adaptation consolidation, injury prevention"
+  },
+
+  "weekly_schedule": {
+    "monday": {
+      "day_number": 1,
+      "type": "STRENGTH_A",
+      "name": "Lower Body + Posterior Chain",
+      "duration_minutes": 50,
+      "time": "05:55-06:45",
+      "focus": "Hip hinge, squat pattern, ankle stability",
+      "warmup": {
+        "duration": 10,
+        "exercises": [
+          "Cat-Cow x10",
+          "World's Greatest Stretch x5 each",
+          "Ankle circles x10 each",
+          "Bodyweight squats x10",
+          "Glute bridges x10"
+        ]
+      },
+      "main_workout": {
+        "exercises": [
+          {
+            "name": "Single Leg Balance (pillow)",
+            "sets": 3,
+            "reps": "30s each leg",
+            "rest": 30,
+            "notes": "Eyes open week 1-4, progress to eyes closed",
+            "progression": "Add unstable surface or eyes closed"
+          },
+          {
+            "name": "Goblet Squat",
+            "sets": 4,
+            "reps": "8-12",
+            "rest": 90,
+            "notes": "Heels elevated if ankle mobility limited",
+            "progression": "Week 1-4: 8-12 reps, Week 5-8: 8-10 reps heavier, Week 9-12: 6-8 reps"
+          },
+          {
+            "name": "Romanian Deadlift (DB)",
+            "sets": 3,
+            "reps": "10-12",
+            "rest": 90,
+            "notes": "Feel hamstrings stretch, slight knee bend only",
+            "progression": "Increase weight when 12 reps is easy"
+          },
+          {
+            "name": "KB Swings",
+            "sets": 4,
+            "reps": "15",
+            "rest": 60,
+            "notes": "Hip snap, not squat. Provides some Zone 4 HR work.",
+            "progression": "Increase KB weight"
+          },
+          {
+            "name": "Split Squat (Bodyweight/Light DB)",
+            "sets": 3,
+            "reps": "10 each leg",
+            "rest": 60,
+            "notes": "Focus on balance and hip flexor stretch",
+            "progression": "Add dumbbells, then elevate rear foot"
+          },
+          {
+            "name": "Bird-Dog",
+            "sets": 3,
+            "reps": "10 each side",
+            "rest": 45,
+            "notes": "Core braced, no back arch. McGill Big 3 component.",
+            "progression": "Add 2s hold at extension"
+          },
+          {
+            "name": "McGill Curl-Up",
+            "sets": 3,
+            "reps": "10",
+            "rest": 45,
+            "notes": "Hands under lower back. Brace. Lift head/shoulders only. 8-10s holds. McGill Big 3 component.",
+            "progression": "Increase hold duration"
+          },
+          {
+            "name": "Banded Ankle Dorsiflexion Mobilization",
+            "sets": 3,
+            "reps": "10",
+            "rest": 30,
+            "notes": "RIGHT ANKLE ONLY. Band above ankle, drive knee forward over toes. 3s hold at end range. Priority exercise for 4cm deficit.",
+            "progression": "Increase depth of knee drive"
+          },
+          {
+            "name": "Single-Leg RDL (Right Side Priority)",
+            "sets": 3,
+            "reps": "8 each side",
+            "rest": 60,
+            "notes": "RIGHT leg standing first. Light weight. Focus on hip hinge + ankle stability. Keep standing knee slightly pushed out. Addresses compensation patterns.",
+            "progression": "Add light dumbbell"
+          }
+        ]
+      },
+      "cooldown": {
+        "duration": 5,
+        "exercises": [
+          "Pigeon stretch 90s each",
+          "Couch stretch 60s each",
+          "Calf stretch 60s each"
+        ]
+      },
+      "rehab_emphasis": ["ankle_stability", "hip_mobility", "compensation_patterns"],
+      "ice_bath": "NO - strength day"
+    },
+
+    "tuesday": {
+      "day_number": 2,
+      "type": "CARDIO_ZONE2",
+      "name": "Zone 2 Aerobic Base",
+      "duration_minutes": 50,
+      "time": "05:55-06:45",
+      "modality": "Stationary Bike",
+      "hr_target": {
+        "min": 109,
+        "max": 127,
+        "description": "60-70% max HR - conversational pace"
+      },
+      "protocol": {
+        "warmup": "5 min easy spin (Zone 1, <109 bpm)",
+        "main_set": "40 min Zone 2 steady state (109-127 bpm)",
+        "cooldown": "5 min easy spin"
+      },
+      "data_to_log": ["duration", "avg_hr", "max_hr", "avg_power", "avg_cadence", "distance"],
+      "notes": "Watch documentary or audiobook. Make it enjoyable. HR should stay conversational.",
+      "progression": {
+        "weeks_1_4": "40 min main set",
+        "weeks_5_8": "45 min main set",
+        "weeks_9_12": "50 min main set"
+      },
+      "ice_bath": "YES - optimal day, 4+ hours from yesterday's strength"
+    },
+
+    "wednesday": {
+      "day_number": 3,
+      "type": "STRENGTH_B",
+      "name": "Upper Body + Core (Shoulder Rehab Focus)",
+      "duration_minutes": 50,
+      "time": "05:55-06:45",
+      "focus": "Push/pull balance, shoulder repair, core stability",
+      "shoulder_restrictions": [
+        "NO wide-grip pull-ups",
+        "NO upright rows",
+        "Neutral grip pressing only",
+        "Stop if sharp pain in Zone B (deltoid insertion)"
+      ],
+      "warmup": {
+        "duration": 12,
+        "exercises": [
+          "Shoulder painkiller isometrics (doorframe ER 60s x3 at 40-70% MVC - Rio protocol)",
+          "Towel crush (10s x5)",
+          "Cat-Cow x10",
+          "Band pull-aparts x15",
+          "Arm circles x10 each direction"
+        ]
+      },
+      "main_workout": {
+        "exercises": [
+          {
+            "name": "Floor Press (DB)",
+            "sets": 4,
+            "reps": "8-12",
+            "rest": 90,
+            "notes": "Floor stops elbows going too deep - protects shoulder capsule",
+            "progression": "Increase weight when 12 reps achieved"
+          },
+          {
+            "name": "Chest-Supported Row (Incline Bench)",
+            "sets": 4,
+            "reps": "10-12",
+            "rest": 90,
+            "notes": "Squeeze shoulder blades DOWN and back. Protects lower back.",
+            "progression": "Increase weight"
+          },
+          {
+            "name": "Face Pulls (Band or Cable)",
+            "sets": 3,
+            "reps": "15",
+            "rest": 60,
+            "notes": "External rotation at top. Critical for shoulder health.",
+            "progression": "Increase band resistance"
+          },
+          {
+            "name": "Landmine Press (or Kneeling Single-Arm DB Press)",
+            "sets": 3,
+            "reps": "10 each side",
+            "rest": 60,
+            "notes": "Angled pressing is safer for impingement",
+            "progression": "Increase weight"
+          },
+          {
+            "name": "Side-Lying External Rotation (Eccentric)",
+            "sets": 3,
+            "reps": "10 each side",
+            "rest": 45,
+            "notes": "THE HEALER. 1-2kg max. Lift with help, lower SLOWLY (4s)",
+            "progression": "Only increase weight when pain-free"
+          },
+          {
+            "name": "McGill Big 3 Circuit",
+            "sets": 2,
+            "reps": "Curl-up x10, Side plank 30s each, Bird-dog x10 each",
+            "rest": 30,
+            "notes": "Essential for back pain prevention"
+          },
+          {
+            "name": "Pallof Press",
+            "sets": 3,
+            "reps": "12 each side",
+            "rest": 45,
+            "notes": "Anti-rotation core. Keep hips square."
+          }
+        ]
+      },
+      "cooldown": {
+        "duration": 5,
+        "exercises": [
+          "Pec stretch 60s each",
+          "Lat stretch 60s each",
+          "Thoracic spine rotation 60s each"
+        ]
+      },
+      "rehab_emphasis": ["shoulder_repair", "core_stability"],
+      "ice_bath": "NO - strength day"
+    },
+
+    "thursday": {
+      "day_number": 4,
+      "type": "ACTIVE_RECOVERY",
+      "name": "Mobility + Light Zone 2",
+      "duration_minutes": 45,
+      "time": "05:55-06:40",
+      "modality": "Mobility flow + Easy cycling or walking",
+      "hr_target": {
+        "min": 100,
+        "max": 120,
+        "description": "Zone 1-2, truly easy"
+      },
+      "protocol": {
+        "part_a_mobility": {
+          "duration": 20,
+          "exercises": [
+            "World's Greatest Stretch x10 each side",
+            "Deep squat hold - accumulate 2 min",
+            "90/90 hip switches x10",
+            "Thoracic rotations x10 each",
+            "Couch stretch 2 min each side"
+          ]
+        },
+        "part_b_easy_cardio": {
+          "duration": 25,
+          "description": "Easy cycling OR walking with dog/baby",
+          "notes": "TRUE recovery. If fatigued, do NSDR instead."
+        }
+      },
+      "red_day_override": "If RED status, do 20 min NSDR instead of cardio portion",
+      "ice_bath": "YES - optimal recovery day"
+    },
+
+    "friday": {
+      "day_number": 5,
+      "type": "STRENGTH_C",
+      "name": "Full Body + Power Elements",
+      "duration_minutes": 55,
+      "time": "05:55-06:50",
+      "focus": "Compound movements, carrying capacity, functional strength",
+      "notes": "Peak power day - ensure good sleep night before",
+      "warmup": {
+        "duration": 10,
+        "exercises": [
+          "Morning routine if not done",
+          "KB halo x10 each direction",
+          "Goblet squat x10 light",
+          "Hip circles x10 each",
+          "Shoulder dislocates (band) x10"
+        ]
+      },
+      "main_workout": {
+        "exercises": [
+          {
+            "name": "Deadlift (Trap Bar or DB)",
+            "sets": 4,
+            "reps": "5-8",
+            "rest": 120,
+            "notes": "Hip hinge, not squat. Brace core.",
+            "progression": "Work toward heavier loads with good form"
+          },
+          {
+            "name": "Goblet Squat (Heavy)",
+            "sets": 3,
+            "reps": "8",
+            "rest": 90,
+            "notes": "Heavier than Monday, lower reps"
+          },
+          {
+            "name": "KB Clean & Press",
+            "sets": 3,
+            "reps": "6 each side",
+            "rest": 90,
+            "notes": "Power from hips, press from shoulder",
+            "week_1_4_modification": "Substitute Landmine Press if shoulder not ready"
+          },
+          {
+            "name": "Farmers Walk / Suitcase Carry",
+            "sets": 3,
+            "reps": "40m (or 30s)",
+            "rest": 60,
+            "notes": "Suitcase = one hand only, anti-lateral flexion"
+          },
+          {
+            "name": "Turkish Get-Up",
+            "sets": 2,
+            "reps": "3 each side",
+            "rest": 90,
+            "notes": "Start light, focus on each position",
+            "week_1_4_modification": "Half get-up only (to elbow)"
+          },
+          {
+            "name": "Neck Harness or Manual Resistance",
+            "sets": 2,
+            "reps": "15 flexion/extension",
+            "rest": 45,
+            "notes": "Start VERY light. Blueprint standard."
+          },
+          {
+            "name": "Side Plank",
+            "sets": 3,
+            "reps": "30s each side",
+            "rest": 30,
+            "notes": "McGill Big 3 component. Elbow under shoulder. Straight line from head to feet."
+          },
+          {
+            "name": "Inverted Rows (TRX/Bar)",
+            "sets": 3,
+            "reps": "12",
+            "rest": 60,
+            "notes": "Horizontal pulling. Feet on floor, body at angle. Squeeze shoulder blades. Addresses back pulling volume gap.",
+            "progression": "Lower body angle to increase difficulty"
+          },
+          {
+            "name": "Lateral Band Walks",
+            "sets": 3,
+            "reps": "10 steps each direction",
+            "rest": 30,
+            "notes": "Band above knees. Stay low in quarter squat. Burn in glute med = good. Fixes knee valgus pattern.",
+            "progression": "Increase band resistance"
+          }
+        ]
+      },
+      "cooldown": {
+        "duration": 5,
+        "exercises": [
+          "Hip flexor stretch 60s each",
+          "Hamstring stretch 60s each",
+          "Spine decompression hang 60s"
+        ]
+      },
+      "rehab_emphasis": ["functional_strength", "posture", "glute_med_activation"],
+      "ice_bath": "NO - strength day"
+    },
+
+    "saturday": {
+      "day_number": 6,
+      "type": "CARDIO_EXTENDED",
+      "name": "Extended Zone 2 (No HIIT in Phase 1)",
+      "duration_minutes": 60,
+      "time": "Flexible - morning preferred",
+      "modality": "Ruck walk, Cycling, OR Outdoor activity with family",
+      "hr_target": {
+        "min": 109,
+        "max": 127,
+        "description": "Zone 2 throughout - no HIIT spikes"
+      },
+      "protocol_options": {
+        "option_a_ruck_walk": {
+          "description": "50 min Zone 2 ruck walk (PREFERRED for ankle rehab)",
+          "load": "10-15kg backpack",
+          "terrain": "Flat to moderate",
+          "notes": "Great for core/posture. Zero impact. HR 109-127 bpm."
+        },
+        "option_b_brisk_walk": {
+          "description": "50 min Zone 2 incline walk",
+          "treadmill": "10-15% incline OR hilly outdoor route",
+          "notes": "Zero ankle impact. May need incline to reach Zone 2 HR."
+        },
+        "option_c_bike": {
+          "description": "60 min Zone 2 steady state on bike",
+          "warmup": "10 min Zone 1",
+          "main_set": "45 min Zone 2",
+          "cooldown": "5 min Zone 1"
+        },
+        "option_d_family_activity": {
+          "description": "Hike or beach walk with family",
+          "duration": "60-90 min",
+          "intensity": "Conversational throughout",
+          "notes": "Wear Garmin, track HR to ensure Zone 2"
+        }
+      },
+      "hiit_clearance_requirements": [
+        "GATE 1 passed (all criteria met)",
+        "Pain ≤2/10 for 2+ weeks on shoulder AND ankle",
+        "LSI ≥90% on heel raises",
+        "25 single-leg heel raises each side",
+        "30-min brisk walk pain-free"
+      ],
+      "phase_1_note": "NO HIIT/Intervals in Phase 1. Saturday becomes extended Zone 2, not vigorous day. Jogging NOT recommended until walk test passed.",
+      "progression": {
+        "weeks_1_4": "45-50 min Zone 2",
+        "weeks_5_8": "55-60 min Zone 2",
+        "weeks_9_12": "60 min Zone 2, add 4x30s 'strides' in final 2 weeks to prep for Phase 2"
+      },
+      "ice_bath": "YES - good day for cold exposure"
+    },
+
+    "sunday": {
+      "day_number": 7,
+      "type": "RECOVERY",
+      "name": "Active Recovery + Family Time",
+      "duration_minutes": 30,
+      "time": "Flexible",
+      "protocol": {
+        "option_a_nsdr": {
+          "description": "20-30 min NSDR/Yoga Nidra",
+          "notes": "Andrew Huberman protocol, YouTube guided"
+        },
+        "option_b_family_walk": {
+          "description": "30-45 min easy walk with family",
+          "hr_target": "Below Zone 2 (<109 bpm)"
+        },
+        "option_c_mobility": {
+          "description": "20 min gentle stretching/yoga",
+          "notes": "No intense stretching, recovery focus"
+        }
+      },
+      "notes": "True rest day. System reset before Monday strength.",
+      "ice_bath": "Optional - if feels good"
+    }
+  },
+
+  "weekly_totals_phase_1": {
+    "strength_minutes": 155,
+    "zone_2_minutes": "120-150 (progressive)",
+    "mobility_minutes": 65,
+    "vigorous_minutes": 0,
+    "total_training_minutes": "340-370",
+    "total_training_hours": "5.7-6.2"
+  },
+
+  "gate_1_requirements": {
+    "name": "Ready to Start Running",
+    "test_week": 12,
+    "tests": [
+      {"name": "Pain", "requirement": "≤2/10 for 2+ weeks", "current": null},
+      {"name": "WBLT", "requirement": "≥10cm AND <2cm asymmetry", "current": null},
+      {"name": "Single Leg Balance (EO)", "requirement": "60s each side", "current": null},
+      {"name": "Single Leg Balance (EC)", "requirement": "30s each side", "current": null},
+      {"name": "Heel Raises", "requirement": "25 reps each, LSI ≥90%", "current": null},
+      {"name": "Walk Test", "requirement": "30 min brisk walk pain-free", "current": null},
+      {"name": "Double Leg Hops", "requirement": "20 hops pain-free", "current": null}
+    ],
+    "pass_action": "Begin Phase 2A Walk-Jog progression",
+    "fail_action": "Continue Phase 1, address deficits, retest in 1-2 weeks"
+  },
+
+  "tracking_requirements": {
+    "daily": [
+      "Pain levels (all injury sites)",
+      "Morning status (Traffic Light)",
+      "Workout completion",
+      "Supplements taken"
+    ],
+    "weekly": [
+      "Total Zone 2 minutes",
+      "Strength sessions completed",
+      "Weight trend",
+      "HRV trend"
+    ],
+    "monthly": [
+      "Strength progress (reps/weight)",
+      "Flexibility tests (WBLT, sit-and-reach)",
+      "Balance tests"
+    ]
+  }
+}

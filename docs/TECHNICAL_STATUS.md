@@ -1,7 +1,7 @@
 # ATLAS Technical Status
 
-**Last Updated:** January 9, 2026
-**Status:** Phase 0-3 COMPLETE + Phase 4 IN PROGRESS (Quality Audit Pipeline)
+**Last Updated:** January 23, 2026
+**Status:** Phase 0-3 COMPLETE + Phase 4 IN PROGRESS (Quality Audit Pipeline) + Health/Fitness Module COMPLETE + Garmin Integration COMPLETE + Voice API Pipeline COMPLETE + Voice Intents COMPLETE + Interactive Workout Timer COMPLETE + Workout Scheduler COMPLETE + Interactive Morning Routine COMPLETE + Voice Announcements COMPLETE + STOP Button Fix COMPLETE + BridgeFileServer Refactoring COMPLETE + Pipeline Audit D82-D88 COMPLETE
 
 ---
 
@@ -191,21 +191,69 @@ python -m atlas.voice.pipeline --text-mode
 
 ---
 
-## Windows Launcher
+## Windows Command Centre
 
 ### File: `scripts/atlas_launcher.py`
 
-Single-file CustomTkinter GUI for voice interaction (~735 lines).
+CustomTkinter GUI with large timer display and button controls for voice + visual interaction.
+
+**Layout:**
+```
+┌─────────────────────────────────────┐
+│  ATLAS Command Centre    [START][STOP]
+├─────────────────────────────────────┤
+│              ┌─────┐                │
+│              │  37 │  ← Large timer │
+│              │ sec │    (80pt font) │
+│              └─────┘                │
+│     ●●●●●●●○○○○○○○○○  38%          │
+├─────────────────────────────────────┤
+│  Hip Flexor Stretch          8/20  │
+│  Lower Back & Hips          [LEFT] │
+│  💡 Squeeze glute of back leg.      │
+├─────────────────────────────────────┤
+│  [⏸ PAUSE]  [⏭ SKIP]  [⏹ STOP]     │
+├─────────────────────────────────────┤
+│  Voice: Lewis │ GPU: CUDA │ 1260ms │
+├─────────────────────────────────────┤
+│  ▾ Transcript (collapsible)        │
+└─────────────────────────────────────┘
+```
 
 **Features:**
-- Start/Stop WSL server with progress feedback
-- Hold SPACEBAR to record, release to send
+- **Timer Display**: Large 80pt countdown, progress bar, color-coded urgency
+- **Exercise Info**: Name, section, counter (8/20), side indicator, form cue
+- **Button Controls**: PAUSE/RESUME, SKIP, STOP (alternative to voice)
+- **Transition Screen**: "GET READY" with setup tip during auto-advance
+- Hold SPACEBAR to record, release to send (voice still works)
 - Voice toggle (Lewis/Emma)
 - Session cost and routing display
 - STT/TTS latency display
 - GPU status indicator (CUDA/CPU)
 - Transcript history with timestamps
-- State indicator (Idle/Listening/Processing/Speaking)
+
+**Button Commands (via command.txt):**
+| Button | Command | Action |
+|--------|---------|--------|
+| START | `START_TIMER` | Start timer on pending/ready screen |
+| PAUSE | `PAUSE_ROUTINE` | Pause active timer (button changes to RESUME) |
+| RESUME | `RESUME_ROUTINE` | Resume from pause |
+| SKIP | `SKIP_EXERCISE` | Advance to next exercise |
+| STOP | `STOP_ROUTINE` | Stop routine completely |
+
+**Timer IPC (session_status.json):**
+```json
+{
+  "timer": {
+    "active": true,
+    "mode": "routine",
+    "exercise_name": "Hip Flexor Stretch",
+    "remaining_seconds": 37,
+    "is_paused": false,
+    "form_cue": "Squeeze glute of back leg."
+  }
+}
+```
 
 **Running:**
 ```bash
@@ -228,9 +276,10 @@ pythonw scripts/atlas_launcher.py
 |------|---------|
 | `atlas/voice/stt.py` | Removed initial_prompt bias, disabled vad_filter, added 100ms silence head |
 | `atlas/voice/tts.py` | GPU provider selection with CPU fallback |
-| `atlas/voice/bridge_file_server.py` | base.en model, voice selection, session_status.json, 200ms silence tail |
+| `atlas/voice/bridge_file_server.py` | Timer state machine, auto-advance logic, button command handlers, timer IPC |
+| `atlas/voice/audio_utils.py` | Distinct chimes: timer start (660Hz), exercise complete (440→550→660Hz) |
 | `atlas/llm/router.py` | Flexible timer patterns for LOCAL routing |
-| `scripts/atlas_launcher.py` | New Windows launcher with spacebar-to-talk |
+| `scripts/atlas_launcher.py` | Command Centre UI with timer display, button controls, state-driven rendering |
 
 ---
 
@@ -353,7 +402,33 @@ python -m atlas.orchestrator.skill_executor --skill draft_21s --repo babybrains-
 | Activity Conversion Pipeline | `atlas/pipelines/activity_conversion.py` | ✅ Complete | 7-stage pipeline with quality audit gate (Jan 9) |
 | Quality Audit Stage | `audit_quality()` method | ✅ Complete | Grade A enforcement via Voice Rubric (Jan 9) |
 | Intelligent Retry | `convert_with_retry()` + `reflect_on_failure()` | ✅ Complete | Wait pattern for 89.3% blind spot reduction (Jan 9) |
+| LLM Context Checking (D77) | `check_activity_quality.py` | ✅ Complete | Pressure/outcome/transition false positive fixes (Jan 21) |
+| Stage Caching + Truncation (D79) | `activity_conversion.py` | ✅ Complete | 60-70% faster retries, early truncation detection (Jan 21) |
+| CLI Error Display Fix (D80) | `activity_conversion.py` | ✅ Complete | Print result.error for FAILED status, fix misleading retry count (Jan 22) |
+| --auto-approve Fix (D81) | `activity_conversion.py` | ✅ Complete | Fix --auto-approve not working with --next flag (Jan 22) |
+| Status Handlers (D82) | `activity_conversion.py` | ✅ Complete | Add REVISION_NEEDED/QC_FAILED handlers to --next path (Jan 23) |
+| Summary Counts Fix (D83) | `activity_conversion.py` | ✅ Complete | Fix stale cache bug - update cache before calculating counts (Jan 23) |
+| Exit Codes (D84) | `activity_conversion.py` | ✅ Complete | Add sys.exit(1) for --next path failures (Jan 23) |
+| Batch Retry (D85) | `activity_conversion.py` | ✅ Complete | Batch mode now uses convert_with_retry() (Jan 23) |
+| SKIPPED Handler (D86) | `activity_conversion.py` | ✅ Complete | Handle SKIPPED status in CLI paths (Jan 23) |
+| Adversarial Coverage (D87) | `activity_conversion.py` | ✅ Complete | Increase from 5000 to 15000 chars (~75% coverage) (Jan 23) |
+| File Lock on Parse (D88) | `activity_conversion.py` | ✅ Complete | Add LOCK_SH when reading progress file (Jan 23) |
 | CLI Mode | `SkillExecutor(timeout=300)` | ✅ Complete | Max subscription - no API key needed (Jan 9) |
+| Stdin-Based CLI (D24) | `skill_executor.py`, `subagent_executor.py` | ✅ Complete | Pass prompts via stdin to avoid ARG_MAX (Jan 10) |
+| Deterministic Slug (D25) | `activity_conversion.py:_fix_canonical_slug()` | ✅ Complete | Post-process canonical_slug derivation (Jan 10) |
+| Zero-Tolerance Superlatives (D26) | `elevate_voice_activity.md` | ✅ Complete | CRITICAL section + BLOCK rule (Jan 10) |
+| Zero-Tolerance Pressure (D32) | `elevate_voice_activity.md` | ✅ Complete | CRITICAL section + BLOCK rule + permission-giving alternatives (Jan 10) |
+| Robust JSON Parsing (D33) | `activity_conversion.py:_extract_audit_json()` | ✅ Complete | Truncation detection + auto-repair + extended final timeout (Jan 10) |
+| Sandbox Disabled (D34) | `activity_conversion.py` | ✅ Complete | Prevents EROFS errors with claude CLI (Jan 11) |
+| Context-Aware QC (D35) | `check_activity_quality.py`, `hooks.py` | ✅ Complete | False positive fixes + principle slug normalization (Jan 11) |
+| Age Range Normalization (D36) | `activity_conversion.py` | ✅ Complete | Trust label over raw min_months + specific retry feedback (Jan 11) |
+| Deduplication Verification (D37) | `activity_conversion.py` | ✅ Complete | --verify command, duplicate detection, group context (Jan 11) |
+| Empty Response Detection (D38) | `skill_executor.py`, `subagent_executor.py` | ✅ Complete | Detect CLI exit 0 with empty stdout (Jan 11) |
+| QC False Positive Fix (D39) | `check_activity_quality.py` | ✅ Complete | Relational superlative exceptions (Jan 11) |
+| ELEVATE Context Optimization (D40) | Multiple files | ✅ Complete | 47% context reduction + verification protocol + LLM context check (Jan 11) |
+| Adversarial Audit Prompt (D41) | `activity_conversion.py` | ✅ Complete | Skeptical auditor + BLOCKING vs ADVISORY distinction (Jan 11) |
+| Interactive Workout Timer (D58) | `bridge_file_server.py` | ✅ Complete | Voice-controlled user-paced workout with countdown beeps (Jan 17) |
+| Weight Tracking (D59) | `bridge_file_server.py`, `number_parser.py` | ✅ Complete | Simple weight prompt during workout, `parse_weight_value()` (Jan 17) |
 
 ### V2 Gaps (From Masterclass Analysis)
 
@@ -367,6 +442,711 @@ python -m atlas.orchestrator.skill_executor --skill draft_21s --repo babybrains-
 | Scratch pad | Low | ✅ DONE (Jan 8, 2026) |
 
 See `docs/ATLAS_ARCHITECTURE_V2.md` for full implementation plan.
+
+---
+
+## Health/Fitness Module (January 2026)
+
+### Status: ✅ IMPLEMENTED
+
+Comprehensive fitness tracking system for injury rehabilitation with Traffic Light system, GATE evaluations, and phase management.
+
+### Components
+
+| Component | File | Status | Notes |
+|-----------|------|--------|-------|
+| Health CLI | `atlas/health/cli.py` | ✅ Complete | 9 commands: daily, workout, supplements, pain, routine, assess, phase, stats, garmin |
+| TrafficLightRouter | `atlas/health/router.py` | ✅ Complete | GREEN/YELLOW/RED based on sleep, HRV, RHR |
+| WorkoutService | `atlas/health/workout.py` | ✅ Complete | Loads phase configs, injury-aware filtering |
+| SupplementService | `atlas/health/supplement.py` | ✅ Complete | Checklist, compliance tracking |
+| AssessmentService | `atlas/health/assessment.py` | ✅ Complete | 40+ tests, LSI calculation, GATE evaluation |
+| PhaseService | `atlas/health/phase.py` | ✅ Complete | Phase transitions with GATE integration |
+| GarminService | `atlas/health/garmin.py` | ✅ Complete | Sleep, HRV, body battery + activity HR sync (Jan 17) |
+| AssessmentProtocolRunner | `atlas/health/assessment_runner.py` | ✅ Complete | Voice-guided 69-test baseline protocol (Jan 17) |
+| NumberParser | `atlas/voice/number_parser.py` | ✅ Complete | Spoken numbers, BP, weight+reps parsing (Jan 17) |
+| AssessmentCalculator | `atlas/health/assessment_calculator.py` | ✅ Complete | 1RM estimation, LSI calculation (Jan 17) |
+| MorningSyncService | `atlas/health/morning_sync.py` | ✅ Complete | Cached status, voice formatting (Jan 15) |
+| RoutineRunner | `atlas/health/routine_runner.py` | ✅ Complete | Timer-based 18-min morning protocol (Jan 15) |
+| WorkoutRunner | `atlas/health/workout_runner.py` | ✅ Complete | Timer-based workout with form cues (Jan 15) |
+| Garmin Auth | `scripts/garmin_auth_setup.py` | ✅ Complete | One-time auth, tokens in ~/.garth/ |
+| Garmin Tests | `tests/health/test_garmin.py` | ✅ Complete | 31 tests passing |
+| Baseline Config | `config/assessments/baseline.json` | ✅ Complete | 9 categories, GATE 1-4 criteria |
+| Phase 1 Config | `config/workouts/phase1.json` | ✅ Complete | Protocols + daily routine |
+| Fitness Schema | `atlas/memory/schema_fitness.sql` | ✅ Complete | pain_log, assessments, phases, exercises, workout_hr_data |
+| Voice Protocol Config | `config/assessments/protocol_voice.json` | ✅ Complete | 69 tests across 3 sessions (A/B/C) with voice prompts |
+
+### Features
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Traffic Light System | ✅ Working | GREEN (full), YELLOW (-15%), RED (recovery) |
+| Daily Morning Routine | ✅ Working | 5 sections, 18 min, interactive guided mode |
+| Pain Tracking | ✅ Working | 5 body parts, 0-10 scale, validation |
+| Assessment System | ✅ Working | Baseline, progress, LSI calculation |
+| GATE Evaluation | ✅ Working | GATE 1-4 with specific test criteria |
+| Phase Management | ✅ Working | Advancement with GATE checks, regression triggers |
+| Input Validation | ✅ Working | Sleep hours (0-24), HRV choices, pain levels |
+| Error Handling | ✅ Working | JSON parse, date parse, None access, division by zero |
+| Garmin Integration | ✅ Working | Sleep, HRV, body battery, RHR + activity HR sync |
+| Voice Assessment Protocol | ✅ Working | 69 tests, 3 sessions, natural BP/weight input |
+| Garmin Auth | ✅ Working | One-time setup, tokens auto-refresh |
+| Fail-Fast Health Check | ✅ Working | `is_garmin_auth_valid()` for cron jobs |
+
+### CLI Commands
+
+```bash
+# Garmin integration
+python3 -m atlas.health.cli garmin status        # Check connection
+python3 -m atlas.health.cli garmin sync          # Sync today's data
+
+# Daily workflow
+python3 -m atlas.health.cli routine              # Morning routine
+python3 -m atlas.health.cli pain all             # Log pain levels
+python3 -m atlas.health.cli daily                # Morning sync (auto-pulls Garmin)
+python3 -m atlas.health.cli workout              # Today's workout
+python3 -m atlas.health.cli supplements          # Supplement checklist
+
+# Assessment workflow
+python3 -m atlas.health.cli assess baseline      # View protocols
+python3 -m atlas.health.cli assess log --id ankle_dorsiflexion_left --value 9.5
+python3 -m atlas.health.cli assess progress      # View progress
+python3 -m atlas.health.cli assess gate 1        # Check GATE readiness
+
+# Phase management
+python3 -m atlas.health.cli phase                # Current status
+python3 -m atlas.health.cli phase check          # Advancement check
+python3 -m atlas.health.cli phase advance        # Advance (if ready)
+```
+
+### Verification Status
+
+| Check | Result |
+|-------|--------|
+| Code Review | ✅ Completed - 4 sub-agents |
+| Critical Bugs Fixed | ✅ 8 issues resolved |
+| Input Validation | ✅ Added for pain, sleep, HRV |
+| Error Handling | ✅ JSON, dates, None access, division by zero |
+| End-to-End Test | ✅ All commands verified |
+
+### Known Limitations
+
+| Limitation | Priority | Notes |
+|------------|----------|-------|
+| ~~Garmin integration stub~~ | ~~P2~~ | ✅ COMPLETE (Jan 14, 2026) |
+| ~~5am Automation~~ | ~~P2~~ | ✅ COMPLETE - morning_sync.py can be cron'd (Jan 15) |
+| Phase 2/3 configs | P3 | Not needed until Week 13+ |
+| No pain history view | P3 | Enhancement for later |
+| No supplement deactivation | P3 | Enhancement |
+
+---
+
+## Voice API Pipeline (January 2026)
+
+### Status: ✅ IMPLEMENTED
+
+Token-efficient voice-first health queries via PowerShell↔WSL2 bridge. Enables frictionless morning routine.
+
+### Components
+
+| Component | File | Status | Notes |
+|-----------|------|--------|-------|
+| BridgeFileServer | `atlas/voice/bridge_file_server.py` | ✅ Complete | Health intent routing added (Jan 15) |
+| MorningSyncService | `atlas/health/morning_sync.py` | ✅ Complete | Cache + voice formatting |
+| RoutineRunner | `atlas/health/routine_runner.py` | ✅ Complete | Timer-based 18-min protocol |
+| WorkoutRunner | `atlas/health/workout_runner.py` | ✅ Complete | Timer-based workout execution |
+| AudioUtils | `atlas/voice/audio_utils.py` | ✅ Complete | Chime generation (440Hz) |
+
+### Key Design Decisions
+
+| Decision | Description |
+|----------|-------------|
+| D48: Direct HTTP for Garmin | `garth.connectapi()` returned empty; fixed with direct HTTP to connectapi.garmin.com |
+| D49: Intent Before LLM | Health queries use regex to bypass LLM (0 tokens) |
+| D50: Two Response Formats | Quick status vs detailed briefing |
+| D56: Sleep API Endpoint Fix | Changed from `/sleep-service/sleep/` to `/wellness-service/wellness/dailySleepData/` (Jan 17) |
+
+### Voice Commands
+
+| Command | Response Type | Tokens |
+|---------|--------------|--------|
+| "my status" | Quick one-liner | 0 |
+| "morning briefing" | Detailed metrics | 0 |
+| "how was my sleep" | Detailed metrics | 0 |
+| "log meal: chicken rice" | Nutrition lookup | ~200 |
+
+### Token Cost
+
+| Action | Tokens | Monthly Cost |
+|--------|--------|--------------|
+| Status queries | 0 | $0 |
+| Meal logging | ~200 | ~$0.006 |
+| Thought capture | 0 | $0 |
+| **Total estimate** | ~550/day | **~$0.02/month** |
+
+### Known Limitations
+
+| Limitation | Priority | Notes |
+|------------|----------|-------|
+| ~~Sleep API empty~~ | ~~P3~~ | ✅ FIXED (D56) - Changed to `/wellness-service/wellness/dailySleepData/` endpoint |
+| HRV onboarding | P3 | Watch needs 7+ days for BALANCED/UNBALANCED status |
+| No trend analysis | P2 | Future: yesterday comparison, weekly trends |
+| No predictive insights | P3 | Future: "low reserves by 3pm" |
+
+---
+
+## Voice Intent Implementation (January 2026)
+
+### Status: ✅ IMPLEMENTED
+
+Comprehensive voice intent routing for health tracking, supplements, pain logging, and workout completion.
+
+### Components
+
+| Component | File | Status | Notes |
+|-----------|------|--------|-------|
+| PainService | `atlas/health/pain.py` | ✅ Complete | Voice formatting, 0-10 scale, body part aliases |
+| SessionBuffer | `atlas/voice/session_buffer.py` | ✅ Complete | 5 exchanges, 10-min TTL, uses atlas.db |
+| Pain Intents | `bridge_file_server.py` | ✅ Complete | Negation checking, status query support |
+| Supplement Intents | `bridge_file_server.py` | ✅ Complete | Individual before batch detection |
+| Workout Completion | `bridge_file_server.py` | ✅ Complete | Smart confirmation flow, uses get_todays_workout() |
+
+### Bug Fixes (Phase 0)
+
+| Fix | File | Notes |
+|-----|------|-------|
+| HRV status not passed | `service.py:206` | Now passes hrv_status from metrics |
+| Body battery not stored | `blueprint.py`, `schema.sql` | Added hrv_status + body_battery fields |
+| Insufficient data → YELLOW | `router.py` | Changed to RED (conservative default) |
+| Body battery YELLOW threshold | `router.py` | Added explicit 25-49 → YELLOW check |
+| Garmin token permissions | `~/.garth/*.json` | Fixed to chmod 600 |
+
+### Bug Fixes (Phase 4 - Workout Completion)
+
+| Fix | File | Notes |
+|-----|------|-------|
+| Silent data loss | `bridge_file_server.py:835-837,876-878` | Error handlers now return honest "Couldn't log workout" instead of lying |
+| Class variable state bug | `bridge_file_server.py:302` | `_pending_workout` moved from class to instance variable |
+| No state timeout | `bridge_file_server.py:762-766` | Added 5-minute TTL for pending workout (prevents stale confirmations) |
+| Positive notes not captured | `bridge_file_server.py:184-188` | Expanded WORKOUT_ISSUE_PATTERNS with positive feedback patterns |
+
+### Bug Fixes (Phase 5 - Voice Bridge LLM + Assessment Info)
+
+| Fix | File | Notes |
+|-----|------|-------|
+| Local LLM fallback broken | `bridge_file_server.py:1640-1647` | Changed `self.llm.chat()` to `self.llm.generate().content` (OllamaClient has no .chat()) |
+| .env not loaded | `bridge_file_server.py:21-22` | Added `from dotenv import load_dotenv; load_dotenv()` |
+| .env format wrong | `.env` | Fixed raw keys to `ANTHROPIC_API_KEY=...` format |
+| Assessment info queries miss | `bridge_file_server.py:223-232` | Added `ASSESS_INFO_PATTERNS` with regex for "what are baseline protocols?" |
+| False negatives for info | `bridge_file_server.py:1264-1273` | Changed exclusion to check `startswith()` not `in` (so "how long is baseline assessment" works) |
+
+### Voice Commands Added
+
+| Command | Intent | Response |
+|---------|--------|----------|
+| "shoulder is at a 4" | Pain logging | "Logged shoulder right at 4. Monitor it." |
+| "no pain in my shoulder" | Pain (rejected) | Falls through to LLM (negation detected) |
+| "pain status" | Pain status | "Pain levels: shoulder right 4, ankle left 2." |
+| "took my vitamin d" | Supplement individual | "Checked off vitamin d." |
+| "took my preworkout supps" | Supplement batch | "Checked off 6 preworkout supplements." |
+| "took my morning supps" | Supplement batch (alias) | "Checked off 6 preworkout supplements." |
+| "took my breakfast supps" | Supplement batch | "Checked off 7 breakfast supplements." |
+| "took my bedtime supps" | Supplement batch | "Checked off 5 before bed supplements." |
+| "what supps are next?" | Supplement status | Time-aware response by hour |
+| "what supps do I still need?" | Supplement remaining | Lists by timing category |
+| "finished my workout" | Workout completion | "Strength A logged. 45 minutes. Well executed." |
+| "workout done but skipped squats" | Workout with issues | "Got it. What did you skip or modify?" |
+| "yes log it" | Workout confirmation | "Strength A logged with notes. 45 minutes." |
+| "session A" | Start assessment session | "Session A. Body composition. Step on scale." |
+| "120 over 80" | Blood pressure (natural) | "One twenty over eighty. Recorded." |
+| "20 kilos for 5 reps" | Weight+reps (natural) | "Twenty kilos for five. Recorded." |
+| "go" / "stop" / "done" | Timer control | Starts/stops timed tests |
+| "undo" / "go back" | Correction | Returns to previous test |
+| "what are baseline protocols?" | Assessment info | "Baseline assessment has 69 tests across 3 sessions..." |
+| "baseline protocol" | Assessment info | Same as above |
+| "how long is baseline assessment?" | Assessment info | Duration breakdown by session |
+| "start workout" | Interactive workout start | "Strength A. 45 minutes. First: Goblet Squat. 3x6. Say ready." |
+| "30 kilos" | Weight input | "Got it. 30 kilos. Say ready to begin." |
+| "ready" | Start set | "Set 1 at 30 kilos. Begin." |
+| "done" / "finished" | Complete set | "Set 1 complete. Rest 90 seconds." |
+| "how long" | Rest remaining | "45 seconds left." |
+| "skip" | Skip exercise | "Skipping Goblet Squat. Next: Floor Press..." |
+| "stop workout" | End early | "Workout stopped. 3 exercises completed." |
+
+### Intent Detection Priority
+
+```
+1. WORKOUT_CONFIRM (stateful pending)
+2. ASSESSMENT_ACTIVE (stateful - during test)
+3. ASSESSMENT_SESSION_PENDING (waiting for A/B/C)
+4. ASSESSMENT_RESUME ("resume baseline")
+5. ASSESSMENT_INFO ("what are baseline protocols?")
+6. ASSESSMENT_START ("start baseline")
+7. INTERACTIVE_WORKOUT_ACTIVE (stateful - handles ready/done/skip)
+8. INTERACTIVE_WORKOUT_START ("start workout")
+9. WEIGHT
+10. PAIN (log or status)
+11. SUPPLEMENT (individual, batch, or status)
+12. WORKOUT_COMPLETE
+13. WORKOUT (query)
+14. EXERCISE (query)
+15. HEALTH (status or briefing)
+16. MEAL
+17. CAPTURE
+18. LLM fallback
+```
+
+### Architecture Decisions
+
+| Decision | Summary |
+|----------|---------|
+| D51 | Session buffer uses main atlas.db (not separate file) |
+| D52 | Supplement: check individual names BEFORE batch keywords |
+| D53 | Insufficient recovery data defaults to RED (conservative) |
+| D54 | Pain intent negation checking (20-char window) |
+| D55 | Supplement timing: 3 categories (preworkout, with_meal, before_bed) |
+
+### Verification
+
+| Test | Result |
+|------|--------|
+| PainService log/format | ✅ Passed |
+| SessionBuffer add/get/format | ✅ Passed |
+| TrafficLightRouter insufficient → RED | ✅ Passed |
+| TrafficLightRouter body battery 30 → YELLOW | ✅ Passed |
+| Negation check "no pain" | ✅ Not triggered |
+
+---
+
+## Voice-Guided Assessment Protocol (January 2026)
+
+### Status: ✅ IMPLEMENTED
+
+69-test baseline assessment protocol with voice-first interface, natural language input parsing, and Garmin integration.
+
+### Components
+
+| Component | File | Status | Notes |
+|-----------|------|--------|-------|
+| AssessmentProtocolRunner | `atlas/health/assessment_runner.py` | ✅ Complete | State machine for 69 tests across 3 sessions |
+| NumberParser | `atlas/voice/number_parser.py` | ✅ Complete | Parse spoken numbers with hedging, units, BP, weight+reps |
+| AssessmentCalculator | `atlas/health/assessment_calculator.py` | ✅ Complete | 1RM estimation (Epley formula), LSI calculation |
+| Voice Protocol Config | `config/assessments/protocol_voice.json` | ✅ Complete | 69 tests with prompts, validation, input types |
+| Workout HR Data Schema | `atlas/memory/schema_fitness.sql` | ✅ Complete | workout_hr_data table for Garmin activity sync |
+
+### Sessions
+
+| Session | Tests | Focus |
+|---------|-------|-------|
+| A | 15 tests | Body composition (weight, measurements, BP, resting HR) |
+| B | 38 tests | Strength/mobility (1RM, ROM, FMS, balance) |
+| C | 16 tests | Cardio (zone tests, recovery, talk test) |
+
+### Input Types Supported
+
+| Type | Examples | Parser |
+|------|----------|--------|
+| Numeric | "82", "eighty two", "about 82 kilos" | `parse_spoken_number()` |
+| Timed | "go"→start, "stop"→end with elapsed time | Timer with 100ms beeps |
+| Boolean | "yes", "pain-free", "nope" | `parse_boolean()` |
+| Categorical | "balanced", "low" | `parse_categorical()` |
+| FMS | "three", "compensation", "pain" | `parse_fms_score()` |
+| Compound | "120 over 80", "20 kilos for 5 reps" | `parse_blood_pressure()`, `parse_weight_reps()` |
+
+### Garmin Activity Sync
+
+After workout completion, automatically syncs Garmin activity HR data:
+
+```python
+# User: "finished my workout"
+# → Logs workout to DB
+# → Syncs Garmin activity (within 4 hours)
+# → Stores HR data in workout_hr_data table
+# ATLAS: "Strength A logged. 42 min. Avg HR 128, max 156."
+```
+
+| Data Captured | Source |
+|---------------|--------|
+| Resting HR, HRV, Body Battery | Daily Garmin sync |
+| Workout Avg/Max HR, Calories | Activity sync after "finished workout" |
+| Duration, Activity Type | Activity sync |
+
+### Voice Commands
+
+| Command | Action |
+|---------|--------|
+| "session A/B/C" | Start specific session |
+| "skip" | Skip current test |
+| "undo" / "go back" | Return to previous test |
+| "pause" / "resume" | Pause/resume session |
+| "what test is this" | Repeat current test prompt |
+| "progress" | Show completion status |
+
+### Verification Fixes Applied
+
+| Issue | Fix |
+|-------|-----|
+| "ninety" parsed as "n ety" | Changed unit patterns to use word boundaries |
+| "one twenty" = 21 for BP | Added explicit BP "one X" patterns (one twenty = 120) |
+| Timezone bug in activity age | Changed to `datetime.now(AEST)` with timezone-aware parsing |
+| Activity-workout mismatch | Added `expected_type` validation |
+| Silent parse errors | Added explicit `return None` after exceptions |
+
+---
+
+## Phase 1 Workout Program Improvements (January 18, 2026)
+
+### Status: ✅ IMPLEMENTED
+
+Evidence-based Phase 1 workout program improvements with full system integration.
+
+### Components Updated
+
+| Component | File | Changes |
+|-----------|------|---------|
+| WorkoutExercise (runner) | `atlas/health/workout_runner.py` | Added per_side, hold_seconds, side, distance_steps, per_direction fields |
+| WorkoutExercise (blueprint) | `atlas/memory/blueprint.py` | Same fields for database persistence |
+| Exercise Library | `config/exercises/exercise_library.json` | Added 8 new exercises with form cues |
+| Phase 1 Config | `config/workouts/phase1.json` | Updated daily routine, strength protocols, Zone 2 Extended |
+| Voice Pipeline | `atlas/voice/bridge_file_server.py` | Updated announcements for per_side, per_direction, hold_seconds |
+
+### New WorkoutExercise Fields
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `per_side` | bool | Exercise performed per side (clamshells, side plank) |
+| `hold_seconds` | Optional[int] | Isometric holds (McGill curl-up 8-10s) |
+| `side` | Optional[str] | 'left', 'right', 'both' for unilateral tracking |
+| `distance_steps` | Optional[int] | Step-based exercises (lateral walks) |
+| `per_direction` | bool | Exercise performed each direction |
+
+### New Exercises Added (8 total)
+
+| Exercise | Category | Purpose |
+|----------|----------|---------|
+| mcgill_curl_up | core | McGill Big 3 component |
+| clamshells | hip | Glute med activation, knee valgus fix |
+| side_plank | core | McGill Big 3 component |
+| inverted_row | upper_body_pull | Horizontal pulling volume |
+| lateral_band_walks | hip | Knee valgus correction |
+| single_leg_rdl | lower_body | Ankle compensation fix |
+| suitcase_carry | functional | Anti-lateral flexion |
+| neck_harness | neck | Blueprint standard |
+
+### Daily Routine Changes
+
+| Change | Before | After |
+|--------|--------|-------|
+| Doorframe ER | 2×45s | 3×60s (Rio protocol) |
+| Eccentric Calf Raises | 10 reps | 3×15 (Alfredson protocol) |
+| Clamshells | Not present | 2×15 per side |
+
+### Strength Protocol Changes
+
+**Strength A (Monday):**
+- Added McGill Curl-Up (3×10, 8s holds)
+- Added Banded Ankle DF Mobilization (3×10, RIGHT only)
+- Added Single-Leg RDL (3×8, right priority)
+- Added Goblet Squat (4×10)
+- Added KB Swings (4×15)
+
+**Strength C (Friday):**
+- Added Side Plank (3×30s/side)
+- Added Inverted Rows (3×12)
+- Added Lateral Band Walks (3×10 steps/direction)
+- Added Trap Bar Deadlift (4×6)
+- Added Turkish Get-Up (2×3/side)
+- Added KB Clean & Press (3×6/side)
+
+**Saturday:**
+- Replaced VO2 Max 4×4 intervals with Zone 2 Extended
+- Added ruck walk as preferred modality
+- HIIT clearance requirements documented for Phase 2
+
+### Voice Pipeline Updates
+
+| Feature | Implementation |
+|---------|----------------|
+| per_side exercises | Voice says "each side" (e.g., "3 sets of 10 each side") |
+| per_direction exercises | Voice says "each direction" |
+| hold_seconds | Voice says "Hold X seconds each rep" |
+| Notes truncation | Long notes truncated to 50 chars for voice |
+
+### Verification Status
+
+| Check | Result |
+|-------|--------|
+| All JSON files valid | ✅ Passed |
+| WorkoutExercise dataclass complete | ✅ Passed |
+| Voice announcements correct | ✅ Passed |
+| 11 new exercises present | ✅ Passed |
+| Config files synchronized | ✅ Passed |
+
+---
+
+## Workout Scheduler (January 2026)
+
+### Status: ✅ IMPLEMENTED
+
+Intelligent workout scheduling with program day tracking, missed workout handling, and phase management confirmation flow.
+
+### Components
+
+| Component | File | Status | Notes |
+|-----------|------|--------|-------|
+| WorkoutScheduler | `atlas/health/scheduler.py` | ✅ Complete | Sequential catch-up mode, program day tracking |
+| workout_sessions table | `atlas/health/scheduler.py` | ✅ Complete | Tracks completed workouts with duration, HR, notes |
+| Schedule Status Handler | `atlas/voice/bridge_file_server.py` | ✅ Complete | Voice-first schedule queries |
+| Phase Start/Reset Handler | `atlas/voice/bridge_file_server.py` | ✅ Complete | Confirmation flow for destructive operations |
+
+### Features
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Sequential Catch-Up Mode | ✅ Working | Missed workouts done in order (Monday missed = do Monday on Tuesday) |
+| Program Day/Week Tracking | ✅ Working | Tracks days since phase start |
+| Confirmation Flow for Reset | ✅ Working | "reset my program" requires confirmation with 30s timeout |
+| Rest Day Handling | ✅ Working | Sunday returns friendly message, doesn't start interactive workout |
+| No-Phase Handling | ✅ Working | Prompts user to "start program" instead of silent auto-start |
+| Already-Done Detection | ✅ Working | Prevents duplicate workouts on same day |
+| Traffic Light Override | ✅ Working | "green day" / "yellow day" bypasses Garmin-derived intensity |
+
+### Voice Commands
+
+| Command | Intent | Response |
+|---------|--------|----------|
+| "start program" | Phase start (first time) | "Phase 1 started. Day 1, Week 1. Today: Strength A. Say start workout." |
+| "schedule status" | Schedule query | "Week 2, Day 10. On track. 8 workouts completed." |
+| "what day am I on" | Schedule query | Same as above |
+| "am I on track" | Schedule query | Same as above |
+| "reset my program" | Phase reset (confirm) | "You're on Week 2 with 8 workouts. Reset? Say confirm or cancel." |
+| "confirm" | Reset confirmation | "Phase 1 started fresh. Day 1, Week 1. Today: Strength A." |
+| "cancel" | Reset cancellation | "Reset cancelled. Still on Week 2, Day 10." |
+| "start workout" (rest day) | Rest day message | "Today is a recovery day. No workout scheduled. Rest or go for a walk." |
+| "start workout" (no phase) | No-phase prompt | "No program started yet. Today would be Strength A. Say 'start program' to begin." |
+
+### Architecture Decisions
+
+| Decision | Summary |
+|----------|---------|
+| D60 | Sequential mode for catch-up (not calendar-based) |
+| D61 | Confirmation required for reset operations (30s timeout) |
+| D62 | "start program" vs "reset my program" distinction |
+| D63 | Rest days return message instead of starting workout |
+| D64 | No-phase returns special status requiring explicit start |
+
+### Database Schema
+
+```sql
+CREATE TABLE IF NOT EXISTS workout_sessions (
+    id INTEGER PRIMARY KEY,
+    phase_name TEXT NOT NULL,
+    protocol_id TEXT NOT NULL,
+    program_day INTEGER NOT NULL,
+    completed_at TEXT NOT NULL,
+    duration_minutes INTEGER,
+    avg_hr INTEGER,
+    max_hr INTEGER,
+    notes TEXT,
+    created_at TEXT NOT NULL
+);
+```
+
+### Verification Status
+
+| Check | Result |
+|-------|--------|
+| Code Review Self-Check | ✅ Passed |
+| Junior Analyst Review | ✅ Passed - 3 issues fixed |
+| Inversion Test | ✅ Passed - edge cases validated |
+| Rest day handling | ✅ Returns friendly message |
+| Reset confirmation flow | ✅ 30s timeout with state tracking |
+| No-phase handling | ✅ Prompts for explicit start |
+
+---
+
+## Interactive Morning Routine (January 2026)
+
+### Status: ✅ IMPLEMENTED
+
+Voice-guided 18-minute morning protocol with auto-advancing timers, form cues, and section-based navigation.
+
+### Components
+
+| Component | File | Status | Notes |
+|-----------|------|--------|-------|
+| InteractiveRoutineRunner | `atlas/voice/bridge_file_server.py` | ✅ Complete | State machine for routine execution |
+| RoutineRunner | `atlas/health/routine_runner.py` | ✅ Complete | Timer-based 18-min protocol (CLI mode) |
+| Routine Form Guides | `config/exercises/routine_form_guides.json` | ✅ Complete | 20 exercises with setup, cues, common mistakes |
+
+### Features
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Auto-advancing timers | ✅ Working | Exercises auto-advance when timer completes |
+| Form help on demand | ✅ Working | "how do I do this" provides form cues |
+| Pause/resume | ✅ Working | User controls timing |
+| Skip exercises | ✅ Working | Move to next exercise in sequence |
+| Section complete chimes | ✅ Working | Audio feedback between sections |
+| Time remaining queries | ✅ Working | "how long" returns remaining seconds |
+
+### Voice Commands
+
+| Command | Intent | Response |
+|---------|--------|----------|
+| "start routine" | Start morning protocol | "Starting ATLAS Morning Protocol. 18 minutes total. First section: Feet & Plantar Fascia..." |
+| "morning protocol" | Start morning protocol | Same as above |
+| "start rehab" | Start morning protocol | Same as above |
+| "pause" / "hold on" | Pause current exercise | "Paused. Short Foot Exercise. Say resume to continue." |
+| "how do I do this" | Form help | "Short Foot Exercise. Lift arch without curling toes..." |
+| "show me the form" | Form help | Same as above |
+| "resume" / "continue" | Resume exercise | "Resuming Short Foot Exercise. 25 seconds remaining." |
+| "skip" / "next" | Skip exercise | "Skipping Short Foot Exercise. Next: Ankle CARs. 5 reps..." |
+| "how long" / "time" | Time remaining | "35 seconds remaining." |
+| "stop routine" | End early | "Routine stopped in Ankle Mobility, exercise 2. Good effort." |
+
+### Daily Routine Sections (18 min total)
+
+| Section | Duration | Exercises |
+|---------|----------|-----------|
+| Feet & Plantar Fascia | ~2 min | Short Foot, Toe Yoga, Ball Roll |
+| Ankle Mobility | ~3 min | Ankle CARs, WBLT Stretch, Calf Raises |
+| Hip Stability | ~4 min | Clamshells, Glute Bridges, Hip CARs |
+| Shoulder Rehab | ~5 min | Doorframe ER, Towel Crush, Side-Lying Wiper |
+| Core Activation | ~4 min | Bird-Dog, Dead Bug, Breathing |
+
+### Form Guide Structure
+
+```json
+{
+  "short_foot_exercise": {
+    "name": "Short Foot Exercise",
+    "setup": "Stand barefoot, weight evenly distributed.",
+    "cues": [
+      "Lift your arch by pulling toes toward heel",
+      "Don't curl your toes",
+      "Hold 5 seconds"
+    ],
+    "common_mistakes": [
+      "Curling toes instead of lifting arch",
+      "Holding breath"
+    ]
+  }
+}
+```
+
+---
+
+## Voice Announcement & STOP Button Fixes (January 21, 2026)
+
+### Status: ✅ IMPLEMENTED
+
+Two UX improvements for the interactive morning routine in Command Centre.
+
+### Voice Announcement on READY? Screen
+
+**Problem:** When transitioning between exercises, the READY? screen appeared but there was silence - users on the mat or away from screen couldn't hear what's next.
+
+**Solution:** Modified auto-advance flow in `bridge_file_server.py`:
+
+| Phase | UI State | Voice | Duration |
+|-------|----------|-------|----------|
+| 'completed' | "COMPLETE" | Chime only | 2 seconds |
+| 'pending' | "READY?" | **"Next: {exercise}. {setup tip}."** | 4 seconds |
+| timer | Exercise name | "Go. {duration} seconds." | Exercise duration |
+
+**Key Change:** State advances FIRST via `_advance_routine_exercise_silent()`, THEN voice announces - ensuring UI and voice are synchronized.
+
+### STOP Button Behavior Fix
+
+**Problem:** Pressing STOP killed the entire server instead of returning to idle/main menu state.
+
+**Root Cause:** `_handle_routine_stop()` wasn't calling `_clear_timer_from_session_status()`, so timer data persisted in `session_status.json` and UI continued showing timer.
+
+**Solution:** Updated `_handle_routine_stop()` to:
+1. Reset all state variables (`_routine_exercise_complete`, `_routine_timer_duration`, etc.)
+2. Reset indices (`_routine_section_idx`, `_routine_exercise_idx`)
+3. Call `_clear_timer_from_session_status()` to clear timer from UI
+4. Confirm via TTS "Routine stopped..."
+
+**Result:** STOP now exits current routine, UI shows idle state, server continues running for new commands.
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `atlas/voice/bridge_file_server.py` | Voice announcement in auto-advance, STOP handler fix, timer status clearing |
+| `scripts/atlas_launcher.py` | UI countdown display during 'pending' phase |
+
+### Verification
+
+| Check | Result |
+|-------|--------|
+| Voice announces on READY? screen | ✅ Synchronized with UI |
+| STOP exits routine | ✅ State fully reset |
+| Server continues after STOP | ✅ Accepts new commands |
+| UI shows idle after STOP | ✅ Timer card hidden |
+| Can start new routine after STOP | ✅ All state reset |
+
+---
+
+## BridgeFileServer Modular Refactoring (January 21, 2026)
+
+### Status: ✅ IMPLEMENTED
+
+Major refactoring of `bridge_file_server.py` to improve maintainability, testability, and code organization.
+
+### Problem
+
+The voice bridge had grown to 5820 lines with:
+- 52 scattered instance variables
+- 936-line `process_audio()` method with 30+ if/elif branches
+- 325-line `_get_timer_status()` method
+- 400+ lines of hardcoded pattern constants
+
+### Solution: Modular Extraction
+
+| New Module | Lines | Purpose |
+|------------|-------|---------|
+| `atlas/voice/state_models.py` | 173 | WorkoutState, RoutineState, AssessmentState, TimerState dataclasses |
+| `atlas/voice/timer_builders.py` | 547 | Timer dict building with TimerContext |
+| `atlas/voice/intent_dispatcher.py` | 1123 | IntentDispatcher with priority-ordered handlers |
+| `config/voice/intent_patterns.json` | ~500 | Externalized patterns (hot-configurable) |
+
+### Results
+
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| bridge_file_server.py | 5820 lines | 4767 lines | -18% |
+| process_audio() | 936 lines | 148 lines | -84% |
+| _get_timer_status() | 325 lines | 66 lines | -80% |
+| Instance variables | 52 scattered | 4 dataclasses | Organized |
+
+### Key Changes
+
+1. **State Classes**: Variables like `self._workout_active` → `self.workout.active`
+2. **Timer Builders**: `get_timer_status(ctx)` with 8 focused builder functions
+3. **Intent Dispatcher**: `IntentDispatcher(self).dispatch(text)` replaces if/elif chain
+4. **Pattern Config**: `get_patterns("general", "meal_triggers")` for hot-reloadable patterns
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `atlas/voice/bridge_file_server.py` | State class usage, timer builder integration, dispatcher wiring |
+| `atlas/voice/state_models.py` | NEW - 4 dataclasses with reset() methods |
+| `atlas/voice/timer_builders.py` | NEW - TimerContext + 8 builder functions |
+| `atlas/voice/intent_dispatcher.py` | NEW - IntentDispatcher class |
+| `config/voice/intent_patterns.json` | NEW - All patterns externalized |
+
+### Verification
+
+| Check | Result |
+|-------|--------|
+| All modules compile | ✅ Passed |
+| State class reset() | ✅ Works |
+| Timer builders | ✅ Return correct dicts |
+| Intent dispatcher | ✅ Routes correctly |
+| Full import test | ✅ BridgeFileServer imports |
 
 ---
 

@@ -1,0 +1,659 @@
+{
+  "metadata": {
+    "module_name": "Return to Running & Sprint Protocol",
+    "version": "1.0",
+    "created_date": "2026-01-12",
+    "parent_protocol": "Blueprint Combat Ready v4.0",
+    "purpose": "Systematic, evidence-based running reintroduction for ankle injury recovery leading to combat sports and soccer readiness",
+    "research_basis": [
+      "Mass General Brigham Lateral Ankle Sprain Protocol (2024)",
+      "University of Delaware Return to Running Program",
+      "International Journal of Sports Physical Therapy - Soccer Return to Sprint",
+      "Phil Plisky LSI Research (2011-2023)",
+      "Wilson et al. 2012 - Interference Effect Meta-Analysis"
+    ],
+    "critical_principle": "Running is ESSENTIAL for combat readiness and soccer - but TIMING and READINESS determine success. Premature return = 4x re-injury risk."
+  },
+
+  "why_running_matters": {
+    "combat_sports_requirement": {
+      "acceleration": "First 10m determines who controls engagement",
+      "deceleration": "Braking forces 2-3x body weight - ankle must handle this",
+      "change_of_direction": "Soccer: 1350+ direction changes per match",
+      "repeated_sprint_ability": "Key predictor of match performance",
+      "psychological": "Confidence in ankle is as important as physical capacity"
+    },
+    "soccer_specific_demands": {
+      "sprint_distances": "Most sprints are 10-30m (acceleration dominant)",
+      "max_velocity_achievement": "Soccer players reach 96% max velocity by 21m",
+      "deceleration_frequency": "More frequent than accelerations in match play",
+      "cutting_pivoting": "Lateral forces demand full ankle stability"
+    },
+    "why_we_defer_not_skip": {
+      "tissue_healing_timeline": "Ligaments need 12-16 weeks for full remodeling",
+      "neural_recovery": "Proprioception deficits persist 12+ months without rehab",
+      "reinjury_statistics": "Ankle sprain has highest re-injury rate of all lower limb injuries",
+      "building_foundation": "Cycling builds cardio base without compromising ankle healing"
+    }
+  },
+
+  "phase_structure_overview": {
+    "phase_1_rehab": {
+      "weeks": "1-12",
+      "running_status": "NO RUNNING",
+      "cardio_modality": "Cycling exclusively",
+      "focus": "Ankle rehab, strength foundation, Zone 2 base",
+      "goal": "Pass all GATE 1 criteria"
+    },
+    "phase_2a_walk_jog": {
+      "weeks": "13-16",
+      "running_status": "WALK-JOG PROGRESSION",
+      "prerequisite": "Pass GATE 1 criteria",
+      "goal": "Rebuild running tolerance, pass GATE 2"
+    },
+    "phase_2b_tempo_running": {
+      "weeks": "17-20",
+      "running_status": "TEMPO & CONTINUOUS RUNNING",
+      "prerequisite": "Pass GATE 2 criteria",
+      "goal": "Build running volume, prepare for sprints, pass GATE 3"
+    },
+    "phase_2c_sprint_introduction": {
+      "weeks": "21-24",
+      "running_status": "SPRINT REINTRODUCTION",
+      "prerequisite": "Pass GATE 3 criteria",
+      "goal": "Develop acceleration, pass GATE 4"
+    },
+    "phase_3_full_sport": {
+      "weeks": "25+",
+      "running_status": "FULL SPRINT & AGILITY",
+      "prerequisite": "Pass GATE 4 criteria",
+      "goal": "Return to soccer, combat sports conditioning"
+    }
+  },
+
+  "gate_criteria": {
+    "gate_1_running_readiness": {
+      "name": "GATE 1: Ready to Attempt Running",
+      "earliest_week": 12,
+      "must_pass_ALL": true,
+      "criteria": {
+        "pain_criteria": {
+          "test": "Ankle pain rating",
+          "requirement": "≤2/10 for 2+ consecutive weeks",
+          "rationale": "Pain-free foundation prevents compensation patterns"
+        },
+        "range_of_motion": {
+          "test": "Weight-Bearing Lunge Test (WBLT)",
+          "requirement": "≥10cm AND within 2cm of uninjured side",
+          "how_to_test": "Foot on tape measure, lunge knee to wall, measure toe-to-wall distance",
+          "normative": "Males average 14.2cm, Females 12.7cm",
+          "rationale": "Running requires 20-30° dorsiflexion (≈7-8cm WBLT minimum)"
+        },
+        "single_leg_balance": {
+          "test": "Single-leg stance",
+          "requirement": "60 seconds eyes open, 30 seconds eyes closed, both sides",
+          "rationale": "Proprioception foundation for dynamic stability"
+        },
+        "calf_strength": {
+          "test": "Single-leg heel raises",
+          "requirement": "25 repetitions at 2-second tempo without quality loss",
+          "both_sides_requirement": "LSI ≥90%",
+          "rationale": "Calf absorbs 6-8x body weight during running"
+        },
+        "walk_test": {
+          "test": "30-minute brisk walk",
+          "requirement": "No pain, no limp, no swelling afterwards",
+          "surface": "Flat, even surface",
+          "rationale": "Walking is running at low intensity - must be effortless"
+        },
+        "plyometric_readiness": {
+          "test": "Double-leg hopping in place",
+          "requirement": "20 consecutive hops pain-free",
+          "progression": "Two-foot → Single-foot when double is easy",
+          "rationale": "Running = controlled single-leg hopping"
+        }
+      },
+      "agent_decision": {
+        "all_pass": "Clear to begin Phase 2A walk-jog progression",
+        "any_fail": "Continue Phase 1 rehab, retest in 1-2 weeks"
+      }
+    },
+
+    "gate_2_continuous_running": {
+      "name": "GATE 2: Ready for Continuous Running",
+      "earliest_week": 16,
+      "must_pass_ALL": true,
+      "criteria": {
+        "walk_jog_completion": {
+          "test": "University of Delaware Protocol Level 5",
+          "requirement": "Jog 2 miles continuously without pain/swelling",
+          "rationale": "Graduated loading ensures tissue tolerance"
+        },
+        "single_leg_hop_battery": {
+          "tests": [
+            "Single Hop for Distance",
+            "Triple Hop for Distance",
+            "Crossover Hop for Distance",
+            "6-Meter Timed Hop"
+          ],
+          "requirement": "LSI ≥90% on ALL four tests",
+          "ideal_target": "LSI ≥95% (research suggests 90% insufficient)",
+          "how_to_test": "Best of 3 trials each leg, calculate involved/uninvolved × 100",
+          "rationale": "Hop tests assess power, proprioception, and confidence"
+        },
+        "side_hop_test": {
+          "test": "Lateral hop over 30cm line × 10 reps for time",
+          "requirement": "LSI ≥90%",
+          "rationale": "Assesses lateral stability crucial for direction changes"
+        },
+        "y_balance_test": {
+          "test": "Y-Balance / Star Excursion Balance Test",
+          "requirement": "Composite score LSI ≥90%",
+          "rationale": "Dynamic balance in all planes"
+        },
+        "no_pain_with_jogging": {
+          "test": "Pain during and 24h after jogging",
+          "requirement": "0/10 pain",
+          "rationale": "Any pain indicates incomplete readiness"
+        }
+      },
+      "agent_decision": {
+        "all_pass": "Clear to begin Phase 2B tempo running",
+        "any_fail": "Continue walk-jog progression, address deficits, retest in 1-2 weeks"
+      }
+    },
+
+    "gate_3_sprint_readiness": {
+      "name": "GATE 3: Ready for Sprint Introduction",
+      "earliest_week": 20,
+      "must_pass_ALL": true,
+      "criteria": {
+        "continuous_running": {
+          "test": "Tempo run at 70-75% effort",
+          "requirement": "20 minutes continuous without pain",
+          "rationale": "Must handle sustained moderate intensity before max efforts"
+        },
+        "hop_test_progression": {
+          "test": "All four hop tests + Side Hop + Figure-8 Hop",
+          "requirement": "LSI ≥95% (higher standard for sprint clearance)",
+          "rationale": "Sprinting loads exceed hopping - need buffer"
+        },
+        "reactive_agility_baseline": {
+          "test": "T-Test or 5-10-5 Shuttle",
+          "requirement": "Complete pain-free, assess baseline time",
+          "rationale": "Establishes direction change capacity"
+        },
+        "deceleration_tolerance": {
+          "test": "Rapid deceleration from jog (3 reps)",
+          "requirement": "Pain-free, controlled stop within 2-3 steps",
+          "rationale": "Braking forces are higher than acceleration forces"
+        },
+        "psychological_readiness": {
+          "test": "Self-reported confidence in ankle",
+          "requirement": "≥8/10 confidence for sprinting",
+          "rationale": "Fear and apprehension increase injury risk"
+        }
+      },
+      "agent_decision": {
+        "all_pass": "Clear to begin Phase 2C sprint introduction",
+        "any_fail": "Continue tempo running, address specific deficits, retest in 1-2 weeks"
+      }
+    },
+
+    "gate_4_full_sport_clearance": {
+      "name": "GATE 4: Ready for Full Sport Return",
+      "earliest_week": 24,
+      "must_pass_ALL": true,
+      "criteria": {
+        "sprint_progression_complete": {
+          "test": "Completed all sprint progression levels",
+          "requirement": "Pain-free 90%+ effort sprints × multiple sessions"
+        },
+        "max_velocity_sprint": {
+          "test": "60m sprint at 95%+ effort",
+          "requirement": "Pain-free, symmetrical gait",
+          "rationale": "Must handle absolute max speeds"
+        },
+        "repeated_sprint_ability": {
+          "test": "6 × 40m sprints with 20s recovery",
+          "requirement": "Complete all reps, ≤10% performance decrement",
+          "rationale": "Match simulation - sprints under fatigue"
+        },
+        "change_of_direction": {
+          "test": "Illinois Agility Test or equivalent",
+          "requirement": "Pain-free, compare to baseline",
+          "rationale": "Multi-directional demands"
+        },
+        "reactive_agility": {
+          "test": "Reactive COD drill (visual/audio cue)",
+          "requirement": "Pain-free, appropriate movement quality",
+          "rationale": "Sport requires unplanned movements"
+        },
+        "sport_specific_simulation": {
+          "test": "20-minute small-sided game or shadow sparring",
+          "requirement": "Pain-free during and 24-48h after",
+          "rationale": "Final integration test before full return"
+        }
+      },
+      "agent_decision": {
+        "all_pass": "CLEARED for full sport participation with ongoing monitoring",
+        "any_fail": "Continue Phase 2C, address specific issues, retest"
+      }
+    }
+  },
+
+  "walk_jog_progression": {
+    "name": "University of Delaware Return to Running Protocol (Modified)",
+    "prerequisites": "GATE 1 passed",
+    "surface": "Treadmill preferred initially (controlled), progress to grass/track",
+    "frequency": "Every other day minimum, max 4 sessions per week",
+    "progression_rules": {
+      "advance_when": "Complete level pain-free with no swelling 24h post",
+      "stay_same_level_if": "Sore AFTER workout",
+      "drop_one_level_if": "Sore DURING workout, take 1 day off",
+      "drop_two_levels_if": "Sore during WARMUP, take 2 days off"
+    },
+    "levels": {
+      "level_1": {
+        "description": "Walk/Jog Introduction",
+        "protocol": "0.1 mile walk / 0.1 mile jog - repeat 10 times",
+        "total_distance": "2 miles",
+        "running_percentage": "50%",
+        "estimated_duration": "25-30 min"
+      },
+      "level_2": {
+        "description": "Increase Jog Ratio",
+        "protocol": "Alternate 0.1 mile walk / 0.2 mile jog",
+        "total_distance": "2 miles",
+        "running_percentage": "67%",
+        "estimated_duration": "22-25 min"
+      },
+      "level_3": {
+        "description": "Further Increase Jog",
+        "protocol": "Alternate 0.1 mile walk / 0.3 mile jog",
+        "total_distance": "2 miles",
+        "running_percentage": "75%",
+        "estimated_duration": "20-23 min"
+      },
+      "level_4": {
+        "description": "Near Continuous",
+        "protocol": "Alternate 0.1 mile walk / 0.4 mile jog",
+        "total_distance": "2 miles",
+        "running_percentage": "80%",
+        "estimated_duration": "18-22 min"
+      },
+      "level_5": {
+        "description": "Continuous Jogging",
+        "protocol": "Jog full 2 miles continuously",
+        "total_distance": "2 miles",
+        "running_percentage": "100%",
+        "milestone": "GATE 2 checkpoint - perform hop tests"
+      },
+      "level_6": {
+        "description": "Increase Distance",
+        "protocol": "Jog 2.5 miles continuously",
+        "estimated_duration": "25-28 min"
+      },
+      "level_7": {
+        "description": "Standard Distance",
+        "protocol": "Jog 3 miles continuously",
+        "estimated_duration": "30-35 min"
+      },
+      "level_8": {
+        "description": "Introduce Speed Variation",
+        "protocol": "Alternate running/jogging every 0.25 miles",
+        "total_distance": "3 miles",
+        "note": "Running = faster pace, not sprinting"
+      }
+    },
+    "track_alternative": {
+      "level_1": "Jog straights / Walk curves - 2 miles",
+      "level_2": "Jog straights / Jog 1 curve every other lap - 2 miles",
+      "level_3": "Jog straights / Jog 1 curve every lap - 2 miles",
+      "level_4": "Jog 1¾ lap / Walk curve - 2 miles",
+      "level_5": "Jog all laps - 2 miles",
+      "surface_benefit": "Track provides consistent, forgiving surface"
+    }
+  },
+
+  "tempo_running_phase": {
+    "name": "Phase 2B: Building Running Capacity",
+    "prerequisites": "GATE 2 passed",
+    "duration": "Weeks 17-20",
+    "goals": [
+      "Build running volume to 30+ continuous minutes",
+      "Introduce tempo/threshold running",
+      "Develop efficient running mechanics",
+      "Prepare tissues for sprint loads"
+    ],
+    "weekly_structure": {
+      "run_sessions_per_week": 3,
+      "progression": {
+        "week_17": {
+          "session_1": "Easy jog 20 min",
+          "session_2": "Easy jog 25 min",
+          "session_3": "Easy jog 20 min with 4 × 20s strides at 70% effort"
+        },
+        "week_18": {
+          "session_1": "Easy jog 25 min",
+          "session_2": "Tempo run: 5 min easy, 10 min at 75% effort, 5 min easy",
+          "session_3": "Easy jog 25 min with 5 × 20s strides at 75% effort"
+        },
+        "week_19": {
+          "session_1": "Easy jog 30 min",
+          "session_2": "Tempo run: 5 min easy, 15 min at 75-80% effort, 5 min easy",
+          "session_3": "Fartlek: 25 min with 6 × 30s pickups"
+        },
+        "week_20": {
+          "session_1": "Easy jog 30 min",
+          "session_2": "Tempo run: 5 min easy, 20 min at 80% effort, 5 min easy",
+          "session_3": "Progression run: Start easy, finish at tempo pace for final 10 min"
+        }
+      }
+    },
+    "strides_protocol": {
+      "what": "Short accelerations to near-sprint pace",
+      "duration": "20-30 seconds",
+      "effort": "70-80% (NOT max sprint)",
+      "recovery": "Walk back to start (60-90 seconds)",
+      "purpose": "Neuromuscular preparation for sprinting",
+      "form_focus": "Tall posture, relaxed shoulders, quick turnover"
+    },
+    "surface_progression": {
+      "weeks_17_18": "Treadmill or track",
+      "weeks_19_20": "Introduce grass, trails (uneven surfaces)",
+      "rationale": "Uneven surfaces challenge proprioception"
+    }
+  },
+
+  "sprint_introduction_protocol": {
+    "name": "Phase 2C: Sprint Reintroduction",
+    "prerequisites": "GATE 3 passed",
+    "duration": "Weeks 21-24",
+    "critical_principles": {
+      "maximal_intent": "Even at 70% effort, INTEND to accelerate maximally",
+      "full_recovery": "Sprint quality over quantity - 2-3 min between reps",
+      "surface": "Grass preferred initially (forgiving), progress to firmer surfaces",
+      "session_frequency": "2 sprint sessions per week max, 72h between"
+    },
+    "progression": {
+      "week_21": {
+        "name": "Sub-Max Sprint Introduction",
+        "session_1": {
+          "warmup": "10 min jog + dynamic drills",
+          "main_set": "4 × 30m at 70% effort, walk back recovery",
+          "cooldown": "5 min easy jog",
+          "focus": "Smooth acceleration, no pain"
+        },
+        "session_2": {
+          "warmup": "10 min jog + dynamic drills",
+          "main_set": "5 × 30m at 70-75% effort, 2 min recovery",
+          "cooldown": "5 min easy jog",
+          "progress_if": "Zero pain or apprehension"
+        }
+      },
+      "week_22": {
+        "name": "Increasing Intensity",
+        "session_1": {
+          "main_set": "4 × 40m at 75-80% effort, 2 min recovery",
+          "add": "2 × 20m at 80% effort"
+        },
+        "session_2": {
+          "main_set": "5 × 40m at 80% effort, 2-3 min recovery",
+          "focus": "Drive phase (first 10m)"
+        }
+      },
+      "week_23": {
+        "name": "Near-Max Sprints",
+        "session_1": {
+          "main_set": "3 × 30m at 85% + 3 × 40m at 85%, 3 min recovery",
+          "add": "2 × flying 20m (10m build-up, 20m fast)"
+        },
+        "session_2": {
+          "main_set": "4 × 50m at 85-90% effort, 3 min recovery",
+          "milestone": "Longest sprint distance yet"
+        }
+      },
+      "week_24": {
+        "name": "Max Effort Introduction",
+        "session_1": {
+          "main_set": "2 × 30m at 90%, 2 × 40m at 90%, 2 × 20m at 95%",
+          "recovery": "Full recovery (3-4 min) between 95% efforts"
+        },
+        "session_2": {
+          "main_set": "6 × 40m at 90%+, focusing on consistent times",
+          "assessment": "Compare times to establish baseline",
+          "milestone": "GATE 4 assessment"
+        }
+      }
+    },
+    "flying_sprint_protocol": {
+      "what": "Sprint with running start (not from standstill)",
+      "setup": "10-15m build-up zone, then max effort for 20-30m",
+      "purpose": "Achieves higher velocities with lower acceleration stress",
+      "when_to_introduce": "Week 23 onwards"
+    },
+    "deceleration_training": {
+      "importance": "Deceleration forces exceed acceleration forces - must train",
+      "progression": {
+        "week_21": "Gradual deceleration over 10-15m",
+        "week_22": "Faster deceleration over 8-10m",
+        "week_23": "Sharp deceleration over 5-6m (controlled)",
+        "week_24": "Reactive deceleration on command"
+      }
+    }
+  },
+
+  "change_of_direction_integration": {
+    "name": "Agility & COD Progression",
+    "timing": "Introduce alongside sprint training (Week 21+)",
+    "principles": {
+      "closed_before_open": "Planned drills before reactive",
+      "slow_before_fast": "Walking COD → Jogging COD → Running COD → Sprint COD",
+      "simple_before_complex": "45° cuts → 90° cuts → 180° turns"
+    },
+    "progression": {
+      "level_1_planned_slow": {
+        "drills": ["Walking figure-8", "Jogging lateral shuffle", "Jogging carioca"],
+        "intensity": "50-60% effort",
+        "when": "Week 21"
+      },
+      "level_2_planned_moderate": {
+        "drills": ["Running figure-8", "45° cut drills at jog pace", "Box drill at 70%"],
+        "intensity": "70% effort",
+        "when": "Week 22"
+      },
+      "level_3_planned_fast": {
+        "drills": ["T-test at tempo", "5-10-5 shuttle at 80%", "90° cuts at running pace"],
+        "intensity": "80% effort",
+        "when": "Week 23"
+      },
+      "level_4_reactive": {
+        "drills": ["Mirror drill", "Reactive T-test (visual cue)", "1v1 shadow chase"],
+        "intensity": "85-90% effort",
+        "when": "Week 24"
+      }
+    },
+    "soccer_specific_drills": {
+      "introduction_week": 22,
+      "examples": [
+        "Jockeying (defensive stance movement)",
+        "Backpedal to sprint",
+        "Cross-step recovery runs",
+        "Curved sprints (arc running)",
+        "Ball-tracking lateral movement"
+      ]
+    }
+  },
+
+  "repeated_sprint_ability_development": {
+    "name": "RSA Training Protocol",
+    "introduction_timing": "Week 23-24",
+    "why_important": "Soccer players perform 1350+ sprints per match, often in clusters",
+    "research_basis": "Repeated Sprint Training improves VO2max, anaerobic capacity, and speed",
+    "protocols": {
+      "beginner_rsa": {
+        "when": "Week 23",
+        "protocol": "4 × 20m sprints, 30s recovery between",
+        "sets": "2 sets with 3 min between sets",
+        "effort": "85% max"
+      },
+      "intermediate_rsa": {
+        "when": "Week 24",
+        "protocol": "6 × 30m sprints, 25s recovery between",
+        "sets": "2 sets with 4 min between sets",
+        "effort": "90% max"
+      },
+      "advanced_rsa": {
+        "when": "Week 25+",
+        "protocol": "8 × 40m sprints, 20s recovery between",
+        "sets": "1-2 sets",
+        "effort": "95% max",
+        "metric": "Track fatigue decrement (final sprint time vs first)"
+      }
+    },
+    "integration_with_cod": {
+      "name": "RSA with Direction Changes",
+      "research": "COD during RSA provides greater stimulus than straight sprints",
+      "example": "6 × 20m shuttle (10m out, touch, 10m back), 25s recovery"
+    }
+  },
+
+  "agent_integration": {
+    "running_status_tracking": {
+      "current_phase": "Phase 1 | 2A | 2B | 2C | 3",
+      "walk_jog_level": "1-8 (if in Phase 2A)",
+      "last_gate_passed": "0 | 1 | 2 | 3 | 4",
+      "next_gate_test_date": "date",
+      "sprint_max_effort_achieved": "percentage (0-100)"
+    },
+    "daily_running_check": {
+      "if_running_scheduled": [
+        "Check ankle pain score (must be ≤2/10)",
+        "Check WBLT both ankles (must be within 2cm)",
+        "Confirm no swelling from previous session",
+        "Verify 48h since last running session (Phase 2A) or 72h (sprint sessions)"
+      ],
+      "red_flags_abort_running": [
+        "Ankle pain >2/10",
+        "Swelling present",
+        "Compensation gait patterns noted",
+        "HRV Poor or Body Battery <40"
+      ]
+    },
+    "gate_test_scheduling": {
+      "gate_1_earliest": "End of Week 12",
+      "gate_2_earliest": "End of Week 16",
+      "gate_3_earliest": "End of Week 20",
+      "gate_4_earliest": "End of Week 24",
+      "retest_if_fail": "1-2 weeks later",
+      "agent_reminder": "Schedule gate test when approaching week milestone"
+    },
+    "progressive_overload_tracking": {
+      "walk_jog_level_history": [],
+      "sprint_distances_achieved": [],
+      "sprint_efforts_achieved": [],
+      "hop_test_lsi_history": {
+        "single_hop": [],
+        "triple_hop": [],
+        "crossover_hop": [],
+        "timed_hop": []
+      }
+    }
+  },
+
+  "injury_red_flags": {
+    "stop_immediately_if": [
+      "Sharp pain in ankle during running",
+      "Giving way or instability sensation",
+      "Swelling that appears during session",
+      "Limping that develops during run",
+      "Pain that increases as you continue"
+    ],
+    "regress_one_phase_if": [
+      "Pain >2/10 for 24h after session",
+      "Swelling next morning",
+      "Apprehension/fear affecting performance",
+      "Compensation patterns (observed or felt)"
+    ],
+    "proceed_with_caution_if": [
+      "Mild stiffness (0-1/10) in morning",
+      "Fatigue without pain",
+      "Psychological hesitation (address with gradual exposure)"
+    ]
+  },
+
+  "psychological_readiness": {
+    "importance": "Athletes with fear/anxiety at RTS have higher reinjury rates",
+    "assessment": {
+      "confidence_scale": "0-10 for each activity",
+      "track_weekly": ["Walking", "Jogging", "Running", "Sprinting", "Cutting", "Sport play"]
+    },
+    "interventions_for_low_confidence": {
+      "gradual_exposure": "More repetitions at current level before advancing",
+      "visualization": "Mental rehearsal of successful sprinting",
+      "positive_self_talk": "Replace 'my ankle is weak' with 'my ankle is getting stronger'",
+      "controlled_challenges": "Succeed at slightly harder task to build confidence"
+    }
+  },
+
+  "integration_with_phase_2_combat_ready": {
+    "weeks_13_16_modifications": {
+      "replace_saturday_vigorous": "One session becomes walk-jog progression",
+      "maintain_cycling": "Keep Tuesday/Sunday Zone 2 cycling",
+      "strength_continues": "Monday/Wednesday/Friday as programmed"
+    },
+    "weeks_17_20_modifications": {
+      "running_sessions": "Replace some cycling with tempo running",
+      "maintain_cycling_for_zone_2": "Running is higher intensity, need cycling for true Zone 2",
+      "saturday_options": ["Tempo run", "Cycling intervals", "Outdoor run + strides"]
+    },
+    "weeks_21_24_modifications": {
+      "sprint_sessions": "Tuesday AND Saturday dedicated to sprint development",
+      "cycling_reduced": "One Zone 2 cycling session (Sunday)",
+      "strength_maintained": "Critical for sprint power - do not reduce"
+    }
+  },
+
+  "summary_timeline": {
+    "week_1_12": {
+      "running": "NONE",
+      "cardio": "Cycling only",
+      "milestone": "Build to 150min Zone 2 weekly"
+    },
+    "week_13": {
+      "running": "GATE 1 TEST",
+      "if_pass": "Begin walk-jog Level 1"
+    },
+    "week_13_16": {
+      "running": "Walk-jog progression Levels 1-5",
+      "frequency": "Every other day",
+      "milestone": "Jog 2 miles continuous"
+    },
+    "week_16": {
+      "running": "GATE 2 TEST",
+      "tests": "Hop battery, Y-balance"
+    },
+    "week_17_20": {
+      "running": "Tempo runs, strides, building to 30min continuous",
+      "frequency": "3× per week"
+    },
+    "week_20": {
+      "running": "GATE 3 TEST",
+      "tests": "Advanced hop tests, T-test baseline, deceleration"
+    },
+    "week_21_24": {
+      "running": "Sprint introduction 70% → 95%",
+      "sprint_sessions": "2× per week",
+      "add": "COD training, RSA introduction"
+    },
+    "week_24": {
+      "running": "GATE 4 TEST",
+      "tests": "Max sprints, RSA, reactive agility, sport simulation"
+    },
+    "week_25_plus": {
+      "running": "Full sport return",
+      "status": "Ongoing monitoring, gradual return to match intensity"
+    }
+  }
+}

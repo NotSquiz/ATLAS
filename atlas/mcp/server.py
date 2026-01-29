@@ -17,6 +17,7 @@ except ImportError:
     FastMCP = None
 
 from atlas.memory.store import MemoryStore, get_store
+from atlas.memory.embeddings import get_embedder
 
 
 # Default database path
@@ -101,6 +102,67 @@ def create_server(db_path: Optional[Path] = None) -> "FastMCP":
                 for r in results
             ],
         }
+
+    @mcp.tool()
+    def memory_semantic_search(
+        query: str,
+        limit: int = 5,
+    ) -> dict:
+        """
+        Search ATLAS's memories using hybrid semantic + full-text search.
+
+        Uses BGE embeddings (384-dim) with RRF fusion (60% vector, 40% FTS).
+        This is the recommended search method for natural language queries.
+
+        Args:
+            query: Natural language search query
+            limit: Maximum number of results (default 5)
+
+        Returns:
+            Dictionary with semantically matching memories
+        """
+        try:
+            embedder = get_embedder()
+            query_embedding = embedder.embed_query(query)
+            results = store.search_hybrid(
+                query=query,
+                embedding=query_embedding,
+                limit=limit,
+            )
+            return {
+                "query": query,
+                "count": len(results),
+                "search_type": "hybrid_semantic",
+                "memories": [
+                    {
+                        "id": r.memory.id,
+                        "content": r.memory.content,
+                        "importance": r.memory.importance,
+                        "type": r.memory.memory_type,
+                        "score": r.score,
+                    }
+                    for r in results
+                ],
+            }
+        except Exception as e:
+            # Fall back to FTS if embeddings unavailable
+            results = store.search_fts(query, limit=limit)
+            return {
+                "query": query,
+                "count": len(results),
+                "search_type": "fts_fallback",
+                "fallback_reason": str(e),
+                "memories": [
+                    {
+                        "id": r.memory.id,
+                        "content": r.memory.content,
+                        "importance": r.memory.importance,
+                        "type": r.memory.memory_type,
+                        "score": r.score,
+                    }
+                    for r in results
+                ],
+            }
 
     @mcp.tool()
     def memory_get(memory_id: int) -> dict:
@@ -520,6 +582,268 @@ def create_server(db_path: Optional[Path] = None) -> "FastMCP":
             "count": len(injuries),
             "injuries": injuries,
         }
+
+    # ==========================================
+    # DIGEST TOOLS
+    # ==========================================
+
+    @mcp.tool()
+    def generate_daily_digest() -> dict:
+        """
+        Generate a daily digest with priorities, stuck items, and health notes.
+
+        Returns a ~150 word summary designed to be read in the morning.
+        Includes:
+        - Top 3 priorities from high-importance memories
+        - Any items you might be stuck on
+        - Small wins to notice
+        - Health status note
+
+        Returns:
+            Dictionary with digest text and metadata
+        """
+        from atlas.digest import DigestGenerator
+
+        generator = DigestGenerator()
+        digest = generator.generate_daily()
+
+        return {
+            "date": str(digest.date),
+            "text": digest.to_text(),
+            "voice": digest.to_voice(),
+            "word_count": digest.word_count,
+            "priorities": digest.top_priorities,
+            "stuck_on": digest.stuck_on,
+            "small_win": digest.small_win,
+            "health_note": digest.health_note,
+        }
+
+    @mcp.tool()
+    def generate_weekly_review() -> dict:
+        """
+        Generate a weekly review with summary, open loops, and suggested focus.
+
+        Returns a ~250 word review designed for Sunday reflection.
+        Includes:
+        - What happened this week
+        - Open loops that need closing
+        - Suggested focus areas for next week
+        - Recurring themes in your notes
+        - Health summary
+
+        Returns:
+            Dictionary with review text and metadata
+        """
+        from atlas.digest import DigestGenerator
+
+        generator = DigestGenerator()
+        review = generator.generate_weekly()
+
+        return {
+            "week_ending": str(review.week_ending),
+            "text": review.to_text(),
+            "word_count": review.word_count,
+            "summary": review.summary,
+            "completed": review.completed_items,
+            "open_loops": review.open_loops,
+            "suggested_focus": review.suggested_focus,
+            "recurring_theme": review.recurring_theme,
+            "health_summary": review.health_summary,
+        }
+
+    # ==========================================
+    # CLASSIFIER TOOLS
+    # ==========================================
+
+    @mcp.tool()
+    def classify_thought(
+        text: str,
+        store: bool = False,
+    ) -> dict:
+        """
+        Classify a thought into categories: people, projects, ideas, or admin.
+
+        Removes taxonomy work at capture time by automatically determining
+        what type of thought this is and extracting structured fields.
+
+        Args:
+            text: Raw thought text to classify
+            store: Whether to store in memory (default False)
+
+        Returns:
+            Dictionary with category, confidence, structured record
+        """
+        from atlas.orchestrator.classifier import ThoughtClassifier
+
+        classifier = ThoughtClassifier()
+
+        if store:
+            result = classifier.classify_and_store(text)
+        else:
+            result = classifier.classify(text)
+
+        response = {
+            "category": result.category.value,
+            "confidence": result.confidence,
+            "original_text": result.original_text,
+        }
+
+        if result.record:
+            from atlas.orchestrator.classifier import (
+                PersonRecord, ProjectRecord, IdeaRecord, AdminRecord, RecipeRecord
+            )
+            if isinstance(result.record, PersonRecord):
+                response["record"] = {
+                    "type": "person",
+                    "name": result.record.name,
+                    "context": result.record.context,
+                }
+            elif isinstance(result.record, ProjectRecord):
+                response["record"] = {
+                    "type": "project",
+                    "name": result.record.name,
+                    "parent_project": result.record.parent_project,
+                    "sub_area": result.record.sub_area,
+                    "status": result.record.status,
+                    "next_action": result.record.next_action,
+                }
+            elif isinstance(result.record, IdeaRecord):
+                response["record"] = {
+                    "type": "idea",
+                    "name": result.record.name,
+                    "one_liner": result.record.one_liner,
+                }
+            elif isinstance(result.record, AdminRecord):
+                response["record"] = {
+                    "type": "admin",
+                    "name": result.record.name,
+                    "due_date": str(result.record.due_date) if result.record.due_date else None,
+                }
+            elif isinstance(result.record, RecipeRecord):
+                response["record"] = {
+                    "type": "recipe",
+                    "name": result.record.name,
+                    "dish_type": result.record.dish_type,
+                    "notes": result.record.notes,
+                }
+
+        if result.memory_id:
+            response["memory_id"] = result.memory_id
+            response["filed_to"] = result.filed_to
+
+        return response
+
+    @mcp.tool()
+    def capture_thought(text: str) -> dict:
+        """
+        Capture and store a thought with automatic classification.
+
+        This is the primary "inbox" for your second brain. Just dump
+        your thought here and it will be classified, structured, and stored.
+
+        Args:
+            text: Raw thought to capture
+
+        Returns:
+            Dictionary with classification and storage info
+        """
+        from atlas.orchestrator.classifier import ThoughtClassifier
+
+        classifier = ThoughtClassifier()
+        result = classifier.classify_and_store(text, min_confidence=0.3)
+
+        return {
+            "status": "captured",
+            "category": result.category.value,
+            "confidence": result.confidence,
+            "memory_id": result.memory_id,
+            "message": f"Captured as {result.category.value} with {result.confidence:.0%} confidence",
+        }
+
+    @mcp.tool()
+    async def log_meal(meal_description: str) -> dict:
+        """
+        Log a meal with automatic nutrition calculation.
+
+        Parses natural language food descriptions and looks up nutrition data
+        from USDA FoodData Central.
+
+        Args:
+            meal_description: Natural language meal description
+                Examples:
+                - "100g chicken breast, cup of rice, broccoli"
+                - "5 crackers with 100g camembert, 50g salami"
+                - "oatmeal with banana and honey"
+
+        Returns:
+            Dictionary with parsed items and nutrition totals
+        """
+        try:
+            from atlas.nutrition import NutritionService
+
+            service = NutritionService()
+            record = await service.log_meal(meal_description)
+
+            return {
+                "status": "logged",
+                "items": [item.to_dict() for item in record.items],
+                "nutrients": record.nutrients.to_dict(),
+                "summary": record.nutrients.summary(),
+                "timestamp": record.timestamp.isoformat(),
+            }
+
+        except ImportError:
+            return {
+                "status": "error",
+                "message": "Nutrition module not available. Install with: pip install httpx",
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": str(e),
+            }
+
+    @mcp.tool()
+    async def get_daily_nutrition(date_str: str = "") -> dict:
+        """
+        Get nutrition totals for a specific day.
+
+        Args:
+            date_str: Date in YYYY-MM-DD format (defaults to today)
+
+        Returns:
+            Dictionary with daily nutrition totals
+        """
+        from datetime import datetime
+
+        try:
+            from atlas.nutrition import NutritionService
+
+            service = NutritionService()
+
+            if date_str:
+                query_date = datetime.strptime(date_str, "%Y-%m-%d")
+            else:
+                query_date = datetime.now()
+
+            totals = await service.get_daily_totals(query_date)
+
+            return {
+                "date": query_date.strftime("%Y-%m-%d"),
+                "nutrients": totals.to_dict(),
+                "summary": totals.summary(),
+            }
+
+        except ImportError:
+            return {
+                "status": "error",
+                "message": "Nutrition module not available",
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": str(e),
+            }
 
     return mcp
 

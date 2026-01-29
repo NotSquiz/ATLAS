@@ -138,6 +138,8 @@ What would make this recommendation WRONG?
 | Code changes | Code Review Self-Check |
 | Uncertain | Confidence Extraction |
 | Decisions | Inversion Test |
+| Workout progression | Progressive Overload Verification |
+| Workout data | Data Persistence Verification |
 
 ---
 
@@ -199,6 +201,106 @@ After agent reports completion:
 
 ---
 
+## 9. Progressive Overload Verification
+
+For workout progression recommendations (health-critical):
+
+```
+Verify progression logic:
+1. Starting weight derived correctly?
+   - Baseline assessment exists and is <28 days old?
+   - 1RM calculated with Brzycki: weight * 36 / (37 - reps)?
+   - Starting intensity applied (70% for 10RM, 75% for 5RM)?
+
+2. Double progression trigger valid?
+   - All sets hit TOP of rep range (not just average)?
+   - No pain warning active for relevant body parts?
+   - Increment matches exercise config (2.5kg default)?
+
+3. Deload detection working?
+   - Pain spike ≥6/10 triggers immediate deload?
+   - 4+ YELLOW days in 10 triggers fatigue deload?
+   - 14-day cooldown prevents stacking deloads?
+
+4. Voice prompt appropriate?
+   - Single touchpoint (only at exercise ready)?
+   - Pain warning prevents progression recommendation?
+   - Weight rounded to plate increment?
+```
+
+### Progression Test Cases
+
+| Scenario | Expected Behavior |
+|----------|-------------------|
+| Last workout: 25kg × 12 reps (all sets) | Recommend 27.5kg |
+| Last workout: 25kg × 10 reps avg | Maintain 25kg |
+| Shoulder pain trending up (slope > 0.5) | "Hold at 25kg" |
+| No baseline assessment | "What weight are you using?" |
+| Bodyweight exercise (bird_dog) | No weight prompt |
+| Pain spike at 7/10 today | Deload all exercises |
+| Last deload 5 days ago | Cooldown active, no deload |
+
+### AMRAP Verification
+
+```
+Final set AMRAP flow:
+1. User says "done" on final set
+2. System responds "Last set. How many reps?"
+3. User says number (e.g., "12")
+4. Reps logged to workout_exercise_sets
+5. Used in next session's progression calculation
+```
+
+---
+
+## 10. Workout Data Persistence Verification
+
+For interactive workout completion:
+
+```
+Verify data persisted correctly:
+1. workout_exercises table populated?
+   - All exercises from _workout_log included?
+   - exercise_id, weight_kg, reps columns filled?
+
+2. workout_exercise_sets table populated?
+   - Per-set data with set_number, reps_actual, weight_kg?
+   - All sets from AMRAP capture included?
+
+3. exercise_progression_log updated?
+   - actual_weight_kg matches user input?
+   - actual_reps_avg calculated from set data?
+   - one_rm_estimate computed (Brzycki)?
+
+4. No data loss on edge cases?
+   - User skips exercise mid-workout?
+   - User stops workout early ("stop workout")?
+   - Workout timeout/crash recovery?
+```
+
+### SQL Verification Queries
+
+```sql
+-- Check workout_exercise_sets populated
+SELECT we.exercise_name, wes.set_number, wes.reps_actual, wes.weight_kg
+FROM workout_exercise_sets wes
+JOIN workout_exercises we ON wes.workout_exercise_id = we.id
+WHERE we.workout_id = (SELECT MAX(id) FROM workouts);
+
+-- Check progression log
+SELECT * FROM exercise_progression_log
+WHERE date = date('now')
+ORDER BY exercise_id;
+
+-- Verify 1RM trend
+SELECT exercise_id, date, actual_weight_kg, actual_reps_avg, one_rm_estimate
+FROM exercise_progression_log
+WHERE exercise_id = 'goblet_squat'
+ORDER BY date DESC LIMIT 5;
+```
+
+---
+
 ## Implementation
 
 ```python
@@ -207,6 +309,11 @@ from atlas.orchestrator.confidence_router import (
     route_by_confidence,     # Routes by extracted confidence
     extract_confidence,      # Gets confidence score from text
 )
+
+from atlas.health.progression import ProgressionService
+# service.get_recommendation("goblet_squat")  # Get weight recommendation
+# service.check_deload()                       # Check deload triggers
+# service.format_voice_recommendation(rec)    # Format for voice output
 ```
 
 ---

@@ -1,0 +1,446 @@
+{
+  "metadata": {
+    "name": "ATLAS Baseline Assessment Protocol",
+    "version": "1.0",
+    "duration_minutes": 60,
+    "retest_frequency_weeks": 4,
+    "source": "Integration of Phase 1-3 baselines + GATE criteria"
+  },
+
+  "assessments": {
+    "strength": [
+      {
+        "id": "trap_bar_deadlift_5rm",
+        "name": "Trap Bar Deadlift 5RM",
+        "protocol": "Warm up progressively (empty bar → 50% → 75%). Find weight you can lift 5 times with good form. Hinge at hips, chest up.",
+        "unit": "kg",
+        "target": 100,
+        "minimum": 60,
+        "calculate_1rm_factor": 1.15,
+        "notes": "Avoid if lower back pain > 3/10"
+      },
+      {
+        "id": "goblet_squat_10rm",
+        "name": "Goblet Squat 10RM",
+        "protocol": "Hold DB at chest, squat to full depth. Heels elevated if ankle mobility limited.",
+        "unit": "kg",
+        "target": 32,
+        "minimum": 16
+      },
+      {
+        "id": "floor_press_10rm",
+        "name": "Floor Press 10RM",
+        "protocol": "Lie on floor, dumbbells at chest. Press up. Floor limits range to protect shoulder.",
+        "unit": "kg",
+        "target": 30,
+        "minimum": 15,
+        "notes": "Safer than bench press for shoulder rehab"
+      }
+    ],
+
+    "mobility": [
+      {
+        "id": "ankle_dorsiflexion_left",
+        "name": "Ankle Dorsiflexion - Left (WBLT)",
+        "protocol": "Knee-to-wall test. Foot on tape measure, drive knee forward to wall. Measure distance from big toe to wall when knee touches. Keep heel down.",
+        "unit": "cm",
+        "target": 12,
+        "minimum": 8,
+        "gate_requirement": "GATE 1 requires >=10cm AND within 2cm of right side",
+        "notes": "Key metric for ankle rehab - left ankle is old break"
+      },
+      {
+        "id": "ankle_dorsiflexion_right",
+        "name": "Ankle Dorsiflexion - Right (WBLT)",
+        "protocol": "Same as left. Compare sides for symmetry.",
+        "unit": "cm",
+        "target": 12,
+        "minimum": 8
+      },
+      {
+        "id": "shoulder_flexion_right",
+        "name": "Shoulder Flexion - Right",
+        "protocol": "Stand against wall, raise arm overhead. Measure angle of arm to vertical.",
+        "unit": "degrees",
+        "target": 180,
+        "minimum": 150,
+        "notes": "Supraspinatus rehab - track recovery"
+      },
+      {
+        "id": "hip_flexor_length_left",
+        "name": "Hip Flexor (Thomas Test) - Left",
+        "protocol": "Lie on edge of table, pull one knee to chest. Rate hanging leg: 5=thigh below horizontal, 4=horizontal, 3=above horizontal, 2=significant hip flexion, 1=severe tightness",
+        "unit": "score",
+        "target": 5,
+        "minimum": 3
+      },
+      {
+        "id": "hip_flexor_length_right",
+        "name": "Hip Flexor (Thomas Test) - Right",
+        "protocol": "Same as left side.",
+        "unit": "score",
+        "target": 5,
+        "minimum": 3
+      },
+      {
+        "id": "toe_touch",
+        "name": "Standing Toe Touch",
+        "protocol": "Stand, bend forward with straight legs. Measure fingertip distance past toes (positive) or from toes (negative).",
+        "unit": "cm",
+        "target": 5,
+        "minimum": -10
+      },
+      {
+        "id": "great_toe_extension",
+        "name": "Great Toe Extension",
+        "protocol": "Stabilize foot, lift big toe. Measure angle of extension.",
+        "unit": "degrees",
+        "target": 70,
+        "minimum": 45,
+        "notes": "Critical for running push-off"
+      }
+    ],
+
+    "stability": [
+      {
+        "id": "single_leg_balance_left_eo",
+        "name": "Single Leg Balance - Left (Eyes Open)",
+        "protocol": "Stand on left leg, hands on hips. Time until loss of balance or max 60s.",
+        "unit": "seconds",
+        "target": 60,
+        "minimum": 30,
+        "gate_requirement": "GATE 1 requires 60s eyes open"
+      },
+      {
+        "id": "single_leg_balance_right_eo",
+        "name": "Single Leg Balance - Right (Eyes Open)",
+        "protocol": "Stand on right leg, hands on hips. Time until loss of balance or max 60s.",
+        "unit": "seconds",
+        "target": 60,
+        "minimum": 30
+      },
+      {
+        "id": "single_leg_balance_left_ec",
+        "name": "Single Leg Balance - Left (Eyes Closed)",
+        "protocol": "Same as eyes open, but close eyes. Much harder.",
+        "unit": "seconds",
+        "target": 30,
+        "minimum": 10,
+        "gate_requirement": "GATE 1 requires 30s eyes closed"
+      },
+      {
+        "id": "single_leg_balance_right_ec",
+        "name": "Single Leg Balance - Right (Eyes Closed)",
+        "protocol": "Same as eyes open, but close eyes.",
+        "unit": "seconds",
+        "target": 30,
+        "minimum": 10
+      },
+      {
+        "id": "mcgill_curlup",
+        "name": "McGill Curl-Up Hold",
+        "protocol": "One knee bent, hands under lower back. Lift head/shoulders slightly, hold.",
+        "unit": "seconds",
+        "target": 60,
+        "minimum": 30
+      },
+      {
+        "id": "side_plank_left",
+        "name": "Side Plank - Left",
+        "protocol": "Elbow under shoulder, feet stacked. Lift hips, hold.",
+        "unit": "seconds",
+        "target": 60,
+        "minimum": 30
+      },
+      {
+        "id": "side_plank_right",
+        "name": "Side Plank - Right",
+        "protocol": "Same as left side.",
+        "unit": "seconds",
+        "target": 60,
+        "minimum": 30
+      }
+    ],
+
+    "cardio": [
+      {
+        "id": "resting_hr",
+        "name": "Resting Heart Rate",
+        "protocol": "Measure upon waking, before getting out of bed. Average of 3 consecutive mornings.",
+        "unit": "bpm",
+        "target": 55,
+        "minimum": 70,
+        "lower_is_better": true
+      },
+      {
+        "id": "hr_recovery_1min",
+        "name": "Heart Rate Recovery (1 min)",
+        "protocol": "After Zone 4 effort (near max), record HR immediately then 1 minute later. Calculate drop.",
+        "unit": "bpm",
+        "target": 25,
+        "minimum": 12,
+        "notes": "Higher drop = better cardiovascular fitness"
+      }
+    ],
+
+    "calf_strength": [
+      {
+        "id": "single_leg_heel_raise_left",
+        "name": "Single Leg Heel Raises - Left",
+        "protocol": "Stand on left foot on step, hold wall for balance. Rise on toes, lower below step level. 2-second tempo. Count reps until form breaks.",
+        "unit": "reps",
+        "target": 25,
+        "minimum": 15,
+        "gate_requirement": "GATE 1 requires 25 reps at 2-sec tempo"
+      },
+      {
+        "id": "single_leg_heel_raise_right",
+        "name": "Single Leg Heel Raises - Right",
+        "protocol": "Same as left. Compare for LSI.",
+        "unit": "reps",
+        "target": 25,
+        "minimum": 15
+      }
+    ],
+
+    "power": [
+      {
+        "id": "vertical_jump",
+        "name": "Vertical Jump",
+        "protocol": "Countermovement jump. Measure highest reach minus standing reach.",
+        "unit": "cm",
+        "target": 45,
+        "minimum": 30,
+        "phase_available": "phase_2",
+        "notes": "Only test if pain-free and cleared for impact"
+      },
+      {
+        "id": "broad_jump",
+        "name": "Standing Broad Jump",
+        "protocol": "Two-foot takeoff, land on both feet. Measure from start line to heel landing.",
+        "unit": "cm",
+        "target": 200,
+        "minimum": 150,
+        "phase_available": "phase_2"
+      }
+    ],
+
+    "hop_tests": [
+      {
+        "id": "single_hop_left",
+        "name": "Single Hop for Distance - Left",
+        "protocol": "Single leg, hop as far as possible, land and stick on same leg. Best of 3 trials.",
+        "unit": "cm",
+        "phase_available": "phase_2",
+        "lsi_comparison": "single_hop_right",
+        "gate_requirement": "GATE 2 requires LSI >=90%, GATE 3 requires LSI >=95%"
+      },
+      {
+        "id": "single_hop_right",
+        "name": "Single Hop for Distance - Right",
+        "protocol": "Same as left. Use for LSI calculation.",
+        "unit": "cm",
+        "phase_available": "phase_2"
+      },
+      {
+        "id": "triple_hop_left",
+        "name": "Triple Hop for Distance - Left",
+        "protocol": "Three consecutive single-leg hops. Measure total distance.",
+        "unit": "cm",
+        "phase_available": "phase_2",
+        "lsi_comparison": "triple_hop_right"
+      },
+      {
+        "id": "triple_hop_right",
+        "name": "Triple Hop for Distance - Right",
+        "protocol": "Same as left.",
+        "unit": "cm",
+        "phase_available": "phase_2"
+      },
+      {
+        "id": "crossover_hop_left",
+        "name": "Crossover Hop for Distance - Left",
+        "protocol": "Three consecutive single-leg hops, crossing over a center line each time.",
+        "unit": "cm",
+        "phase_available": "phase_2",
+        "lsi_comparison": "crossover_hop_right"
+      },
+      {
+        "id": "crossover_hop_right",
+        "name": "Crossover Hop for Distance - Right",
+        "protocol": "Same as left.",
+        "unit": "cm",
+        "phase_available": "phase_2"
+      },
+      {
+        "id": "timed_hop_left",
+        "name": "6-Meter Timed Hop - Left",
+        "protocol": "Single-leg hop 6 meters as fast as possible. Record time.",
+        "unit": "seconds",
+        "lower_is_better": true,
+        "phase_available": "phase_2",
+        "lsi_comparison": "timed_hop_right"
+      },
+      {
+        "id": "timed_hop_right",
+        "name": "6-Meter Timed Hop - Right",
+        "protocol": "Same as left.",
+        "unit": "seconds",
+        "lower_is_better": true,
+        "phase_available": "phase_2"
+      },
+      {
+        "id": "side_hop_left",
+        "name": "Side Hop Test - Left",
+        "protocol": "Hop laterally over 30cm line, 10 reps for time.",
+        "unit": "seconds",
+        "lower_is_better": true,
+        "phase_available": "phase_2",
+        "lsi_comparison": "side_hop_right"
+      },
+      {
+        "id": "side_hop_right",
+        "name": "Side Hop Test - Right",
+        "protocol": "Same as left.",
+        "unit": "seconds",
+        "lower_is_better": true,
+        "phase_available": "phase_2"
+      }
+    ],
+
+    "agility": [
+      {
+        "id": "t_test",
+        "name": "T-Test",
+        "protocol": "Sprint forward 10m, side shuffle left 5m, side shuffle right 10m, side shuffle left 5m, backpedal 10m. Record time.",
+        "unit": "seconds",
+        "lower_is_better": true,
+        "phase_available": "phase_2c",
+        "gate_requirement": "GATE 3 baseline, GATE 4 comparison"
+      },
+      {
+        "id": "illinois_agility",
+        "name": "Illinois Agility Test",
+        "protocol": "Standard Illinois agility course with cones.",
+        "unit": "seconds",
+        "lower_is_better": true,
+        "phase_available": "phase_3",
+        "gate_requirement": "GATE 4 requirement"
+      }
+    ],
+
+    "sprint": [
+      {
+        "id": "sprint_10m",
+        "name": "10m Sprint",
+        "protocol": "Maximal effort 10m sprint from standing start. Record time.",
+        "unit": "seconds",
+        "lower_is_better": true,
+        "phase_available": "phase_2c"
+      },
+      {
+        "id": "sprint_40m",
+        "name": "40m Sprint",
+        "protocol": "Maximal effort 40m sprint. Record time.",
+        "unit": "seconds",
+        "lower_is_better": true,
+        "phase_available": "phase_2c"
+      },
+      {
+        "id": "rsa_decrement",
+        "name": "Repeated Sprint Ability (Fatigue Index)",
+        "protocol": "6 x 40m sprints with 20s recovery. Calculate % decrement from fastest to slowest.",
+        "unit": "percent",
+        "target": 10,
+        "lower_is_better": true,
+        "phase_available": "phase_3",
+        "gate_requirement": "GATE 4 requires <=10% decrement"
+      }
+    ]
+  },
+
+  "pain_baseline": {
+    "body_parts": [
+      {"id": "shoulder_right", "name": "Right Shoulder", "injury": "Supraspinatus Tendinopathy"},
+      {"id": "feet", "name": "Feet (both)", "injury": "Metatarsal stress, plantar fascia"},
+      {"id": "ankle_left", "name": "Left Ankle", "injury": "Old break, scar tissue"},
+      {"id": "ankle_right", "name": "Right Ankle", "injury": "Compensation patterns"},
+      {"id": "lower_back", "name": "Lower Back", "injury": "Postural strain"}
+    ],
+    "scale": "0-10 where 0=no pain, 10=worst imaginable",
+    "measure_timing": "Upon waking, before any movement",
+    "gate_requirement": "GATE 1 requires ankle pain <=2/10 for 2+ weeks"
+  },
+
+  "gate_assessment_groups": {
+    "gate_1": {
+      "name": "GATE 1: Running Readiness",
+      "tests": [
+        "ankle_dorsiflexion_left",
+        "ankle_dorsiflexion_right",
+        "single_leg_balance_left_eo",
+        "single_leg_balance_right_eo",
+        "single_leg_balance_left_ec",
+        "single_leg_balance_right_ec",
+        "single_leg_heel_raise_left",
+        "single_leg_heel_raise_right"
+      ],
+      "additional_criteria": [
+        "Ankle pain <=2/10 for 2+ consecutive weeks",
+        "30-minute brisk walk pain-free",
+        "20 double-leg hops pain-free"
+      ]
+    },
+    "gate_2": {
+      "name": "GATE 2: Continuous Running",
+      "tests": [
+        "single_hop_left", "single_hop_right",
+        "triple_hop_left", "triple_hop_right",
+        "crossover_hop_left", "crossover_hop_right",
+        "timed_hop_left", "timed_hop_right",
+        "side_hop_left", "side_hop_right"
+      ],
+      "lsi_requirement": 90,
+      "additional_criteria": [
+        "2-mile continuous jog pain-free"
+      ]
+    },
+    "gate_3": {
+      "name": "GATE 3: Sprint Readiness",
+      "tests": [
+        "single_hop_left", "single_hop_right",
+        "triple_hop_left", "triple_hop_right",
+        "crossover_hop_left", "crossover_hop_right",
+        "timed_hop_left", "timed_hop_right",
+        "t_test"
+      ],
+      "lsi_requirement": 95,
+      "additional_criteria": [
+        "20-minute tempo run at 70-75% effort pain-free",
+        "Rapid deceleration from jog x3 pain-free",
+        "Confidence in ankle >=8/10"
+      ]
+    },
+    "gate_4": {
+      "name": "GATE 4: Full Sport Return",
+      "tests": [
+        "sprint_40m",
+        "rsa_decrement",
+        "illinois_agility"
+      ],
+      "additional_criteria": [
+        "60m sprint at 95% effort pain-free",
+        "20-minute sport simulation pain-free"
+      ]
+    }
+  },
+
+  "testing_schedule": {
+    "baseline": "Week 1 - Full baseline assessment",
+    "phase_1_end": "Week 4 - Retest all Phase 1 metrics + GATE 1 check",
+    "gate_1_check": "Week 12 - GATE 1 comprehensive assessment",
+    "gate_2_check": "Week 16 - GATE 2 hop test battery",
+    "gate_3_check": "Week 20 - GATE 3 sprint readiness",
+    "gate_4_check": "Week 24 - GATE 4 full sport clearance"
+  }
+}
