@@ -1,0 +1,80 @@
+{
+  "repos": {
+    "ATLAS": "/home/squiz/ATLAS",
+    "babybrains-os": "/home/squiz/code/babybrains-os",
+    "knowledge": "/home/squiz/code/knowledge",
+    "web": "/home/squiz/code/web",
+    "app": "/home/squiz/code/app"
+  },
+  "topic_map": {
+    "platform strategy": [
+      {"repo": "babybrains-os", "path": "docs/PLATFORM-PLAYBOOKS.md", "summary": "Platform-specific posting strategies and specs"},
+      {"repo": "babybrains-os", "path": "docs/SOCIAL-MEDIA-STRATEGY.md", "summary": "Overall social media funnel strategy"},
+      {"repo": "babybrains-os", "path": "docs/strategic-review/09-strategic-decisions.md", "summary": "Authoritative strategic decisions"}
+    ],
+    "youtube": [
+      {"repo": "babybrains-os", "path": "docs/research/youtube-dec-2025.md", "summary": "YouTube algorithm research Dec 2025 - 21-day incubation, loop mechanics"},
+      {"repo": "babybrains-os", "path": "docs/PLATFORM-PLAYBOOKS.md", "summary": "YouTube posting specs and strategy"}
+    ],
+    "instagram": [
+      {"repo": "babybrains-os", "path": "docs/research/instagram-dec-2025.md", "summary": "Instagram algorithm research Dec 2025 - Sends KPI, Trial Reels"},
+      {"repo": "babybrains-os", "path": "docs/PLATFORM-PLAYBOOKS.md", "summary": "Instagram posting specs and strategy"}
+    ],
+    "tiktok": [
+      {"repo": "babybrains-os", "path": "docs/research/tiktok-dec-2025.md", "summary": "TikTok algorithm research Dec 2025 - Trust Phase, visual AI"},
+      {"repo": "babybrains-os", "path": "docs/PLATFORM-PLAYBOOKS.md", "summary": "TikTok posting specs and strategy"}
+    ],
+    "audience": [
+      {"repo": "babybrains-os", "path": "docs/AUDIENCE-SEGMENTATION.md", "summary": "5 target audience personas with demographics and pain points"}
+    ],
+    "voice spec": [
+      {"repo": "web", "path": ".claude/agents/BabyBrains-Writer.md", "summary": "1712-line BabyBrains-Writer voice specification"},
+      {"repo": "web", "path": ".claude/agents/content-reviewer.md", "summary": "E-E-A-T content review agent"},
+      {"repo": "web", "path": ".claude/agents/editorial-qa-automator.md", "summary": "Editorial QA automation"}
+    ],
+    "knowledge graph": [
+      {"repo": "knowledge", "path": "docs/overview/SYNTHESIS_SUMMARY_AND_NEXT_STEPS.md", "summary": "Knowledge Graph completion status and synthesis"},
+      {"repo": "knowledge", "path": "docs/research/", "summary": "18 research results (RP01-RP18)"},
+      {"repo": "knowledge", "path": "docs/research-prompts/", "summary": "18 research prompts"}
+    ],
+    "montessori": [
+      {"repo": "knowledge", "path": "sources/raw_extractions/maria_primary/", "summary": "Original Maria Montessori text extractions"},
+      {"repo": "knowledge", "path": "sources/raw_extractions/other/", "summary": "Modern Montessori book extractions"},
+      {"repo": "knowledge", "path": "master_index/", "summary": "125+ activity canonicals"}
+    ],
+    "activities": [
+      {"repo": "knowledge", "path": "master_index/", "summary": "125+ structured activity files"},
+      {"repo": "knowledge", "path": "docs/planning/", "summary": "90+ planning stories for activities"}
+    ],
+    "evidence": [
+      {"repo": "knowledge", "path": "evidence/GUIDELINE_REGISTRY.yaml", "summary": "AU guidelines with source URLs"},
+      {"repo": "knowledge", "path": "docs/research/", "summary": "Research results with evidence"}
+    ],
+    "website": [
+      {"repo": "web", "path": "docs/BABY-BRAINS-CANONICAL-SPEC.md", "summary": "Website canonical specification"},
+      {"repo": "web", "path": "", "summary": "Next.js website repository"}
+    ],
+    "launch strategy": [
+      {"repo": "ATLAS", "path": "docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md", "summary": "Launch strategy January 2026"},
+      {"repo": "babybrains-os", "path": "docs/strategic-review/09-strategic-decisions.md", "summary": "Authoritative strategic decisions"}
+    ],
+    "production tools": [
+      {"repo": "babybrains-os", "path": "docs/research/production-tools-dec-2025.md", "summary": "AI video/image generation tool research"},
+      {"repo": "babybrains-os", "path": "docs/research/au-parenting-landscape.md", "summary": "Australian parenting content landscape"}
+    ],
+    "content pipeline": [
+      {"repo": "babybrains-os", "path": "skills/", "summary": "9-skill content pipeline"},
+      {"repo": "babybrains-os", "path": "qc/", "summary": "Quality control rules"}
+    ],
+    "warming strategy": [
+      {"repo": "ATLAS", "path": "docs/BB_AUTOMATION_PLAN_V2.md", "summary": "BB automation plan with warming pipeline design"},
+      {"repo": "babybrains-os", "path": "docs/SOCIAL-MEDIA-STRATEGY.md", "summary": "Social media engagement strategy"}
+    ],
+    "competitors": [
+      {"repo": "babybrains-os", "path": "docs/research/au-parenting-landscape.md", "summary": "Australian parenting competitor analysis"}
+    ],
+    "agent research": [
+      {"repo": "ATLAS", "path": "docs/research/AGENT_KNOWLEDGE_BASE.md", "summary": "17 sources, 284 items, 49 patterns for agent design"}
+    ]
+  }
+}

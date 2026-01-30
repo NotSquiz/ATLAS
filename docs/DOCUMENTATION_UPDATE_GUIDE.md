@@ -78,6 +78,14 @@
 | IntentDispatcher | CLAUDE.md V2 Components |
 | IntentPatterns | CLAUDE.md V2 Components |
 | Qwen3TTS | V2 Guide Section 11 (Voice API) |
+| BBWarmingService | V2 Guide Section 13 (Baby Brains) |
+| BBCommentGenerator | V2 Guide Section 13 (Baby Brains) |
+| BBTranscriptFetcher | V2 Guide Section 13 (Baby Brains) |
+| BBTargetScorer | V2 Guide Section 13 (Baby Brains) |
+| BBVoiceSpec | V2 Guide Section 13 (Baby Brains) |
+| BBCrossRepoSearch | V2 Guide Section 13 (Baby Brains) |
+| BBDatabase | V2 Guide Section 13 (Baby Brains) |
+| BBCLI | V2 Guide Section 13 (Baby Brains) |
 | XPService (Octalysis) | `atlas/gamification/xp_service.py` |
 | OSRS Command Centre | `.claude/plans/osrs-command-centre.md` |
 
@@ -162,14 +170,15 @@
 | `docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md` | 4-week launch plan with day-by-day tasks | Strategy changes, milestone completions |
 | `skills/babybrains/BABYBRAINS.md` | 9-skill content pipeline orchestrator | Pipeline changes |
 
-### Baby Brains Pending Work (January 30, 2026)
+### Baby Brains Build Status (January 30, 2026)
 | Task | Status | Tracker ID |
 |------|--------|------------|
-| Account warming automation | NOT STARTED | bb-1 |
-| Content strategy engine | NOT STARTED | bb-2 |
-| Content production pipeline | NOT STARTED | bb-3 |
-| Website relaunch | NOT STARTED | bb-4 |
-| Article/SEO/GEO pipeline | NOT STARTED | bb-5 |
+| Account warming automation (foundation) | ✅ WEEK 1 DONE (S1.1-S1.8, 98 tests) | bb-1 |
+| Account warming automation (browser) | PENDING (S2.1-S2.3) | bb-1b |
+| Trend engine (YouTube + Grok) | PENDING (S2.4-S2.6) | bb-2 |
+| Content production pipeline | PENDING (S3.1-S3.4) | bb-3 |
+| Website relaunch | PENDING | bb-4 |
+| Article/SEO/GEO pipeline | PENDING | bb-5 |
 
 ## Checklist for OSRS UI Changes
 

@@ -103,6 +103,15 @@ Hardware: ThinkPad X1 Extreme, 16GB RAM, RTX 3050 Ti 4GB.
 | IntentPatterns | config/voice/intent_patterns.json | Externalized intent patterns (hot-configurable) |
 | Qwen3TTS | atlas/voice/tts_qwen.py | Voice cloning TTS with Jeremy Irons (Lethal Gentleman) |
 | VoiceConfig | config/voice/qwen_tts_voices.json | Voice cloning configs (ref audio + transcript) |
+| BBWarmingService | atlas/babybrains/warming/service.py | Orchestrate daily warming pipeline |
+| BBCommentGenerator | atlas/babybrains/warming/comments.py | Sonnet API comment drafts with voice spec QC |
+| BBTranscriptFetcher | atlas/babybrains/warming/transcript.py | YouTube transcript fetching via API |
+| BBTargetScorer | atlas/babybrains/warming/targets.py | Niche relevance scoring + engagement levels |
+| BBVoiceSpec | atlas/babybrains/voice_spec.py | Load + section-extract BabyBrains-Writer.md |
+| BBCrossRepoSearch | atlas/babybrains/cross_repo.py | Search docs across 5 BB repos |
+| BBDatabase | atlas/babybrains/db.py | 10-table schema + query helpers |
+| BBModels | atlas/babybrains/models.py | Dataclasses for all BB entities |
+| BBCLI | atlas/babybrains/cli.py | CLI: status, find-doc, warming commands |
 
 ## Infrastructure (January 2026)
 Based on Anthropic research papers. See `docs/V2_ORCHESTRATOR_GUIDE.md` for full details.
@@ -133,6 +142,11 @@ Based on Anthropic research papers. See `docs/V2_ORCHESTRATOR_GUIDE.md` for full
 | Command Centre UI | `scripts/atlas_launcher.py` | Windows GUI with large timer, button controls |
 | Timer Status IPC | `~/.atlas/.bridge/session_status.json` | Real-time timer data for UI (100ms polling) |
 | Button Commands | `~/.atlas/.bridge/command.txt` | UI→Server: PAUSE/RESUME/SKIP/STOP/START_TIMER |
+| BB Schema | `atlas/babybrains/schema.sql` | 10 tables for warming, trends, content pipeline |
+| BB Configs | `config/babybrains/*.json` | Platform rules, warming schedule, audience personas |
+| BB Cross-Repo Map | `config/babybrains/cross_repo_paths.json` | Topic→file mappings across 5 repos |
+| BB Human Story | `config/babybrains/human_story.json` | Personal angle profile (PLACEHOLDER) |
+| BB MCP Tools | `atlas/mcp/server.py` | bb_status, bb_find_doc, bb_warming_daily/done/status |
 
 ### Garmin Integration
 ```bash
@@ -368,7 +382,11 @@ Workout and routine start intents use regex matching for flexibility:
 
 ## Key Commands
 - Tests: `pytest`
+- BB tests: `pytest tests/babybrains/`
 - Voice pipeline: `python atlas/voice/pipeline.py`
+- BB CLI: `python -m atlas.babybrains.cli status`
+- BB find doc: `python -m atlas.babybrains.cli find-doc "youtube"`
+- BB warming: `python -m atlas.babybrains.cli warming daily`
 
 ## Key Documentation
 - V2 Guide: docs/V2_ORCHESTRATOR_GUIDE.md

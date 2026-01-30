@@ -1,0 +1,76 @@
+{
+  "competitors": {
+    "australia": [
+      {
+        "name": "Chantel Mila",
+        "handle": "@mama_mila_au",
+        "platforms": ["instagram", "tiktok"],
+        "niche": "Home hacks/organisation for parents",
+        "strengths": ["High-utility 15-20s Reels", "Save-ability focus", "Consistent format"],
+        "gap": "No evidence-based developmental science"
+      },
+      {
+        "name": "Emily Skye",
+        "handle": "@emilyskyefit",
+        "platforms": ["instagram", "youtube"],
+        "niche": "Fitness + motherhood transparency",
+        "strengths": ["Radical transparency (bloated + fit photos)", "Vulnerability drives engagement"],
+        "gap": "Fitness focus, not child development"
+      },
+      {
+        "name": "Sarah Kearns",
+        "handle": "@sarahkearns",
+        "platforms": ["instagram"],
+        "niche": "Parenting stories + emotional resonance",
+        "strengths": ["Long-form captions with emotional stories", "Watch time inflation during caption read"],
+        "gap": "Story-based, not evidence-based"
+      },
+      {
+        "name": "Maggie Dent",
+        "handle": "@maggiedentofficial",
+        "platforms": ["instagram", "youtube", "facebook"],
+        "niche": "Parenting expert/author",
+        "strengths": ["Established authority", "Book-backed credibility"],
+        "gap": "Not Montessori-specific, older audience skew"
+      },
+      {
+        "name": "Sarahs Day",
+        "handle": "@sarahsday",
+        "platforms": ["youtube", "instagram"],
+        "niche": "Wellness/lifestyle family",
+        "strengths": ["Large audience", "Consistent uploads"],
+        "gap": "Lifestyle vlog format, no developmental science"
+      }
+    ],
+    "international_montessori": [
+      {
+        "name": "Hapa Family",
+        "handle": "@hapafamily",
+        "platforms": ["youtube", "instagram"],
+        "niche": "Montessori at home",
+        "strengths": ["Beautiful setups", "Practical demonstrations"],
+        "gap": "US-centric, expensive setups"
+      },
+      {
+        "name": "The Montessori Notebook",
+        "handle": "@themontessorinotebook",
+        "platforms": ["instagram"],
+        "niche": "Montessori education",
+        "strengths": ["Deep knowledge", "Beautiful content"],
+        "gap": "Not video-first, not Australian"
+      }
+    ]
+  },
+  "bb_differentiation": {
+    "unique_angle": "Science-Backed Micro-Education",
+    "positioning": "Expert Peer (not Influencer Mum)",
+    "key_differentiators": [
+      "Evidence-based with real citations (not generic advice)",
+      "Neuroscience + Montessori intersection",
+      "Australian-first (language, references, systems)",
+      "Cost-of-living aware (lead with free/DIY)",
+      "Both parents included (dad perspective)",
+      "Knowledge Graph backing (125+ activities with evidence)"
+    ]
+  }
+}

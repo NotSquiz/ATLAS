@@ -1,7 +1,7 @@
 # ATLAS Technical Status
 
 **Last Updated:** January 30, 2026
-**Status:** Phase 0-3 COMPLETE + Phase 4 IN PROGRESS (Quality Audit Pipeline) + Health/Fitness Module COMPLETE + Garmin Integration COMPLETE + Voice API Pipeline COMPLETE + Voice Intents COMPLETE + Interactive Workout Timer COMPLETE + Workout Scheduler COMPLETE + Interactive Morning Routine COMPLETE + Voice Announcements COMPLETE + STOP Button Fix COMPLETE + BridgeFileServer Refactoring COMPLETE + Pipeline Audit D82-D88 COMPLETE + **Agent Knowledge Base Research COMPLETE (17 sources, 284 items, 49 patterns)** + **Baby Brains Agent Architecture PLANNED (D97)**
+**Status:** Phase 0-3 COMPLETE + Phase 4 IN PROGRESS (Quality Audit Pipeline) + Health/Fitness Module COMPLETE + Garmin Integration COMPLETE + Voice API Pipeline COMPLETE + Voice Intents COMPLETE + Interactive Workout Timer COMPLETE + Workout Scheduler COMPLETE + Interactive Morning Routine COMPLETE + Voice Announcements COMPLETE + STOP Button Fix COMPLETE + BridgeFileServer Refactoring COMPLETE + Pipeline Audit D82-D88 COMPLETE + **Agent Knowledge Base Research COMPLETE (17 sources, 284 items, 49 patterns)** + **Baby Brains Week 1 COMPLETE (S1.1-S1.8, 98 tests, D100-D106)**
 
 ---
 
@@ -1259,15 +1259,31 @@ ANTHROPIC_API_KEY="$(cat .env | tr -d '\n')" python scripts/voice_latency_benchm
 | Privacy as routing constraint | S16 (BrainPro) | Health data → ZDR/local providers |
 | 0-token intents validated as optimal | S14 (ARTIST finding) | No change needed — already optimal |
 
-### Baby Brains Agent — Planned Components
+### Baby Brains Agent — Week 1 COMPLETE (S1.1-S1.8)
+
+| Component | Status | What's Built |
+|-----------|--------|-------------|
+| **S1.1** Schema + Models + DB | ✅ DONE | 10 tables, 10 dataclasses, 25+ query helpers (24 tests) |
+| **S1.2** Voice Spec Loader | ✅ DONE | XML section parser for 1712-line BabyBrains-Writer.md (13 tests) |
+| **S1.3** Cross-Repo Search | ✅ DONE | 16 topic mappings across 5 repos, keyword scoring (11 tests) |
+| **S1.4** Platform Configs | ✅ DONE | 7 JSON configs from Dec 2025 research (YT/IG/TT/FB) |
+| **S1.5** MCP Tools + CLI | ✅ DONE | 5 MCP tools: bb_status, bb_find_doc, bb_warming_daily/done/status |
+| **S1.6** Transcript Fetcher | ✅ DONE | youtube-transcript-api + graceful fallback (12 tests) |
+| **S1.7** Comment Generator | ✅ DONE | Sonnet API + voice spec + quality gate (19 tests) |
+| **S1.8** Warming Service | ✅ DONE | Full pipeline orchestrator + target scoring (19 tests) |
+
+**Total: 98 tests passing. Architecture decisions: D100-D106.**
+
+### Baby Brains Agent — Week 2+ Pending
 
 | Component | Status | Priority |
 |-----------|--------|----------|
-| Account warming automation | NOT STARTED | 1 — highest daily impact |
-| Content strategy engine | NOT STARTED | 2 — trending topics → briefs |
-| Content production pipeline | NOT STARTED | 3 — script → video → post |
-| Website relaunch | NOT STARTED | 4 — unblock with placeholder |
-| Article/SEO/GEO pipeline | NOT STARTED | 5 — long-form for web |
+| Browser automation (Playwright) | PENDING (S2.1-S2.3) | Watch/like/subscribe |
+| Trend engine (YouTube + Grok) | PENDING (S2.4-S2.6) | Trending topics → scored opportunities |
+| Content pipeline | PENDING (S3.1-S3.4) | Briefs → scripts → visuals → export |
+| Review queue + scheduler | PENDING (S3.5-S3.6) | Calendar, review workflow, cron integration |
+| Website relaunch | PENDING | Placeholder hero, articles enabled |
+| Article/SEO/GEO pipeline | PENDING | Long-form for web + LLM citation |
 
 ### Memory Upgrade — Planned
 
@@ -1288,6 +1304,8 @@ ANTHROPIC_API_KEY="$(cat .env | tr -d '\n')" python scripts/voice_latency_benchm
 3. **Understand the voice pipeline:** Read `atlas/voice/pipeline.py`
 4. **Understand the research:** Read `docs/research/AGENT_KNOWLEDGE_BASE.md`
 5. **Understand Baby Brains strategy:** Read `docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md`
+6. **Understand BB automation:** Read `docs/BB_AUTOMATION_PLAN_V2.md` and `docs/SPRINT_TASKS.md`
+7. **Run BB CLI:** `python -m atlas.babybrains.cli status`
 6. **Run tests:** Use commands in "Testing Commands" section
 7. **Check budget:** `get_cost_tracker().get_budget_status()`
 8. **Config options:** See `VoicePipelineConfig` in pipeline.py

@@ -1699,6 +1699,80 @@ Form cues are loaded from `config/exercises/routine_form_guides.json`:
 
 ---
 
+## 15. Baby Brains Automation Module (January 2026)
+
+Social media account warming and content pipeline automation for the Baby Brains parenting platform. Built in Week 1 sprint (S1.1-S1.8), 98 tests passing.
+
+### Architecture
+```
+BB Module (atlas/babybrains/)
+├── db.py              10-table schema + 25+ query helpers
+├── models.py          10 dataclasses (BBAccount, WarmingTarget, etc.)
+├── voice_spec.py      XML section parser for BabyBrains-Writer.md (1712 lines)
+├── cross_repo.py      Search docs across 5 repos (16 topic mappings)
+├── cli.py             CLI: status, find-doc, warming daily/done/status
+├── warming/
+│   ├── service.py     WarmingService orchestrator (run_daily, add_targets, log_done)
+│   ├── targets.py     Niche relevance scoring, engagement level determination
+│   ├── comments.py    Sonnet API + voice spec + quality gate
+│   └── transcript.py  YouTube transcript fetching (youtube-transcript-api)
+├── trends/            (Week 2: S2.4-S2.6)
+├── content/           (Week 3: S3.1-S3.4)
+└── clients/           (Week 2: S2.4-S2.5)
+
+Config (config/babybrains/)
+├── platforms.json              Platform algo rules (YT/IG/TT/FB)
+├── warming_schedule.json       Phases, daily targets, search queries
+├── warming_engagement_rules.json  Watch/like/subscribe thresholds
+├── audience_segments.json      5 personas with pain points
+├── competitors.json            AU + international competitors
+├── cross_repo_paths.json       Topic → file mappings across 5 repos
+└── human_story.json            Personal angle profile (PLACEHOLDER)
+```
+
+### MCP Tools (5 implemented, 9 more planned)
+```python
+# In atlas/mcp/server.py
+bb_status()                              # Full dashboard: accounts, warming, trends, content
+bb_find_doc(topic)                       # Cross-repo search across 5 BB repos
+bb_warming_daily(platform?)              # Today's targets with transcript-aware BB-voice comments
+bb_warming_done(platform, comments, ...) # Log completed warming actions
+bb_warming_status()                      # 7-day warming stats
+```
+
+### CLI Usage
+```bash
+python -m atlas.babybrains.cli status              # Dashboard
+python -m atlas.babybrains.cli find-doc "youtube"   # Cross-repo search
+python -m atlas.babybrains.cli warming daily         # Today's warming targets
+python -m atlas.babybrains.cli warming done --platform youtube --comments 3 --likes 2
+python -m atlas.babybrains.cli warming status        # 7-day stats
+```
+
+### Comment Generation Pipeline
+Three-layer system (D103):
+1. **Knowledge Base**: Video transcript + cross-repo Montessori content
+2. **Voice Spec**: AU English, anti-superlative, em-dash prohibition, Grade 8 reading level
+3. **Human Story**: ~35% personal angle (disabled until `human_story.json` completed)
+
+Quality gate checks: em-dash/en-dash, AU vocabulary (mum/nappy/pram), length limits, emoji count.
+
+### Key Decisions
+- D100: MCP tools as primary interface
+- D101: Dual-mode Claude (Max interactive, Sonnet API automated)
+- D102: Auto-watch/like/subscribe, human-post comments (ban risk mitigation)
+- D103: Three-layer comment generation
+- D104: Static cross-repo path map
+- D105: Platform configs from Dec 2025 research
+- D106: 10 `bb_*` tables in shared ATLAS database
+
+### Sprint Status
+- **Week 1 (S1.1-S1.8)**: COMPLETE — 98 tests
+- **Week 2 (S2.1-S2.6)**: PENDING — Browser automation + Trend engine
+- **Week 3 (S3.1-S3.7)**: PENDING — Content pipeline + Polish
+
+---
+
 ## Research References
 
 These patterns are based on Anthropic's 2025-2026 research:

@@ -1,0 +1,67 @@
+{
+  "engagement_levels": {
+    "WATCH": {
+      "description": "Watch video only, no interaction",
+      "min_watch_seconds": 60,
+      "max_watch_seconds": 120,
+      "niche_relevance_threshold": 0.0
+    },
+    "LIKE": {
+      "description": "Watch and like the video",
+      "min_watch_seconds": 60,
+      "max_watch_seconds": 180,
+      "delay_after_watch_seconds": {"min": 2, "max": 5},
+      "niche_relevance_threshold": 0.3
+    },
+    "SUBSCRIBE": {
+      "description": "Watch, like, and subscribe to channel",
+      "min_watch_seconds": 90,
+      "max_watch_seconds": 300,
+      "delay_after_watch_seconds": {"min": 3, "max": 8},
+      "niche_relevance_threshold": 0.6,
+      "max_per_day": 2,
+      "require_quality_channel": true
+    },
+    "COMMENT": {
+      "description": "Watch, like, and leave a comment (HUMAN-POSTED)",
+      "min_watch_seconds": 120,
+      "max_watch_seconds": 300,
+      "niche_relevance_threshold": 0.5,
+      "max_per_day_per_platform": 5,
+      "human_posted": true,
+      "comment_rules": {
+        "max_length_chars": 500,
+        "no_em_dashes": true,
+        "australian_english": true,
+        "must_reference_transcript": true,
+        "personal_angle_probability": 0.35
+      }
+    }
+  },
+  "safety_rules": {
+    "inter_video_delay_seconds": {"min": 30, "max": 120},
+    "watch_time_variance_percent": 15,
+    "max_actions_per_session": 20,
+    "circuit_breaker_consecutive_failures": 3,
+    "max_subscribes_per_day": 2,
+    "cooldown_after_subscribe_seconds": 300,
+    "session_duration_max_minutes": 90
+  },
+  "scoring": {
+    "niche_keywords": [
+      "montessori", "gentle parenting", "respectful parenting",
+      "toddler development", "baby brain", "sensory play",
+      "independent play", "prepared environment", "tummy time",
+      "fine motor", "gross motor", "language development",
+      "child-led", "following the child", "practical life",
+      "emotional regulation", "attachment", "secure base"
+    ],
+    "quality_channel_indicators": [
+      "consistent posting (>1/week)",
+      "engagement rate >3%",
+      "niche-focused content",
+      "professional presentation",
+      "subscriber count 1K-500K (sweet spot for engagement)"
+    ]
+  }
+}

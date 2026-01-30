@@ -845,6 +845,183 @@ def create_server(db_path: Optional[Path] = None) -> "FastMCP":
                 "message": str(e),
             }
 
+    # ==========================================
+    # BABY BRAINS TOOLS
+    # ==========================================
+
+    @mcp.tool()
+    def bb_status() -> dict:
+        """
+        Get the full Baby Brains status dashboard.
+
+        Shows account warming progress, today's targets, trend scan results,
+        and content pipeline status.
+
+        Returns:
+            Dictionary with accounts, warming stats, trends, and content status
+        """
+        try:
+            from atlas.babybrains import db as bb_db
+
+            conn = bb_db.get_bb_connection(db_path or DEFAULT_DB_PATH)
+            bb_db.init_bb_tables(conn)
+            status = bb_db.get_bb_status(conn)
+            conn.close()
+            return status
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    @mcp.tool()
+    def bb_find_doc(topic: str) -> dict:
+        """
+        Search all Baby Brains repos for relevant strategy/research docs.
+
+        Searches across ATLAS, babybrains-os, knowledge, web, and app repos
+        using a keyword-based index of topic-to-file mappings.
+
+        Args:
+            topic: Search query (e.g., 'platform strategy', 'montessori', 'youtube')
+
+        Returns:
+            Dictionary with matching documents and their locations
+        """
+        try:
+            from atlas.babybrains.cross_repo import get_cross_repo_search
+
+            search = get_cross_repo_search()
+            results = search.search(topic, limit=10)
+            return {
+                "query": topic,
+                "count": len(results),
+                "documents": results,
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    @mcp.tool()
+    async def bb_warming_daily(platform: Optional[str] = None) -> dict:
+        """
+        Get today's warming targets with transcript-aware BB-voice comments.
+
+        Shows the daily warming target list with:
+        - Video URLs and titles
+        - Transcript summaries
+        - Pre-drafted BB-voice comments (human-posted)
+        - Engagement levels (WATCH/LIKE/SUBSCRIBE/COMMENT)
+
+        Args:
+            platform: Optional platform filter ('youtube', 'instagram', 'tiktok')
+
+        Returns:
+            Dictionary with today's warming targets and comments
+        """
+        try:
+            from atlas.babybrains import db as bb_db
+
+            conn = bb_db.get_bb_connection(db_path or DEFAULT_DB_PATH)
+            bb_db.init_bb_tables(conn)
+            targets = bb_db.get_warming_targets(conn, platform=platform)
+            conn.close()
+
+            return {
+                "date": str(__import__("datetime").date.today()),
+                "platform": platform or "all",
+                "count": len(targets),
+                "targets": [
+                    {
+                        "id": t.id,
+                        "platform": t.platform,
+                        "url": t.url,
+                        "channel": t.channel_name,
+                        "title": t.video_title,
+                        "transcript_summary": t.transcript_summary,
+                        "suggested_comment": t.suggested_comment,
+                        "engagement_level": t.engagement_level,
+                        "watch_seconds": t.watch_duration_target,
+                        "relevance": t.niche_relevance_score,
+                        "status": t.status,
+                    }
+                    for t in targets
+                ],
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    @mcp.tool()
+    def bb_warming_done(
+        platform: str,
+        comments: int = 0,
+        likes: int = 0,
+        subscribes: int = 0,
+        watches: int = 0,
+    ) -> dict:
+        """
+        Log completed warming actions for a platform.
+
+        Call this after finishing your daily warming session to record
+        what actions were taken.
+
+        Args:
+            platform: Platform name ('youtube', 'instagram', 'tiktok')
+            comments: Number of comments posted
+            likes: Number of likes given
+            subscribes: Number of subscribes/follows
+            watches: Number of videos watched
+
+        Returns:
+            Confirmation of logged actions
+        """
+        try:
+            from atlas.babybrains import db as bb_db
+
+            conn = bb_db.get_bb_connection(db_path or DEFAULT_DB_PATH)
+            bb_db.init_bb_tables(conn)
+
+            logged = []
+            for action_type, count in [
+                ("comment", comments),
+                ("like", likes),
+                ("subscribe", subscribes),
+                ("watch", watches),
+            ]:
+                for _ in range(count):
+                    bb_db.log_warming_action(conn, target_id=0, action_type=action_type)
+                if count > 0:
+                    logged.append(f"{count} {action_type}(s)")
+
+            conn.close()
+
+            return {
+                "status": "logged",
+                "platform": platform,
+                "actions": logged,
+                "message": f"Logged for {platform}: {', '.join(logged)}",
+            }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    @mcp.tool()
+    def bb_warming_status() -> dict:
+        """
+        Get warming progress dashboard.
+
+        Shows warming statistics for the last 7 days including
+        watches, likes, subscribes, comments, and total watch time.
+
+        Returns:
+            Dictionary with warming statistics
+        """
+        try:
+            from atlas.babybrains import db as bb_db
+
+            conn = bb_db.get_bb_connection(db_path or DEFAULT_DB_PATH)
+            bb_db.init_bb_tables(conn)
+            stats = bb_db.get_warming_stats(conn, days=7)
+            conn.close()
+            return stats
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
     return mcp
 
 

@@ -1,0 +1,178 @@
+{
+  "personas": [
+    {
+      "id": "anxious_new_parent",
+      "name": "Anxious New Parent",
+      "age_range": "25-35",
+      "child_stage": "0-12 months",
+      "location": "Urban/suburban Australia (Sydney, Melbourne, Brisbane)",
+      "primary_platform": "instagram",
+      "content_allocation_pct": 30,
+      "pain_points": [
+        "Sleep deprivation decisions",
+        "Conflicting advice from multiple sources",
+        "Fear of developmental damage",
+        "Guilt about not enjoying moments",
+        "Cost-of-living pressure"
+      ],
+      "content_preferences": [
+        "Reassurance + evidence-based science",
+        "Permission-giving messaging",
+        "Specific actionable steps",
+        "Short, digestible formats"
+      ],
+      "hook_styles": [
+        "Stop Googling at 2am. Here's the actual research.",
+        "The thing no one tells new parents..."
+      ],
+      "content_priority": {
+        "sleep": 25,
+        "regulation": 25,
+        "feeding": 20,
+        "movement": 15,
+        "philosophy": 15
+      },
+      "voice_tone": "Warm, reassuring, gentle, confident but not preachy"
+    },
+    {
+      "id": "toddler_wrangler",
+      "name": "Toddler Wrangler",
+      "age_range": "28-38",
+      "child_stage": "12-36 months",
+      "location": "Suburban Australia",
+      "primary_platform": "tiktok",
+      "content_allocation_pct": 25,
+      "pain_points": [
+        "Tantrums in public",
+        "Never enough time for intentional parenting",
+        "Screen time guilt",
+        "Picky eating battles",
+        "Feeling like surviving not thriving",
+        "Independence battles"
+      ],
+      "content_preferences": [
+        "Quick practical tips (<5 min actionable)",
+        "Humour appreciated",
+        "No perfectionism guilt",
+        "Efficiency focused"
+      ],
+      "hook_styles": [
+        "The toddler tantrum hack that actually works",
+        "Why everything takes 47 times longer with a toddler"
+      ],
+      "content_priority": {
+        "regulation": 35,
+        "feeding": 20,
+        "movement": 20,
+        "sleep": 15,
+        "materials": 10
+      },
+      "voice_tone": "Practical, sometimes humorous, no-nonsense, 'been there' peer"
+    },
+    {
+      "id": "montessori_curious",
+      "name": "Montessori Curious",
+      "age_range": "30-40",
+      "child_stage": "0-36 months",
+      "location": "Urban Australia",
+      "primary_platform": "youtube",
+      "content_allocation_pct": 20,
+      "pain_points": [
+        "Montessori seems expensive/time-consuming",
+        "Instagram perfection intimidates",
+        "Unsure essential vs nice-to-have",
+        "Family not on board",
+        "Conflicting Montessori info",
+        "Judgment fears"
+      ],
+      "content_preferences": [
+        "Accessible Montessori (not intimidating)",
+        "Philosophy explained simply",
+        "Evidence-based benefits",
+        "Budget-friendly alternatives",
+        "Permission to adapt"
+      ],
+      "hook_styles": [
+        "Montessori on a budget: what you actually need",
+        "Why Maria Montessori would hate Instagram Montessori"
+      ],
+      "content_priority": {
+        "philosophy": 30,
+        "prepared_environment": 25,
+        "materials": 20,
+        "movement": 15,
+        "adult_preparation": 10
+      },
+      "voice_tone": "Thoughtful, philosophical, inviting, knowledgeable guide"
+    },
+    {
+      "id": "second_time_realist",
+      "name": "Second-Time Realist",
+      "age_range": "32-42",
+      "child_stage": "0-36 months (2nd+ child)",
+      "location": "Suburban Australia",
+      "primary_platform": "facebook",
+      "content_allocation_pct": 15,
+      "pain_points": [
+        "Less time/attention for subsequent children",
+        "Sibling dynamics complexity",
+        "Managing multiple children",
+        "Already tried basic advice",
+        "Less patience for fluff"
+      ],
+      "content_preferences": [
+        "Skip the basics, go deeper",
+        "Sibling-specific content",
+        "Validation that 'good enough' works",
+        "Efficiency hacks"
+      ],
+      "hook_styles": [
+        "What I do differently with my second",
+        "The thing no one tells you about having two"
+      ],
+      "content_priority": {
+        "regulation": 30,
+        "practical_efficiency": 25,
+        "sleep": 20,
+        "philosophy": 15,
+        "feeding": 10
+      },
+      "voice_tone": "Efficient, validating, experienced peer"
+    },
+    {
+      "id": "professional_carer",
+      "name": "Professional Carer",
+      "age_range": "25-55",
+      "child_stage": "Role-based (educators, nannies, family daycare)",
+      "location": "Australia-wide",
+      "primary_platform": "youtube",
+      "content_allocation_pct": 10,
+      "pain_points": [
+        "Parents who don't understand development",
+        "Limited professional development budget",
+        "Need evidence to explain to families",
+        "Regulatory compliance",
+        "Burnout and underappreciation",
+        "Keeping up with research"
+      ],
+      "content_preferences": [
+        "Professional-grade evidence (shareable)",
+        "Training value content",
+        "Respect for expertise",
+        "Practical group-setting techniques"
+      ],
+      "hook_styles": [
+        "What to tell parents when they ask about...",
+        "The research childcare educators should know"
+      ],
+      "content_priority": {
+        "philosophy": 25,
+        "regulation": 25,
+        "materials": 20,
+        "movement": 15,
+        "adult_preparation": 15
+      },
+      "voice_tone": "Respectful, professional, substantive, research-grade"
+    }
+  ]
+}

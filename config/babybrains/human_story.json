@@ -1,0 +1,31 @@
+{
+  "bb_human_story": {
+    "who": "TBD - needs proper crafting",
+    "child": "TBD",
+    "motivation": "TBD",
+    "background": "TBD",
+    "credibility": "TBD",
+    "tone": "Learning alongside other parents, not preaching from above",
+    "vulnerability": "TBD",
+    "partner": "TBD",
+    "status": "INCOMPLETE - DO NOT USE FOR COMMENT GENERATION UNTIL CRAFTED"
+  },
+  "comment_rules": {
+    "personal_angle_percentage": 0.35,
+    "personal_phrases": [
+      "We found this with our little one too...",
+      "This is something we've been researching...",
+      "As a dad trying to figure this out..."
+    ],
+    "never_mention": [
+      "partner credentials",
+      "employer details"
+    ],
+    "tone_anchors": [
+      "Learning alongside",
+      "Not preaching",
+      "Real family, real mess",
+      "Cost-of-living aware"
+    ]
+  }
+}

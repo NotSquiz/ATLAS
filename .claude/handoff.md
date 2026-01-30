@@ -1,14 +1,69 @@
 # ATLAS Session Handoff
 
 **Date:** January 30, 2026
-**Status:** Agent Knowledge Base — Phase 1 COMPLETE. Ready for Phase 2 (Synthesis) + Baby Brains Action Planning.
+**Status:** Week 1 Sprint COMPLETE (S1.1-S1.8). 98 tests passing. Ready for Week 2 (S2.1+).
+**Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: Agent Knowledge Base Research → Baby Brains Execution
+## Current Session: Baby Brains Week 1 BUILD COMPLETE
 
-### What We Did
-Built a structured knowledge base of ideas, tools, patterns, and strategies for a 24/7 AI assistant. Processed 17 sources from X.com, GitHub, arxiv, and the web. Extracted items, tagged by category, rated relevance, identified patterns, cross-referenced across sources. Then pivoted to Baby Brains execution planning.
+### What We Built This Session (S1.1-S1.8)
+1. **S1.1** Schema (10 tables) + models (dataclasses) + db.py (query helpers) -- 24 tests
+2. **S1.2** Voice spec loader (parses 1712-line BabyBrains-Writer.md) + human story profile -- 13 tests
+3. **S1.3** Cross-repo search (static path map across 5 repos) -- 11 tests
+4. **S1.4** Platform configs (YouTube/IG/TikTok/FB rules from Dec 2025 research) -- 7 JSON configs
+5. **S1.5** MCP tools (bb_status, bb_find_doc, bb_warming_daily, bb_warming_done, bb_warming_status) + CLI
+6. **S1.6** Transcript fetcher (youtube-transcript-api) -- 12 tests
+7. **S1.7** Comment generator (Sonnet API + voice spec + quality gate) -- 19 tests
+8. **S1.8** WarmingService (orchestrates daily pipeline) + targets module -- 19 tests
+
+### Files Created
+```
+atlas/babybrains/
+├── __init__.py, __main__.py
+├── schema.sql (10 tables)
+├── models.py (10 dataclasses)
+├── db.py (25+ query helpers)
+├── voice_spec.py (section extraction)
+├── cross_repo.py (5-repo search)
+├── cli.py (status, find-doc, warming commands)
+├── warming/
+│   ├── __init__.py
+│   ├── service.py (WarmingService orchestrator)
+│   ├── targets.py (target generation + scoring)
+│   ├── comments.py (Sonnet API + quality gate)
+│   └── transcript.py (YouTube transcript fetch)
+├── trends/__init__.py
+├── content/__init__.py
+└── clients/__init__.py
+
+config/babybrains/
+├── platforms.json (4 platform algo rules)
+├── warming_schedule.json (phases, search queries)
+├── warming_engagement_rules.json (watch/like/subscribe thresholds)
+├── audience_segments.json (5 personas)
+├── competitors.json (AU + international)
+├── cross_repo_paths.json (16 topic mappings)
+└── human_story.json (PLACEHOLDER -- needs user completion)
+
+tests/babybrains/
+├── conftest.py, __init__.py
+├── test_db.py (24 tests)
+├── test_voice_spec.py (13 tests)
+├── test_cross_repo.py (11 tests)
+├── test_transcript.py (12 tests)
+├── test_comments.py (19 tests)
+└── test_warming_service.py (19 tests)
+```
+
+### Modified Files
+- `atlas/mcp/server.py` -- Added 5 BB MCP tools (bb_status, bb_find_doc, bb_warming_daily, bb_warming_done, bb_warming_status)
+
+### Key Documents
+- `docs/BB_AUTOMATION_PLAN_V2.md` -- Full architecture plan (D100-D106)
+- `docs/SPRINT_TASKS.md` -- 21 sprint tasks with prerequisites, acceptance criteria, git workflow
+- `docs/research/AGENT_KNOWLEDGE_BASE.md` -- 17 sources, 284 items, 49 patterns
 
 ### Key Documents
 - `docs/research/AGENT_KNOWLEDGE_BASE.md` — Full research (17 sources, 284 items, 49 patterns)
@@ -18,9 +73,11 @@ Built a structured knowledge base of ideas, tools, patterns, and strategies for 
 - **17 sources processed (S1-S17)**
 - **284 items extracted**
 - **49 patterns identified**
+- **8 synthesis themes** — cross-referenced all patterns
+- **4 contradictions resolved** — VPS/local, active/passive, autonomy/safety, task/process decisions
 - **Phase 1 (Intake & Tagging)** — COMPLETE
-- **Phase 2 (Synthesis)** — READY to begin
-- **Phase 3 (Architecture Decisions)** — pending synthesis
+- **Phase 2 (Synthesis)** — COMPLETE (8 themes, convergence map, build order)
+- **Phase 3 (Architecture Decisions)** — Ready when needed (D96-D99 already logged)
 
 ### Sources Processed
 

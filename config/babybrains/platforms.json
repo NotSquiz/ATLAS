@@ -1,0 +1,150 @@
+{
+  "youtube": {
+    "posting_times_aedt": ["07:00", "12:00", "20:00"],
+    "posting_times_context": {
+      "07:00": "Morning commute/pre-chaos scroll",
+      "12:00": "Lunch break window",
+      "20:00": "Post-bedtime doom-scroll (prime slot)"
+    },
+    "video_lengths": {
+      "viral_sweet_spot": {"min_seconds": 50, "max_seconds": 70},
+      "educational": {"min_seconds": 60, "max_seconds": 120},
+      "dead_zone": {"min_seconds": 90, "max_seconds": 120, "note": "Avoid this range"},
+      "max_seconds": 180
+    },
+    "title_max_chars": 60,
+    "description_above_fold_chars": 100,
+    "hashtag_limit": {"min": 3, "max": 5},
+    "hashtag_strategy": ["1 broad (e.g. #Parenting)", "1 niche (e.g. #Montessori)", "1 geo/community (e.g. #MumLifeAustralia)"],
+    "algo_signals": [
+      "Loop mechanics (replays count as additional views)",
+      "Session time on platform",
+      "Retention >80% for 60s or >50% for 3m",
+      "Feed traffic >70%",
+      "Custom thumbnails (90% CTR lift)"
+    ],
+    "incubation": {
+      "required": true,
+      "duration_days": 21,
+      "rules": [
+        "No posting for 21 days after channel creation",
+        "Consume 3x daily during incubation",
+        "Like competitor comments",
+        "Subscribe to niche channels",
+        "Build 20-video backlog during this period"
+      ]
+    },
+    "cadence": "3/week",
+    "critical_rules": [
+      "3-second hook mandatory",
+      "No AI/templated content (July 2025 policy)",
+      "Custom thumbnails required",
+      "Related Video linking to long-form",
+      "Pinned comment with link/lead magnet"
+    ],
+    "bridge_strategy": {
+      "shorts_to_longform": true,
+      "related_video_link": true,
+      "pinned_comment_link": true,
+      "subscribe_cta_at_40s": true
+    }
+  },
+  "instagram": {
+    "posting_times_aedt": ["07:00", "19:00", "20:00"],
+    "posting_times_context": {
+      "06:00-09:00": "Drop-off exhale window",
+      "19:00-21:30": "Prime revenge bedtime scrolling",
+      "weekends_09:00-11:00": "Weekend morning engagement"
+    },
+    "video_lengths": {
+      "cold_reach": {"min_seconds": 15, "max_seconds": 30},
+      "community_retention": {"min_seconds": 60, "max_seconds": 90},
+      "avoid_for_new": {"min_seconds": 180, "note": "Avoid 3m+ for new accounts"}
+    },
+    "caption_max_chars": 2200,
+    "caption_above_fold_chars": 125,
+    "hashtag_limit": {"min": 3, "max": 5, "note": "Strict enforcement"},
+    "hashtag_strategy": ["1 niche", "1 topic", "1 location", "optional brand/campaign"],
+    "algo_signals": [
+      "Sends (DM shares) = 10-20x weight vs likes (PRIMARY KPI)",
+      "Retention >70%",
+      "Save rate (utility signal)",
+      "Profile clicks (interest signal)",
+      "Re-watch/loops"
+    ],
+    "cadence": "1/day (6 days/week)",
+    "critical_rules": [
+      "No TikTok watermarks",
+      "No engagement bait",
+      "No static videos",
+      "Use native Instagram editing",
+      "Semantic SEO replaces hashtag stuffing"
+    ],
+    "trial_reels": {
+      "available": true,
+      "description": "Post to non-followers first for A/B testing"
+    }
+  },
+  "tiktok": {
+    "posting_times_aedt": ["06:00", "09:00", "19:00"],
+    "posting_times_context": {
+      "06:00-07:00": "Commute scroll",
+      "09:00-12:00": "Morning engagement",
+      "thursday_19:00-22:00": "Highest priority slot",
+      "friday_13:00-15:00": "Friday afternoon"
+    },
+    "video_lengths": {
+      "viral_hooks": {"min_seconds": 11, "max_seconds": 18},
+      "storytelling": {"min_seconds": 21, "max_seconds": 34},
+      "educational_deep_dive": {"min_seconds": 60}
+    },
+    "caption_max_chars": 4000,
+    "caption_above_fold_lines": 2,
+    "hashtag_limit": {"min": 3, "max": 5},
+    "hashtag_strategy": ["2 broad niche", "2 specific content", "1 trending/location"],
+    "algo_signals": [
+      "Share ratio (shares per 1,000 views)",
+      "Completion rate >100% (loops)",
+      "Search intent matching",
+      "3-second hook benchmark 30.7% (top quartile 40-45%)",
+      "Visual AI frame scanning for categorisation"
+    ],
+    "trust_phase": {
+      "duration_days": {"min": 30, "max": 90},
+      "rules": [
+        "Strict niche discipline (no random trends)",
+        "Post 2-3x/day for algorithmic data",
+        "File naming SEO (rename before upload)"
+      ]
+    },
+    "cadence": "1/day (7 days/week)",
+    "critical_rules": [
+      "File naming with keywords before upload",
+      "Business accounts must use Commercial Music Library",
+      "Audio fingerprinting detects copyright violations",
+      "4,000-char captions = micro-blogging platform"
+    ]
+  },
+  "facebook": {
+    "posting_times_aedt": ["11:00", "18:00"],
+    "posting_times_context": {
+      "wednesday_11:00-13:00": "Highest engagement slot",
+      "weekdays_18:00-20:00": "Evening engagement",
+      "sunday_09:00-11:00": "Sunday morning"
+    },
+    "video_lengths": {
+      "reels": {"min_seconds": 15, "max_seconds": 30},
+      "acceptable": {"min_seconds": 60, "max_seconds": 90}
+    },
+    "hashtag_limit": {"min": 3, "max": 5},
+    "algo_signals": [
+      "Recency (50% same-day boost)",
+      "Friend signals",
+      "Engagement rate 5.91% avg (outperforms TikTok/IG)"
+    ],
+    "critical_rules": [
+      "75% scroll with audio muted - burn-in captions essential",
+      "Visual storytelling must work without sound"
+    ]
+  }
+}

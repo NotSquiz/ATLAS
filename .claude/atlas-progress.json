@@ -1,7 +1,7 @@
 {
   "current_phase": "phase4_quality_audit",
-  "last_updated": "2026-01-30T12:00:00Z",
-  "session_count": 17,
+  "last_updated": "2026-01-30T18:00:00Z",
+  "session_count": 18,
   "completed_tasks": [
     {"id": "phase4-align-4", "task": "Add superlatives to ELEVATE skill", "date": "2026-01-09"},
     {"id": "phase4-align-5", "task": "Add outcome promise detection to ELEVATE", "date": "2026-01-09"},
@@ -62,7 +62,16 @@
     {"id": "docs-7", "task": "Update DECISIONS.md with D96-D99", "date": "2026-01-30"},
     {"id": "docs-8", "task": "Update atlas-progress.json with research tasks + BB pending", "date": "2026-01-30"},
     {"id": "docs-9", "task": "Update DOCUMENTATION_UPDATE_GUIDE.md with research section", "date": "2026-01-30"},
-    {"id": "docs-10", "task": "Update BABY-BRAINS-LAUNCH-STRATEGY status (accounts created)", "date": "2026-01-30"}
+    {"id": "docs-10", "task": "Update BABY-BRAINS-LAUNCH-STRATEGY status (accounts created)", "date": "2026-01-30"},
+    {"id": "bb-s1.1", "task": "S1.1: Schema (10 tables) + models (10 dataclasses) + db.py (25+ query helpers) — 24 tests", "date": "2026-01-30"},
+    {"id": "bb-s1.2", "task": "S1.2: Voice spec loader (XML section parser for 1712-line BabyBrains-Writer.md) — 13 tests", "date": "2026-01-30"},
+    {"id": "bb-s1.3", "task": "S1.3: Cross-repo search (16 topic mappings across 5 repos) — 11 tests", "date": "2026-01-30"},
+    {"id": "bb-s1.4", "task": "S1.4: Platform configs (7 JSON configs from Dec 2025 research)", "date": "2026-01-30"},
+    {"id": "bb-s1.5", "task": "S1.5: MCP tools (bb_status, bb_find_doc, bb_warming_daily/done/status) + CLI", "date": "2026-01-30"},
+    {"id": "bb-s1.6", "task": "S1.6: Transcript fetcher (youtube-transcript-api + graceful fallback) — 12 tests", "date": "2026-01-30"},
+    {"id": "bb-s1.7", "task": "S1.7: Comment generator (Sonnet API + voice spec + quality gate) — 19 tests", "date": "2026-01-30"},
+    {"id": "bb-s1.8", "task": "S1.8: WarmingService orchestrator + target scoring — 19 tests", "date": "2026-01-30"},
+    {"id": "bb-docs-1", "task": "Update CLAUDE.md, DECISIONS.md (D100-D106), TECHNICAL_STATUS.md, atlas-progress.json, DOCUMENTATION_UPDATE_GUIDE.md with BB Week 1", "date": "2026-01-30"}
   ],
   "pending_tasks": [
     {"id": "phase4-compare-2", "task": "True A/B: Run pipeline on caring-for-clothes-folding-hanging, compare to manual Grade A"},
@@ -71,9 +80,19 @@
     {"id": "voice-6", "task": "Add yesterday comparison to briefing"},
     {"id": "voice-7", "task": "Add weekly trends analysis"},
     {"id": "voice-8", "task": "Add predictive insights (low reserves warning)"},
-    {"id": "bb-1", "task": "Build account warming automation (daily: watch, engage, comment in BB voice)"},
-    {"id": "bb-2", "task": "Build content strategy engine (trending topics → briefs → schedule)"},
-    {"id": "bb-3", "task": "Build content production pipeline (script → video → platform export)"},
+    {"id": "bb-s2.1", "task": "S2.1: WSLg/Playwright spike test (headless Chrome on WSL2)"},
+    {"id": "bb-s2.2", "task": "S2.2: Browser automation (Playwright: watch, like, subscribe)"},
+    {"id": "bb-s2.3", "task": "S2.3: bb_warming_watch + bb_warming_done MCP tools enhancement"},
+    {"id": "bb-s2.4", "task": "S2.4: YouTube Data API client (search + captions)"},
+    {"id": "bb-s2.5", "task": "S2.5: Grok API client (X.com trending search)"},
+    {"id": "bb-s2.6", "task": "S2.6: Trend Engine + scorer + bb_trend_scan MCP tool"},
+    {"id": "bb-s3.1", "task": "S3.1: Brief generator + bb_content_brief MCP tool"},
+    {"id": "bb-s3.2", "task": "S3.2: Script generator + bb_generate_script MCP tool"},
+    {"id": "bb-s3.3", "task": "S3.3: Visual prompt generator + bb_generate_visuals MCP tool"},
+    {"id": "bb-s3.4", "task": "S3.4: Caption + export pipeline + bb_export_platform MCP tool"},
+    {"id": "bb-s3.5", "task": "S3.5: Review queue + calendar + management MCP tools"},
+    {"id": "bb-s3.6", "task": "S3.6: Scheduler integration (6 BB cron tasks)"},
+    {"id": "bb-s3.7", "task": "S3.7: Integration test + docs update + handoff"},
     {"id": "bb-4", "task": "Relaunch Baby Brains website (placeholder hero, articles enabled)"},
     {"id": "bb-5", "task": "Build article/SEO/GEO pipeline (long-form for web + LLM citation)"},
     {"id": "memory-1", "task": "Add temporal backbone to semantic_memory (previous_thought_id, related_thought_ids)"},
@@ -122,11 +141,18 @@
   },
   "baby_brains_status": {
     "social_accounts_created": true,
+    "week1_sprint_complete": true,
+    "sprint_tasks_done": ["S1.1", "S1.2", "S1.3", "S1.4", "S1.5", "S1.6", "S1.7", "S1.8"],
+    "tests_passing": 98,
+    "decisions_logged": ["D100", "D101", "D102", "D103", "D104", "D105", "D106"],
+    "mcp_tools": ["bb_status", "bb_find_doc", "bb_warming_daily", "bb_warming_done", "bb_warming_status"],
     "account_warming_consistent": false,
     "content_pipeline_established": false,
     "website_live": false,
     "articles_started": false,
     "knowledge_graph_completion": "40-50%",
-    "writer_voice_spec": "complete"
+    "writer_voice_spec": "complete",
+    "human_story_json": "INCOMPLETE_PLACEHOLDER",
+    "next_sprint": "S2.1 (WSLg/Playwright spike test)"
   }
 }
