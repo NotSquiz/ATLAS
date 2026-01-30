@@ -1,7 +1,7 @@
 # ATLAS Technical Status
 
-**Last Updated:** January 23, 2026
-**Status:** Phase 0-3 COMPLETE + Phase 4 IN PROGRESS (Quality Audit Pipeline) + Health/Fitness Module COMPLETE + Garmin Integration COMPLETE + Voice API Pipeline COMPLETE + Voice Intents COMPLETE + Interactive Workout Timer COMPLETE + Workout Scheduler COMPLETE + Interactive Morning Routine COMPLETE + Voice Announcements COMPLETE + STOP Button Fix COMPLETE + BridgeFileServer Refactoring COMPLETE + Pipeline Audit D82-D88 COMPLETE
+**Last Updated:** January 30, 2026
+**Status:** Phase 0-3 COMPLETE + Phase 4 IN PROGRESS (Quality Audit Pipeline) + Health/Fitness Module COMPLETE + Garmin Integration COMPLETE + Voice API Pipeline COMPLETE + Voice Intents COMPLETE + Interactive Workout Timer COMPLETE + Workout Scheduler COMPLETE + Interactive Morning Routine COMPLETE + Voice Announcements COMPLETE + STOP Button Fix COMPLETE + BridgeFileServer Refactoring COMPLETE + Pipeline Audit D82-D88 COMPLETE + **Agent Knowledge Base Research COMPLETE (17 sources, 284 items, 49 patterns)** + **Baby Brains Agent Architecture PLANNED (D97)**
 
 ---
 
@@ -1236,12 +1236,59 @@ ANTHROPIC_API_KEY="$(cat .env | tr -d '\n')" python scripts/voice_latency_benchm
 
 ---
 
+## Agent Knowledge Base Research (January 30, 2026)
+
+### Status: Phase 1 COMPLETE — 17 Sources Processed
+
+| Metric | Value |
+|--------|-------|
+| Sources processed | 17 (S1-S17) |
+| Items extracted | 284 |
+| Patterns identified | 49 |
+| Architecture decisions logged | D96-D99 |
+| Key document | `docs/research/AGENT_KNOWLEDGE_BASE.md` |
+
+### Key Architecture Findings
+
+| Finding | Source | Impact |
+|---------|--------|--------|
+| Hybrid planning (ReWOO + ReAct + Plan-and-Execute) | S14 (800-paper survey) | ATLAS already implements — formalized in D99 |
+| FSRS-6 memory decay over flat storage | S17 (Vestige) | Memory upgrade planned — D98 |
+| Dual-agent architecture (Personal + Baby Brains) | S14, S16 | Planned — D97 |
+| Circuit breaker + fallback chains | S16 (BrainPro) | Needed for production resilience |
+| Privacy as routing constraint | S16 (BrainPro) | Health data → ZDR/local providers |
+| 0-token intents validated as optimal | S14 (ARTIST finding) | No change needed — already optimal |
+
+### Baby Brains Agent — Planned Components
+
+| Component | Status | Priority |
+|-----------|--------|----------|
+| Account warming automation | NOT STARTED | 1 — highest daily impact |
+| Content strategy engine | NOT STARTED | 2 — trending topics → briefs |
+| Content production pipeline | NOT STARTED | 3 — script → video → post |
+| Website relaunch | NOT STARTED | 4 — unblock with placeholder |
+| Article/SEO/GEO pipeline | NOT STARTED | 5 — long-form for web |
+
+### Memory Upgrade — Planned
+
+| Component | Current | Planned | Source |
+|-----------|---------|---------|--------|
+| Storage | Flat SQLite (`semantic_memory`) | Temporal + entity-linked | D98 |
+| Decay | None (infinite retention) | FSRS-6 spaced repetition | S17 |
+| Strength model | None | Dual (retrievability + stability) | S17 |
+| Conflict detection | None (append-only) | Prediction error gating | S17 |
+| Forgetting | Manual only | Automatic via FSRS-6 decay | S17 |
+
+---
+
 ## Quick Start for New Agent
 
 1. **Understand architecture decisions:** Read `docs/DECISIONS.md`
 2. **Understand the routing:** Read `atlas/llm/router.py`
 3. **Understand the voice pipeline:** Read `atlas/voice/pipeline.py`
-4. **Run tests:** Use commands in "Testing Commands" section
-5. **Check budget:** `get_cost_tracker().get_budget_status()`
-6. **Config options:** See `VoicePipelineConfig` in pipeline.py
-7. **Windows launcher:** Run from Windows with `python scripts/atlas_launcher.py`
+4. **Understand the research:** Read `docs/research/AGENT_KNOWLEDGE_BASE.md`
+5. **Understand Baby Brains strategy:** Read `docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md`
+6. **Run tests:** Use commands in "Testing Commands" section
+7. **Check budget:** `get_cost_tracker().get_budget_status()`
+8. **Config options:** See `VoicePipelineConfig` in pipeline.py
+9. **Windows launcher:** Run from Windows with `python scripts/atlas_launcher.py`

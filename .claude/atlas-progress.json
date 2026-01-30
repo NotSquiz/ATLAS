@@ -1,7 +1,7 @@
 {
   "current_phase": "phase4_quality_audit",
-  "last_updated": "2026-01-23T14:00:00Z",
-  "session_count": 16,
+  "last_updated": "2026-01-30T12:00:00Z",
+  "session_count": 17,
   "completed_tasks": [
     {"id": "phase4-align-4", "task": "Add superlatives to ELEVATE skill", "date": "2026-01-09"},
     {"id": "phase4-align-5", "task": "Add outcome promise detection to ELEVATE", "date": "2026-01-09"},
@@ -51,7 +51,18 @@
     {"id": "phase4-d86-fix", "task": "D86: Add SKIPPED status handler to CLI paths", "date": "2026-01-23"},
     {"id": "phase4-d87-fix", "task": "D87: Increase adversarial verification to 75% coverage", "date": "2026-01-23"},
     {"id": "phase4-d88-fix", "task": "D88: Add file lock on progress file parse", "date": "2026-01-23"},
-    {"id": "phase4-orphan-fix", "task": "Reset 5 orphaned in_progress entries in progress file", "date": "2026-01-23"}
+    {"id": "phase4-orphan-fix", "task": "Reset 5 orphaned in_progress entries in progress file", "date": "2026-01-23"},
+    {"id": "research-1", "task": "Agent Knowledge Base: Process 17 sources (S1-S17), extract 284 items, identify 49 patterns", "date": "2026-01-30"},
+    {"id": "research-2", "task": "D96: Log Agent Knowledge Base methodology decision", "date": "2026-01-30"},
+    {"id": "research-3", "task": "D97: Log dual-agent architecture decision (Personal + Baby Brains)", "date": "2026-01-30"},
+    {"id": "research-4", "task": "D98: Log memory architecture decision (FSRS-6 over flat storage)", "date": "2026-01-30"},
+    {"id": "research-5", "task": "D99: Log hybrid planning validation decision", "date": "2026-01-30"},
+    {"id": "docs-5", "task": "Update handoff.md with full research session state + BB execution plan", "date": "2026-01-30"},
+    {"id": "docs-6", "task": "Update TECHNICAL_STATUS.md with research phase + BB agent planning", "date": "2026-01-30"},
+    {"id": "docs-7", "task": "Update DECISIONS.md with D96-D99", "date": "2026-01-30"},
+    {"id": "docs-8", "task": "Update atlas-progress.json with research tasks + BB pending", "date": "2026-01-30"},
+    {"id": "docs-9", "task": "Update DOCUMENTATION_UPDATE_GUIDE.md with research section", "date": "2026-01-30"},
+    {"id": "docs-10", "task": "Update BABY-BRAINS-LAUNCH-STRATEGY status (accounts created)", "date": "2026-01-30"}
   ],
   "pending_tasks": [
     {"id": "phase4-compare-2", "task": "True A/B: Run pipeline on caring-for-clothes-folding-hanging, compare to manual Grade A"},
@@ -59,7 +70,17 @@
     {"id": "phase4-prod", "task": "First successful batch run (10+ activities)"},
     {"id": "voice-6", "task": "Add yesterday comparison to briefing"},
     {"id": "voice-7", "task": "Add weekly trends analysis"},
-    {"id": "voice-8", "task": "Add predictive insights (low reserves warning)"}
+    {"id": "voice-8", "task": "Add predictive insights (low reserves warning)"},
+    {"id": "bb-1", "task": "Build account warming automation (daily: watch, engage, comment in BB voice)"},
+    {"id": "bb-2", "task": "Build content strategy engine (trending topics → briefs → schedule)"},
+    {"id": "bb-3", "task": "Build content production pipeline (script → video → platform export)"},
+    {"id": "bb-4", "task": "Relaunch Baby Brains website (placeholder hero, articles enabled)"},
+    {"id": "bb-5", "task": "Build article/SEO/GEO pipeline (long-form for web + LLM citation)"},
+    {"id": "memory-1", "task": "Add temporal backbone to semantic_memory (previous_thought_id, related_thought_ids)"},
+    {"id": "memory-2", "task": "Implement FSRS-6 decay scoring for memory retrieval"},
+    {"id": "memory-3", "task": "Add prediction error gating to ThoughtClassifier"},
+    {"id": "infra-1", "task": "Implement circuit breaker for Garmin/USDA/LLM APIs"},
+    {"id": "infra-2", "task": "Formalize fallback chains (Claude → Haiku → Ollama)"}
   ],
   "qc_validation_counts": {
     "formal_transitions": 11,
@@ -90,5 +111,22 @@
     "voice_announcements_updated": true,
     "opus_verification_passed": true,
     "config_files_synchronized": true
+  },
+  "agent_knowledge_base": {
+    "status": "phase1_complete",
+    "sources_processed": 17,
+    "items_extracted": 284,
+    "patterns_identified": 49,
+    "decisions_logged": ["D96", "D97", "D98", "D99"],
+    "key_document": "docs/research/AGENT_KNOWLEDGE_BASE.md"
+  },
+  "baby_brains_status": {
+    "social_accounts_created": true,
+    "account_warming_consistent": false,
+    "content_pipeline_established": false,
+    "website_live": false,
+    "articles_started": false,
+    "knowledge_graph_completion": "40-50%",
+    "writer_voice_spec": "complete"
   }
 }

@@ -2,7 +2,7 @@
 
 Decisions are logged chronologically. Future agents should read this to understand why choices were made.
 
-**Last Updated:** January 26, 2026
+**Last Updated:** January 30, 2026
 
 ---
 
@@ -3215,5 +3215,111 @@ combat_level = (sum_of_all_skill_levels // 2) + 3
 
 **Files Modified:**
 - `scripts/atlas_launcher.py` - Added `workout_display` frame, `_update_workout_display()`, `_hide_workout_display()` methods
+
+---
+
+## D96: Agent Knowledge Base Research Methodology
+**Date:** January 30, 2026
+**Context:** Need structured approach to evaluate 17+ sources about AI agent architecture, tools, and strategies before building the 24/7 assistant.
+
+**Options Considered:**
+1. Ad-hoc reading and note-taking
+2. Spreadsheet tracking
+3. Structured intake document with taxonomy, relevance scoring, pattern identification, and cross-referencing
+
+**Decision:** Structured intake methodology (Option 3)
+
+**Rationale:**
+- Category taxonomy (12 tags: ARCH, SECURITY, MEMORY, VOICE, AUTONOMY, COMMS, WORKFLOW, TOOLS, COST, UX, BUSINESS, COMMUNITY) enables filtering
+- Relevance scoring (HIGH/MEDIUM/LOW/NOISE) prevents analysis paralysis
+- Cross-referencing across sources reveals convergent patterns (e.g., 4 independent sources confirming hybrid model routing)
+- Pattern identification (49 patterns from 17 sources) provides architectural principles
+- Credibility assessment per source prevents uncritical adoption
+- Result: 284 actionable items from 17 sources in `docs/research/AGENT_KNOWLEDGE_BASE.md`
+
+---
+
+## D97: Dual-Agent Architecture (Personal + Baby Brains)
+**Date:** January 30, 2026
+**Context:** User needs both a personal health/development assistant AND a Baby Brains business agent. Single monolith vs separate agents vs orchestrated sub-agents.
+
+**Options Considered:**
+1. Single monolithic agent handling everything
+2. Fully independent agents with no shared infrastructure
+3. One orchestrator with specialized sub-agents (hub-and-spoke)
+
+**Decision:** Hub-and-spoke: shared orchestrator with Personal and Baby Brains agent branches (Option 3)
+
+**Rationale:**
+- S14 (800-paper survey) Pattern 31: Three-layer architecture supports progressive capability building
+- S14 #212: Five generic agent roles (Leader, Executor, Critic, Memory Keeper, Facilitator) map cleanly to sub-agents
+- S14 #215: "Start with fixed pipelines, evolve to adaptive coordination"
+- S16 Pattern 44: Tool-level access control enables different permissions per agent
+- S16 Pattern 45: Modular prompt assembly enables different personas from shared infrastructure
+- Shared infrastructure (memory, model router, MCP, security) avoids duplication
+- Separate knowledge bases, permissions, and brand voice prevent cross-contamination
+- Health data stays private (S16 privacy tiers); business data stays professional
+
+**Architecture:**
+```
+ATLAS Orchestrator (shared: memory, model router, MCP, security)
+├── Personal Agent (health, development, life admin)
+└── Baby Brains Agent (content, marketing, strategy)
+```
+
+---
+
+## D98: Memory Architecture — FSRS-6 Decay Over Flat Storage
+**Date:** January 30, 2026
+**Context:** Current `semantic_memory` table is flat SQLite with no decay, no conflict detection, no importance scoring. Research identified this as the highest-impact upgrade.
+
+**Options Considered:**
+1. Keep flat `semantic_memory` as-is
+2. Add vector embeddings to flat store (traditional RAG)
+3. Implement structured memory with FSRS-6 decay, dual strength, prediction error gating
+4. Adopt Vestige MCP server directly
+
+**Decision:** Implement FSRS-6 principles in our memory system (Option 3), evaluate Vestige (Option 4) as potential drop-in
+
+**Rationale:**
+- S14 #205: MAGMA shows 46% improvement over flat memory (0.700 vs 0.481)
+- S14 #206: Traversal policy matters more than graph structure — invest in query logic
+- S17 Pattern 46: Forgetting is the feature — infinite retention drowns in noise at scale
+- S17 Pattern 47: Dual strength (retrievability + stability) maps to our needs — daily health data = high retrievability, core preferences = high stability
+- S17 Pattern 48: Prediction error gating prevents contradictory memories accumulating
+- S17 #277: RAG degrades after ~10,000 interactions without decay
+- Vestige is 42K lines of Rust with 29 MCP tools — evaluate before rebuilding in Python
+
+**Implementation Plan:**
+1. Add temporal backbone to `semantic_memory` (previous_thought_id, related_thought_ids)
+2. Add dual strength columns (retrievability_score, stability_score)
+3. Implement FSRS-6 decay calculation on retrieval
+4. Add conflict detection to ThoughtClassifier (prediction error gating)
+5. Evaluate Vestige as drop-in replacement vs custom Python implementation
+
+---
+
+## D99: Hybrid Planning Validated (ReWOO + ReAct + Plan-and-Execute)
+**Date:** January 30, 2026
+**Context:** S14 (800-paper survey) reviewed all planning approaches. Need to confirm our existing architecture is sound.
+
+**Decision:** Current hybrid planning architecture is academically validated — formalize, don't change
+
+**Rationale:**
+- S14 concludes: "No single planning approach dominates. Real systems combine approaches."
+- Our existing architecture already implements all three patterns:
+  - **ReWOO** (plan then execute): WorkoutRunner, RoutineRunner, AssessmentRunner — 80% token savings vs ReAct
+  - **ReAct** (reason-act-observe loop): Haiku fallback + SessionBuffer for general queries
+  - **Plan-and-Execute** (plan, execute, replan): 7-stage activity pipeline with stage caching on retry
+  - **0-token bypass**: 23-priority intent dispatcher — validated as optimal by ARTIST finding (S14 #195)
+- S14 Pattern 34: Our Wait pattern retry = Reflexion (20-22% improvement quantified)
+- Action: Document this formally so it doesn't regress. No architecture change needed.
+
+**Files Referenced:**
+- `atlas/voice/intent_dispatcher.py` — Priority-ordered intent dispatch (0-token)
+- `atlas/health/workout_runner.py` — ReWOO pattern
+- `atlas/health/routine_runner.py` — ReWOO pattern
+- `atlas/pipelines/activity_conversion.py` — Plan-and-Execute pattern
+- `atlas/voice/bridge_file_server.py` — ReAct fallback via SessionBuffer
 
 ---

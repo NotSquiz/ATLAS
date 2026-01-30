@@ -1,99 +1,111 @@
 # ATLAS Session Handoff
 
-**Date:** January 26, 2026
-**Status:** Strategic Research Complete — ATLAS 3.0 Planning
+**Date:** January 30, 2026
+**Status:** Agent Knowledge Base — Phase 1 COMPLETE. Ready for Phase 2 (Synthesis) + Baby Brains Action Planning.
 
 ---
 
-## What Was Accomplished This Session
+## Current Session: Agent Knowledge Base Research → Baby Brains Execution
 
-### Personal AI Landscape Research (Comprehensive)
+### What We Did
+Built a structured knowledge base of ideas, tools, patterns, and strategies for a 24/7 AI assistant. Processed 17 sources from X.com, GitHub, arxiv, and the web. Extracted items, tagged by category, rated relevance, identified patterns, cross-referenced across sources. Then pivoted to Baby Brains execution planning.
 
-Deep analysis of the personal AI assistant ecosystem in January 2026:
+### Key Documents
+- `docs/research/AGENT_KNOWLEDGE_BASE.md` — Full research (17 sources, 284 items, 49 patterns)
+- `docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md` — Launch strategy (Jan 16, partially executed)
 
-**Key Discoveries:**
-1. **Clawdbot** — 9.7k GitHub stars, viral adoption, self-hosted AI assistant
-2. **Claude Skills Marketplace** — 71,000+ skills, but security concerns (ransomware demonstrated)
-3. **Levangie Labs/BlevLabs** — Cognitive Agentic Framework with episodic memory
-4. **Brian Roemmele's Love Equation** — `dE/dt = β(C-D)E` for AI alignment
-5. **/last30days skill** — Trend research across Reddit/X
-6. **WooYun Legacy** — 88,636 vulnerability cases as Claude skill
+### Research Progress
+- **17 sources processed (S1-S17)**
+- **284 items extracted**
+- **49 patterns identified**
+- **Phase 1 (Intake & Tagging)** — COMPLETE
+- **Phase 2 (Synthesis)** — READY to begin
+- **Phase 3 (Architecture Decisions)** — pending synthesis
 
-**Strategic Conclusion:** Don't adopt Clawdbot — evolve ATLAS with Clawdbot's best patterns while preserving unique strengths (voice-first, health tracking, Baby Brains pipeline).
+### Sources Processed
+
+| ID | Source | Key Contribution |
+|----|--------|-----------------|
+| S1 | Scoble's Molty Report #2 | 100 use cases, multi-agent patterns |
+| S2 | Robert Youssef: LobeHub + Moltbot | "Brain + Hands" architecture, RAG, agent groups |
+| S3 | "$3000 computer" article | Data sovereignty, Olares OS, hybrid routing |
+| S4 | /last30days + Grok API | Role allocation framework (Local/Grok/Claude/Agent) |
+| S5 | Alex Finn memory config | Memory flush before compaction, session search |
+| S6 | Vercel AGENTS.md study | Passive context (100%) >> Active retrieval (53%) |
+| S7 | Anthropic MCP Apps | Interactive UI inside conversations, open standard |
+| S8 | Claire Vo: 24hrs with Clawdbot | Failure modes: permission creep, temporal reasoning, overreach |
+| S9 | Typeless + STT landscape | Voice-as-input: human dictation vs agent STT |
+| S10 | Composer + browser agents | Browser = missing capability, Phase 5, security concerns |
+| S11 | Brain Emulation Report 2025 | Conceptual: data > compute, individuality from experience |
+| S12 | Asimov Press brain article | Companion to S11, timeline/costs |
+| S13 | Moltbot VPS security hardening | ACTIVE exploitation of unsecured bots, Tailscale, hardening checklist |
+| S14 | Agentic Reasoning survey (arXiv:2601.12538) | 800-paper survey: three-layer framework, planning taxonomy, memory architecture, ATLAS validation |
+| S15 | Claude Code "Ship Like a Team of Five" | Parallel worktrees, custom commands, engineering-manager mindset, MCP integrations |
+| S16 | BrainPro (Jeff Garzik, Rust) | Circuit breakers, privacy routing tiers, fallback chains, tool-level access control, modular prompts |
+| S17 | Vestige + FSRS-6 cognitive memory | Forgetting as feature, dual strength model, prediction error gating, retroactive importance, 29 MCP tools |
+
+### Top Patterns (49 total, most important listed)
+
+1. **Async delegation is THE use case** (S1, S3, S8)
+2. **Hybrid model routing is consensus** (S1, S2, S3, S4)
+3. **Passive context >> active retrieval** (S6) — 100% vs 53%
+4. **Data sovereignty as strategy** (S3, S13)
+5. **Security before features** (S13)
+6. **Brain + Hands = ReWOO pattern** (S2, S14) — 80% token savings
+7. **Agents optimize for capability, humans must optimize for safety** (S8)
+8. **MCP is the universal protocol** (S7)
+9. **Hybrid planning is the answer** (S14) — ReWOO + ReAct + Plan-and-Execute
+10. **Flat memory → structured memory = 46% improvement** (S14)
+11. **Fewer tool calls > frequent calls** (S14) — validates 0-token architecture
+12. **ATLAS architecture is academically validated** (S14)
+13. **Forgetting is the feature** (S17) — FSRS-6 decay prevents context bloat
+14. **Dual strength memory** (S17) — retrievability vs stability as independent dimensions
+15. **Prediction error gating** (S17) — detect conflicts before storing
+16. **Circuit breaker + fallback chains** (S16) — production resilience
+17. **Privacy as routing constraint** (S16) — standard/sensitive/strict tiers
 
 ---
 
-## Documents Created
+## Baby Brains Execution Status (Jan 30, 2026)
 
-| Document | Purpose |
-|----------|---------|
-| `docs/research/R31.Personal AI Assistant Landscape January 2026 - Clawdbot Era.md` | **Comprehensive research document** — Clawdbot analysis, competitive landscape, Love Equation, security architecture, ATLAS 3.0 strategy, 90-day roadmap |
-| `.claude/plans/transient-rolling-hamming.md` | Active strategic plan with implementation details |
-| `docs/Clawdbot Trend Analysis - Comprehensive .md` | Raw Clawdbot trend data (5,620 posts analyzed) |
+### What's Done
+- Social media accounts CREATED (YouTube, Instagram, TikTok, Facebook)
+- BabyBrains-Writer voice spec COMPLETE (95KB)
+- Knowledge Graph 40-50% complete (125+ activities)
+- Agent Knowledge Base research COMPLETE (17 sources)
 
----
+### What's NOT Done (Priority Order)
+1. **Account warming** — accounts created but NOT consistently warmed
+2. **Content pipeline** — not established
+3. **Content strategy** — no gameplan for what goes out or when
+4. **Website** — not live, hero video still blocking
+5. **Long-form articles** — none started, needed for SEO/GEO
 
-## ATLAS 3.0 Vision
-
-A 24/7 AI partner that:
-1. **Manages health** (current strength)
-2. **Runs Baby Brains** as business workforce
-3. **Handles life admin** (email, calendar, tasks)
-4. **Is reachable anywhere** (voice, Telegram, email)
-5. **Improves itself** over time
-
-### Architecture Summary
+### Planned Agent Architecture
 
 ```
-Voice Bridge (current) + Messaging Bridge (new) + Daemon Mode (new)
-                              ↓
-                    Intent Dispatcher (unified)
-                              ↓
-         Health Services | Baby Brains Workforce | Life Admin
-                              ↓
-                    Model Router (multi-model)
-                              ↓
-                    Persistent Memory
+ATLAS Orchestrator (shared infrastructure)
+├── Personal Agent (health, development, life admin)
+│   ├── Health sub-agent (Garmin, workouts, supplements)
+│   ├── Memory sub-agent (thoughts, capture, digest)
+│   └── Life admin sub-agent (calendar, email — Phase 5)
+│
+└── Baby Brains Agent (business, content, strategy)
+    ├── Content sub-agent (activities, blog, copy)
+    ├── Marketing sub-agent (social, SEO/GEO, analytics)
+    ├── Strategy sub-agent (market research, expansion)
+    └── Customer-facing agent (website/app — future)
 ```
 
----
+### Baby Brains Agent — Immediate Build Priorities
 
-## Implementation Phases (Not Started)
-
-| Phase | Description | Duration |
-|-------|-------------|----------|
-| 1 | Telegram bridge | 1-2 weeks |
-| 2 | Daemon mode + Ralph loop | 1-2 weeks |
-| 3 | Model router | 1 week |
-| 4 | Self-improvement layer | 2-3 weeks |
-| 5 | Life admin (email, calendar) | 2-3 weeks |
-
----
-
-## Key Concepts to Remember
-
-### Love Equation (Brian Roemmele)
-```
-dE/dt = β(C - D)E
-```
-- E = emotional complexity / "love" level
-- C = cooperative interactions, D = defective/toxic
-- If C > D: Love grows exponentially
-- **Application:** Design ATLAS interactions as relationship, not transaction. Store positive memories. Proactive care.
-
-### Security Architecture
-- Clawdbot/Skills ecosystem has real attack vectors (MedusaLocker demonstrated)
-- Use OS-level sandboxing (bubblewrap/Docker)
-- Deny rules for curl, fetch, .env
-- Whitelist-only skill installation
-- Monthly audits
-
-### ATLAS Advantages (Don't Lose)
-- Voice-first <1.8s latency
-- 0-token intent matching (95%+ local)
-- Traffic Light + GATE system
-- Baby Brains quality pipeline
-- Ethical gamification
+| Priority | What to Build | Why |
+|----------|--------------|-----|
+| 1 | **Account warming automation** | Daily grind: watch videos, engage, leave BB-voice comments |
+| 2 | **Content strategy engine** | Trending topic research → content briefs → production schedule |
+| 3 | **Content production pipeline** | Script → video → captions → platform-specific export |
+| 4 | **Website launch** | Unblock with placeholder hero, get articles live |
+| 5 | **Article/SEO/GEO pipeline** | Long-form content for web + LLM citation |
 
 ---
 
@@ -102,99 +114,62 @@ dE/dt = β(C - D)E
 ```
 Read these files:
 1. .claude/handoff.md (this file)
-2. docs/research/R31.Personal AI Assistant Landscape January 2026 - Clawdbot Era.md
+2. docs/research/AGENT_KNOWLEDGE_BASE.md (full research — 17 sources)
+3. docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md (launch strategy)
 
 Then:
-- For implementation: Start with Phase 1 (Telegram bridge)
-- For more research: User has more X.com discoveries to share
-- For Baby Brains focus: Activity pipeline automation via Ralph loop
+- If user has more sources: Continue S18+ intake
+- If ready for synthesis: Begin Phase 2 (cross-reference all 49 patterns)
+- If ready for architecture: Begin Phase 3 (concrete build decisions)
+- If ready to build: Start with account warming automation (highest daily impact)
 ```
 
 ---
 
-## Quick Reference: Key External Resources
+## Previous Session Context (Preserved)
 
-| Resource | URL | Purpose |
-|----------|-----|---------|
-| Clawdbot | https://github.com/clawdbot/clawdbot | Reference architecture |
-| /last30days | https://github.com/mvanhorn/last30days-skill | Trend research for Baby Brains |
-| WooYun Security | https://github.com/tanweai/wooyun-legacy | Security auditing skill |
-| Claude Sandboxing | https://code.claude.com/docs/en/sandboxing | Security implementation |
-| Levangie Labs | https://levangielabs.com/ | Cognitive architecture reference |
+### ATLAS 3.0 Vision
+24/7 AI partner: health management, Baby Brains workforce, life admin, multi-platform, self-improving.
 
----
+### Implementation Phases
+| Phase | Description |
+|-------|-------------|
+| 0 | Desktop security hardening (from S13) |
+| 1 | Telegram bridge |
+| 2 | Daemon mode + Ralph loop |
+| 3 | Model router (informed by S4, S16) |
+| 4 | Self-improvement layer (informed by S14, S17) |
+| 5 | Life admin (email, calendar, browser) |
 
-## User Context
+### ATLAS Advantages (Don't Lose)
+- Voice-first <1.8s latency
+- 0-token intent matching (95%+ local) — validated by S6, S14 as optimal
+- Traffic Light + GATE system
+- Baby Brains quality pipeline
+- Ethical gamification
 
-**Goal:** Build AI system that acts as life assistant and business partner for Baby Brains.
+### User Context
+**Goal:** Build AI system as life assistant AND business partner for Baby Brains.
+**Stakes:** Better life for family. Personal AI assistant = critical path.
+**Baby Brains:** Evidence-based Montessori parenting platform (175+ activities, pre-launch).
+**New Desktop Machine:** Available for 24/7 agent deployment.
+**Separation:** Personal health/development SEPARATE from Baby Brains business agent.
 
-**Stakes:** User explicitly stated this is about providing a better life for their family. The personal AI assistant opportunity is seen as critical path to financial improvement.
+### Key Research Findings for Architecture
+- **Memory:** FSRS-6 decay + dual strength + prediction error gating (S17 Vestige)
+- **Planning:** Hybrid ReWOO + ReAct + Plan-and-Execute (S14, already implemented)
+- **Security:** Privacy tiers + circuit breakers + fallback chains (S16 BrainPro)
+- **Multi-agent:** One orchestrator + specialized sub-agents (S14 five generic roles)
+- **Development:** Parallel worktrees + single-trigger commands (S15)
+- **Tools to evaluate:** Vestige, LobeHub, Grok API, Tailscale
 
-**Baby Brains:** Evidence-based Montessori parenting platform with:
-- Knowledge repo (175+ activities to convert)
-- Web platform (pre-launch)
-- Marketing OS (content generation)
-
----
-
-## This Session: Qwen3-TTS Voice Cloning (January 26, 2026)
-
-### What Was Done
-1. **Qwen3-TTS Installation** - Installed qwen-tts, flash-attn, openai-whisper, ffmpeg
-2. **Voice Cloning Testing** - Tested multiple voices:
-   - **Jeremy Irons** (interview audio) - WORKS WELL, adopted as default
-   - **Thomas Shelby/Cillian Murphy** (TV audio) - FAILED, TV audio too processed
-3. **Module Integration** - Fixed `atlas/voice/tts_qwen.py`:
-   - Changed from CustomVoice to Base model (ICL mode)
-   - Added correct API calls (`generate_voice_clone` with `ref_text`)
-   - Added x-vector fallback mode
-4. **Bridge Integration** - Updated `atlas/voice/bridge_file_server.py`:
-   - Default voice changed to `jeremy_irons`
-   - Removed thomas_shelby from QWEN_VOICES (didn't work)
-5. **Documentation** - Updated CLAUDE.md, V2_ORCHESTRATOR_GUIDE.md, DECISIONS.md
-
-### Key Files
-| File | Purpose |
-|------|---------|
-| `config/voice/jeremy_irons.wav` | Reference audio (11 seconds) |
-| `config/voice/qwen_tts_voices.json` | Voice cloning config |
-| `atlas/voice/tts_qwen.py` | Qwen3TTS wrapper |
-| `atlas/voice/bridge_file_server.py` | Voice bridge (uses Qwen3TTS) |
-
-### Voice Cloning Learnings
-- Clean interview/podcast audio works best
-- TV/film dialogue fails (reverb, EQ, background score)
-- Regional accents (Birmingham) harder than RP British
-- Transcription accuracy critical for ICL mode
-- Punctuation controls pacing (commas, ellipses)
-
-### Testing the Voice
-```bash
-# Start voice bridge
-cd /home/squiz/ATLAS && source venv/bin/activate
-python -m atlas.voice.bridge_file_server
-
-# First response will be slow (~30s) as model loads
-# Subsequent responses faster
-```
+### Qwen3-TTS Voice Cloning (Jan 26)
+- Jeremy Irons voice working
+- Config: `config/voice/qwen_tts_voices.json`
+- Module: `atlas/voice/tts_qwen.py`
 
 ---
 
-## Previous Session Work (Preserved)
-
-### UI & Voice Pipeline
-- Tab order fixed, HUD gauge sizes increased
-- Visual workout display in main zone
-- Seneca Trial protocol (Full/Quick modes)
-- Combat level formula: `(skill_sum // 2) + 3`
-
-### Pending
-- White background on Focus/Learning icons (need GIMP fix)
-- Combat level display in HUD
-- XP balancing values
-- Test voice bridge with Qwen3-TTS live
-
----
-
-*Session ended: January 26, 2026*
-*Qwen3-TTS integration complete, ready for live testing*
+*Session updated: January 30, 2026*
+*Knowledge base: 17 sources, 284 items, 49 patterns*
+*Next: Phase 2 synthesis → Baby Brains agent build*

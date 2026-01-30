@@ -133,6 +133,44 @@
 - ATLAS 3.0 strategic plan (5 phases)
 - 90-day implementation roadmap
 
+## Agent Knowledge Base (January 30, 2026)
+
+| Path | Purpose | When to Update |
+|------|---------|----------------|
+| `docs/research/AGENT_KNOWLEDGE_BASE.md` | Structured intake of 17 sources: 284 items, 49 patterns, cross-references | New sources (S18+), Phase 2 synthesis, Phase 3 architecture |
+
+### Knowledge Base Contents
+- **17 sources (S1-S17):** Practitioner articles, academic survey, GitHub projects, Reddit posts
+- **284 extracted items** with category tags (ARCH, SECURITY, MEMORY, etc.) and relevance ratings
+- **49 patterns** cross-referenced across sources
+- **Per-source:** Items table, key patterns, cross-references, action items, credibility assessment
+- **Architecture decisions logged:** D96-D99
+
+### Key Findings for Architecture
+| Finding | Source | Decision |
+|---------|--------|----------|
+| Dual-agent architecture (Personal + Baby Brains) | S14, S16 | D97 |
+| FSRS-6 memory decay over flat storage | S17 (Vestige) | D98 |
+| Hybrid planning validated (ReWOO + ReAct + Plan-and-Execute) | S14 | D99 |
+| Circuit breaker + fallback chains for resilience | S16 (BrainPro) | Pending implementation |
+| Privacy tiers for model routing | S16 (BrainPro) | Pending implementation |
+
+## Baby Brains Agent Documentation
+
+| Path | Purpose | When to Update |
+|------|---------|----------------|
+| `docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md` | 4-week launch plan with day-by-day tasks | Strategy changes, milestone completions |
+| `skills/babybrains/BABYBRAINS.md` | 9-skill content pipeline orchestrator | Pipeline changes |
+
+### Baby Brains Pending Work (January 30, 2026)
+| Task | Status | Tracker ID |
+|------|--------|------------|
+| Account warming automation | NOT STARTED | bb-1 |
+| Content strategy engine | NOT STARTED | bb-2 |
+| Content production pipeline | NOT STARTED | bb-3 |
+| Website relaunch | NOT STARTED | bb-4 |
+| Article/SEO/GEO pipeline | NOT STARTED | bb-5 |
+
 ## Checklist for OSRS UI Changes
 
 - [ ] Update `.claude/plans/osrs-command-centre.md` with phase progress
