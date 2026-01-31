@@ -1,12 +1,89 @@
 # ATLAS Session Handoff
 
-**Date:** January 30, 2026
-**Status:** Week 1 Sprint COMPLETE (S1.1-S1.8). 98 tests passing. Ready for Week 2 (S2.1+).
+**Date:** January 31, 2026
+**Status:** KB intake (S18-S22) + BB Week 2 audit + browser stealth research. Plans updated, ready for desktop sync.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: Baby Brains Week 1 BUILD COMPLETE
+## Current Session: BB Week 2 Audit + Stealth Research (Jan 31, 2026 - Session 2)
+
+### What We Did
+1. **Audited BB Week 2 preparation checklist** against 22-source knowledge base
+2. **Cross-referenced comment pipeline** against P54 (self-review degrades quality) -- found regex-only quality gate is acceptable because human-in-the-loop acts as independent critic
+3. **Identified 3 missing items** from original checklist: account DB population, WSLg fallback plan, Playwright anti-detection
+4. **Researched browser stealth** for Playwright: playwright-stealth, camoufox, patchright, rebrowser-patches
+5. **Updated plan docs** with KB audit findings and stealth requirements
+6. **Human story deferred** -- comment generator handles gracefully, fill later
+
+### Key Decisions
+- **Account warming reset:** Treat pipeline start as Day 1 (accounts not consistently warmed)
+- **Human story deferred:** 0% personal angle is fine for now
+- **Stealth is mandatory:** YouTube detects at infrastructure level, not content level
+- **P54 mitigated by human review:** No independent critic needed yet at 5-10 comments/day
+
+### Files Modified This Session
+- `docs/SPRINT_TASKS.md` -- Added S0.1 (populate accounts), audit notes, stealth requirements to S2.1/S2.2
+- `docs/BB_AUTOMATION_PLAN_V2.md` -- Added KB audit findings table, stealth requirements to D102 pipeline
+- `docs/BROWSER_STEALTH_RESEARCH.md` -- NEW: Anti-detection research findings
+- `docs/DOCUMENTATION_UPDATE_GUIDE.md` -- Stats updated (from Session 1)
+- `.claude/handoff.md` -- This file
+
+---
+
+## Previous Session: Knowledge Base Source Intake (Jan 31, 2026 - Session 1)
+
+### What We Did
+Ingested 5 new sources into the overhauled knowledge base system:
+
+| Source | Type | Items | Patterns | Cred | Key Contribution |
+|--------|------|:-----:|----------|:----:|------------------|
+| **S18** Claude Cowork Plugins | Product launch + OSS | 14 | P50, P51 (new) | 8 | Plugin architecture (skills+commands+connectors+sub-agents), MCP Tool Search (85% token savings) |
+| **S19** Agentic Image Gen | Practitioner + Product | 12 | P52 (new) | 7 | Nano Banana + self-improving loop + Google Agentic Vision. BB carousel pipeline |
+| **S20** Team of Rivals + Swarm | Academic + Scientific | 16 | P53, P54, P55 (new) | 9 | **Highest value source.** Opposing incentives (92.1% vs 60%), self-review degrades quality, quorum sensing |
+| **S21** THE SEED Loop | Social media | 6 | None new | 3 | Low credibility. Confirms existing patterns only. "Accumulate WHAT, empty HOW" heuristic |
+| **S22** OpenClaw Agent Canvas | Open-source tool | 12 | None new | 8 | Validates 8 patterns in one system. 13 messaging adapters, Docker sandboxes, visual agent dashboard |
+
+### New Patterns (6 total: P50-P55)
+
+| # | Pattern | Signal | Impact |
+|---|---------|--------|--------|
+| P50 | Plugin = Skills + Commands + Connectors + Sub-Agents | 8.2 | Anthropic canonical. Our `.claude/` is ~70% aligned |
+| P51 | Dynamic Tool Loading (MCP Tool Search) | 7.9 | 85% token reduction. Critical as we add more MCP tools |
+| P52 | Agentic Vision (Think→Act→Observe) | 8.1 | Self-improving image loops. BB carousel production |
+| P53 | Opposing Incentives Create Coherence | 8.8 | Agents constrain agents. 92.1% vs 60% single-agent |
+| P54 | **Self-Review Degrades Quality** | **9.1** | **Session's highest signal.** Self-verification went wrong 60% of time |
+| P55 | Quorum Sensing > Consensus | 8.3 | Threshold agreement faster AND more accurate than unanimity |
+
+### Highest-Priority New Actions
+
+| ID | Action | Priority |
+|----|--------|----------|
+| **A61** | **Independent critic agent with VETO authority** | **P0** |
+| A53 | Restructure `.claude/` to plugin architecture | P1 |
+| A54 | Evaluate MCP Tool Search | P1 |
+| A57 | Evaluate Nano Banana Pro for BB carousels | P1 |
+| A62 | Quorum-based voting for multi-agent decisions | P1 |
+| A63 | Swiss Cheese error layers in ATLAS | P1 |
+| A65 | Study OpenClaw for Telegram bridge | P1 |
+
+### Convergence Promotions
+- **P6** (Brain+Hands) → Tier 1 (4 sources)
+- **P14** (Passive Context) → Tier 1 (4 sources)
+- **P38** (Cascading Failures) → Tier 2 (3 sources)
+- **P19** (Sandboxed Extensibility) → Tier 2 (3 sources)
+- **P40** (Single-Trigger Delegation) → Tier 2 (3 sources)
+
+### KB Stats After Session
+- **22 sources** (S1-S22), up from 17
+- **55 patterns** (P1-P55), up from 49
+- **67 actions** (A1-A67), up from 52
+- 3 JSON indexes current
+- CHANGELOG at v1.3
+
+---
+
+## Previous Session: Baby Brains Week 1 BUILD COMPLETE
 
 ### What We Built This Session (S1.1-S1.8)
 1. **S1.1** Schema (10 tables) + models (dataclasses) + db.py (query helpers) -- 24 tests
@@ -63,50 +140,45 @@ tests/babybrains/
 ### Key Documents
 - `docs/BB_AUTOMATION_PLAN_V2.md` -- Full architecture plan (D100-D106)
 - `docs/SPRINT_TASKS.md` -- 21 sprint tasks with prerequisites, acceptance criteria, git workflow
-- `docs/research/AGENT_KNOWLEDGE_BASE.md` -- 17 sources, 284 items, 49 patterns
-
-### Key Documents
-- `docs/research/AGENT_KNOWLEDGE_BASE.md` — Full research (17 sources, 284 items, 49 patterns)
 - `docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md` — Launch strategy (Jan 16, partially executed)
 
-### Research Progress
-- **17 sources processed (S1-S17)**
-- **284 items extracted**
-- **49 patterns identified**
-- **8 synthesis themes** — cross-referenced all patterns
-- **4 contradictions resolved** — VPS/local, active/passive, autonomy/safety, task/process decisions
-- **Phase 1 (Intake & Tagging)** — COMPLETE
-- **Phase 2 (Synthesis)** — COMPLETE (8 themes, convergence map, build order)
-- **Phase 3 (Architecture Decisions)** — Ready when needed (D96-D99 already logged)
+### Knowledge Base (Overhauled Jan 31, 2026)
 
-### Sources Processed
+**Location:** `knowledge-base/` (top-level directory)
 
-| ID | Source | Key Contribution |
-|----|--------|-----------------|
-| S1 | Scoble's Molty Report #2 | 100 use cases, multi-agent patterns |
-| S2 | Robert Youssef: LobeHub + Moltbot | "Brain + Hands" architecture, RAG, agent groups |
-| S3 | "$3000 computer" article | Data sovereignty, Olares OS, hybrid routing |
-| S4 | /last30days + Grok API | Role allocation framework (Local/Grok/Claude/Agent) |
-| S5 | Alex Finn memory config | Memory flush before compaction, session search |
-| S6 | Vercel AGENTS.md study | Passive context (100%) >> Active retrieval (53%) |
-| S7 | Anthropic MCP Apps | Interactive UI inside conversations, open standard |
-| S8 | Claire Vo: 24hrs with Clawdbot | Failure modes: permission creep, temporal reasoning, overreach |
-| S9 | Typeless + STT landscape | Voice-as-input: human dictation vs agent STT |
-| S10 | Composer + browser agents | Browser = missing capability, Phase 5, security concerns |
-| S11 | Brain Emulation Report 2025 | Conceptual: data > compute, individuality from experience |
-| S12 | Asimov Press brain article | Companion to S11, timeline/costs |
-| S13 | Moltbot VPS security hardening | ACTIVE exploitation of unsecured bots, Tailscale, hardening checklist |
-| S14 | Agentic Reasoning survey (arXiv:2601.12538) | 800-paper survey: three-layer framework, planning taxonomy, memory architecture, ATLAS validation |
-| S15 | Claude Code "Ship Like a Team of Five" | Parallel worktrees, custom commands, engineering-manager mindset, MCP integrations |
-| S16 | BrainPro (Jeff Garzik, Rust) | Circuit breakers, privacy routing tiers, fallback chains, tool-level access control, modular prompts |
-| S17 | Vestige + FSRS-6 cognitive memory | Forgetting as feature, dual strength model, prediction error gating, retroactive importance, 29 MCP tools |
+The research index was restructured from a monolithic 2,546-line file into a hub-and-spoke architecture:
+
+```
+knowledge-base/
+├── README.md              # Dashboard (always read first)
+├── PATTERNS.md            # 49 patterns indexed with convergence
+├── SYNTHESIS.md           # 8 themes, contradictions, build order
+├── ACTIONS.md             # 52 action items with IDs, status, deps
+├── CHANGELOG.md           # Version history
+├── indexes/
+│   ├── SIGNAL_HEATMAP.md  # Top items by composite score
+│   ├── by_category.json   # Tag → items
+│   ├── by_source.json     # Source → metadata
+│   └── by_tool.json       # Tool → references
+├── sources/               # 17 individual source files (S01-S17)
+├── _templates/            # Intake template for new sources
+├── synthesis/             # Synthesis working files
+└── archive/               # Original monolithic file preserved
+```
+
+**Session bootstrap:** Read `knowledge-base/README.md` first — it has source index, top patterns, open actions, and navigation.
+
+**Adding sources:** Copy `_templates/source_template.md`, fill in, run `python scripts/kb_rebuild_indexes.py`
+
+**Key stats:** 17 sources, 284 items, 49 patterns, 8 themes, 52 action items
+**Signal scoring:** `(Relevance×0.30) + (Confidence×0.25) + (Credibility×0.25) + (Convergence×0.20)`
 
 ### Top Patterns (49 total, most important listed)
 
-1. **Async delegation is THE use case** (S1, S3, S8)
-2. **Hybrid model routing is consensus** (S1, S2, S3, S4)
-3. **Passive context >> active retrieval** (S6) — 100% vs 53%
-4. **Data sovereignty as strategy** (S3, S13)
+1. **Async delegation is THE use case** (S1, S3, S8, S14) — Consensus
+2. **Hybrid model routing is consensus** (S1, S2, S3, S4, S14, S16) — 6 sources
+3. **Passive context >> active retrieval** (S6, S14, S15) — 100% vs 53%
+4. **Data sovereignty as strategy** (S3, S6, S11)
 5. **Security before features** (S13)
 6. **Brain + Hands = ReWOO pattern** (S2, S14) — 80% token savings
 7. **Agents optimize for capability, humans must optimize for safety** (S8)
@@ -171,15 +243,33 @@ ATLAS Orchestrator (shared infrastructure)
 ```
 Read these files:
 1. .claude/handoff.md (this file)
-2. docs/research/AGENT_KNOWLEDGE_BASE.md (full research — 17 sources)
-3. docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md (launch strategy)
+2. docs/SPRINT_TASKS.md (find next PENDING task — S0.1 or S2.1)
+3. docs/BROWSER_STEALTH_RESEARCH.md (if starting Week 2 browser work)
+4. knowledge-base/README.md (research dashboard — sources, patterns, actions)
 
 Then:
-- If user has more sources: Continue S18+ intake
-- If ready for synthesis: Begin Phase 2 (cross-reference all 49 patterns)
-- If ready for architecture: Begin Phase 3 (concrete build decisions)
-- If ready to build: Start with account warming automation (highest daily impact)
+- For BB Week 2 build: Start S2.1 (Playwright + stealth spike test). Needs stealth research doc.
+- For BB warming prep: Run S0.1 first (populate bb_accounts with current dates)
+- If user has more sources: Use knowledge-base/_templates/source_template.md for S23+ intake
+- If ready for architecture work: A61 (independent critic agent) is highest-priority (P0)
+- For BB content: A57 (Nano Banana eval) enables carousel image generation
+- To see all actions: Read knowledge-base/ACTIONS.md (67 items, 13 P0 critical)
+- To see what matters most: Read knowledge-base/indexes/SIGNAL_HEATMAP.md
+- Key insight: Self-review degrades quality (P54). Human-in-the-loop is the critic for now.
+- Key insight: Browser stealth is mandatory. See docs/BROWSER_STEALTH_RESEARCH.md.
 ```
+
+### User Manual Tasks (Before Week 2 Build)
+1. Get YouTube API key (console.cloud.google.com → YouTube Data API v3, free)
+2. Get Grok API key (console.x.ai, $5 free credit)
+3. Git pull on desktop machine
+4. Copy .env to desktop (add new API keys)
+5. `pip install -r requirements.txt` on desktop
+
+### Git Sync Strategy
+- All code lives in git. Push from laptop, pull on desktop.
+- `.env` is gitignored — must be manually copied/recreated on each machine.
+- No local-only state except `.env` and `atlas.db` (DB is recreated from schema on first run).
 
 ---
 
@@ -227,6 +317,6 @@ Then:
 
 ---
 
-*Session updated: January 30, 2026*
-*Knowledge base: 17 sources, 284 items, 49 patterns*
-*Next: Phase 2 synthesis → Baby Brains agent build*
+*Session updated: January 31, 2026*
+*Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
+*Next: Continue source intake OR begin building (A61 critic agent is highest priority)*

@@ -1,0 +1,2832 @@
+{
+  "_meta": {
+    "generated": "2026-01-31T14:23:46.506390",
+    "total_items": 390
+  },
+  "ARCH": {
+    "count": 103,
+    "items": [
+      {
+        "id": "S1.01",
+        "summary": "Multi-agent orchestration",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.09",
+        "summary": "Separate Codex agents for coding",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.12",
+        "summary": "Telegram DM topics as separate sessions",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.19",
+        "summary": "$5 VPS deployment",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.20",
+        "summary": "AWS free tier in under 5 minutes",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.21",
+        "summary": "Raspberry Pi deployment",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.22",
+        "summary": "Refurbished mini PCs + Proxmox",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.23",
+        "summary": "Mac Mini farm \u2014 50 Claudes 24/7",
+        "relevance": "LOW",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.24",
+        "summary": "Old Mac + RPi + VPS connected via protocol",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.25",
+        "summary": "Coolify one-click deployment",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S2.01",
+        "summary": "\"Brain + Hands\" architecture",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.02",
+        "summary": "LobeHub",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.03",
+        "summary": "Agent Groups",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.04",
+        "summary": "SOUL.md as personality export",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.05",
+        "summary": "MCP as universal bridge",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.07",
+        "summary": "S3-compatible storage for original files",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.08",
+        "summary": "Knowledge base exposed via MCP",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.09",
+        "summary": "40+ model providers with per-task routing",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.10",
+        "summary": "\"Prototype with perfect model, deploy with single best model\"",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.17",
+        "summary": "Docker self-hosted deployment",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.18",
+        "summary": "Ollama integration for zero-cost local models",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.20",
+        "summary": "Auth options",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.21",
+        "summary": "Vercel one-click deploy",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.26",
+        "summary": "Research pipeline",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S3.01",
+        "summary": "Hybrid intelligence pattern",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.02",
+        "summary": "Olares OS",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.03",
+        "summary": "Self-hosted SaaS alternatives via Olares",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.04",
+        "summary": "Olares One",
+        "relevance": "MEDIUM",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.05",
+        "summary": "Nvidia DGX Spark",
+        "relevance": "LOW",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.06",
+        "summary": "Mac Studio as AI workstation",
+        "relevance": "LOW",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.11",
+        "summary": "Containerized isolation",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.17",
+        "summary": "Multi-model whitelist",
+        "relevance": "MEDIUM",
+        "source_file": "S3"
+      },
+      {
+        "id": "S4.07",
+        "summary": "OpenAI-compatible API format",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.11",
+        "summary": "Role allocation question",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.12",
+        "summary": "Grok's unique capability = real-time social data",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S6.01",
+        "summary": "Passive context beats active retrieval",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.02",
+        "summary": "Skills were unused 56% of the time",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.03",
+        "summary": "\"Retrieval-led reasoning over pre-training-led reasoning\"",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.05",
+        "summary": "Elimination of decision points",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.06",
+        "summary": "Instruction ordering matters dramatically",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.07",
+        "summary": "Anchoring effect",
+        "relevance": "MEDIUM",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.08",
+        "summary": "Skills excel for vertical, action-specific workflows",
+        "relevance": "MEDIUM",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.10",
+        "summary": "Build evaluations targeting APIs absent from training data",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S7.01",
+        "summary": "MCP Apps = interactive UI inside AI conversations",
+        "relevance": "HIGH",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.02",
+        "summary": "Build once, deploy across multiple AI platforms",
+        "relevance": "HIGH",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.03",
+        "summary": "Bidirectional data flow",
+        "relevance": "HIGH",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.04",
+        "summary": "`ui://` resource protocol",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.12",
+        "summary": "Integration with host capabilities",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.14",
+        "summary": "Local dev with cloudflared tunnel",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S9.12",
+        "summary": "Voice input has two users: the human and the agent",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.13",
+        "summary": "Voice quality chain",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S10.05",
+        "summary": "Steel.dev",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.10",
+        "summary": "Browser as capability layer for existing agents",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.11",
+        "summary": "Playwright / Puppeteer / Browser Use",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S11.01",
+        "summary": "\"The central challenge is acquiring data, not computation\"",
+        "relevance": "MEDIUM",
+        "source_file": "S11"
+      },
+      {
+        "id": "S11.03",
+        "summary": "Three-pillar pipeline: Recording (data in) \u2192 Connectomics (structure) \u2192 Modeling (behavior)",
+        "relevance": "MEDIUM",
+        "source_file": "S11"
+      },
+      {
+        "id": "S11.05",
+        "summary": "Faithful emulation vs behavioral imitation",
+        "relevance": "MEDIUM",
+        "source_file": "S11"
+      },
+      {
+        "id": "S11.06",
+        "summary": "Non-neural factors matter",
+        "relevance": "LOW",
+        "source_file": "S11"
+      },
+      {
+        "id": "S12.01",
+        "summary": "Brain emulators vs AI simulators",
+        "relevance": "LOW",
+        "source_file": "S12"
+      },
+      {
+        "id": "S12.03",
+        "summary": "\"AI will provide extraordinary acceleration in some places\" but biology involves \"physical manipulation with time requir",
+        "relevance": "MEDIUM",
+        "source_file": "S12"
+      },
+      {
+        "id": "S13.16",
+        "summary": "\"Just put it on a mac mini\" response",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S18.01",
+        "summary": "Four-component plugin architecture",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.02",
+        "summary": "Skills = passive context (validated)",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.03",
+        "summary": "File-based configuration, no code",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.04",
+        "summary": "Sub-agents with scoped data access",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.05",
+        "summary": "MCP as universal connector protocol",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.07",
+        "summary": "MCP Tool Search: dynamic tool loading",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.08",
+        "summary": "Tool Search improves accuracy",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.10",
+        "summary": "Cowork = Claude Code for non-technical users",
+        "relevance": "MEDIUM",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.12",
+        "summary": "Plugin manifest",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S19.04",
+        "summary": "Self-improving image generation loop",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.05",
+        "summary": "Claude Code skill wraps Nano Banana API",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.06",
+        "summary": "Visual annotation as agent feedback",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.08",
+        "summary": "Agentic Vision: Think\u2192Act\u2192Observe loop",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.09",
+        "summary": "Zoom & Inspect capability",
+        "relevance": "MEDIUM",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.10",
+        "summary": "Image annotation for transparency",
+        "relevance": "MEDIUM",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.11",
+        "summary": "Instagram carousel automation pipeline",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S20.01",
+        "summary": "Opposing incentives create coherence",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.02",
+        "summary": "Self-review DEGRADES quality",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.03",
+        "summary": "Critic veto authority (hierarchical, not advisory)",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.04",
+        "summary": "Swiss Cheese Model for error layers",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.05",
+        "summary": "Remote code execution separates reasoning from execution",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.06",
+        "summary": "Context Ray Tracing",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.07",
+        "summary": "92.1% success rate with 7.9% residual floor",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.08",
+        "summary": "38.6% computational overhead for reliability",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.09",
+        "summary": "Checkpointing for infinite pause/resume",
+        "relevance": "MEDIUM",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.10",
+        "summary": "Shannon's Channel Capacity for agent communication",
+        "relevance": "MEDIUM",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.11",
+        "summary": "Quorum sensing > consensus",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.12",
+        "summary": "Graded recruitment proportional to quality",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.13",
+        "summary": "\"Disagreement and contest, not consensus or compromise\"",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.14",
+        "summary": "Decentralized swarms: 95% accuracy with 30% Byzantine agents",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.15",
+        "summary": "10 classic swarm algorithms as optimization toolkit",
+        "relevance": "MEDIUM",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.16",
+        "summary": "Hybrid human-AI swarms",
+        "relevance": "MEDIUM",
+        "source_file": "S20"
+      },
+      {
+        "id": "S21.01",
+        "summary": "8-phase dependency chain",
+        "relevance": "MEDIUM",
+        "source_file": "S21"
+      },
+      {
+        "id": "S21.03",
+        "summary": "Second-order improvement (meta-learning)",
+        "relevance": "MEDIUM",
+        "source_file": "S21"
+      },
+      {
+        "id": "S21.05",
+        "summary": "\"Love\" as game theory optimum",
+        "relevance": "LOW",
+        "source_file": "S21"
+      },
+      {
+        "id": "S22.01",
+        "summary": "Visual command center for multi-agent orchestration",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.02",
+        "summary": "Shared workspace management",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.03",
+        "summary": "WebSocket gateway as single control plane",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.04",
+        "summary": "Multi-agent routing",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.09",
+        "summary": "Injected prompt files shape agent behavior",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.10",
+        "summary": "Session-based multi-agent coordination",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.11",
+        "summary": "Model failover with profile rotation",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      }
+    ],
+    "patterns": [
+      "P0",
+      "P1",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P15",
+      "P16",
+      "P17",
+      "P18",
+      "P19",
+      "P2",
+      "P21",
+      "P24",
+      "P25",
+      "P26",
+      "P27",
+      "P28",
+      "P29",
+      "P3",
+      "P30",
+      "P31",
+      "P32",
+      "P34",
+      "P35",
+      "P36",
+      "P38",
+      "P4",
+      "P40",
+      "P41",
+      "P42",
+      "P43",
+      "P44",
+      "P45",
+      "P46",
+      "P48",
+      "P5",
+      "P50",
+      "P51",
+      "P52",
+      "P53",
+      "P54",
+      "P55",
+      "P6",
+      "P7",
+      "P8",
+      "P9"
+    ]
+  },
+  "AUTONOMY": {
+    "count": 23,
+    "items": [
+      {
+        "id": "S1.01",
+        "summary": "Multi-agent orchestration",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.02",
+        "summary": "AI as engineering manager",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.03",
+        "summary": "Recursive learning rule",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.04",
+        "summary": "Teaching new skills via conversation",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.05",
+        "summary": "Custom skills + real-time vision",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.06",
+        "summary": "\"First full-time AI employee\"",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.26",
+        "summary": "Autonomous email triage",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.30",
+        "summary": "Managing other humans",
+        "relevance": "LOW",
+        "source_file": "S1"
+      },
+      {
+        "id": "S2.03",
+        "summary": "Agent Groups",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.04",
+        "summary": "SOUL.md as personality export",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.14",
+        "summary": "Branching conversations",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.15",
+        "summary": "Agent marketplace",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S3.14",
+        "summary": "Alex Finn's 24-hour autonomous run",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.15",
+        "summary": "Restaurant reservation via voice call",
+        "relevance": "MEDIUM",
+        "source_file": "S3"
+      },
+      {
+        "id": "S6.06",
+        "summary": "Instruction ordering matters dramatically",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.10",
+        "summary": "Build evaluations targeting APIs absent from training data",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S8.03",
+        "summary": "Permission pushback lesson",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.04",
+        "summary": "Autonomous overreach",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.06",
+        "summary": "Async research = sweet spot",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S10.01",
+        "summary": "Browser agents = AI that acts on the web",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.03",
+        "summary": "Manus AI",
+        "relevance": "MEDIUM",
+        "source_file": "S10"
+      },
+      {
+        "id": "S11.02",
+        "summary": "40-50% of synaptic connections differ between genetically identical worms",
+        "relevance": "LOW",
+        "source_file": "S11"
+      },
+      {
+        "id": "S12.04",
+        "summary": "First brain emulations will be generic, not personality-preserving",
+        "relevance": "MEDIUM",
+        "source_file": "S12"
+      }
+    ],
+    "patterns": [
+      "P1",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P15",
+      "P16",
+      "P2",
+      "P20",
+      "P21",
+      "P22",
+      "P23",
+      "P26",
+      "P27",
+      "P3",
+      "P4",
+      "P5",
+      "P6",
+      "P7",
+      "P8",
+      "P9"
+    ]
+  },
+  "WORKFLOW": {
+    "count": 24,
+    "items": [
+      {
+        "id": "S1.02",
+        "summary": "AI as engineering manager",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.15",
+        "summary": "Monitor all messages via Beeper",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.26",
+        "summary": "Autonomous email triage",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.27",
+        "summary": "Calendar timeblocking",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.28",
+        "summary": "Conference note-taking",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.29",
+        "summary": "Customer success workflow",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.30",
+        "summary": "Managing other humans",
+        "relevance": "LOW",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.31",
+        "summary": "Auto-post to X",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.32",
+        "summary": "Calendar + email + comprehensive day management",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S2.26",
+        "summary": "Research pipeline",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.27",
+        "summary": "Content creation workflow",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.28",
+        "summary": "Visual analysis pipeline",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S3.14",
+        "summary": "Alex Finn's 24-hour autonomous run",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S4.04",
+        "summary": "Outputs tool-specific prompts",
+        "relevance": "MEDIUM",
+        "source_file": "S4"
+      },
+      {
+        "id": "S7.09",
+        "summary": "Launch partners: Asana, Slack, Figma, Canva, Amplitude, Box, Hex, monday.com, Salesforce",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.12",
+        "summary": "Integration with host capabilities",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S8.06",
+        "summary": "Async research = sweet spot",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.07",
+        "summary": "Calendar management failed",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.08",
+        "summary": "Voice note \u2192 complex task specification",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.09",
+        "summary": "Development latency too slow for feedback loops",
+        "relevance": "MEDIUM",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.10",
+        "summary": "Remote file/screenshot retrieval via Telegram",
+        "relevance": "MEDIUM",
+        "source_file": "S8"
+      },
+      {
+        "id": "S18.03",
+        "summary": "File-based configuration, no code",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.06",
+        "summary": "Slash commands as single-trigger workflows",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.13",
+        "summary": "Connector swapping via config",
+        "relevance": "MEDIUM",
+        "source_file": "S18"
+      }
+    ],
+    "patterns": [
+      "P1",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P17",
+      "P18",
+      "P19",
+      "P2",
+      "P20",
+      "P21",
+      "P22",
+      "P23",
+      "P28",
+      "P3",
+      "P36",
+      "P38",
+      "P4",
+      "P40",
+      "P44",
+      "P45",
+      "P5",
+      "P50",
+      "P51",
+      "P6",
+      "P7",
+      "P8",
+      "P9"
+    ]
+  },
+  "MEMORY": {
+    "count": 18,
+    "items": [
+      {
+        "id": "S1.03",
+        "summary": "Recursive learning rule",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.08",
+        "summary": "Adaptive chunking to prevent context nuking",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S2.06",
+        "summary": "Built-in RAG with PostgreSQL + pgvector",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.07",
+        "summary": "S3-compatible storage for original files",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.08",
+        "summary": "Knowledge base exposed via MCP",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S5.01",
+        "summary": "Memory flush before compaction",
+        "relevance": "HIGH",
+        "source_file": "S5"
+      },
+      {
+        "id": "S5.02",
+        "summary": "Session memory search",
+        "relevance": "HIGH",
+        "source_file": "S5"
+      },
+      {
+        "id": "S5.03",
+        "summary": "Both features disabled by default",
+        "relevance": "MEDIUM",
+        "source_file": "S5"
+      },
+      {
+        "id": "S6.01",
+        "summary": "Passive context beats active retrieval",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.03",
+        "summary": "\"Retrieval-led reasoning over pre-training-led reasoning\"",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.04",
+        "summary": "Compressed docs index (8KB) matches full injection (40KB)",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S11.01",
+        "summary": "\"The central challenge is acquiring data, not computation\"",
+        "relevance": "MEDIUM",
+        "source_file": "S11"
+      },
+      {
+        "id": "S12.04",
+        "summary": "First brain emulations will be generic, not personality-preserving",
+        "relevance": "MEDIUM",
+        "source_file": "S12"
+      },
+      {
+        "id": "S20.09",
+        "summary": "Checkpointing for infinite pause/resume",
+        "relevance": "MEDIUM",
+        "source_file": "S20"
+      },
+      {
+        "id": "S21.02",
+        "summary": "\"Sacred Paradox\" resolved as WHAT vs HOW",
+        "relevance": "MEDIUM",
+        "source_file": "S21"
+      },
+      {
+        "id": "S21.04",
+        "summary": "Memory as the unsolved bottleneck",
+        "relevance": "HIGH",
+        "source_file": "S21"
+      },
+      {
+        "id": "S22.02",
+        "summary": "Shared workspace management",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.12",
+        "summary": "Context compaction",
+        "relevance": "MEDIUM",
+        "source_file": "S22"
+      }
+    ],
+    "patterns": [
+      "P0",
+      "P1",
+      "P13",
+      "P14",
+      "P15",
+      "P16",
+      "P2",
+      "P21",
+      "P28",
+      "P3",
+      "P30",
+      "P31",
+      "P34",
+      "P35",
+      "P38",
+      "P4",
+      "P42",
+      "P43",
+      "P44",
+      "P45",
+      "P46",
+      "P48",
+      "P5",
+      "P50",
+      "P53",
+      "P54",
+      "P55",
+      "P6",
+      "P7",
+      "P8",
+      "P9"
+    ]
+  },
+  "UX": {
+    "count": 8,
+    "items": [
+      {
+        "id": "S1.04",
+        "summary": "Teaching new skills via conversation",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.06",
+        "summary": "\"First full-time AI employee\"",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.17",
+        "summary": "Multiple bots for family members",
+        "relevance": "LOW",
+        "source_file": "S1"
+      },
+      {
+        "id": "S7.11",
+        "summary": "Context preservation",
+        "relevance": "HIGH",
+        "source_file": "S7"
+      },
+      {
+        "id": "S8.14",
+        "summary": "Emotional duality",
+        "relevance": "MEDIUM",
+        "source_file": "S8"
+      },
+      {
+        "id": "S9.03",
+        "summary": "Context-aware tone adaptation",
+        "relevance": "MEDIUM",
+        "source_file": "S9"
+      },
+      {
+        "id": "S19.06",
+        "summary": "Visual annotation as agent feedback",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S20.16",
+        "summary": "Hybrid human-AI swarms",
+        "relevance": "MEDIUM",
+        "source_file": "S20"
+      }
+    ],
+    "patterns": [
+      "P0",
+      "P1",
+      "P12",
+      "P17",
+      "P18",
+      "P19",
+      "P2",
+      "P20",
+      "P21",
+      "P22",
+      "P23",
+      "P24",
+      "P25",
+      "P28",
+      "P3",
+      "P31",
+      "P32",
+      "P34",
+      "P38",
+      "P4",
+      "P41",
+      "P44",
+      "P5",
+      "P50",
+      "P52",
+      "P53",
+      "P54",
+      "P55",
+      "P6"
+    ]
+  },
+  "TOOLS": {
+    "count": 73,
+    "items": [
+      {
+        "id": "S1.05",
+        "summary": "Custom skills + real-time vision",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.10",
+        "summary": "AI Gateway \u2014 200+ models, 1 API key",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.11",
+        "summary": "NotDiamond for model routing",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.25",
+        "summary": "Coolify one-click deployment",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.28",
+        "summary": "Conference note-taking",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.33",
+        "summary": "HomeAssistant + Jarvis voice clone",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S2.02",
+        "summary": "LobeHub",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.05",
+        "summary": "MCP as universal bridge",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.06",
+        "summary": "Built-in RAG with PostgreSQL + pgvector",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.11",
+        "summary": "@lobehub/tts toolkit",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.12",
+        "summary": "Vision pipeline",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.13",
+        "summary": "Text-to-image via DALL-E 3 / MidJourney / Pollinations",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.14",
+        "summary": "Branching conversations",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.15",
+        "summary": "Agent marketplace",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.16",
+        "summary": "MCP marketplace",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.28",
+        "summary": "Visual analysis pipeline",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S3.02",
+        "summary": "Olares OS",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.03",
+        "summary": "Self-hosted SaaS alternatives via Olares",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.04",
+        "summary": "Olares One",
+        "relevance": "MEDIUM",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.16",
+        "summary": "Mac ecosystem hooks",
+        "relevance": "LOW",
+        "source_file": "S3"
+      },
+      {
+        "id": "S4.01",
+        "summary": "/last30days",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.02",
+        "summary": "Requires OpenAI API key + X (Twitter) API key",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.03",
+        "summary": "Engagement-metric weighting",
+        "relevance": "MEDIUM",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.04",
+        "summary": "Outputs tool-specific prompts",
+        "relevance": "MEDIUM",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.05",
+        "summary": "Grok API has native X Search tool",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.06",
+        "summary": "Grok 4.1 Fast",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.07",
+        "summary": "OpenAI-compatible API format",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.08",
+        "summary": "2 million token context window",
+        "relevance": "MEDIUM",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.09",
+        "summary": "Web Search tool",
+        "relevance": "MEDIUM",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.12",
+        "summary": "Grok's unique capability = real-time social data",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S6.08",
+        "summary": "Skills excel for vertical, action-specific workflows",
+        "relevance": "MEDIUM",
+        "source_file": "S6"
+      },
+      {
+        "id": "S6.09",
+        "summary": "`npx @next/codemod@canary agents-md`",
+        "relevance": "MEDIUM",
+        "source_file": "S6"
+      },
+      {
+        "id": "S7.01",
+        "summary": "MCP Apps = interactive UI inside AI conversations",
+        "relevance": "HIGH",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.04",
+        "summary": "`ui://` resource protocol",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.05",
+        "summary": "SDK: `@modelcontextprotocol/ext-apps`",
+        "relevance": "HIGH",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.09",
+        "summary": "Launch partners: Asana, Slack, Figma, Canva, Amplitude, Box, Hex, monday.com, Salesforce",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.10",
+        "summary": "Example apps available",
+        "relevance": "HIGH",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.13",
+        "summary": "`create-mcp-app` skill",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S9.01",
+        "summary": "Typeless",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.06",
+        "summary": "No developer API",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.08",
+        "summary": "OpenAI Whisper",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.09",
+        "summary": "Deepgram Nova-3",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.10",
+        "summary": "Speechmatics",
+        "relevance": "MEDIUM",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.11",
+        "summary": "Soniox",
+        "relevance": "MEDIUM",
+        "source_file": "S9"
+      },
+      {
+        "id": "S10.01",
+        "summary": "Browser agents = AI that acts on the web",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.02",
+        "summary": "Composer",
+        "relevance": "MEDIUM",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.03",
+        "summary": "Manus AI",
+        "relevance": "MEDIUM",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.04",
+        "summary": "OpenAI Operator",
+        "relevance": "LOW",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.05",
+        "summary": "Steel.dev",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.06",
+        "summary": "Browserbase",
+        "relevance": "MEDIUM",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.07",
+        "summary": "BrowserOS",
+        "relevance": "MEDIUM",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.10",
+        "summary": "Browser as capability layer for existing agents",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.11",
+        "summary": "Playwright / Puppeteer / Browser Use",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S13.07",
+        "summary": "Tailscale VPN mesh: private network for all access",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.12",
+        "summary": "Security audit command: `clawdbot security audit --deep`",
+        "relevance": "MEDIUM",
+        "source_file": "S13"
+      },
+      {
+        "id": "S18.01",
+        "summary": "Four-component plugin architecture",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.02",
+        "summary": "Skills = passive context (validated)",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.05",
+        "summary": "MCP as universal connector protocol",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.06",
+        "summary": "Slash commands as single-trigger workflows",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.09",
+        "summary": "11 open-source reference plugins",
+        "relevance": "MEDIUM",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.11",
+        "summary": "Private plugin marketplace planned",
+        "relevance": "LOW",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.12",
+        "summary": "Plugin manifest",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.13",
+        "summary": "Connector swapping via config",
+        "relevance": "MEDIUM",
+        "source_file": "S18"
+      },
+      {
+        "id": "S19.01",
+        "summary": "Nano Banana Pro = Gemini 3 Pro Image",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.02",
+        "summary": "Free API access exists",
+        "relevance": "MEDIUM",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.04",
+        "summary": "Self-improving image generation loop",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.05",
+        "summary": "Claude Code skill wraps Nano Banana API",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.07",
+        "summary": "Multiple visual feedback plugins emerging",
+        "relevance": "MEDIUM",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.08",
+        "summary": "Agentic Vision: Think\u2192Act\u2192Observe loop",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S20.15",
+        "summary": "10 classic swarm algorithms as optimization toolkit",
+        "relevance": "MEDIUM",
+        "source_file": "S20"
+      },
+      {
+        "id": "S21.06",
+        "summary": "136-file repo is mostly documentation",
+        "relevance": "LOW",
+        "source_file": "S21"
+      },
+      {
+        "id": "S22.01",
+        "summary": "Visual command center for multi-agent orchestration",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.05",
+        "summary": "13 messaging platform adapters",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      }
+    ],
+    "patterns": [
+      "P0",
+      "P1",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P15",
+      "P16",
+      "P17",
+      "P18",
+      "P19",
+      "P2",
+      "P21",
+      "P24",
+      "P25",
+      "P26",
+      "P27",
+      "P28",
+      "P29",
+      "P3",
+      "P30",
+      "P31",
+      "P32",
+      "P34",
+      "P35",
+      "P36",
+      "P38",
+      "P4",
+      "P40",
+      "P41",
+      "P42",
+      "P43",
+      "P44",
+      "P45",
+      "P46",
+      "P48",
+      "P5",
+      "P50",
+      "P51",
+      "P52",
+      "P53",
+      "P54",
+      "P55",
+      "P6",
+      "P7",
+      "P8",
+      "P9"
+    ]
+  },
+  "COST": {
+    "count": 37,
+    "items": [
+      {
+        "id": "S1.07",
+        "summary": "96% token reduction using qmd",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.08",
+        "summary": "Adaptive chunking to prevent context nuking",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.09",
+        "summary": "Separate Codex agents for coding",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.10",
+        "summary": "AI Gateway \u2014 200+ models, 1 API key",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.11",
+        "summary": "NotDiamond for model routing",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.19",
+        "summary": "$5 VPS deployment",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.20",
+        "summary": "AWS free tier in under 5 minutes",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.21",
+        "summary": "Raspberry Pi deployment",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.22",
+        "summary": "Refurbished mini PCs + Proxmox",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S2.09",
+        "summary": "40+ model providers with per-task routing",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.10",
+        "summary": "\"Prototype with perfect model, deploy with single best model\"",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.18",
+        "summary": "Ollama integration for zero-cost local models",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.19",
+        "summary": "Realistic cost breakdown: $30-100/month",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.21",
+        "summary": "Vercel one-click deploy",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.22",
+        "summary": "500,000 free credits",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S3.01",
+        "summary": "Hybrid intelligence pattern",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.12",
+        "summary": "\"Pay cloud API bills only when you actually need bleeding-edge capability\"",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.13",
+        "summary": "\"For the cost of a decent gaming PC, I get to keep it\"",
+        "relevance": "MEDIUM",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.17",
+        "summary": "Multi-model whitelist",
+        "relevance": "MEDIUM",
+        "source_file": "S3"
+      },
+      {
+        "id": "S4.02",
+        "summary": "Requires OpenAI API key + X (Twitter) API key",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.05",
+        "summary": "Grok API has native X Search tool",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.06",
+        "summary": "Grok 4.1 Fast",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.10",
+        "summary": "Cost estimate: $5-30/month for light use",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S4.11",
+        "summary": "Role allocation question",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S6.04",
+        "summary": "Compressed docs index (8KB) matches full injection (40KB)",
+        "relevance": "HIGH",
+        "source_file": "S6"
+      },
+      {
+        "id": "S7.15",
+        "summary": "Available on paid Claude plans (Pro, Max, Team, Enterprise)",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S8.11",
+        "summary": "Model selection matters for safety",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S9.07",
+        "summary": "$12/month (annual) or $30/month (monthly)",
+        "relevance": "MEDIUM",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.09",
+        "summary": "Deepgram Nova-3",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.10",
+        "summary": "Speechmatics",
+        "relevance": "MEDIUM",
+        "source_file": "S9"
+      },
+      {
+        "id": "S10.06",
+        "summary": "Browserbase",
+        "relevance": "MEDIUM",
+        "source_file": "S10"
+      },
+      {
+        "id": "S18.07",
+        "summary": "MCP Tool Search: dynamic tool loading",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.08",
+        "summary": "Tool Search improves accuracy",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S19.02",
+        "summary": "Free API access exists",
+        "relevance": "MEDIUM",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.12",
+        "summary": "Cost-effective at scale",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S20.08",
+        "summary": "38.6% computational overhead for reliability",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S22.11",
+        "summary": "Model failover with profile rotation",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      }
+    ],
+    "patterns": [
+      "P0",
+      "P1",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P15",
+      "P16",
+      "P17",
+      "P18",
+      "P19",
+      "P2",
+      "P20",
+      "P21",
+      "P22",
+      "P23",
+      "P24",
+      "P25",
+      "P26",
+      "P27",
+      "P28",
+      "P3",
+      "P30",
+      "P31",
+      "P32",
+      "P34",
+      "P36",
+      "P38",
+      "P4",
+      "P40",
+      "P41",
+      "P42",
+      "P43",
+      "P44",
+      "P45",
+      "P46",
+      "P5",
+      "P50",
+      "P51",
+      "P52",
+      "P53",
+      "P54",
+      "P55",
+      "P6",
+      "P7",
+      "P8",
+      "P9"
+    ]
+  },
+  "COMMS": {
+    "count": 10,
+    "items": [
+      {
+        "id": "S1.12",
+        "summary": "Telegram DM topics as separate sessions",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.13",
+        "summary": "Voice-enabled Telegram bot",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.14",
+        "summary": "ElevenLabs for voice notes + back-and-forth conversation",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.15",
+        "summary": "Monitor all messages via Beeper",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.16",
+        "summary": "LINE channel with rich replies & quick actions",
+        "relevance": "LOW",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.17",
+        "summary": "Multiple bots for family members",
+        "relevance": "LOW",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.18",
+        "summary": "Separate machine with own Gmail/Telegram/WhatsApp",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S8.10",
+        "summary": "Remote file/screenshot retrieval via Telegram",
+        "relevance": "MEDIUM",
+        "source_file": "S8"
+      },
+      {
+        "id": "S13.10",
+        "summary": "Moltbot locked to owner only",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S22.05",
+        "summary": "13 messaging platform adapters",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      }
+    ],
+    "patterns": [
+      "P1",
+      "P13",
+      "P2",
+      "P20",
+      "P21",
+      "P22",
+      "P23",
+      "P28",
+      "P29",
+      "P3",
+      "P30",
+      "P4",
+      "P42",
+      "P43",
+      "P44",
+      "P45",
+      "P46",
+      "P5",
+      "P50",
+      "P53"
+    ]
+  },
+  "VOICE": {
+    "count": 20,
+    "items": [
+      {
+        "id": "S1.13",
+        "summary": "Voice-enabled Telegram bot",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.14",
+        "summary": "ElevenLabs for voice notes + back-and-forth conversation",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.33",
+        "summary": "HomeAssistant + Jarvis voice clone",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.34",
+        "summary": "TTS/voice with controllable heartbeats",
+        "relevance": "LOW",
+        "source_file": "S1"
+      },
+      {
+        "id": "S2.11",
+        "summary": "@lobehub/tts toolkit",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S3.15",
+        "summary": "Restaurant reservation via voice call",
+        "relevance": "MEDIUM",
+        "source_file": "S3"
+      },
+      {
+        "id": "S8.08",
+        "summary": "Voice note \u2192 complex task specification",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S9.01",
+        "summary": "Typeless",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.02",
+        "summary": "Intelligent processing features",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.03",
+        "summary": "Context-aware tone adaptation",
+        "relevance": "MEDIUM",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.04",
+        "summary": "100+ languages, automatic detection, seamless multilingual mixing",
+        "relevance": "LOW",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.05",
+        "summary": "Local processing, zero data retention",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.06",
+        "summary": "No developer API",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.07",
+        "summary": "$12/month (annual) or $30/month (monthly)",
+        "relevance": "MEDIUM",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.08",
+        "summary": "OpenAI Whisper",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.09",
+        "summary": "Deepgram Nova-3",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.10",
+        "summary": "Speechmatics",
+        "relevance": "MEDIUM",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.11",
+        "summary": "Soniox",
+        "relevance": "MEDIUM",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.12",
+        "summary": "Voice input has two users: the human and the agent",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S9.13",
+        "summary": "Voice quality chain",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      }
+    ],
+    "patterns": [
+      "P1",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P2",
+      "P20",
+      "P21",
+      "P22",
+      "P23",
+      "P24",
+      "P25",
+      "P3",
+      "P4",
+      "P5",
+      "P6",
+      "P7",
+      "P8",
+      "P9"
+    ]
+  },
+  "SECURITY": {
+    "count": 56,
+    "items": [
+      {
+        "id": "S1.18",
+        "summary": "Separate machine with own Gmail/Telegram/WhatsApp",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S2.18",
+        "summary": "Ollama integration for zero-cost local models",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.20",
+        "summary": "Auth options",
+        "relevance": "MEDIUM",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.23",
+        "summary": "Multi-system attack surface warning",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.24",
+        "summary": "\"Only install MCP servers from trusted sources\"",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S2.25",
+        "summary": "Data flow awareness",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S3.01",
+        "summary": "Hybrid intelligence pattern",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.07",
+        "summary": "\"Private data is the moat no cloud company can replicate\"",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.08",
+        "summary": "Agent has access to API keys, calendars, emails, logins, potentially credit cards/crypto keys",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.09",
+        "summary": "\"I would like the option to pull the power cord if the bot goes awry\"",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.10",
+        "summary": "PHI (Protected Health Information) concern",
+        "relevance": "MEDIUM",
+        "source_file": "S3"
+      },
+      {
+        "id": "S3.11",
+        "summary": "Containerized isolation",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S5.03",
+        "summary": "Both features disabled by default",
+        "relevance": "MEDIUM",
+        "source_file": "S5"
+      },
+      {
+        "id": "S7.06",
+        "summary": "Sandboxed iframe isolation",
+        "relevance": "HIGH",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.07",
+        "summary": "Host controls capabilities",
+        "relevance": "HIGH",
+        "source_file": "S7"
+      },
+      {
+        "id": "S7.08",
+        "summary": "Pre-declared templates + auditable messages",
+        "relevance": "MEDIUM",
+        "source_file": "S7"
+      },
+      {
+        "id": "S8.01",
+        "summary": "Dedicated sacrifice machine",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.02",
+        "summary": "Dedicated bot identity",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.03",
+        "summary": "Permission pushback lesson",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.04",
+        "summary": "Autonomous overreach",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.05",
+        "summary": "Post-testing teardown",
+        "relevance": "MEDIUM",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.11",
+        "summary": "Model selection matters for safety",
+        "relevance": "HIGH",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.14",
+        "summary": "Emotional duality",
+        "relevance": "MEDIUM",
+        "source_file": "S8"
+      },
+      {
+        "id": "S9.05",
+        "summary": "Local processing, zero data retention",
+        "relevance": "HIGH",
+        "source_file": "S9"
+      },
+      {
+        "id": "S10.07",
+        "summary": "BrowserOS",
+        "relevance": "MEDIUM",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.08",
+        "summary": "Gartner: CISOs should block AI browsers for now",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S10.09",
+        "summary": "Browser agent security risks",
+        "relevance": "HIGH",
+        "source_file": "S10"
+      },
+      {
+        "id": "S13.01",
+        "summary": "Active exploitation of unsecured Clawdbots",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.02",
+        "summary": "\"The internet is a nonstop scanner\"",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.03",
+        "summary": "Unauthenticated public endpoint = \"please take over my bot\"",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.04",
+        "summary": "SSH: keys only, no passwords, no root login",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.05",
+        "summary": "UFW firewall: default deny incoming, allow outgoing",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.06",
+        "summary": "Fail2ban: auto-ban IPs after failed login attempts",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.07",
+        "summary": "Tailscale VPN mesh: private network for all access",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.08",
+        "summary": "SSH only via Tailscale IP range",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.09",
+        "summary": "Web ports (80/443) private via Tailscale",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.10",
+        "summary": "Moltbot locked to owner only",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.11",
+        "summary": "Credential permissions: `chmod 700` for credential dirs, `chmod 600` for .env",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.12",
+        "summary": "Security audit command: `clawdbot security audit --deep`",
+        "relevance": "MEDIUM",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.13",
+        "summary": "Disable IPv6 if unused",
+        "relevance": "MEDIUM",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.14",
+        "summary": "Enable unattended upgrades",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.15",
+        "summary": "\"Buckle seatbelts before stepping on gas\"",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S13.16",
+        "summary": "\"Just put it on a mac mini\" response",
+        "relevance": "HIGH",
+        "source_file": "S13"
+      },
+      {
+        "id": "S18.04",
+        "summary": "Sub-agents with scoped data access",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.14",
+        "summary": "Git MCP server vulnerabilities (patched)",
+        "relevance": "HIGH",
+        "source_file": "S18"
+      },
+      {
+        "id": "S19.03",
+        "summary": "SynthID watermarking on all output",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.10",
+        "summary": "Image annotation for transparency",
+        "relevance": "MEDIUM",
+        "source_file": "S19"
+      },
+      {
+        "id": "S20.02",
+        "summary": "Self-review DEGRADES quality",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.03",
+        "summary": "Critic veto authority (hierarchical, not advisory)",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.04",
+        "summary": "Swiss Cheese Model for error layers",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.06",
+        "summary": "Context Ray Tracing",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S20.14",
+        "summary": "Decentralized swarms: 95% accuracy with 30% Byzantine agents",
+        "relevance": "HIGH",
+        "source_file": "S20"
+      },
+      {
+        "id": "S22.03",
+        "summary": "WebSocket gateway as single control plane",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.06",
+        "summary": "Per-session Docker sandboxes",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.07",
+        "summary": "DM access control (pairing)",
+        "relevance": "HIGH",
+        "source_file": "S22"
+      },
+      {
+        "id": "S22.08",
+        "summary": "Tool access control via TCC",
+        "relevance": "MEDIUM",
+        "source_file": "S22"
+      }
+    ],
+    "patterns": [
+      "P0",
+      "P1",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P17",
+      "P18",
+      "P19",
+      "P2",
+      "P20",
+      "P21",
+      "P22",
+      "P23",
+      "P24",
+      "P25",
+      "P26",
+      "P27",
+      "P28",
+      "P29",
+      "P3",
+      "P30",
+      "P31",
+      "P32",
+      "P34",
+      "P36",
+      "P38",
+      "P4",
+      "P40",
+      "P41",
+      "P42",
+      "P43",
+      "P44",
+      "P45",
+      "P46",
+      "P5",
+      "P50",
+      "P51",
+      "P52",
+      "P53",
+      "P54",
+      "P55",
+      "P6",
+      "P7",
+      "P8",
+      "P9"
+    ]
+  },
+  "BUSINESS": {
+    "count": 10,
+    "items": [
+      {
+        "id": "S1.29",
+        "summary": "Customer success workflow",
+        "relevance": "HIGH",
+        "source_file": "S1"
+      },
+      {
+        "id": "S1.31",
+        "summary": "Auto-post to X",
+        "relevance": "MEDIUM",
+        "source_file": "S1"
+      },
+      {
+        "id": "S2.27",
+        "summary": "Content creation workflow",
+        "relevance": "HIGH",
+        "source_file": "S2"
+      },
+      {
+        "id": "S3.07",
+        "summary": "\"Private data is the moat no cloud company can replicate\"",
+        "relevance": "HIGH",
+        "source_file": "S3"
+      },
+      {
+        "id": "S4.01",
+        "summary": "/last30days",
+        "relevance": "HIGH",
+        "source_file": "S4"
+      },
+      {
+        "id": "S8.13",
+        "summary": "\"Who builds this for real?\"",
+        "relevance": "MEDIUM",
+        "source_file": "S8"
+      },
+      {
+        "id": "S18.11",
+        "summary": "Private plugin marketplace planned",
+        "relevance": "LOW",
+        "source_file": "S18"
+      },
+      {
+        "id": "S19.03",
+        "summary": "SynthID watermarking on all output",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.11",
+        "summary": "Instagram carousel automation pipeline",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      },
+      {
+        "id": "S19.12",
+        "summary": "Cost-effective at scale",
+        "relevance": "HIGH",
+        "source_file": "S19"
+      }
+    ],
+    "patterns": [
+      "P1",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P17",
+      "P19",
+      "P2",
+      "P20",
+      "P21",
+      "P22",
+      "P23",
+      "P28",
+      "P3",
+      "P32",
+      "P34",
+      "P36",
+      "P38",
+      "P4",
+      "P40",
+      "P41",
+      "P44",
+      "P45",
+      "P5",
+      "P50",
+      "P51",
+      "P52",
+      "P6",
+      "P7",
+      "P8",
+      "P9"
+    ]
+  },
+  "COMMUNITY": {
+    "count": 8,
+    "items": [
+      {
+        "id": "S3.18",
+        "summary": "Jensen Huang CES 2026: \"AI can span from cloud to desktop to edge\"",
+        "relevance": "LOW",
+        "source_file": "S3"
+      },
+      {
+        "id": "S8.12",
+        "summary": "Two-hour setup reality",
+        "relevance": "MEDIUM",
+        "source_file": "S8"
+      },
+      {
+        "id": "S8.13",
+        "summary": "\"Who builds this for real?\"",
+        "relevance": "MEDIUM",
+        "source_file": "S8"
+      },
+      {
+        "id": "S11.04",
+        "summary": "< 500 active researchers globally in brain emulation",
+        "relevance": "LOW",
+        "source_file": "S11"
+      },
+      {
+        "id": "S12.02",
+        "summary": "Concrete timelines: zebrafish/fly 3-8 years ($100M), mouse 2030s ($1B), human late 2040s ($10B+)",
+        "relevance": "LOW",
+        "source_file": "S12"
+      },
+      {
+        "id": "S18.09",
+        "summary": "11 open-source reference plugins",
+        "relevance": "MEDIUM",
+        "source_file": "S18"
+      },
+      {
+        "id": "S18.10",
+        "summary": "Cowork = Claude Code for non-technical users",
+        "relevance": "MEDIUM",
+        "source_file": "S18"
+      },
+      {
+        "id": "S19.07",
+        "summary": "Multiple visual feedback plugins emerging",
+        "relevance": "MEDIUM",
+        "source_file": "S19"
+      }
+    ],
+    "patterns": [
+      "P1",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P17",
+      "P19",
+      "P2",
+      "P20",
+      "P21",
+      "P22",
+      "P23",
+      "P28",
+      "P3",
+      "P32",
+      "P34",
+      "P36",
+      "P38",
+      "P40",
+      "P41",
+      "P44",
+      "P45",
+      "P5",
+      "P50",
+      "P51",
+      "P52",
+      "P6",
+      "P8"
+    ]
+  }
+}

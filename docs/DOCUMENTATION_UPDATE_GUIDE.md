@@ -141,18 +141,28 @@
 - ATLAS 3.0 strategic plan (5 phases)
 - 90-day implementation roadmap
 
-## Agent Knowledge Base (January 30, 2026)
+## Agent Knowledge Base (Overhauled Jan 31, 2026)
+
+**Location:** `knowledge-base/` (top-level directory)
 
 | Path | Purpose | When to Update |
 |------|---------|----------------|
-| `docs/research/AGENT_KNOWLEDGE_BASE.md` | Structured intake of 17 sources: 284 items, 49 patterns, cross-references | New sources (S18+), Phase 2 synthesis, Phase 3 architecture |
+| `knowledge-base/README.md` | Dashboard: source index, top patterns, open actions | New sources, stats changes |
+| `knowledge-base/PATTERNS.md` | All 55 patterns with convergence + themes | New patterns identified |
+| `knowledge-base/ACTIONS.md` | 67 action items with IDs, status, dependencies | Action status changes |
+| `knowledge-base/SYNTHESIS.md` | 8 themes, contradictions, build order | Synthesis refresh (every 5+ new sources) |
+| `knowledge-base/indexes/SIGNAL_HEATMAP.md` | Top items ranked by composite score | New high-signal items |
+| `knowledge-base/sources/S{NN}_*.md` | Individual source analysis (22 files) | New source intake |
+| `knowledge-base/_templates/source_template.md` | Standardized intake template | Template improvements |
+| `knowledge-base/CHANGELOG.md` | Version history | Every KB change |
+| `scripts/kb_rebuild_indexes.py` | Regenerate JSON indexes + README stats | Run after adding sources |
 
-### Knowledge Base Contents
-- **17 sources (S1-S17):** Practitioner articles, academic survey, GitHub projects, Reddit posts
-- **284 extracted items** with category tags (ARCH, SECURITY, MEMORY, etc.) and relevance ratings
-- **49 patterns** cross-referenced across sources
-- **Per-source:** Items table, key patterns, cross-references, action items, credibility assessment
-- **Architecture decisions logged:** D96-D99
+### Adding a New Source
+1. Copy `knowledge-base/_templates/source_template.md` to `sources/S{NN}_{slug}.md`
+2. Fill template (frontmatter, items, patterns, actions, cross-refs, verification)
+3. Run `python scripts/kb_rebuild_indexes.py`
+4. Update `ACTIONS.md` with new action items
+5. Update `README.md` source index row
 
 ### Key Findings for Architecture
 | Finding | Source | Decision |
@@ -162,6 +172,10 @@
 | Hybrid planning validated (ReWOO + ReAct + Plan-and-Execute) | S14 | D99 |
 | Circuit breaker + fallback chains for resilience | S16 (BrainPro) | Pending implementation |
 | Privacy tiers for model routing | S16 (BrainPro) | Pending implementation |
+| Plugin architecture (skills+commands+connectors+sub-agents) | S18 (Cowork Plugins) | A53 |
+| Self-review degrades quality — independent critics essential | S20 (Team of Rivals) | A61 (P0) |
+| Opposing incentives create coherence (Team of Rivals) | S20 | A61-A63 |
+| Agentic image generation for BB content pipeline | S19 (Nano Banana + Agentic Vision) | A57-A60 |
 
 ## Baby Brains Agent Documentation
 

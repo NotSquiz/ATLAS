@@ -1,8 +1,25 @@
 # Baby Brains Automation System - Full Architecture Plan (v2)
 
 **Scope:** Complete Baby Brains agent system -- warming, trends, content pipeline, cross-repo intelligence
-**Status:** Architecture redesigned with full cross-repo context. Ready to build.
+**Status:** Week 1 COMPLETE (S1.1-S1.8, 98 tests). Week 2 ready pending stealth research + API keys.
 **Key Change from v1:** Integrated findings from 6 repos, proper warming pipeline design, Claude Max ($0 LLM), cross-repo knowledge map
+
+---
+
+## KB Audit Findings (January 31, 2026)
+
+Cross-referenced against 22-source Agent Knowledge Base (S1-S22). Key findings:
+
+| Finding | KB Source | Impact on Plan | Status |
+|---------|-----------|---------------|--------|
+| Self-review degrades quality (same model generate + evaluate = 60% error) | P54, S20 | Comment pipeline uses regex gate (good). Add independent Haiku critic when scaling | NOTED — human review mitigates for now |
+| Opposing incentives create coherence (92.1% vs 60% single-agent) | P53, S20 | Content pipeline (Week 3) should have brand-safety vs engagement agents | DEFERRED to Week 3 |
+| Browser automation detected at infrastructure level | D102, P54 | Stealth patches mandatory for S2.1-S2.3. See `docs/BROWSER_STEALTH_RESEARCH.md` | ADDED to sprint tasks |
+| Plugin architecture is canonical (skills+commands+connectors+sub-agents) | P50, S18 | Current BB module is monolithic package. Refactor to plugins post-Sprint 3 | DEFERRED (A53) |
+| MCP Tool Search saves 85% tokens as tool count grows | P51, S18 | 14 new BB tools will push total past 20. Evaluate before Sprint 3 | DEFERRED (A54) |
+| Agentic image gen for BB carousels ($0.04-0.13/image) | P52, S19 | S3.3 visual_generator should evaluate Nano Banana Pro before MidJourney | NOTED for Week 3 |
+| Human story deferred | D103 | Comment generator handles gracefully (0% personal angle). Fill later | DEFERRED |
+| Account warming reset | D105 | Accounts not consistently warmed. Treat pipeline start as Day 1 | ADDED S0.1 task |
 
 ---
 
@@ -89,13 +106,18 @@ Total monthly cost: ~$8-15 (Sonnet API + Grok + YouTube). Interactive Claude ope
    -> Quality gate: em-dash check, voice spec validation, length check
 
 3. Browser Automation (Playwright headed Chrome via WSLg, automated)
+   -> STEALTH REQUIRED: See docs/BROWSER_STEALTH_RESEARCH.md
+   -> Use system Chrome (channel="chrome"), NOT bundled Chromium
+   -> Persistent browser profile (cookies/history survive between sessions)
    -> Open video in real Chrome window
    -> Watch for 60-300s (longer = higher quality/relevance score)
-   -> Random variance: +/- 15% of target watch time
+   -> Random variance: +/- 15% of target watch time (gaussian distribution)
+   -> Humanized mouse movements + random scrolling during watch
    -> Like if engagement_level >= LIKE (random 2-5s delay after watch)
    -> Subscribe if engagement_level >= SUBSCRIBE (max 2/day, after 90s+ watch)
-   -> Random inter-video delay: 30-120s between targets
+   -> Random inter-video delay: 30-120s between targets (gaussian, not uniform)
    -> Circuit breaker: stop if 3 consecutive failures
+   -> Anti-detection: navigator.webdriver masked, fingerprint validated
 
 4. Comment Review + Post (HUMAN, ~15 min/day)
    -> "bb warming daily" shows: video title, transcript summary, drafted comment

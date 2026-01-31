@@ -126,27 +126,68 @@ After: Mark task DONE, update handoff.md, commit + push.
 
 ---
 
+## Pre-Week-2: Account Setup + Audit Notes (Jan 31, 2026)
+
+### Audit Findings (KB Cross-Reference)
+- **P54 (Self-Review Degrades Quality):** Comment pipeline uses regex quality gate, NOT self-review. Human-in-the-loop review mitigates P54 for now. When automating review: add independent Haiku critic (A61).
+- **P53 (Opposing Incentives):** Not needed at current scale (5-10 comments/day with human review). Becomes critical for content pipeline (Week 3+).
+- **Browser Stealth Required:** YouTube terminates accounts via infrastructure-level bot detection (D102). Playwright default fingerprint is detectable. Stealth patches mandatory for S2.1-S2.3. See `docs/BROWSER_STEALTH_RESEARCH.md`.
+- **Human Story Deferred:** `config/babybrains/human_story.json` stays as TBD. Comment generator handles this gracefully (0% personal angle instead of 35%). Fill in later when engaging in forums/communities.
+- **Account Warming Reset:** Accounts have NOT been consistently warmed. Treat pipeline start as Day 1 of incubation. Populate `bb_accounts` table with current dates, not original creation dates.
+
+### S0.1: Populate bb_accounts Table
+- **Status:** PENDING
+- **Prerequisites:** None
+- **Build:**
+  - Insert records into `bb_accounts` for all 4 platforms (YouTube, Instagram, TikTok, Facebook)
+  - Set `status = 'incubating'` for YouTube, `status = 'warming'` for others
+  - Set `incubation_end_date` = pipeline start date + 21 days for YouTube
+  - Record actual account handles
+- **Acceptance:** `SELECT * FROM bb_accounts` returns 4 rows with correct dates
+- **Note:** This can be done via CLI or direct SQL when ready to start warming
+
+---
+
 ## Week 2: Browser Automation + Trend Engine
 
-### S2.1: WSLg / Playwright Spike Test
+### S2.1: WSLg / Playwright Spike Test + Stealth Setup
 - **Status:** PENDING
 - **Prerequisites:** None (DO THIS FIRST in Week 2)
-- **Read First:** N/A
+- **Read First:** `docs/BROWSER_STEALTH_RESEARCH.md` (anti-detection research)
 - **Build:**
   - Install playwright: `pip install playwright && playwright install chromium`
+  - Install stealth: `pip install playwright-stealth` (or evaluate camoufox/rebrowser-patches)
   - Install WSL2 browser deps: `sudo apt install libgtk-3-dev libnss3 libxss1 libasound2`
-  - Test headed Chrome: `python -c "from playwright.sync_api import sync_playwright; p = sync_playwright().start(); b = p.chromium.launch(headless=False); page = b.new_page(); page.goto('https://youtube.com'); import time; time.sleep(5); b.close(); p.stop()"`
-- **Test:** Chrome window opens showing YouTube
-- **Acceptance:** Headed Chrome works on WSL2 OR fallback plan documented
-- **Update After:** Mark DONE with result (WORKS / FALLBACK NEEDED)
+  - Test headed Chrome with stealth: Use system Chrome via `channel="chrome"` instead of bundled Chromium
+  - Verify anti-detection: Check `navigator.webdriver` is not exposed, test against bot detection sites
+- **Test:** Chrome window opens showing YouTube, passes basic bot detection checks
+- **Acceptance:** Headed Chrome works on WSL2 with stealth patches active OR fallback plan documented
+- **Fallback Options (if WSLg fails):**
+  1. Run Playwright on desktop machine (has real display)
+  2. Headless with stealth patches (higher detection risk)
+  3. Use system Chrome on Windows side via subprocess
+- **Anti-Detection Checklist:**
+  - [ ] `navigator.webdriver` flag removed/masked
+  - [ ] Browser fingerprint not flagged on creepjs.com or bot.sannysoft.com
+  - [ ] Mouse movements humanized (random curves, not linear)
+  - [ ] Consistent browser profile (cookies persist between sessions)
+  - [ ] System Chrome used (not Playwright bundled Chromium)
+- **Update After:** Mark DONE with result (WORKS / FALLBACK NEEDED / STEALTH STATUS)
 
-### S2.2: Browser Automation (Watch + Like + Subscribe)
+### S2.2: Browser Automation (Watch + Like + Subscribe) with Stealth
 - **Status:** PENDING
-- **Prerequisites:** S2.1 (WSLg confirmed)
+- **Prerequisites:** S2.1 (WSLg + stealth confirmed)
 - **Build:**
   - `atlas/babybrains/warming/browser.py` (WarmingBrowser class: open video, watch for N seconds with random variance, like, subscribe, circuit breaker)
+  - Stealth integration: persistent browser profile, humanized mouse movement, scroll simulation
   - `tests/babybrains/test_browser.py` (mock tests + 1 real integration test)
-- **Acceptance:** Browser watches a video, likes it, returns cleanly
+- **Anti-Detection Requirements:**
+  - Persistent browser context (cookies/history survive between sessions — builds trust signal)
+  - Humanized scroll behavior during video watch (random scroll intervals, not static)
+  - Random mouse movements during watch (mimics real user attention shifts)
+  - Variable viewport size (not default 1280x720 every time)
+  - Inter-action delays with gaussian distribution (not uniform random)
+- **Acceptance:** Browser watches a video, likes it, returns cleanly, passes bot detection check
 
 ### S2.3: bb_warming_watch + bb_warming_done MCP Tools
 - **Status:** PENDING

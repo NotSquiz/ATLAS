@@ -1,0 +1,406 @@
+{
+  "_meta": {
+    "generated": "2026-01-31T14:23:46.507116"
+  },
+  "Agent Groups": {
+    "sources": [
+      "S2"
+    ],
+    "item_count": 1
+  },
+  "LobeHub": {
+    "sources": [
+      "S2"
+    ],
+    "item_count": 1
+  },
+  "Ghost": {
+    "sources": [
+      "S3"
+    ],
+    "item_count": 1
+  },
+  "Immich": {
+    "sources": [
+      "S3"
+    ],
+    "item_count": 1
+  },
+  "NocoDB": {
+    "sources": [
+      "S3"
+    ],
+    "item_count": 1
+  },
+  "Olares OS": {
+    "sources": [
+      "S3"
+    ],
+    "item_count": 1
+  },
+  "Olares One": {
+    "sources": [
+      "S3"
+    ],
+    "item_count": 1
+  },
+  "Perplexica": {
+    "sources": [
+      "S3"
+    ],
+    "item_count": 1
+  },
+  "Partial": {
+    "sources": [
+      "S5"
+    ],
+    "item_count": 1
+  },
+  "Tension.": {
+    "sources": [
+      "S6"
+    ],
+    "item_count": 1
+  },
+  "Activity Viewer": {
+    "sources": [
+      "S7"
+    ],
+    "item_count": 1
+  },
+  "Complementary.": {
+    "sources": [
+      "S7"
+    ],
+    "item_count": 1
+  },
+  "Health Dashboard": {
+    "sources": [
+      "S7"
+    ],
+    "item_count": 1
+  },
+  "Workout Timer": {
+    "sources": [
+      "S7"
+    ],
+    "item_count": 1
+  },
+  "OpenAI Whisper": {
+    "sources": [
+      "S9"
+    ],
+    "item_count": 1
+  },
+  "Soniox": {
+    "sources": [
+      "S9"
+    ],
+    "item_count": 1
+  },
+  "Speechmatics": {
+    "sources": [
+      "S9"
+    ],
+    "item_count": 1
+  },
+  "Typeless": {
+    "sources": [
+      "S9"
+    ],
+    "item_count": 1
+  },
+  "BrowserOS": {
+    "sources": [
+      "S10"
+    ],
+    "item_count": 1
+  },
+  "Browserbase": {
+    "sources": [
+      "S10"
+    ],
+    "item_count": 1
+  },
+  "Composer": {
+    "sources": [
+      "S10"
+    ],
+    "item_count": 1
+  },
+  "Composer/Manus": {
+    "sources": [
+      "S10"
+    ],
+    "item_count": 1
+  },
+  "Manus AI": {
+    "sources": [
+      "S10"
+    ],
+    "item_count": 1
+  },
+  "OpenAI Operator": {
+    "sources": [
+      "S10"
+    ],
+    "item_count": 1
+  },
+  "Steel.dev": {
+    "sources": [
+      "S10"
+    ],
+    "item_count": 1
+  },
+  "Behavior": {
+    "sources": [
+      "S11"
+    ],
+    "item_count": 1
+  },
+  "Structure": {
+    "sources": [
+      "S11"
+    ],
+    "item_count": 1
+  },
+  "Collective": {
+    "sources": [
+      "S14"
+    ],
+    "item_count": 1
+  },
+  "Foundational": {
+    "sources": [
+      "S14"
+    ],
+    "item_count": 1
+  },
+  "In-Context": {
+    "sources": [
+      "S14"
+    ],
+    "item_count": 1
+  },
+  "MemGPT": {
+    "sources": [
+      "S14"
+    ],
+    "item_count": 1
+  },
+  "Plan-and-Execute": {
+    "sources": [
+      "S14"
+    ],
+    "item_count": 1
+  },
+  "Post-Training": {
+    "sources": [
+      "S14"
+    ],
+    "item_count": 1
+  },
+  "ReAct": {
+    "sources": [
+      "S14"
+    ],
+    "item_count": 1
+  },
+  "ReWOO": {
+    "sources": [
+      "S14"
+    ],
+    "item_count": 1
+  },
+  "Self-Evolving": {
+    "sources": [
+      "S14"
+    ],
+    "item_count": 1
+  },
+  "MrBot": {
+    "sources": [
+      "S16"
+    ],
+    "item_count": 1
+  },
+  "MrCode": {
+    "sources": [
+      "S16"
+    ],
+    "item_count": 1
+  },
+  "Context-Dependent Retrieval": {
+    "sources": [
+      "S17"
+    ],
+    "item_count": 1
+  },
+  "Spreading Activation": {
+    "sources": [
+      "S17"
+    ],
+    "item_count": 1
+  },
+  "Author": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "Composite": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "Confidence Extraction": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "Fact-Check": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "Intake Mode": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "Inversion Test": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "Items Extracted": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "P14": {
+    "sources": [
+      "S18"
+    ],
+    "item_count": 1
+  },
+  "P17": {
+    "sources": [
+      "S18"
+    ],
+    "item_count": 1
+  },
+  "P19": {
+    "sources": [
+      "S18"
+    ],
+    "item_count": 1
+  },
+  "P40": {
+    "sources": [
+      "S18"
+    ],
+    "item_count": 1
+  },
+  "P44": {
+    "sources": [
+      "S18",
+      "S20"
+    ],
+    "item_count": 2
+  },
+  "P45": {
+    "sources": [
+      "S18"
+    ],
+    "item_count": 1
+  },
+  "Patterns Identified": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "Processed": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "Wait Pattern": {
+    "sources": [
+      "S18",
+      "S19",
+      "S20",
+      "S21",
+      "S22"
+    ],
+    "item_count": 5
+  },
+  "P41": {
+    "sources": [
+      "S19"
+    ],
+    "item_count": 1
+  },
+  "P50": {
+    "sources": [
+      "S19"
+    ],
+    "item_count": 1
+  },
+  "P21": {
+    "sources": [
+      "S20"
+    ],
+    "item_count": 1
+  },
+  "P38": {
+    "sources": [
+      "S20"
+    ],
+    "item_count": 1
+  }
+}
