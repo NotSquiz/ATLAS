@@ -1303,8 +1303,8 @@ ANTHROPIC_API_KEY="$(cat .env | tr -d '\n')" python scripts/voice_latency_benchm
 2. **Understand the routing:** Read `atlas/llm/router.py`
 3. **Understand the voice pipeline:** Read `atlas/voice/pipeline.py`
 4. **Understand the research:** Read `docs/research/AGENT_KNOWLEDGE_BASE.md`
-5. **Understand Baby Brains strategy:** Read `docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md`
-6. **Understand BB automation:** Read `docs/BB_AUTOMATION_PLAN_V2.md` and `docs/SPRINT_TASKS.md`
+5. **Understand Baby Brains strategy:** Read `/home/squiz/code/babybrains-os/docs/automation/LAUNCH-STRATEGY-JAN2026.md`
+6. **Understand BB automation:** Read `/home/squiz/code/babybrains-os/docs/automation/BB_AUTOMATION_PLAN_V2.md` and `/home/squiz/code/babybrains-os/docs/automation/SPRINT_TASKS.md`
 7. **Run BB CLI:** `python -m atlas.babybrains.cli status`
 6. **Run tests:** Use commands in "Testing Commands" section
 7. **Check budget:** `get_cost_tracker().get_budget_status()`

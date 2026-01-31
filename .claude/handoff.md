@@ -138,9 +138,10 @@ tests/babybrains/
 - `atlas/mcp/server.py` -- Added 5 BB MCP tools (bb_status, bb_find_doc, bb_warming_daily, bb_warming_done, bb_warming_status)
 
 ### Key Documents
-- `docs/BB_AUTOMATION_PLAN_V2.md` -- Full architecture plan (D100-D106)
-- `docs/SPRINT_TASKS.md` -- 21 sprint tasks with prerequisites, acceptance criteria, git workflow
-- `docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md` — Launch strategy (Jan 16, partially executed)
+- `[babybrains-os] docs/automation/BB_AUTOMATION_PLAN_V2.md` -- Full architecture plan (D100-D106)
+- `[babybrains-os] docs/automation/SPRINT_TASKS.md` -- 21 sprint tasks with prerequisites, acceptance criteria, git workflow
+- `[babybrains-os] docs/automation/LAUNCH-STRATEGY-JAN2026.md` -- Launch strategy (Jan 16, partially executed)
+- `[babybrains-os] docs/automation/BROWSER_STEALTH_RESEARCH.md` -- Anti-detection research
 
 ### Knowledge Base (Overhauled Jan 31, 2026)
 
@@ -243,9 +244,12 @@ ATLAS Orchestrator (shared infrastructure)
 ```
 Read these files:
 1. .claude/handoff.md (this file)
-2. docs/SPRINT_TASKS.md (find next PENDING task — S0.1 or S2.1)
-3. docs/BROWSER_STEALTH_RESEARCH.md (if starting Week 2 browser work)
+2. /home/squiz/code/babybrains-os/docs/automation/SPRINT_TASKS.md (find next PENDING task — S0.1 or S2.1)
+3. /home/squiz/code/babybrains-os/docs/automation/BROWSER_STEALTH_RESEARCH.md (if starting Week 2 browser work)
 4. knowledge-base/README.md (research dashboard — sources, patterns, actions)
+
+NOTE: BB docs moved to babybrains-os repo on 2026-01-31.
+      ATLAS docs/ stubs point to new locations.
 
 Then:
 - For BB Week 2 build: Start S2.1 (Playwright + stealth spike test). Needs stealth research doc.
@@ -256,7 +260,7 @@ Then:
 - To see all actions: Read knowledge-base/ACTIONS.md (67 items, 13 P0 critical)
 - To see what matters most: Read knowledge-base/indexes/SIGNAL_HEATMAP.md
 - Key insight: Self-review degrades quality (P54). Human-in-the-loop is the critic for now.
-- Key insight: Browser stealth is mandatory. See docs/BROWSER_STEALTH_RESEARCH.md.
+- Key insight: Browser stealth is mandatory. See babybrains-os docs/automation/BROWSER_STEALTH_RESEARCH.md.
 ```
 
 ### User Manual Tasks (Before Week 2 Build)

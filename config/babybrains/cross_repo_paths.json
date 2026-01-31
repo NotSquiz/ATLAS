@@ -55,7 +55,7 @@
       {"repo": "web", "path": "", "summary": "Next.js website repository"}
     ],
     "launch strategy": [
-      {"repo": "ATLAS", "path": "docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md", "summary": "Launch strategy January 2026"},
+      {"repo": "babybrains-os", "path": "docs/automation/LAUNCH-STRATEGY-JAN2026.md", "summary": "Launch strategy January 2026"},
       {"repo": "babybrains-os", "path": "docs/strategic-review/09-strategic-decisions.md", "summary": "Authoritative strategic decisions"}
     ],
     "production tools": [
@@ -67,7 +67,7 @@
       {"repo": "babybrains-os", "path": "qc/", "summary": "Quality control rules"}
     ],
     "warming strategy": [
-      {"repo": "ATLAS", "path": "docs/BB_AUTOMATION_PLAN_V2.md", "summary": "BB automation plan with warming pipeline design"},
+      {"repo": "babybrains-os", "path": "docs/automation/BB_AUTOMATION_PLAN_V2.md", "summary": "BB automation plan with warming pipeline design"},
       {"repo": "babybrains-os", "path": "docs/SOCIAL-MEDIA-STRATEGY.md", "summary": "Social media engagement strategy"}
     ],
     "competitors": [

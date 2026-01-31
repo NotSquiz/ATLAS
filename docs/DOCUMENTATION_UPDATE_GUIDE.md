@@ -181,7 +181,10 @@
 
 | Path | Purpose | When to Update |
 |------|---------|----------------|
-| `docs/BABY-BRAINS-LAUNCH-STRATEGY-JAN2026.md` | 4-week launch plan with day-by-day tasks | Strategy changes, milestone completions |
+| `[babybrains-os] docs/automation/LAUNCH-STRATEGY-JAN2026.md` | 4-week launch plan | Strategy changes |
+| `[babybrains-os] docs/automation/BB_AUTOMATION_PLAN_V2.md` | BB automation architecture (D100-D106) | Architecture changes |
+| `[babybrains-os] docs/automation/SPRINT_TASKS.md` | Sprint task tracker | Task completions |
+| `[babybrains-os] docs/automation/BROWSER_STEALTH_RESEARCH.md` | Anti-detection research | Stealth approach changes |
 | `skills/babybrains/BABYBRAINS.md` | 9-skill content pipeline orchestrator | Pipeline changes |
 
 ### Baby Brains Build Status (January 30, 2026)
