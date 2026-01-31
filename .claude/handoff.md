@@ -1,12 +1,44 @@
 # ATLAS Session Handoff
 
-**Date:** January 31, 2026
-**Status:** S2.4 YouTube + S2.5 Grok clients COMPLETE + AUDITED + INTEGRATION TESTED. 239 BB tests passing. Docs updated. Ready for S2.6 Trend Engine.
+**Date:** February 1, 2026
+**Status:** S2.4 YouTube + S2.5 Grok clients COMPLETE + AUDITED + INTEGRATION TESTED. 239 BB tests passing. SPRINT_PLAN_V3 written and audited (4 rounds). Ready for Sprint 1: S0.1 → S2.1 → S2.2 → S2.3.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: S2.4 YouTube + S2.5 Grok API Clients + Audit (Jan 31, 2026 - Sessions 3-4)
+## Current Session: Sprint Plan V3 + Audit (Feb 1, 2026 - Session 6)
+
+### What We Did
+1. **Comprehensive next-phase analysis** — cross-referenced 55 KB patterns against build plan
+2. **Round 1 audit (3 Opus agents):** Inversion Test, Adversarial Self-Check, Junior Analyst Challenge
+   - FINDING: Plan was sequenced backwards — trend engine before warming is wrong
+   - FINDING: A61 Critic Agent is premature (human IS the critic at <50 pieces)
+   - FINDING: 23-hour decay half-life is hypothetical, not measured
+   - FINDING: 92.1% opposing incentives figure is from finance domain, not content
+3. **Wrote SPRINT_PLAN_V3.md** (716 lines) at `babybrains-os/docs/automation/`
+4. **Round 2 audit (1 Opus agent):** Found 3 CRITICAL, 12 HIGH, 13 MEDIUM issues
+5. **Incorporated all V4 findings** (24 targeted edits):
+   - Cookie expiry monitoring (check_login_state)
+   - YouTube ToS cross-source risk mitigation
+   - requirements.txt update in S2.1
+   - V0.2 Anthropic API validation task
+   - Sprint 2 split into 2A + 2B
+   - S2.1 debugging buffer (3-day abort)
+   - S3.1/S3.3/S3.5 specs expanded
+   - Risk register expanded to 15 entries
+   - Agent context boundaries corrected
+6. **Fixed Trend Agent context inconsistency** — removed youtube_client.py from MUST READ (YouTube not used for trend scoring per ToS fix)
+
+### Key Decision: New Build Order
+V2: S2.6 → S0.1 → A61 → S2.1-S2.3 → S3.x (WRONG — backwards)
+V3: S0.1 → S2.1 → S2.2 → S2.3 → V0.1/V0.2 → M1 → S2.6-lite → A22 → S3.1-S3.2 → PUBLISH
+
+### Sprint Plan Location
+`/home/squiz/code/babybrains-os/docs/automation/SPRINT_PLAN_V3.md`
+
+---
+
+## Previous Session: S2.4 YouTube + S2.5 Grok API Clients + Audit (Jan 31, 2026 - Sessions 3-5)
 
 ### What We Did
 1. **S2.4: YouTube Data API Client** — ToS-compliant video discovery (no cross-channel aggregation, no derived metrics, 30-day retention compliance)
@@ -302,23 +334,29 @@ ATLAS Orchestrator (shared infrastructure)
 ```
 Read these files:
 1. .claude/handoff.md (this file)
-2. /home/squiz/code/babybrains-os/docs/automation/SPRINT_TASKS.md (find next PENDING task — S0.1 or S2.1)
-3. /home/squiz/code/babybrains-os/docs/automation/BROWSER_STEALTH_RESEARCH.md (if starting Week 2 browser work)
+2. /home/squiz/code/babybrains-os/docs/automation/SPRINT_PLAN_V3.md (AUTHORITATIVE — find next PENDING task)
+3. /home/squiz/code/babybrains-os/docs/automation/BROWSER_STEALTH_RESEARCH.md (if working on S2.1/S2.2)
 4. knowledge-base/README.md (research dashboard — sources, patterns, actions)
 
-NOTE: BB docs moved to babybrains-os repo on 2026-01-31.
-      ATLAS docs/ stubs point to new locations.
+NOTE: SPRINT_PLAN_V3.md supersedes SPRINT_TASKS.md for Week 2+ tasks.
+      BB docs live in babybrains-os repo. ATLAS docs/ stubs point to new locations.
 
-Then:
-- For S2.6 Trend Engine: Build on GrokClient + YouTubeDataClient outputs. Dedup, decay, scoring.
-- For BB Week 2 build: Start S2.1 (Playwright + stealth spike test). Needs stealth research doc.
-- For BB warming prep: Run S0.1 first (populate bb_accounts with current dates)
-- If user has more sources: Use knowledge-base/_templates/source_template.md for S23+ intake
-- If ready for architecture work: A61 (independent critic agent) is highest-priority (P0)
-- For BB content: A57 (Nano Banana eval) enables carousel image generation
-- Key insight: Self-review degrades quality (P54). Human-in-the-loop is the critic for now.
-- Key insight: Browser stealth is mandatory. See babybrains-os docs/automation/BROWSER_STEALTH_RESEARCH.md.
-- Key insight: YouTube ToS prohibits cross-channel aggregation. Grok is the intelligence engine.
+Sprint 1 task order:
+1. S0.1: Populate bb_accounts table (15 min, do FIRST)
+2. S2.1: Patchright stealth spike test (existential risk — fast fail)
+3. S2.2: WarmingBrowser class (if S2.1 passes)
+4. S2.3: Warming integration + MCP tools
+5. S2.BF1: YouTube quota persistence fix
+6. V0.1: Validate Grok credit + model
+7. V0.2: Validate Anthropic/Sonnet API access
+8. M1: Produce 3-5 pieces of content MANUALLY
+
+Key insights (from 4-round audit):
+- Browser stealth is mandatory. See BROWSER_STEALTH_RESEARCH.md.
+- YouTube ToS prohibits cross-channel aggregation. Grok is the intelligence engine.
+- Human IS the critic for first 50 pieces (P54 mitigated by human review).
+- A61 Critic Agent and S2.6-full are DEFERRED to Month 2+ (data-driven triggers).
+- S2.6-lite (thin trend wrapper) is in Sprint 2A, NOT Sprint 1.
 ```
 
 ### User Manual Tasks (Before Week 2 Build)
@@ -379,7 +417,8 @@ Then:
 
 ---
 
-*Session updated: January 31, 2026 (Session 5 — Integration tests + docs)*
+*Session updated: February 1, 2026 (Session 6 — Sprint Plan V3 + 4-round audit)*
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
 *BB tests: 239 passing (47 YouTube + 59 Grok + 35 integration + 98 existing)*
-*Next: S2.6 Trend Engine OR S2.1 Playwright stealth OR A61 critic agent*
+*Sprint Plan: babybrains-os/docs/automation/SPRINT_PLAN_V3.md (authoritative)*
+*Next: Sprint 1 — S0.1 (populate accounts) → S2.1 (stealth spike) → S2.2 (WarmingBrowser)*
