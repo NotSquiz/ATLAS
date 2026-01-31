@@ -86,6 +86,8 @@
 | BBCrossRepoSearch | V2 Guide Section 13 (Baby Brains) |
 | BBDatabase | V2 Guide Section 13 (Baby Brains) |
 | BBCLI | V2 Guide Section 13 (Baby Brains) |
+| BBYouTubeDataClient | `atlas/babybrains/clients/youtube_client.py` |
+| BBGrokClient | `atlas/babybrains/clients/grok_client.py` |
 | XPService (Octalysis) | `atlas/gamification/xp_service.py` |
 | OSRS Command Centre | `.claude/plans/osrs-command-centre.md` |
 
@@ -187,12 +189,15 @@
 | `[babybrains-os] docs/automation/BROWSER_STEALTH_RESEARCH.md` | Anti-detection research | Stealth approach changes |
 | `skills/babybrains/BABYBRAINS.md` | 9-skill content pipeline orchestrator | Pipeline changes |
 
-### Baby Brains Build Status (January 30, 2026)
+### Baby Brains Build Status (January 31, 2026)
 | Task | Status | Tracker ID |
 |------|--------|------------|
 | Account warming automation (foundation) | ✅ WEEK 1 DONE (S1.1-S1.8, 98 tests) | bb-1 |
 | Account warming automation (browser) | PENDING (S2.1-S2.3) | bb-1b |
-| Trend engine (YouTube + Grok) | PENDING (S2.4-S2.6) | bb-2 |
+| YouTube Data API Client | ✅ DONE (S2.4, 47 tests, audited) | bb-2a |
+| Grok API Client | ✅ DONE (S2.5, 59 tests, audited) | bb-2b |
+| Integration tests (real API + adversarial) | ✅ DONE (35 tests) | bb-2c |
+| Trend engine (scoring + dedup) | PENDING (S2.6) | bb-2d |
 | Content production pipeline | PENDING (S3.1-S3.4) | bb-3 |
 | Website relaunch | PENDING | bb-4 |
 | Article/SEO/GEO pipeline | PENDING | bb-5 |

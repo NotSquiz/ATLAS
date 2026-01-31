@@ -1,12 +1,70 @@
 # ATLAS Session Handoff
 
 **Date:** January 31, 2026
-**Status:** KB intake (S18-S22) + BB Week 2 audit + browser stealth research. Plans updated, ready for desktop sync.
+**Status:** S2.4 YouTube + S2.5 Grok clients COMPLETE + AUDITED + INTEGRATION TESTED. 239 BB tests passing. Docs updated. Ready for S2.6 Trend Engine.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: BB Week 2 Audit + Stealth Research (Jan 31, 2026 - Session 2)
+## Current Session: S2.4 YouTube + S2.5 Grok API Clients + Audit (Jan 31, 2026 - Sessions 3-4)
+
+### What We Did
+1. **S2.4: YouTube Data API Client** — ToS-compliant video discovery (no cross-channel aggregation, no derived metrics, 30-day retention compliance)
+2. **S2.5: Grok API Client** — Primary intelligence engine with Live Search (x_search + web_search tools), passive context system prompt (P14), Pydantic validation, cost tracking
+3. **Circuit breaker** (aiobreaker) + **retry** (tenacity) on both clients
+4. **Cache with confidence degradation** — stale-while-revalidate pattern (1.0 fresh → 0.3 minimum)
+5. **Grok→YouTube cross-pollination** — `suggest_search_queries()` converts X.com trends into YouTube search terms
+6. **Fixed warming_schedule.json** incubation from 21 → 7 days (research-backed)
+7. **Updated pyproject.toml** — added aiobreaker + tenacity deps, pytest-asyncio to dev
+8. **Independent 3-agent audit** (Code Reviewer, Security Reviewer, Junior Analyst) per VERIFICATION_PROMPTS.md
+9. **Audit fixes applied** (Session 4):
+   - Added `_safe_int()` for non-numeric YouTube API stats (was NameError)
+   - Fixed 403 handler API key leak (removed `resp.text`, now uses error reason field)
+   - Added `YouTubeRateLimitError` + `GrokRateLimitError` + `GrokServiceUnavailableError`
+   - 429/503 now retried by tenacity (were only retrying connection errors)
+   - Extracted `_strip_markdown_fences()` + `_extract_content()` helpers (DRY, was 3x duplication)
+   - Fixed empty `choices` IndexError in `suggest_search_queries`/`deep_dive`
+   - Wrapped `_set_cached()` in try/except for disk errors (both clients)
+   - Fixed docstring/DEFAULT_MODEL mismatch (aligned to grok-3-fast)
+   - Added 35 new tests covering all audit-identified gaps
+10. **Integration tests** (Session 5):
+   - 7 real YouTube API tests (search, details, caching, quota, health — skipped without API key)
+   - 5 real circuit breaker + retry tests using httpx.MockTransport (no mocks on aiobreaker/tenacity)
+   - 20 adversarial Grok parsing tests (garbage, truncated, HTML, Unicode, emoji, flat list JSON)
+   - 2 end-to-end Grok flow tests with MockTransport
+   - Found + fixed REAL production bug: flat list JSON crash in `_parse_trend_response`
+   - Fixed environment isolation: monkeypatch.delenv for no-key tests
+11. **Documentation updates** (Session 5):
+   - Updated CLAUDE.md, TECHNICAL_STATUS.md, DOCUMENTATION_UPDATE_GUIDE.md
+
+### Files Created
+- `atlas/babybrains/clients/youtube_client.py` — YouTubeVideo, YouTubeDataClient, CacheEntry, quota tracking
+- `atlas/babybrains/clients/grok_client.py` — GrokTrendTopic, GrokTrendResult (Pydantic), GrokClient, cost tracking
+- `tests/babybrains/test_youtube_client.py` — 47 tests (30 + 17 audit)
+- `tests/babybrains/test_grok_client.py` — 59 tests (41 + 18 audit)
+- `tests/babybrains/test_integration.py` — 35 tests (real API + adversarial + e2e)
+
+### Files Modified
+- `atlas/babybrains/clients/__init__.py` — Added all exports incl. new error classes
+- `config/babybrains/warming_schedule.json` — Incubation 21→7 days
+- `pyproject.toml` — Added aiobreaker, tenacity, pytest-asyncio
+
+### Key Architecture Decisions
+- **YouTube is NOT an intelligence engine** — just simple video discovery (ToS compliance)
+- **Grok is the primary intelligence engine** — x_search/web_search tools provide real-time X.com data
+- **Model: grok-3-fast** (OpenAI-compatible API at api.x.ai/v1)
+- **aiobreaker.call_async()** for circuit breaker (not context manager)
+- **Pydantic BaseModel** for Grok response validation (catches schema inconsistencies)
+- **Independent failure** — YouTube and Grok fail independently; pipeline handles partial data
+
+### Test Results (Post-Audit)
+- YouTube client: 47/47 passing
+- Grok client: 59/59 passing
+- Full BB suite: 204/204 passing (98 existing + 106 new)
+
+---
+
+## Previous Session: BB Week 2 Audit + Stealth Research (Jan 31, 2026 - Session 2)
 
 ### What We Did
 1. **Audited BB Week 2 preparation checklist** against 22-source knowledge base
@@ -252,15 +310,15 @@ NOTE: BB docs moved to babybrains-os repo on 2026-01-31.
       ATLAS docs/ stubs point to new locations.
 
 Then:
+- For S2.6 Trend Engine: Build on GrokClient + YouTubeDataClient outputs. Dedup, decay, scoring.
 - For BB Week 2 build: Start S2.1 (Playwright + stealth spike test). Needs stealth research doc.
 - For BB warming prep: Run S0.1 first (populate bb_accounts with current dates)
 - If user has more sources: Use knowledge-base/_templates/source_template.md for S23+ intake
 - If ready for architecture work: A61 (independent critic agent) is highest-priority (P0)
 - For BB content: A57 (Nano Banana eval) enables carousel image generation
-- To see all actions: Read knowledge-base/ACTIONS.md (67 items, 13 P0 critical)
-- To see what matters most: Read knowledge-base/indexes/SIGNAL_HEATMAP.md
 - Key insight: Self-review degrades quality (P54). Human-in-the-loop is the critic for now.
 - Key insight: Browser stealth is mandatory. See babybrains-os docs/automation/BROWSER_STEALTH_RESEARCH.md.
+- Key insight: YouTube ToS prohibits cross-channel aggregation. Grok is the intelligence engine.
 ```
 
 ### User Manual Tasks (Before Week 2 Build)
@@ -321,6 +379,7 @@ Then:
 
 ---
 
-*Session updated: January 31, 2026*
+*Session updated: January 31, 2026 (Session 5 — Integration tests + docs)*
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
-*Next: Continue source intake OR begin building (A61 critic agent is highest priority)*
+*BB tests: 239 passing (47 YouTube + 59 Grok + 35 integration + 98 existing)*
+*Next: S2.6 Trend Engine OR S2.1 Playwright stealth OR A61 critic agent*

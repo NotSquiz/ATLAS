@@ -2,7 +2,7 @@
   "phases": {
     "incubation": {
       "description": "No posting. Watch, like, subscribe to build algorithm trust.",
-      "duration_days": 21,
+      "duration_days": 7,
       "applies_to": ["youtube"],
       "daily_targets": {
         "youtube": {"watch": 5, "like": 5, "subscribe": 2, "comment": 3},

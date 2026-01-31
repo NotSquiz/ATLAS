@@ -112,6 +112,8 @@ Hardware: ThinkPad X1 Extreme, 16GB RAM, RTX 3050 Ti 4GB.
 | BBDatabase | atlas/babybrains/db.py | 10-table schema + query helpers |
 | BBModels | atlas/babybrains/models.py | Dataclasses for all BB entities |
 | BBCLI | atlas/babybrains/cli.py | CLI: status, find-doc, warming commands |
+| BBYouTubeDataClient | atlas/babybrains/clients/youtube_client.py | ToS-compliant video discovery + quota tracking |
+| BBGrokClient | atlas/babybrains/clients/grok_client.py | Grok Live Search trend intelligence + cost tracking |
 
 ## Infrastructure (January 2026)
 Based on Anthropic research papers. See `docs/V2_ORCHESTRATOR_GUIDE.md` for full details.
