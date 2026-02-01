@@ -25,9 +25,9 @@
     ],
     "incubation": {
       "required": true,
-      "duration_days": 21,
+      "duration_days": 7,
       "rules": [
-        "No posting for 21 days after channel creation",
+        "No posting for 7 days after channel creation",
         "Consume 3x daily during incubation",
         "Like competitor comments",
         "Subscribe to niche channels",

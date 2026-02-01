@@ -1,12 +1,81 @@
 # ATLAS Session Handoff
 
 **Date:** February 1, 2026
-**Status:** S2.4 YouTube + S2.5 Grok clients COMPLETE + AUDITED + INTEGRATION TESTED. 239 BB tests passing. SPRINT_PLAN_V3 written and audited (4 rounds). Ready for Sprint 1: S0.1 → S2.1 → S2.2 → S2.3.
+**Status:** S0.1 DONE. 4 BB accounts populated. 243 BB tests passing. Ready for S2.1 (Patchright stealth spike).
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: Sprint Plan V3 + Audit (Feb 1, 2026 - Session 6)
+## Current Session: S0.1 Account Population (Feb 1, 2026 - Session 8)
+
+### What We Did
+1. **S0.1: Populated bb_accounts table** with 4 Baby Brains social accounts:
+   - YouTube: `@babybrains-app` (status=incubating, incubation_end_date=today+7)
+   - TikTok: `babybrains.app` (status=warming)
+   - Instagram: `babybrains.app` (status=warming)
+   - Facebook: `Baby Brains` (status=warming)
+2. **Added `accounts populate` CLI command** — idempotent via upsert_account
+3. **Fixed get_accounts()** to include `incubation_end_date` in BBAccount construction
+4. **Fixed get_bb_status()** to include `incubation_end_date` in status dashboard
+5. **Fixed status display** — removed erroneous `@` prefix on handles that already have it
+6. **11 new tests** covering: 4 accounts inserted, correct handles/platforms/statuses, YouTube incubation date = today+7, idempotency (no duplicates), status dashboard shows all 4
+
+### Files Created
+- `tests/babybrains/test_populate_accounts.py` — 11 tests for S0.1
+
+### Files Modified
+- `atlas/babybrains/db.py` — Added `populate_accounts()`, fixed `get_accounts()` to include `incubation_end_date`, added `incubation_end_date` to `get_bb_status()`
+- `atlas/babybrains/cli.py` — Added `accounts populate` subcommand, fixed handle display in status
+
+### Test Results
+- BB suite: 243 passed, 7 skipped (API key gated), 0 failures
+- New tests: 11/11 passing
+
+---
+
+## Previous Session: 21-Day Fix + Agent Quality Framework (Feb 1, 2026 - Session 7)
+
+### What We Did
+1. **Fixed 21-day → 7-day propagation bug** — 15 instances across 9 files in 2 repos
+   - ATLAS repo (5 fixes): schema.sql, platforms.json, cross_repo_paths.json, DECISIONS.md
+   - babybrains-os repo (9 fixes): SPRINT_PLAN_V3.md (3), BB_AUTOMATION_PLAN_V2.md (2), SPRINT_TASKS.md (1), LAUNCH-STRATEGY-JAN2026.md (3)
+   - Verification grep confirms zero remaining instances in operational files
+2. **Built 5-layer Agent Quality Framework** to prevent propagation bugs going forward:
+   - Layer 1 (SessionStart): Injects critical-state.md into every session via JSON additionalContext
+   - Layer 2 (PostToolUse): Warns when source-of-truth file edited — lists reference files
+   - Layer 3 (Stop): Deterministic grep blocks agent from finishing if canonical values inconsistent
+   - Layer 4 (Stop): Independent agent critic reviews git diff HEAD
+   - Layer 5 (PreCompact): Saves critical state before context compaction
+3. **Created canonical_values.json** registry with 3 entries (incubation_duration, grok_model, intelligence_engine)
+4. **All hooks tested** — inject-context outputs valid JSON, propagation warning fires correctly, stop check blocks on inconsistency, stop_hook_active guard prevents infinite loop
+
+### Files Created
+```
+.claude/settings.json                    — Hook configuration (5 layers)
+.claude/critical-state.md                — Compact critical state (<40 lines)
+.claude/hooks/inject-context.py          — Layer 1: SessionStart injection
+.claude/hooks/check-edit-propagation.py  — Layer 2: PostToolUse warning
+.claude/hooks/check-propagation.py       — Layer 3: Stop-time consistency check
+.claude/hooks/save-state.sh              — Layer 5: PreCompact state save
+config/canonical_values.json             — Cross-file value registry
+```
+
+### Files Modified
+- `atlas/babybrains/schema.sql` — 21-day → 7-day comment
+- `config/babybrains/platforms.json` — duration_days 21→7, rule text
+- `config/babybrains/cross_repo_paths.json` — summary text
+- `docs/DECISIONS.md` — D105 rationale
+- `[babybrains-os] docs/automation/SPRINT_PLAN_V3.md` — 3 instances
+- `[babybrains-os] docs/automation/BB_AUTOMATION_PLAN_V2.md` — 2 instances
+- `[babybrains-os] docs/automation/SPRINT_TASKS.md` — 1 instance
+- `[babybrains-os] docs/automation/LAUNCH-STRATEGY-JAN2026.md` — 3 instances
+
+### Test Results
+- BB suite: 232 passed, 7 skipped (API key gated), 0 failures
+
+---
+
+## Previous Session: Sprint Plan V3 + Audit (Feb 1, 2026 - Session 6)
 
 ### What We Did
 1. **Comprehensive next-phase analysis** — cross-referenced 55 KB patterns against build plan
@@ -342,7 +411,7 @@ NOTE: SPRINT_PLAN_V3.md supersedes SPRINT_TASKS.md for Week 2+ tasks.
       BB docs live in babybrains-os repo. ATLAS docs/ stubs point to new locations.
 
 Sprint 1 task order:
-1. S0.1: Populate bb_accounts table (15 min, do FIRST)
+1. ~~S0.1: Populate bb_accounts table~~ DONE (Session 8)
 2. S2.1: Patchright stealth spike test (existential risk — fast fail)
 3. S2.2: WarmingBrowser class (if S2.1 passes)
 4. S2.3: Warming integration + MCP tools
@@ -417,8 +486,8 @@ Key insights (from 4-round audit):
 
 ---
 
-*Session updated: February 1, 2026 (Session 6 — Sprint Plan V3 + 4-round audit)*
+*Session updated: February 1, 2026 (Session 8 — S0.1 Account Population)*
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
-*BB tests: 239 passing (47 YouTube + 59 Grok + 35 integration + 98 existing)*
+*BB tests: 243 passing (47 YouTube + 59 Grok + 35 integration + 11 populate + 91 existing)*
 *Sprint Plan: babybrains-os/docs/automation/SPRINT_PLAN_V3.md (authoritative)*
-*Next: Sprint 1 — S0.1 (populate accounts) → S2.1 (stealth spike) → S2.2 (WarmingBrowser)*
+*Next: Sprint 1 — S2.1 (Patchright stealth spike) → S2.2 (WarmingBrowser) → S2.3 (integration)*

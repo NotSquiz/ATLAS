@@ -8,7 +8,7 @@ Uses the existing ATLAS MemoryStore connection.
 import json
 import logging
 import sqlite3
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -127,9 +127,87 @@ def get_accounts(
             status=r["status"],
             followers=r["followers"],
             following=r["following"],
+            incubation_end_date=r["incubation_end_date"],
         )
         for r in cursor.fetchall()
     ]
+
+
+def populate_accounts(conn: sqlite3.Connection) -> list[dict]:
+    """
+    Populate bb_accounts with the 4 Baby Brains social accounts.
+
+    Idempotent -- uses upsert, safe to call multiple times.
+    YouTube gets 'incubating' status with 7-day incubation end date.
+    All others get 'warming' status.
+
+    Args:
+        conn: SQLite connection with BB tables initialized
+
+    Returns:
+        List of dicts with platform, handle, status, action ('inserted'/'updated')
+    """
+    incubation_end = (date.today() + timedelta(days=7)).isoformat()
+
+    accounts = [
+        {
+            "platform": "youtube",
+            "handle": "@babybrains-app",
+            "status": "incubating",
+            "incubation_end_date": incubation_end,
+        },
+        {
+            "platform": "tiktok",
+            "handle": "babybrains.app",
+            "status": "warming",
+            "incubation_end_date": None,
+        },
+        {
+            "platform": "instagram",
+            "handle": "babybrains.app",
+            "status": "warming",
+            "incubation_end_date": None,
+        },
+        {
+            "platform": "facebook",
+            "handle": "Baby Brains",
+            "status": "warming",
+            "incubation_end_date": None,
+        },
+    ]
+
+    results = []
+    for acct in accounts:
+        # Check if already exists
+        cursor = conn.execute(
+            "SELECT id FROM bb_accounts WHERE platform = ? AND handle = ?",
+            (acct["platform"], acct["handle"]),
+        )
+        existed = cursor.fetchone() is not None
+
+        upsert_account(
+            conn,
+            platform=acct["platform"],
+            handle=acct["handle"],
+            status=acct["status"],
+            incubation_end_date=acct["incubation_end_date"],
+        )
+
+        results.append({
+            "platform": acct["platform"],
+            "handle": acct["handle"],
+            "status": acct["status"],
+            "action": "updated" if existed else "inserted",
+        })
+        logger.info(
+            "Account %s/%s %s (status=%s)",
+            acct["platform"],
+            acct["handle"],
+            "updated" if existed else "inserted",
+            acct["status"],
+        )
+
+    return results
 
 
 # ============================================
@@ -540,7 +618,13 @@ def get_bb_status(conn: sqlite3.Connection) -> dict:
 
     return {
         "accounts": [
-            {"platform": a.platform, "handle": a.handle, "status": a.status, "followers": a.followers}
+            {
+                "platform": a.platform,
+                "handle": a.handle,
+                "status": a.status,
+                "followers": a.followers,
+                "incubation_end_date": a.incubation_end_date,
+            }
             for a in accounts
         ],
         "warming_7d": warming_stats,

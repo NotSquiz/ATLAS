@@ -3404,7 +3404,7 @@ ATLAS Orchestrator (shared: memory, model router, MCP, security)
 **Decision:** Structured JSON configs extracted from Dec 2025 platform research docs
 
 **Rationale:**
-- YouTube: 21-day incubation, 50-70s sweet spot, 3-5 hashtags, loop mechanics
+- YouTube: 7-day incubation, 50-70s sweet spot, 3-5 hashtags, loop mechanics
 - Instagram: Sends KPI (10-20x weight vs likes), Trial Reels, 3-5 hashtags strict
 - TikTok: 30-90 day Trust Phase, 4K char captions, file naming SEO
 - Facebook: 75% sound-off, burn-in captions essential

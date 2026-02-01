@@ -41,7 +41,11 @@ def cmd_status(args):
     print("ACCOUNTS:")
     if status["accounts"]:
         for a in status["accounts"]:
-            print(f"  {a['platform']:12s} @{a['handle']:20s} [{a['status']}] {a['followers']} followers")
+            extra = ""
+            if a.get("incubation_end_date"):
+                extra = f" (until {a['incubation_end_date']})"
+            handle = a['handle'] if a['handle'].startswith('@') else a['handle']
+            print(f"  {a['platform']:12s} {handle:20s} [{a['status']}]{extra} {a['followers']} followers")
     else:
         print("  No accounts registered. Use bb_warming_daily to get started.")
 
@@ -69,6 +73,19 @@ def cmd_status(args):
     print(f"  Draft briefs: {status['content']['draft_briefs']}")
 
     print()
+    conn.close()
+
+
+def cmd_accounts_populate(args):
+    """Populate bb_accounts with the 4 Baby Brains social accounts."""
+    conn = get_conn()
+    results = db.populate_accounts(conn)
+
+    print("\n=== ACCOUNTS POPULATE ===\n")
+    for r in results:
+        print(f"  {r['platform']:12s} {r['handle']:20s} [{r['status']}] {r['action']}")
+
+    print(f"\n{len(results)} accounts processed.")
     conn.close()
 
 
@@ -173,6 +190,11 @@ def main():
     find_doc.add_argument("topic", help="Topic to search for")
     find_doc.add_argument("--limit", type=int, default=10, help="Max results")
 
+    # accounts
+    accounts = subparsers.add_parser("accounts", help="Account management commands")
+    accounts_sub = accounts.add_subparsers(dest="accounts_command")
+    accounts_sub.add_parser("populate", help="Populate 4 BB social accounts")
+
     # warming
     warming = subparsers.add_parser("warming", help="Warming pipeline commands")
     warming_sub = warming.add_subparsers(dest="warming_command")
@@ -196,6 +218,11 @@ def main():
         cmd_status(args)
     elif args.command == "find-doc":
         cmd_find_doc(args)
+    elif args.command == "accounts":
+        if args.accounts_command == "populate":
+            cmd_accounts_populate(args)
+        else:
+            accounts.print_help()
     elif args.command == "warming":
         if args.warming_command == "daily":
             cmd_warming_daily(args)

@@ -1,0 +1,58 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/inject-context.py\"",
+            "timeout": 10,
+            "statusMessage": "Loading critical state..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-edit-propagation.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking propagation..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-propagation.py\"",
+            "timeout": 30,
+            "statusMessage": "Verifying canonical value consistency..."
+          },
+          {
+            "type": "agent",
+            "prompt": "You are an independent quality checker. Your ONLY job is to find problems. Read the modified files (check git diff HEAD). For each changed file: 1) Are there related files that reference the same values but were NOT updated? 2) Does the file contradict itself internally? 3) Were tests created/updated for new code? If you find real issues, respond with decision block and explain what needs fixing. If everything checks out, respond with decision allow. Be thorough but only flag real problems, not style preferences. If stop_hook_active is true in your input, respond allow immediately.",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/save-state.sh\"",
+            "timeout": 10,
+            "statusMessage": "Saving critical state before compaction..."
+          }
+        ]
+      }
+    ]
+  }
+}

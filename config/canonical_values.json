@@ -1,0 +1,32 @@
+{
+  "values": {
+    "incubation_duration_days": {
+      "canonical": "7",
+      "old_incorrect": ["duration_days.*21", "incubation.*21", "posting for 21", "3-week incubation", "3 week incubation", "21-day incubation", "21 day incubation"],
+      "source_of_truth": "config/babybrains/warming_schedule.json",
+      "references": [
+        "config/babybrains/platforms.json",
+        "atlas/babybrains/schema.sql",
+        "config/babybrains/cross_repo_paths.json",
+        "docs/DECISIONS.md"
+      ]
+    },
+    "grok_model": {
+      "canonical": "grok-3-fast",
+      "old_incorrect": ["\"grok-3\"[^-]", "grok-4-fast"],
+      "source_of_truth": "atlas/babybrains/clients/grok_client.py",
+      "references": [
+        ".claude/handoff.md"
+      ]
+    },
+    "intelligence_engine": {
+      "canonical": "Grok (not YouTube)",
+      "old_incorrect": ["YouTube is the intelligence engine", "YouTube as intelligence engine"],
+      "source_of_truth": "atlas/babybrains/clients/grok_client.py",
+      "references": [
+        ".claude/handoff.md"
+      ],
+      "note": "Patterns must be specific to avoid matching negations like 'YouTube is NOT the intelligence engine'"
+    }
+  }
+}

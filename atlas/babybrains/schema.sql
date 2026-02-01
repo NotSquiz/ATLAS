@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS bb_accounts (
     status TEXT DEFAULT 'warming',  -- 'warming', 'incubating', 'active', 'paused'
     followers INTEGER DEFAULT 0,
     following INTEGER DEFAULT 0,
-    incubation_end_date DATE,  -- YouTube 21-day rule
+    incubation_end_date DATE,  -- YouTube 7-day incubation
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(platform, handle)
