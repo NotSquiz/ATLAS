@@ -65,6 +65,7 @@ def client(tmp_path) -> YouTubeDataClient:
         api_key="test-api-key",
         cache_dir=tmp_path / "cache",
         warming_schedule_path=config_dir / "warming_schedule.json",
+        quota_file=tmp_path / "youtube_quota.json",
     )
 
 
@@ -824,3 +825,163 @@ class TestNonNumericStats:
         assert videos[0].view_count == 0
         assert videos[0].like_count == 0
         assert videos[0].comment_count == 0
+
+
+# --- TestQuotaPersistence (S2.BF1) ---
+
+class TestQuotaPersistence:
+    """Tests for file-based quota persistence across restarts."""
+
+    def test_quota_survives_restart(self, tmp_path):
+        """Quota persists across client instances (simulates process restart)."""
+        config_dir = tmp_path / "config" / "babybrains"
+        config_dir.mkdir(parents=True)
+        (config_dir / "warming_schedule.json").write_text(
+            json.dumps({"search_queries": {}})
+        )
+        quota_file = tmp_path / "youtube_quota.json"
+
+        # First client: consume some quota
+        c1 = YouTubeDataClient(
+            api_key="test-key",
+            cache_dir=tmp_path / "cache",
+            warming_schedule_path=config_dir / "warming_schedule.json",
+            quota_file=quota_file,
+        )
+        assert c1._consume_quota(500) is True
+        assert c1._quota_used_today == 500
+
+        # Second client: reads quota from file (simulates restart)
+        c2 = YouTubeDataClient(
+            api_key="test-key",
+            cache_dir=tmp_path / "cache2",
+            warming_schedule_path=config_dir / "warming_schedule.json",
+            quota_file=quota_file,
+        )
+        assert c2._quota_used_today == 500
+
+    def test_quota_resets_on_new_day(self, tmp_path):
+        """Quota resets when file date differs from today."""
+        quota_file = tmp_path / "youtube_quota.json"
+        yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+        quota_file.write_text(json.dumps({"date": yesterday, "used": 7000}))
+
+        config_dir = tmp_path / "config" / "babybrains"
+        config_dir.mkdir(parents=True)
+        (config_dir / "warming_schedule.json").write_text(
+            json.dumps({"search_queries": {}})
+        )
+
+        c = YouTubeDataClient(
+            api_key="test-key",
+            cache_dir=tmp_path / "cache",
+            warming_schedule_path=config_dir / "warming_schedule.json",
+            quota_file=quota_file,
+        )
+        assert c._quota_used_today == 0
+
+    def test_corrupted_file_resets_to_zero(self, tmp_path):
+        """Corrupted quota file resets to 0 gracefully."""
+        quota_file = tmp_path / "youtube_quota.json"
+        quota_file.write_text("NOT VALID JSON {{{{")
+
+        config_dir = tmp_path / "config" / "babybrains"
+        config_dir.mkdir(parents=True)
+        (config_dir / "warming_schedule.json").write_text(
+            json.dumps({"search_queries": {}})
+        )
+
+        c = YouTubeDataClient(
+            api_key="test-key",
+            cache_dir=tmp_path / "cache",
+            warming_schedule_path=config_dir / "warming_schedule.json",
+            quota_file=quota_file,
+        )
+        assert c._quota_used_today == 0
+
+    def test_missing_file_starts_at_zero(self, tmp_path):
+        """Missing quota file starts at 0 (first run)."""
+        quota_file = tmp_path / "nonexistent" / "youtube_quota.json"
+        assert not quota_file.exists()
+
+        config_dir = tmp_path / "config" / "babybrains"
+        config_dir.mkdir(parents=True)
+        (config_dir / "warming_schedule.json").write_text(
+            json.dumps({"search_queries": {}})
+        )
+
+        c = YouTubeDataClient(
+            api_key="test-key",
+            cache_dir=tmp_path / "cache",
+            warming_schedule_path=config_dir / "warming_schedule.json",
+            quota_file=quota_file,
+        )
+        assert c._quota_used_today == 0
+
+    def test_save_creates_parent_dirs(self, tmp_path):
+        """_save_quota creates parent directories if needed."""
+        quota_file = tmp_path / "deep" / "nested" / "youtube_quota.json"
+        assert not quota_file.parent.exists()
+
+        config_dir = tmp_path / "config" / "babybrains"
+        config_dir.mkdir(parents=True)
+        (config_dir / "warming_schedule.json").write_text(
+            json.dumps({"search_queries": {}})
+        )
+
+        c = YouTubeDataClient(
+            api_key="test-key",
+            cache_dir=tmp_path / "cache",
+            warming_schedule_path=config_dir / "warming_schedule.json",
+            quota_file=quota_file,
+        )
+        c._consume_quota(200)
+        assert quota_file.exists()
+        data = json.loads(quota_file.read_text())
+        assert data["used"] == 200
+
+    def test_quota_file_format(self, tmp_path):
+        """Quota file contains expected JSON structure."""
+        config_dir = tmp_path / "config" / "babybrains"
+        config_dir.mkdir(parents=True)
+        (config_dir / "warming_schedule.json").write_text(
+            json.dumps({"search_queries": {}})
+        )
+        quota_file = tmp_path / "youtube_quota.json"
+
+        c = YouTubeDataClient(
+            api_key="test-key",
+            cache_dir=tmp_path / "cache",
+            warming_schedule_path=config_dir / "warming_schedule.json",
+            quota_file=quota_file,
+        )
+        c._consume_quota(1234)
+
+        data = json.loads(quota_file.read_text())
+        assert "date" in data
+        assert "used" in data
+        assert data["used"] == 1234
+        assert data["date"] == datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    def test_save_quota_survives_disk_error(self, tmp_path, caplog):
+        """Disk write failure in _save_quota is logged but doesn't crash."""
+        import logging
+
+        config_dir = tmp_path / "config" / "babybrains"
+        config_dir.mkdir(parents=True)
+        (config_dir / "warming_schedule.json").write_text(
+            json.dumps({"search_queries": {}})
+        )
+        quota_file = tmp_path / "youtube_quota.json"
+
+        c = YouTubeDataClient(
+            api_key="test-key",
+            cache_dir=tmp_path / "cache",
+            warming_schedule_path=config_dir / "warming_schedule.json",
+            quota_file=quota_file,
+        )
+
+        with patch.object(Path, "write_text", side_effect=OSError("Disk full")):
+            with caplog.at_level(logging.WARNING):
+                c._save_quota()
+        assert "Failed to save quota file" in caplog.text

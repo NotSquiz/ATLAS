@@ -1,12 +1,59 @@
 # ATLAS Session Handoff
 
 **Date:** February 1, 2026
-**Status:** S2.3 DONE. WarmingBrowser integrated into WarmingService. MCP tools enhanced. CLI `warming watch` command. 29 new tests (355 total BB). Ready for S2.BF1 (quota persistence fix).
+**Status:** S2.BF1 DONE. V0.1 + V0.2 DONE (both API keys need action — see below). Sprint 1 code tasks complete. Ready for M1 (manual content).
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: S2.3 Warming Integration + MCP Tools (Feb 1, 2026 - Session 11)
+## Current Session: S2.BF1 + V0.1 + V0.2 (Feb 1, 2026 - Session 12)
+
+### What We Did
+1. **S2.BF1: YouTube Quota Persistence Fix** (`atlas/babybrains/clients/youtube_client.py`):
+   - Replaced in-memory `_quota_used_today` counter with file-based persistence at `~/.atlas/youtube_quota.json`
+   - File format: `{"date": "2026-02-01", "used": 4500}`
+   - Auto-resets when date changes (new UTC day)
+   - Reads on init (`_load_quota()`), writes on every `_consume_quota()` call and quota reset (`_save_quota()`)
+   - Graceful fallback: corrupted/missing file resets to 0 with warning log
+   - `_save_quota()` creates parent dirs and silently handles disk errors
+   - New `quota_file` constructor parameter (defaults to `~/.atlas/youtube_quota.json`)
+   - 7 new tests in `TestQuotaPersistence` class
+2. **V0.1: Grok API Validation**:
+   - API key is present and recognized by xAI (not a 401)
+   - **BLOCKER: 403 — Team has no credits or licenses**
+   - Error: "Your newly created team doesn't have any credits or licenses yet"
+   - Action needed: Purchase credits at https://console.x.ai
+   - Model `grok-3-fast` exists (API recognized the request, just denied for billing)
+   - Pricing: $0.20/1M input, $0.50/1M output, $5/1K search calls
+   - Estimated cost per `scan_opportunities()`: ~$0.016-0.027
+   - Estimated scans per $5: ~183-304 (depending on search call count)
+3. **V0.2: Anthropic API Validation**:
+   - **BLOCKER: 401 — invalid x-api-key**
+   - The `ANTHROPIC_API_KEY` in `.env` returns "authentication_error: invalid x-api-key"
+   - Action needed: Generate a new API key at https://console.anthropic.com/settings/keys and update `.env`
+   - Model target: `claude-sonnet-4-20250514` (from `comments.py`)
+   - Note: `anthropic` Python package is not installed in this environment (uses raw httpx for validation)
+
+### User Action Required
+Both API keys need attention before Sprint 2 work can begin:
+
+| API | Status | Action |
+|-----|--------|--------|
+| **Grok (XAI_API_KEY)** | Key valid, NO CREDITS | Purchase credits at https://console.x.ai |
+| **Anthropic (ANTHROPIC_API_KEY)** | Key INVALID (401) | Generate new key at https://console.anthropic.com/settings/keys, update `.env` |
+| **YouTube (YOUTUBE_API_KEY)** | Working (used in tests) | No action needed |
+
+### Files Modified
+- `atlas/babybrains/clients/youtube_client.py` — Added `_load_quota()`, `_save_quota()`, `quota_file` param; calls `_save_quota()` from `_consume_quota()` and `_check_quota_reset()`
+- `tests/babybrains/test_youtube_client.py` — Added 7 `TestQuotaPersistence` tests; updated client fixture to use `quota_file` param
+
+### Test Results
+- YouTube client: 54/54 passing (47 existing + 7 new quota persistence)
+- Full BB suite: 362 passed, 7 skipped (API key gated), 0 failures
+
+---
+
+## Previous Session: S2.3 Warming Integration + MCP Tools (Feb 1, 2026 - Session 11)
 
 ### What We Did
 1. **Integrated WarmingBrowser into WarmingService** (`atlas/babybrains/warming/service.py`):
@@ -581,9 +628,9 @@ Sprint 1 task order:
 2. ~~S2.1: Patchright stealth spike test~~ CONDITIONAL PASS (Session 9) — WebGL only flag
 3. ~~S2.2: WarmingBrowser class~~ DONE (Session 10) — 83 tests, full stealth+humanization
 4. ~~S2.3: Warming integration + MCP tools~~ DONE (Session 11) — 29 tests, full pipeline
-5. S2.BF1: YouTube quota persistence fix
-6. V0.1: Validate Grok credit + model
-7. V0.2: Validate Anthropic/Sonnet API access
+5. ~~S2.BF1: YouTube quota persistence fix~~ DONE (Session 12) — 7 new tests, file-based at ~/.atlas/youtube_quota.json
+6. ~~V0.1: Validate Grok credit + model~~ DONE (Session 12) — Key valid but NO CREDITS (need purchase at console.x.ai)
+7. ~~V0.2: Validate Anthropic/Sonnet API access~~ DONE (Session 12) — Key INVALID 401 (need new key from console.anthropic.com)
 8. M1: Produce 3-5 pieces of content MANUALLY
 
 Key insights (from 4-round audit):
@@ -652,8 +699,8 @@ Key insights (from 4-round audit):
 
 ---
 
-*Session updated: February 1, 2026 (Session 11 — S2.3 Warming Integration + MCP Tools)*
+*Session updated: February 1, 2026 (Session 12 — S2.BF1 + V0.1 + V0.2)*
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
-*BB tests: 355 passing (47 YouTube + 59 Grok + 35 integration + 11 populate + 83 browser + 29 warming integration + 91 existing)*
+*BB tests: 362 passing (54 YouTube + 59 Grok + 35 integration + 11 populate + 83 browser + 29 warming integration + 91 existing)*
 *Sprint Plan: babybrains-os/docs/automation/SPRINT_PLAN_V3.md (authoritative)*
-*Next: Sprint 1 — S2.BF1 (quota fix) → V0.1/V0.2 (API validation) → M1 (manual content)*
+*Next: M1 (manual content) + fix API keys (Grok needs credits, Anthropic needs new key)*

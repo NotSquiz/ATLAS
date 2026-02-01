@@ -221,6 +221,7 @@ class YouTubeDataClient:
         api_key: Optional[str] = None,
         cache_dir: Optional[Path] = None,
         warming_schedule_path: Optional[Path] = None,
+        quota_file: Optional[Path] = None,
     ):
         """
         Initialize YouTube client.
@@ -229,6 +230,7 @@ class YouTubeDataClient:
             api_key: YouTube Data API v3 key. Falls back to YOUTUBE_API_KEY env var.
             cache_dir: Cache directory. Defaults to ~/.cache/atlas/youtube/
             warming_schedule_path: Path to warming_schedule.json config.
+            quota_file: Path to quota persistence file. Defaults to ~/.atlas/youtube_quota.json.
         """
         self.api_key = api_key or os.environ.get("YOUTUBE_API_KEY", "")
         if not self.api_key:
@@ -245,14 +247,52 @@ class YouTubeDataClient:
             / "config" / "babybrains" / "warming_schedule.json"
         )
 
-        # Quota tracking (resets daily)
+        # Quota tracking — file-based persistence (survives restarts)
+        self._quota_file = quota_file or Path.home() / ".atlas" / "youtube_quota.json"
         self._quota_used_today: int = 0
         self._quota_reset_date: str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        self._load_quota()
 
         # Circuit breaker reference
         self._breaker = _youtube_breaker
 
     # --- Quota ---
+
+    def _load_quota(self) -> None:
+        """Load quota state from persistent file. Resets to 0 on missing/corrupted file."""
+        try:
+            if self._quota_file.exists():
+                data = json.loads(self._quota_file.read_text(encoding="utf-8"))
+                saved_date = data.get("date", "")
+                today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+                if saved_date == today:
+                    self._quota_used_today = int(data.get("used", 0))
+                    self._quota_reset_date = saved_date
+                    logger.debug(
+                        f"Loaded quota from file: {self._quota_used_today} used on {saved_date}"
+                    )
+                else:
+                    # Different day — reset
+                    logger.info(
+                        f"Quota file is from {saved_date}, resetting for {today}"
+                    )
+                    self._quota_used_today = 0
+                    self._quota_reset_date = today
+        except (json.JSONDecodeError, ValueError, TypeError, OSError) as e:
+            logger.warning(f"Failed to load quota file, resetting to 0: {e}")
+            self._quota_used_today = 0
+            self._quota_reset_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    def _save_quota(self) -> None:
+        """Persist current quota state to file. Silently fails on disk errors."""
+        try:
+            self._quota_file.parent.mkdir(parents=True, exist_ok=True)
+            self._quota_file.write_text(
+                json.dumps({"date": self._quota_reset_date, "used": self._quota_used_today}),
+                encoding="utf-8",
+            )
+        except OSError as e:
+            logger.warning(f"Failed to save quota file: {e}")
 
     def _check_quota_reset(self) -> None:
         """Reset quota counter if new UTC day. Approximates YouTube's Pacific reset."""
@@ -263,6 +303,7 @@ class YouTubeDataClient:
             )
             self._quota_used_today = 0
             self._quota_reset_date = today
+            self._save_quota()
 
     def _consume_quota(self, units: int) -> bool:
         """
@@ -279,6 +320,7 @@ class YouTubeDataClient:
             )
             return False
         self._quota_used_today += units
+        self._save_quota()
         if self._quota_used_today >= QUOTA_WARNING_THRESHOLD:
             logger.warning(
                 f"Quota at {self._quota_used_today}/{DAILY_QUOTA_LIMIT} "
