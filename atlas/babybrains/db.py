@@ -370,6 +370,138 @@ def get_warming_stats(
     }
 
 
+def log_warming_session(
+    conn: sqlite3.Connection,
+    platform: str,
+    videos_watched: int = 0,
+    total_watch_seconds: int = 0,
+    likes: int = 0,
+    subscribes: int = 0,
+    success: bool = True,
+    abort_reason: Optional[str] = None,
+) -> int:
+    """
+    Log a browser warming session result (success or failure).
+
+    Uses bb_warming_actions with action_type 'session_complete' or
+    'session_failure' and target_id=0 for session-level events.
+
+    Args:
+        conn: SQLite connection
+        platform: Platform name ('youtube')
+        videos_watched: Number of videos watched in session
+        total_watch_seconds: Total watch time in seconds
+        likes: Number of likes in session
+        subscribes: Number of subscribes in session
+        success: Whether session completed without abort
+        abort_reason: Reason if session was aborted
+
+    Returns:
+        Action ID of the logged session entry
+    """
+    action_type = "session_complete" if success else "session_failure"
+    if abort_reason:
+        result_text = abort_reason
+    else:
+        result_text = (
+            f"{platform}: {videos_watched} videos, "
+            f"{total_watch_seconds}s watched, "
+            f"{likes} likes, {subscribes} subscribes"
+        )
+
+    cursor = conn.execute(
+        """INSERT INTO bb_warming_actions
+           (target_id, action_type, engagement_result,
+            actual_watch_seconds, time_spent_seconds)
+           VALUES (?, ?, ?, ?, ?)""",
+        (
+            0, action_type, result_text,
+            total_watch_seconds if success else None,
+            total_watch_seconds,
+        ),
+    )
+    conn.commit()
+    logger.info(f"Session logged: {action_type} — {result_text}")
+    return cursor.lastrowid
+
+
+def get_browser_session_stats(
+    conn: sqlite3.Connection, days: int = 7
+) -> dict:
+    """
+    Get browser session statistics for warming status dashboard.
+
+    Queries session-level entries from bb_warming_actions to provide
+    browser automation stats including successful/failed sessions
+    and last session details.
+
+    Args:
+        conn: SQLite connection
+        days: Number of days to look back
+
+    Returns:
+        Dictionary with session stats
+    """
+    cutoff = f"-{days} days"
+
+    # Session counts
+    cursor = conn.execute(
+        """SELECT
+            COUNT(CASE WHEN action_type = 'session_complete' THEN 1 END)
+                as successful_sessions,
+            COUNT(CASE WHEN action_type = 'session_failure' THEN 1 END)
+                as failed_sessions,
+            COALESCE(SUM(CASE WHEN action_type = 'session_complete'
+                THEN actual_watch_seconds ELSE 0 END), 0)
+                as total_session_watch_seconds
+        FROM bb_warming_actions
+        WHERE created_at >= datetime('now', ?)
+        AND action_type IN ('session_complete', 'session_failure')""",
+        (cutoff,),
+    )
+    row = cursor.fetchone()
+
+    # Most recent session
+    cursor = conn.execute(
+        """SELECT action_type, engagement_result, created_at
+        FROM bb_warming_actions
+        WHERE action_type IN ('session_complete', 'session_failure')
+        ORDER BY created_at DESC
+        LIMIT 1""",
+    )
+    last_session = cursor.fetchone()
+
+    # Most recent failure reason
+    cursor = conn.execute(
+        """SELECT engagement_result, created_at
+        FROM bb_warming_actions
+        WHERE action_type = 'session_failure'
+        AND created_at >= datetime('now', ?)
+        ORDER BY created_at DESC
+        LIMIT 1""",
+        (cutoff,),
+    )
+    last_failure = cursor.fetchone()
+
+    return {
+        "successful_sessions": row["successful_sessions"],
+        "failed_sessions": row["failed_sessions"],
+        "total_session_watch_minutes": round(
+            row["total_session_watch_seconds"] / 60, 1
+        ),
+        "last_session": {
+            "type": last_session["action_type"] if last_session else None,
+            "detail": last_session["engagement_result"] if last_session else None,
+            "at": last_session["created_at"] if last_session else None,
+        } if last_session else None,
+        "last_failure": {
+            "reason": last_failure["engagement_result"] if last_failure else None,
+            "at": last_failure["created_at"] if last_failure else None,
+        } if last_failure else None,
+        "period_days": days,
+    }
+
+
 # ============================================
 # TREND QUERIES
 # ============================================

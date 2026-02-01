@@ -157,6 +157,44 @@ def cmd_warming_done(args):
     conn.close()
 
 
+def cmd_warming_watch(args):
+    """Run an automated browser warming session."""
+    import asyncio
+
+    conn = get_conn()
+    platform = args.platform or "youtube"
+
+    print(f"\n=== STARTING WARMING SESSION ({platform}) ===\n")
+
+    from atlas.babybrains.warming.service import WarmingService
+
+    service = WarmingService(conn=conn)
+    result = asyncio.run(service.run_browser_session(platform=platform))
+
+    if result.get("status") == "error":
+        print(f"  ERROR: {result['message']}")
+    elif result.get("status") == "no_targets":
+        print(f"  {result['message']}")
+        print("  Add targets with: bb warming daily")
+    elif result.get("status") == "aborted":
+        print(f"  Session ABORTED: {result.get('abort_reason')}")
+        print(f"  Videos watched before abort: {result.get('videos_watched', 0)}")
+    else:
+        print(f"  Videos watched: {result.get('videos_watched', 0)}")
+        print(f"  Watch time: {result.get('total_watch_seconds', 0)}s")
+        print(f"  Likes: {result.get('likes', 0)}")
+        print(f"  Subscribes: {result.get('subscribes', 0)}")
+        print(f"  Actions logged: {result.get('actions_logged', 0)}")
+
+    if result.get("errors"):
+        print(f"\n  Errors:")
+        for err in result["errors"]:
+            print(f"    - {err}")
+
+    print()
+    conn.close()
+
+
 def cmd_warming_status(args):
     """Show warming statistics."""
     conn = get_conn()
@@ -170,8 +208,23 @@ def cmd_warming_status(args):
     print(f"  Subscribes: {stats['subscribes']}")
     print(f"  Comments: {stats['comments']}")
     print(f"  Watch time: {stats['total_watch_minutes']} min")
-    print()
 
+    # Browser session stats
+    browser_stats = db.get_browser_session_stats(conn, days=args.days)
+    if (browser_stats["successful_sessions"] > 0
+            or browser_stats["failed_sessions"] > 0):
+        print(f"\n  BROWSER SESSIONS:")
+        print(f"    Successful: {browser_stats['successful_sessions']}")
+        print(f"    Failed: {browser_stats['failed_sessions']}")
+        print(f"    Session watch time: {browser_stats['total_session_watch_minutes']} min")
+        if browser_stats.get("last_session"):
+            last = browser_stats["last_session"]
+            print(f"    Last session: {last['type']} at {last['at']}")
+        if browser_stats.get("last_failure") and browser_stats["last_failure"]["reason"]:
+            fail = browser_stats["last_failure"]
+            print(f"    Last failure: {fail['reason']}")
+
+    print()
     conn.close()
 
 
@@ -203,6 +256,10 @@ def main():
     wd = warming_sub.add_parser("daily", help="Show today's targets")
     wd.add_argument("--platform", help="Filter by platform")
 
+    # warming watch
+    ww = warming_sub.add_parser("watch", help="Run automated browser warming session")
+    ww.add_argument("--platform", default="youtube", help="Platform to warm (default: youtube)")
+
     # warming done
     wdone = warming_sub.add_parser("done", help="Log completed actions")
     wdone.add_argument("platform", help="Platform name")
@@ -226,6 +283,8 @@ def main():
     elif args.command == "warming":
         if args.warming_command == "daily":
             cmd_warming_daily(args)
+        elif args.warming_command == "watch":
+            cmd_warming_watch(args)
         elif args.warming_command == "done":
             cmd_warming_done(args)
         elif args.warming_command == "status":

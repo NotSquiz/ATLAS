@@ -6,6 +6,7 @@ Orchestrates the daily warming pipeline:
 2. Fetch transcripts
 3. Generate BB-voice comments
 4. Present for human review
+5. Run automated browser warming sessions (S2.3)
 """
 
 import logging
@@ -26,6 +27,16 @@ from atlas.babybrains.warming.targets import (
 from atlas.babybrains.warming.transcript import fetch_transcript, TranscriptResult
 
 logger = logging.getLogger(__name__)
+
+
+# Browser availability flag — patchright is optional
+try:
+    from atlas.babybrains.browser import WarmingBrowser, SessionResult
+    BROWSER_AVAILABLE = True
+except ImportError:
+    BROWSER_AVAILABLE = False
+    WarmingBrowser = None
+    SessionResult = None
 
 
 @dataclass
@@ -264,6 +275,7 @@ class WarmingService:
         likes: int = 0,
         subscribes: int = 0,
         watches: int = 0,
+        actions_detail: Optional[list[dict]] = None,
     ) -> dict:
         """
         Log completed warming actions.
@@ -274,26 +286,195 @@ class WarmingService:
             likes: Number of likes
             subscribes: Number of subscribes/follows
             watches: Number of videos watched
+            actions_detail: Optional list of detailed action dicts with keys:
+                target_id, action_type, actual_watch_seconds, content_posted
 
         Returns:
             Summary of logged actions
         """
         logged = []
-        for action_type, count in [
-            ("comment", comments),
-            ("like", likes),
-            ("subscribe", subscribes),
-            ("watch", watches),
-        ]:
-            for _ in range(count):
+
+        # Detailed action logging (from browser session or rich input)
+        if actions_detail:
+            for action in actions_detail:
                 db.log_warming_action(
-                    self.conn, target_id=0, action_type=action_type
+                    self.conn,
+                    target_id=action.get("target_id", 0),
+                    action_type=action.get("action_type", "watch"),
+                    actual_watch_seconds=action.get("actual_watch_seconds"),
+                    content_posted=action.get("content_posted"),
+                    engagement_result=action.get("engagement_result"),
+                    time_spent_seconds=action.get("time_spent_seconds"),
                 )
-            if count > 0:
-                logged.append(f"{count} {action_type}(s)")
+            logged.append(f"{len(actions_detail)} detailed action(s)")
+        else:
+            # Count-based logging (manual input)
+            for action_type, count in [
+                ("comment", comments),
+                ("like", likes),
+                ("subscribe", subscribes),
+                ("watch", watches),
+            ]:
+                for _ in range(count):
+                    db.log_warming_action(
+                        self.conn, target_id=0, action_type=action_type
+                    )
+                if count > 0:
+                    logged.append(f"{count} {action_type}(s)")
 
         return {
             "platform": platform,
             "actions": logged,
             "message": f"Logged for {platform}: {', '.join(logged)}",
+        }
+
+    async def run_browser_session(
+        self,
+        platform: str = "youtube",
+    ) -> dict:
+        """
+        Run an automated browser warming session.
+
+        1. Gets pending targets for today
+        2. Creates WarmingBrowser and runs session
+        3. Logs individual actions (watch/like/subscribe) to bb_warming_actions
+        4. Updates target statuses
+        5. Logs session result (or failure with reason) to DB
+
+        Args:
+            platform: Platform to warm ('youtube')
+
+        Returns:
+            Dictionary with session results and stats
+        """
+        if not BROWSER_AVAILABLE:
+            error_msg = (
+                "Browser dependencies not installed. "
+                "Run: pip install -e '.[browser]'"
+            )
+            logger.error(error_msg)
+            db.log_warming_session(
+                self.conn,
+                platform=platform,
+                success=False,
+                abort_reason=f"import_error: {error_msg}",
+            )
+            return {"status": "error", "message": error_msg}
+
+        # Step 1: Get pending targets
+        targets = db.get_warming_targets(
+            self.conn, platform=platform, status="pending"
+        )
+        if not targets:
+            msg = f"No pending warming targets for {platform} today"
+            logger.info(msg)
+            return {"status": "no_targets", "message": msg}
+
+        # Step 2: Convert DB targets to browser target dicts
+        browser_targets = [
+            {
+                "url": t.url,
+                "engagement_level": t.engagement_level,
+                "watch_duration_target": t.watch_duration_target,
+                "niche_relevance_score": t.niche_relevance_score,
+            }
+            for t in targets
+        ]
+
+        # Step 3: Create browser and run session
+        browser = WarmingBrowser(account_id=f"bb_{platform}")
+        try:
+            session_result = await browser.run_session(browser_targets)
+        except Exception as e:
+            error_msg = f"Browser session crashed: {e}"
+            logger.error(error_msg)
+            db.log_warming_session(
+                self.conn,
+                platform=platform,
+                success=False,
+                abort_reason=f"crash: {error_msg}",
+            )
+            return {"status": "error", "message": error_msg}
+        finally:
+            await browser.stop()
+
+        # Step 4: Log individual actions and update target statuses
+        actions_logged = 0
+        for i, watch_result in enumerate(session_result.watch_results):
+            if i >= len(targets):
+                break
+
+            target = targets[i]
+
+            if watch_result.success:
+                # Log watch action
+                db.log_warming_action(
+                    self.conn,
+                    target_id=target.id,
+                    action_type="watch",
+                    actual_watch_seconds=watch_result.actual_watch_seconds,
+                )
+                actions_logged += 1
+
+                # Log like action if liked
+                if watch_result.liked:
+                    db.log_warming_action(
+                        self.conn,
+                        target_id=target.id,
+                        action_type="like",
+                    )
+                    actions_logged += 1
+
+                # Log subscribe action if subscribed
+                if watch_result.subscribed:
+                    db.log_warming_action(
+                        self.conn,
+                        target_id=target.id,
+                        action_type="subscribe",
+                    )
+                    actions_logged += 1
+
+                # Mark target as completed
+                db.update_target_status(self.conn, target.id, "completed")
+            else:
+                # Mark target as skipped on error
+                db.update_target_status(self.conn, target.id, "skipped")
+                if watch_result.error:
+                    logger.warning(
+                        f"Target {target.id} failed: {watch_result.error}"
+                    )
+
+        # Step 5: Log session-level result
+        if session_result.aborted:
+            db.log_warming_session(
+                self.conn,
+                platform=platform,
+                videos_watched=session_result.videos_watched,
+                total_watch_seconds=session_result.total_watch_seconds,
+                likes=session_result.likes,
+                subscribes=session_result.subscribes,
+                success=False,
+                abort_reason=session_result.abort_reason,
+            )
+        else:
+            db.log_warming_session(
+                self.conn,
+                platform=platform,
+                videos_watched=session_result.videos_watched,
+                total_watch_seconds=session_result.total_watch_seconds,
+                likes=session_result.likes,
+                subscribes=session_result.subscribes,
+                success=True,
+            )
+
+        return {
+            "status": "aborted" if session_result.aborted else "success",
+            "abort_reason": session_result.abort_reason,
+            "videos_watched": session_result.videos_watched,
+            "total_watch_seconds": session_result.total_watch_seconds,
+            "likes": session_result.likes,
+            "subscribes": session_result.subscribes,
+            "errors": session_result.errors,
+            "actions_logged": actions_logged,
+            "summary": session_result.summary,
         }

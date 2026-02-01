@@ -959,7 +959,8 @@ def create_server(db_path: Optional[Path] = None) -> "FastMCP":
         Log completed warming actions for a platform.
 
         Call this after finishing your daily warming session to record
-        what actions were taken.
+        what actions were taken. Logs each action to bb_warming_actions
+        table for tracking.
 
         Args:
             platform: Platform name ('youtube', 'instagram', 'tiktok')
@@ -972,44 +973,76 @@ def create_server(db_path: Optional[Path] = None) -> "FastMCP":
             Confirmation of logged actions
         """
         try:
-            from atlas.babybrains import db as bb_db
+            from atlas.babybrains.warming.service import WarmingService
 
-            conn = bb_db.get_bb_connection(db_path or DEFAULT_DB_PATH)
-            bb_db.init_bb_tables(conn)
+            conn = __import__('atlas.babybrains.db', fromlist=['db'])
+            bb_db = conn
+            db_conn = bb_db.get_bb_connection(db_path or DEFAULT_DB_PATH)
+            bb_db.init_bb_tables(db_conn)
 
-            logged = []
-            for action_type, count in [
-                ("comment", comments),
-                ("like", likes),
-                ("subscribe", subscribes),
-                ("watch", watches),
-            ]:
-                for _ in range(count):
-                    bb_db.log_warming_action(conn, target_id=0, action_type=action_type)
-                if count > 0:
-                    logged.append(f"{count} {action_type}(s)")
-
-            conn.close()
+            service = WarmingService(conn=db_conn)
+            result = service.log_done(
+                platform=platform,
+                comments=comments,
+                likes=likes,
+                subscribes=subscribes,
+                watches=watches,
+            )
+            db_conn.close()
 
             return {
                 "status": "logged",
                 "platform": platform,
-                "actions": logged,
-                "message": f"Logged for {platform}: {', '.join(logged)}",
+                "actions": result["actions"],
+                "message": result["message"],
             }
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+
+    @mcp.tool()
+    async def bb_warming_watch(platform: str = "youtube") -> dict:
+        """
+        Trigger an automated browser warming session.
+
+        Launches WarmingBrowser with stealth configuration, watches
+        today's pending targets with humanized behavior, and logs
+        all actions to the database.
+
+        Requires browser dependencies: pip install -e ".[browser]"
+
+        Args:
+            platform: Platform to warm (default 'youtube')
+
+        Returns:
+            Dictionary with session results: videos watched, likes,
+            subscribes, and any errors or abort reasons
+        """
+        try:
+            from atlas.babybrains import db as bb_db
+            from atlas.babybrains.warming.service import WarmingService
+
+            conn = bb_db.get_bb_connection(db_path or DEFAULT_DB_PATH)
+            bb_db.init_bb_tables(conn)
+
+            service = WarmingService(conn=conn)
+            result = await service.run_browser_session(platform=platform)
+            conn.close()
+            return result
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
     @mcp.tool()
     def bb_warming_status() -> dict:
         """
-        Get warming progress dashboard.
+        Get warming progress dashboard with browser session stats.
 
         Shows warming statistics for the last 7 days including
-        watches, likes, subscribes, comments, and total watch time.
+        watches, likes, subscribes, comments, total watch time,
+        and automated browser session history (successful/failed
+        sessions, last session details, last failure reason).
 
         Returns:
-            Dictionary with warming statistics
+            Dictionary with warming statistics and browser session stats
         """
         try:
             from atlas.babybrains import db as bb_db
@@ -1017,7 +1050,10 @@ def create_server(db_path: Optional[Path] = None) -> "FastMCP":
             conn = bb_db.get_bb_connection(db_path or DEFAULT_DB_PATH)
             bb_db.init_bb_tables(conn)
             stats = bb_db.get_warming_stats(conn, days=7)
+            browser_stats = bb_db.get_browser_session_stats(conn, days=7)
             conn.close()
+
+            stats["browser_sessions"] = browser_stats
             return stats
         except Exception as e:
             return {"status": "error", "message": str(e)}

@@ -1,12 +1,57 @@
 # ATLAS Session Handoff
 
 **Date:** February 1, 2026
-**Status:** S2.2 DONE. WarmingBrowser class built with stealth, humanization, session limits, circuit breaker. 83 new tests. Ready for S2.3 (warming integration).
+**Status:** S2.3 DONE. WarmingBrowser integrated into WarmingService. MCP tools enhanced. CLI `warming watch` command. 29 new tests (355 total BB). Ready for S2.BF1 (quota persistence fix).
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: S2.2 WarmingBrowser Class (Feb 1, 2026 - Session 10)
+## Current Session: S2.3 Warming Integration + MCP Tools (Feb 1, 2026 - Session 11)
+
+### What We Did
+1. **Integrated WarmingBrowser into WarmingService** (`atlas/babybrains/warming/service.py`):
+   - New `run_browser_session(platform)` async method — full pipeline: get pending targets → create WarmingBrowser → run session → log per-action results → update target statuses → log session result/failure
+   - Lazy import of WarmingBrowser with `BROWSER_AVAILABLE` flag — graceful handling when patchright not installed
+   - Browser `stop()` always called via try/finally (crash-safe cleanup)
+   - Each WatchResult mapped back to DB target by index — watch/like/subscribe actions logged with correct `target_id`
+   - Target status updated: successful watches → `completed`, errors → `skipped`
+2. **Enhanced `bb_warming_status()` MCP tool** with browser session stats:
+   - New `get_browser_session_stats(conn, days)` DB helper — returns successful/failed session counts, total session watch time, last session details, last failure reason
+   - Stats merged into warming status dashboard under `browser_sessions` key
+3. **Added `bb_warming_watch(platform?)` MCP tool** — triggers automated browser warming session via `WarmingService.run_browser_session()`
+4. **Enhanced `bb_warming_done(platform, actions)`** — now delegates to `WarmingService.log_done()` which supports both count-based (manual) and detailed action logging with `target_id`, `actual_watch_seconds`, `content_posted`
+5. **CLI: `python -m atlas.babybrains.cli warming watch`** — triggers browser session, shows results (videos watched, watch time, likes, subscribes, errors)
+6. **CLI: `warming status` enhanced** — now shows browser session stats (successful/failed, watch time, last session, last failure)
+7. **Failed session logging** — all failure modes log to DB via `db.log_warming_session()`:
+   - Cookie expiry → `session_failure` with reason
+   - Circuit breaker trip → `session_failure` with reason
+   - Domain violation → `session_failure` with reason
+   - Browser crash → `session_failure` with crash message
+   - Import error (patchright not installed) → `session_failure`
+
+### Files Modified
+- `atlas/babybrains/db.py` — Added `log_warming_session()`, `get_browser_session_stats()`
+- `atlas/babybrains/warming/service.py` — Added `run_browser_session()`, enhanced `log_done()` with `actions_detail` parameter, added `BROWSER_AVAILABLE` flag
+- `atlas/mcp/server.py` — Enhanced `bb_warming_status()` (browser stats), added `bb_warming_watch()`, refactored `bb_warming_done()` to use WarmingService
+- `atlas/babybrains/cli.py` — Added `warming watch` subcommand and routing, enhanced `warming status` with browser session display
+
+### Files Created
+- `tests/babybrains/test_warming_integration.py` — 29 tests across 8 test classes
+
+### Test Results
+- New tests: 29/29 passing
+- Full BB suite: 355 passed, 7 skipped (API key gated), 0 failures
+
+### Key Design Decisions
+- **BROWSER_AVAILABLE flag** — lazy import with try/except at module level, not per-call. Tests can patch the flag directly.
+- **Session logging uses bb_warming_actions table** — action_type `session_complete` / `session_failure` with target_id=0 for session-level events. No new tables needed.
+- **Target-to-WatchResult mapping by index** — WarmingBrowser processes targets in order and appends results in order, so zip by index is safe. Early session termination (limits) means fewer results than targets.
+- **log_done() backward compatible** — count-based logging (manual) still works; new `actions_detail` parameter enables rich per-action logging from browser sessions.
+- **bb_warming_done MCP refactored** — now delegates to WarmingService.log_done() instead of duplicating logic.
+
+---
+
+## Previous Session: S2.2 WarmingBrowser Class (Feb 1, 2026 - Session 10)
 
 ### What We Did
 1. **Built `atlas/babybrains/browser/warming_browser.py`** — full WarmingBrowser class:
@@ -535,7 +580,7 @@ Sprint 1 task order:
 1. ~~S0.1: Populate bb_accounts table~~ DONE (Session 8)
 2. ~~S2.1: Patchright stealth spike test~~ CONDITIONAL PASS (Session 9) — WebGL only flag
 3. ~~S2.2: WarmingBrowser class~~ DONE (Session 10) — 83 tests, full stealth+humanization
-4. S2.3: Warming integration + MCP tools
+4. ~~S2.3: Warming integration + MCP tools~~ DONE (Session 11) — 29 tests, full pipeline
 5. S2.BF1: YouTube quota persistence fix
 6. V0.1: Validate Grok credit + model
 7. V0.2: Validate Anthropic/Sonnet API access
@@ -607,8 +652,8 @@ Key insights (from 4-round audit):
 
 ---
 
-*Session updated: February 1, 2026 (Session 10 — S2.2 WarmingBrowser Class)*
+*Session updated: February 1, 2026 (Session 11 — S2.3 Warming Integration + MCP Tools)*
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
-*BB tests: 326 passing (47 YouTube + 59 Grok + 35 integration + 11 populate + 83 browser + 91 existing)*
+*BB tests: 355 passing (47 YouTube + 59 Grok + 35 integration + 11 populate + 83 browser + 29 warming integration + 91 existing)*
 *Sprint Plan: babybrains-os/docs/automation/SPRINT_PLAN_V3.md (authoritative)*
-*Next: Sprint 1 — S2.3 (warming integration) → S2.BF1 (quota fix) → V0.1/V0.2 (API validation)*
+*Next: Sprint 1 — S2.BF1 (quota fix) → V0.1/V0.2 (API validation) → M1 (manual content)*
