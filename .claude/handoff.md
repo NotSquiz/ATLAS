@@ -1,12 +1,66 @@
 # ATLAS Session Handoff
 
 **Date:** February 1, 2026
-**Status:** S2.1 CONDITIONAL PASS. Patchright stealth working on WSL2. Only WebGL Renderer flagged (SwiftShader/WSL2 limitation). Ready for S2.2 (WarmingBrowser).
+**Status:** S2.2 DONE. WarmingBrowser class built with stealth, humanization, session limits, circuit breaker. 83 new tests. Ready for S2.3 (warming integration).
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: S2.1 Patchright Stealth Spike Test (Feb 1, 2026 - Session 9)
+## Current Session: S2.2 WarmingBrowser Class (Feb 1, 2026 - Session 10)
+
+### What We Did
+1. **Built `atlas/babybrains/browser/warming_browser.py`** — full WarmingBrowser class:
+   - Persistent browser profile per account (`~/.atlas/.browser/<account_id>/`)
+   - Uses S2.1 optimal config: system Chrome + `--disable-blink-features=AutomationControlled` + patchright CDP patches
+   - `check_login_state()` — navigates to YouTube, checks avatar vs sign-in button, logs WARNING on expired session
+   - `watch_video(url, duration_pct)` — humanized watching with random scrolls (15-45s), mouse drift (10-30s), pauses (1-3s every 2-5 min)
+   - `like_video()` — finds like button via DOM, checks already-liked state, humanized mouse movement to click
+   - `subscribe_channel()` — with daily limit check from engagement rules, humanized click
+   - `inter_video_delay()` — gaussian distribution (mean=45s, stddev=15s, clamped 15s-135s)
+   - `run_session(targets)` — full session orchestration: login check, video limit (3-7), duration limit (15-45 min), engagement actions per level
+   - Circuit breaker (aiobreaker): trips after 3 consecutive failures, 5-min reset
+   - Domain allowlist: youtube.com + consent/accounts subdomains only (frozen set)
+   - Session log: file-based daily tracking (`session_log.json`), max 2 sessions/day, auto-prunes entries >7 days
+   - COMMENT level: watches + likes but NEVER automates comment posting (human only)
+2. **Created `atlas/babybrains/browser/__init__.py`** — package with WarmingBrowser, SessionConfig, WatchResult, SessionResult exports
+3. **Created `tests/babybrains/test_warming_browser.py`** — 83 tests across 14 test classes:
+   - Domain allowlist (12 tests): YouTube allowed, spoofing blocked, non-YouTube rejected
+   - Session limits (7 tests): video count, duration, elapsed time tracking
+   - Daily session limit (8 tests): first/second/third session, new day reset, corrupted log
+   - Session log persistence (4 tests): save/load, missing file, corrupted, non-dict
+   - Gaussian delay (3 tests): bounds, minimum, distribution center
+   - Browser profile (3 tests): path construction, per-account isolation, initial state
+   - Login state (5 tests): logged in, logged out, ambiguous, not started, nav error
+   - Watch video (4 tests): success, non-YouTube rejection, counter increment, not started
+   - Circuit breaker (2 tests): trips after 3 failures, successful ops don't trip
+   - Like video (4 tests): success, already liked, button not found, not started
+   - Subscribe channel (4 tests): success, already subscribed, not found, not started
+   - Run session (6 tests): video limit, expired login abort, daily limit abort, like on LIKE level, subscribe on SUBSCRIBE level, comments never automated
+   - Humanization parameters (5 tests): scroll interval, mouse drift, pause duration, pause frequency, inter-video delay config
+   - Result dataclasses (7 tests): WatchResult success/failure, SessionResult properties
+   - Browser lifecycle (3 tests): stop without start, records session, no record on zero videos
+   - Allowed domains constant (6 tests): required domains present, blocked domains absent, immutable
+
+### Files Created
+- `atlas/babybrains/browser/__init__.py` — Browser package with exports
+- `atlas/babybrains/browser/warming_browser.py` — WarmingBrowser class (520 lines)
+- `tests/babybrains/test_warming_browser.py` — 83 unit tests
+
+### Key Design Decisions
+- **Patchright import is lazy** (inside `start()`) — module imports without patchright installed, tests mock at the right level
+- **Domain allowlist uses `frozenset`** with exact match only — no subdomain wildcarding to prevent spoofing
+- **Session log is file-based** (not DB) — WarmingBrowser operates independently; DB logging happens at WarmingService level in S2.3
+- **Circuit breaker is per-instance** — each WarmingBrowser gets its own breaker, separate from client-level breakers
+- **No Google login automation** — `check_login_state()` only verifies; manual login is human-only
+- **No comment automation** — COMMENT engagement level gets watch+like but never posts
+
+### Test Results
+- New tests: 83/83 passing
+- Full BB suite: 326 passed, 7 skipped (API key gated), 0 failures
+
+---
+
+## Previous Session: S2.1 Patchright Stealth Spike Test (Feb 1, 2026 - Session 9)
 
 ### What We Did
 1. **Installed Patchright + humanization-playwright** — browser stealth packages for BB warming
@@ -480,7 +534,7 @@ NOTE: SPRINT_PLAN_V3.md supersedes SPRINT_TASKS.md for Week 2+ tasks.
 Sprint 1 task order:
 1. ~~S0.1: Populate bb_accounts table~~ DONE (Session 8)
 2. ~~S2.1: Patchright stealth spike test~~ CONDITIONAL PASS (Session 9) — WebGL only flag
-3. S2.2: WarmingBrowser class (stealth passed — proceed)
+3. ~~S2.2: WarmingBrowser class~~ DONE (Session 10) — 83 tests, full stealth+humanization
 4. S2.3: Warming integration + MCP tools
 5. S2.BF1: YouTube quota persistence fix
 6. V0.1: Validate Grok credit + model
@@ -553,8 +607,8 @@ Key insights (from 4-round audit):
 
 ---
 
-*Session updated: February 1, 2026 (Session 9 — S2.1 Patchright Stealth Spike)*
+*Session updated: February 1, 2026 (Session 10 — S2.2 WarmingBrowser Class)*
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
-*BB tests: 243 passing (47 YouTube + 59 Grok + 35 integration + 11 populate + 91 existing)*
+*BB tests: 326 passing (47 YouTube + 59 Grok + 35 integration + 11 populate + 83 browser + 91 existing)*
 *Sprint Plan: babybrains-os/docs/automation/SPRINT_PLAN_V3.md (authoritative)*
-*Next: Sprint 1 — S2.2 (WarmingBrowser class) → S2.3 (integration) → S2.BF1 (quota fix)*
+*Next: Sprint 1 — S2.3 (warming integration) → S2.BF1 (quota fix) → V0.1/V0.2 (API validation)*
