@@ -1,12 +1,79 @@
 # ATLAS Session Handoff
 
 **Date:** February 1, 2026
-**Status:** S0.1 DONE. 4 BB accounts populated. 243 BB tests passing. Ready for S2.1 (Patchright stealth spike).
+**Status:** S2.1 CONDITIONAL PASS. Patchright stealth working on WSL2. Only WebGL Renderer flagged (SwiftShader/WSL2 limitation). Ready for S2.2 (WarmingBrowser).
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: S0.1 Account Population (Feb 1, 2026 - Session 8)
+## Current Session: S2.1 Patchright Stealth Spike Test (Feb 1, 2026 - Session 9)
+
+### What We Did
+1. **Installed Patchright + humanization-playwright** — browser stealth packages for BB warming
+2. **Installed Google Chrome** on WSL2 (system Chrome, not bundled Chromium) — better fingerprint than Chromium
+3. **Updated pyproject.toml** — added `[browser]` optional dependency group
+4. **Created `scripts/stealth_spike_test.py`** — automated spike test with 6 checks
+5. **Iterative stealth testing** — tested 5 configurations to find optimal setup:
+   - Bundled Chromium + `--disable-blink-features=AutomationControlled`: 7/37 flags
+   - System Chrome, no flags: 2/37 flags (webdriver=true)
+   - System Chrome + `--disable-blink-features=AutomationControlled`: **1/57 flags** (best)
+   - JS init script injection: counterproductive (sannysoft detects overrides)
+   - No init scripts: cleanest results
+
+### Spike Test Results (CONDITIONAL PASS)
+| Check | Result | Detail |
+|-------|--------|--------|
+| Chrome launch (WSLg) | PASS | Headed Chrome opens via WSLg on WSL2 |
+| navigator.webdriver | PASS | webdriver=False (via --disable-blink-features) |
+| bot.sannysoft.com | 1/57 flags | Only WebGL Renderer flagged (SwiftShader = WSL2 software GPU) |
+| creepjs.com | PASS | Page loads, no flagging detected |
+| youtube.com | PASS | Full page with search + logo |
+| Profile persistence | PASS | 51.2 MB profile persists between runs |
+
+### Key Findings
+- **Patchright patches CDP Runtime.enable** (the #1 YouTube detection vector in 2025-2026)
+- **`--disable-blink-features=AutomationControlled`** hides navigator.webdriver at Blink level
+- **System Chrome is better than bundled Chromium** for fingerprint consistency (57 sannysoft checks vs 37, and fewer flags)
+- **JS init script injection is counterproductive** — sannysoft detects property overrides
+- **WebGL Renderer (SwiftShader)** is the only remaining flag — WSL2 uses software rendering, no real GPU. Desktop machine with real GPU would eliminate this
+- **Profile persistence works** — cookies, history, and session data survive across runs
+
+### Recommended Configuration for S2.2
+```python
+context = await p.chromium.launch_persistent_context(
+    user_data_dir=str(profile_dir),
+    channel="chrome",
+    headless=False,
+    no_viewport=True,
+    args=["--disable-blink-features=AutomationControlled"],
+)
+```
+
+### WebGL Flag Assessment
+The WebGL Renderer flag shows SwiftShader (software GPU in WSL2). For YouTube warming:
+- YouTube primarily detects via CDP leaks and behavioral patterns, not WebGL fingerprint
+- SwiftShader is used by many lightweight machines and VMs — not an automatic ban trigger
+- Desktop machine (RTX 3050 Ti) would eliminate this flag entirely
+- **Recommendation:** Proceed with WSL2. Monitor for issues. Fall back to desktop if needed.
+
+### Files Created
+- `scripts/stealth_spike_test.py` — Automated stealth spike test (6 checks, domain allowlist)
+
+### Files Modified
+- `pyproject.toml` — Added `[browser]` optional deps: patchright, humanization-playwright
+
+### Dependencies Installed
+- `patchright==1.58.0` — Playwright fork with CDP stealth patches
+- `humanization-playwright==0.1.2` — Bezier curves, variable typing, humanized scroll
+- `google-chrome-stable==144.0.7559.109` — System Chrome (via apt)
+- System libraries: libnspr4, libnss3, libatk, libcups, libdrm, libxkbcommon, libgbm, etc.
+
+### Test Results
+- BB suite: 243 passed, 7 skipped (API key gated), 0 failures (no regressions)
+
+---
+
+## Previous Session: S0.1 Account Population (Feb 1, 2026 - Session 8)
 
 ### What We Did
 1. **S0.1: Populated bb_accounts table** with 4 Baby Brains social accounts:
@@ -412,8 +479,8 @@ NOTE: SPRINT_PLAN_V3.md supersedes SPRINT_TASKS.md for Week 2+ tasks.
 
 Sprint 1 task order:
 1. ~~S0.1: Populate bb_accounts table~~ DONE (Session 8)
-2. S2.1: Patchright stealth spike test (existential risk — fast fail)
-3. S2.2: WarmingBrowser class (if S2.1 passes)
+2. ~~S2.1: Patchright stealth spike test~~ CONDITIONAL PASS (Session 9) — WebGL only flag
+3. S2.2: WarmingBrowser class (stealth passed — proceed)
 4. S2.3: Warming integration + MCP tools
 5. S2.BF1: YouTube quota persistence fix
 6. V0.1: Validate Grok credit + model
@@ -486,8 +553,8 @@ Key insights (from 4-round audit):
 
 ---
 
-*Session updated: February 1, 2026 (Session 8 — S0.1 Account Population)*
+*Session updated: February 1, 2026 (Session 9 — S2.1 Patchright Stealth Spike)*
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
 *BB tests: 243 passing (47 YouTube + 59 Grok + 35 integration + 11 populate + 91 existing)*
 *Sprint Plan: babybrains-os/docs/automation/SPRINT_PLAN_V3.md (authoritative)*
-*Next: Sprint 1 — S2.1 (Patchright stealth spike) → S2.2 (WarmingBrowser) → S2.3 (integration)*
+*Next: Sprint 1 — S2.2 (WarmingBrowser class) → S2.3 (integration) → S2.BF1 (quota fix)*

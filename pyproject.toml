@@ -39,6 +39,10 @@ voice = [
 memory = [
     "sentence-transformers[onnx]>=2.2.0",
 ]
+browser = [
+    "patchright>=1.0.0",
+    "humanization-playwright>=0.1.0",
+]
 
 [project.scripts]
 atlas-mcp = "atlas.mcp.server:main"
