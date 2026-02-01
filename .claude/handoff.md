@@ -1,7 +1,7 @@
 # ATLAS Session Handoff
 
 **Date:** February 1, 2026
-**Status:** S2.BF1 DONE. V0.1 + V0.2 DONE (both API keys need action — see below). Sprint 1 code tasks complete. Ready for M1 (manual content).
+**Status:** S2.BF1 + V0.1 + V0.2 ALL DONE. All Sprint 1 code tasks complete. Ready for M1 (manual content).
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
@@ -18,30 +18,26 @@
    - `_save_quota()` creates parent dirs and silently handles disk errors
    - New `quota_file` constructor parameter (defaults to `~/.atlas/youtube_quota.json`)
    - 7 new tests in `TestQuotaPersistence` class
-2. **V0.1: Grok API Validation**:
-   - API key is present and recognized by xAI (not a 401)
-   - **BLOCKER: 403 — Team has no credits or licenses**
-   - Error: "Your newly created team doesn't have any credits or licenses yet"
-   - Action needed: Purchase credits at https://console.x.ai
-   - Model `grok-3-fast` exists (API recognized the request, just denied for billing)
+2. **V0.1: Grok API Validation** — CONFIRMED WORKING:
+   - Initial test: 403 "no credits" → user purchased $5 credit at console.x.ai
+   - Re-test: 200 OK, model returned `grok-3` (requested `grok-3-fast`, API resolved to `grok-3`)
+   - Response: "OK" in 12 tokens, cost_in_usd_ticks: 435000
    - Pricing: $0.20/1M input, $0.50/1M output, $5/1K search calls
    - Estimated cost per `scan_opportunities()`: ~$0.016-0.027
    - Estimated scans per $5: ~183-304 (depending on search call count)
-3. **V0.2: Anthropic API Validation**:
-   - **BLOCKER: 401 — invalid x-api-key**
-   - The `ANTHROPIC_API_KEY` in `.env` returns "authentication_error: invalid x-api-key"
-   - Action needed: Generate a new API key at https://console.anthropic.com/settings/keys and update `.env`
-   - Model target: `claude-sonnet-4-20250514` (from `comments.py`)
-   - Note: `anthropic` Python package is not installed in this environment (uses raw httpx for validation)
+   - Note: Model name returned as `grok-3` not `grok-3-fast` — may be an alias or model consolidated. Works either way.
+3. **V0.2: Anthropic API Validation** — CONFIRMED WORKING:
+   - Initial test: 401 invalid key → user generated new key at console.anthropic.com
+   - Re-test: 200 OK, model `claude-sonnet-4-20250514`, 12 input + 4 output tokens
+   - Comment generator pattern (from `comments.py`) will work with this key
 
-### User Action Required
-Both API keys need attention before Sprint 2 work can begin:
+### API Status (All Green)
 
-| API | Status | Action |
-|-----|--------|--------|
-| **Grok (XAI_API_KEY)** | Key valid, NO CREDITS | Purchase credits at https://console.x.ai |
-| **Anthropic (ANTHROPIC_API_KEY)** | Key INVALID (401) | Generate new key at https://console.anthropic.com/settings/keys, update `.env` |
-| **YouTube (YOUTUBE_API_KEY)** | Working (used in tests) | No action needed |
+| API | Status | Notes |
+|-----|--------|-------|
+| **Grok (GROK_API_KEY)** | WORKING | $5 credit loaded. Model resolves to `grok-3`. |
+| **Anthropic (ANTHROPIC_API_KEY)** | WORKING | New key, `claude-sonnet-4-20250514` confirmed. |
+| **YouTube (YOUTUBE_API_KEY)** | WORKING | Used in tests, quota persistence now file-based. |
 
 ### Files Modified
 - `atlas/babybrains/clients/youtube_client.py` — Added `_load_quota()`, `_save_quota()`, `quota_file` param; calls `_save_quota()` from `_consume_quota()` and `_check_quota_reset()`
@@ -703,4 +699,4 @@ Key insights (from 4-round audit):
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
 *BB tests: 362 passing (54 YouTube + 59 Grok + 35 integration + 11 populate + 83 browser + 29 warming integration + 91 existing)*
 *Sprint Plan: babybrains-os/docs/automation/SPRINT_PLAN_V3.md (authoritative)*
-*Next: M1 (manual content) + fix API keys (Grok needs credits, Anthropic needs new key)*
+*Next: M1 (manual content production) — all code tasks and API validations complete*
