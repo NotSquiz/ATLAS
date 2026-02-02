@@ -1,12 +1,51 @@
 # ATLAS Session Handoff
 
-**Date:** February 1, 2026
-**Status:** S2.BF1 + V0.1 + V0.2 ALL DONE. All Sprint 1 code tasks complete. Ready for M1 (manual content).
+**Date:** February 2, 2026
+**Status:** Content production research COMPLETE. SYNTHESIS.md (1525 lines) + WORKFLOW.md (564 lines) verified by 12 agents. Ready for M1 (manual content).
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: S2.BF1 + V0.1 + V0.2 (Feb 1, 2026 - Session 12)
+## Current Session: Content Production Research Synthesis (Feb 2, 2026 - Session 13)
+
+### What We Did
+1. **Implemented 5-phase content production research plan** (verified by 12 independent agents across 3 rounds):
+   - Phase 1: Fixed 5 factual errors in SYNTHESIS.md (CML access, Epidemic Sound pricing, Kling IMAGE 3.0 footnote, URL coverage, strategy table length)
+   - Phase 2: Added 54 omissions across 3 tiers (11 CRITICAL, 28 HIGH, 15 MEDIUM) to SYNTHESIS.md
+   - Phase 3: Merged 8 new resolved contradiction rows + 2 single-source notes into existing CROSS-FILE CONTRADICTIONS section
+   - Phase 3.5: Rewrote Recommended Next Steps with critical constraints; updated Build Priority Roadmap to reference WORKFLOW.md
+   - Phase 4: Created WORKFLOW.md (564 lines) — operational playbook with 10 sections + build priority plan
+   - Phase 5: Build priority plan embedded in WORKFLOW.md (prerequisites + weeks 1-5+)
+2. **Verification**: 2 parallel agents ran 17 checks (all PASS) across both files
+3. **File organization**: Copied SYNTHESIS.md and WORKFLOW.md to babybrains-os/docs/research/ (prefixed with `content-production-`)
+4. **Updated DOCUMENTATION_UPDATE_GUIDE.md**: Added 4 new doc path entries, updated bb-1b to DONE, added bb-3-research row, updated date
+
+### Files Modified
+- `docs/research/bb-content-production/SYNTHESIS.md` — 1284→1525 lines (54 omissions + 5 fixes + 8 contradiction rows + updated recommendations)
+- `docs/DOCUMENTATION_UPDATE_GUIDE.md` — Added research doc paths, updated build status table
+
+### Files Created
+- `docs/research/bb-content-production/WORKFLOW.md` — 564-line operational playbook (new)
+
+### Files Copied to babybrains-os
+- `docs/research/content-production-SYNTHESIS.md` (copy of ATLAS source)
+- `docs/research/content-production-WORKFLOW.md` (copy of ATLAS source)
+
+### Key Research Findings (from 19 source files, verified by 12 agents)
+- Multi-person motion success rate: **20%** (parent+baby scenes have 80% failure rate)
+- CML music licensed for **TikTok only** — separate licensing needed for other platforms
+- **5-hashtag limit** on TikTok (Aug 2025) and Instagram (Dec 2025)
+- DaVinci Resolve **Studio** required for scripting (free version lost UIManager in v19.1)
+- P1/P2/P3 derivative deletion is **manual** (API can only append)
+- Pika Standard ($10/mo) has **NO commercial license** — must use Pro
+- Burned-in captions required (neither TikTok nor Instagram support SRT sidecar)
+- 92% of U.S. mobile viewers watch sound-off; but 88% of TikTok users say sound is essential
+- YouTube Shorts monetization: 10M views in 90 days OR 4K watch hours
+- Hardware: 8GB VRAM confirmed (CLAUDE.md says 4GB — needs separate update)
+
+---
+
+## Previous Session: S2.BF1 + V0.1 + V0.2 (Feb 1, 2026 - Session 12)
 
 ### What We Did
 1. **S2.BF1: YouTube Quota Persistence Fix** (`atlas/babybrains/clients/youtube_client.py`):

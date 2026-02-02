@@ -188,16 +188,21 @@
 | `[babybrains-os] docs/automation/SPRINT_TASKS.md` | Sprint task tracker | Task completions |
 | `[babybrains-os] docs/automation/BROWSER_STEALTH_RESEARCH.md` | Anti-detection research | Stealth approach changes |
 | `skills/babybrains/BABYBRAINS.md` | 9-skill content pipeline orchestrator | Pipeline changes |
+| `[ATLAS] docs/research/bb-content-production/SYNTHESIS.md` | Content production research synthesis (19 sources, 1525 lines) | Research updates |
+| `[ATLAS] docs/research/bb-content-production/WORKFLOW.md` | Content production operational workflow + build priority | Workflow changes |
+| `[babybrains-os] docs/research/content-production-SYNTHESIS.md` | Copy of SYNTHESIS.md for babybrains-os context | Sync from ATLAS source |
+| `[babybrains-os] docs/research/content-production-WORKFLOW.md` | Copy of WORKFLOW.md for babybrains-os context | Sync from ATLAS source |
 
-### Baby Brains Build Status (January 31, 2026)
+### Baby Brains Build Status (February 2, 2026)
 | Task | Status | Tracker ID |
 |------|--------|------------|
 | Account warming automation (foundation) | ✅ WEEK 1 DONE (S1.1-S1.8, 98 tests) | bb-1 |
-| Account warming automation (browser) | PENDING (S2.1-S2.3) | bb-1b |
+| Account warming automation (browser) | ✅ DONE (S2.1-S2.3, 112 tests) | bb-1b |
 | YouTube Data API Client | ✅ DONE (S2.4, 47 tests, audited) | bb-2a |
 | Grok API Client | ✅ DONE (S2.5, 59 tests, audited) | bb-2b |
 | Integration tests (real API + adversarial) | ✅ DONE (35 tests) | bb-2c |
 | Trend engine (scoring + dedup) | PENDING (S2.6) | bb-2d |
+| Content production research | ✅ DONE (19 sources, 12-agent verification) | bb-3-research |
 | Content production pipeline | PENDING (S3.1-S3.4) | bb-3 |
 | Website relaunch | PENDING | bb-4 |
 | Article/SEO/GEO pipeline | PENDING | bb-5 |
