@@ -17,7 +17,7 @@ Thirteen research files were extracted, categorized, and confidence-tagged by in
 
 2. **The video length debate is resolved by content type, not a single number.** Educational parenting content on TikTok gets 43.2% more reach at 60s+ (Napolify, VERIFIED). But completion rates crater at those lengths (31% for 60s-3min). The data supports a multi-length strategy: 30-60s as the primary format, with 15-25s hooks and 60-90s deep dives.
 
-3. **Human voice is non-negotiable.** AI voiceover faces 38% lower FYP exposure on TikTok post-November 2025 (3A). Business accounts cannot access trending sounds (3A). With 8GB VRAM (32GB RAM), Chatterbox TTS runs locally for $0/month with voice cloning from a 5-10 second sample (MIT license). ElevenLabs at $5/month is the cloud fallback. Self-recorded Australian voiceover remains the gold standard.
+3. **Human voice is non-negotiable.** AI voiceover faces 38% lower FYP exposure on TikTok post-November 2025 (3A). Business accounts cannot access trending sounds (3A). Qwen3-TTS (already installed in ATLAS, 0.6B, voice cloning) runs locally for $0/month. Fish Audio API (~$11/mo Plus tier, #1 TTS-Arena) is the primary cloud fallback. Google Colab VS Code extension provides a free T4 GPU (15GB) for heavier models like Maya1 (3B, voice design via natural language). Self-recorded Australian voiceover remains the gold standard.
 
 4. **Stylized AI content is exempt from mandatory disclosure on ALL four platforms** (5A). MidJourney does not embed C2PA metadata. The anti-sharenting privacy framing is the recommended positioning.
 
@@ -82,15 +82,15 @@ The user's budget target is $50-120/month. The 1C-recommended dual-tool setup (K
 | Character consistency | Pikaframes keyframing, 3/5 -- no reference-image system | 1C | CLAIMED |
 | Max video length | 5s per generation, 25s via Pikaframes | 1C | CLAIMED |
 | Audio | None | 1C | VERIFIED |
-| Credits rollover | No -- credits expire monthly | 1C | CLAIMED |
+| Credits rollover | **Yes** -- paid plans now have roll-over credits (updated 2025) | 1C, Staleness report | UPDATED |
 
-**⚠️ Commercial license:** Pika 2.0 Standard ($10/month) has **NO commercial license** -- must use Pro ($28/month) or higher for any content intended for publication or monetization (4A line 56).
+**⚠️ Commercial license update (late 2025):** Pika Standard ($8/month) now includes commercial use rights. Pro ($28/month) recommended for higher credit allocation but is no longer required for commercial use (4A line 56, updated).
 
 **Quality caveat:** Pika's own documentation includes a disclaimer that the tool is "not suitable for professional-grade output" (1C line 72). This likely refers to photorealistic/VFX use cases — for stylized clay animation, Pika's 74-89% success rate and 5/5 quality score suggest it performs well within its niche.
 
 **Per-video Kling cost range (cross-source):** Per-video costs vary significantly by source and assumptions: $1.61-1.76 per 10s video (1A line 93, assuming 50% stylized failure rate) vs $0.80-1.20 Pro / $0.45-0.70 Premier (1C lines 36-40, using higher success assumptions). The difference reflects failure rate assumptions for stylized content.
 
-**Pika verdict:** Best quality for clay aesthetic but limited to 25s max. No audio. The high success rate (74-89%) means less credit waste. Pro tier ($28) is the minimum viable tier (commercial license required).
+**Pika verdict:** Best quality for clay aesthetic but limited to 25s max. No audio. The high success rate (74-89%) means less credit waste. Standard ($8) now includes commercial rights; Pro ($28) recommended for credit allocation and higher generation limits.
 
 #### MidJourney Video V1
 
@@ -114,6 +114,8 @@ The user's budget target is $50-120/month. The 1C-recommended dual-tool setup (K
 
 **MJ verdict:** Excellent stylized quality but severely limited for video. 21s max, no audio, no reference features in video mode, quality degrades after 9s. Best used as the IMAGE generation engine (--oref character consistency, --sref style) feeding into a separate video tool.
 
+**⚠️ Pricing clarification:** MJ **VIDEO** Relax mode requires Pro ($60/month) or Mega ($120/month) — NOT available on Standard ($30/month). MJ **IMAGE** Relax mode IS available on Standard ($30/month). The recommended Stack A/B/C all use Standard for IMAGE generation, which is correct. Video generation costs 8x image GPU time and uses Fast GPU minutes on all plans.
+
 #### Hailuo / MiniMax 2.3
 
 | Dimension | Data | Source | Confidence |
@@ -130,6 +132,8 @@ The user's budget target is $50-120/month. The 1C-recommended dual-tool setup (K
 **NOTE:** The 1C research cited $94.99 as "Unlimited" -- this was a **legacy plan discontinued June 2025**. Current unlimited requires Ultra ($124.99, Hailuo 01 only) or Max ($199.99, both models). Current sale pricing available: Master $63.99, Pro $24.99.
 
 **Hailuo verdict:** Best option for burst production (Max plan, one month, cancel). Hailuo 01 Live is strong for stylized/cartoon content. But ongoing monthly at $199.99 exceeds budget. The Master tier ($94.99, 10,000 credits) is a non-unlimited alternative for steady production.
+
+**Market note (Jan-Feb 2026):** MiniMax (Hailuo's parent company) filed for IPO in January 2026, signaling growing resources. Hailuo is an active competitor worth re-evaluating quarterly as the product evolves.
 
 #### Luma Ray3
 
@@ -156,7 +160,7 @@ The Trustpilot discrepancy (1.3 vs 2.3, 189 vs 222 reviews) suggests the data wa
 
 ### Recommended Tool Stacks
 
-#### Stack A: Minimum Viable ($58-67/month)
+#### Stack A: Minimum Viable ($58/month)
 - **MidJourney Standard** ($30/month) -- Image generation engine. Unlimited Relax mode for character-consistent stills. --oref for character, --sref for brand style. 15 hrs fast GPU + unlimited relax is sufficient for image work.
 - **Pika Pro** ($28/month) -- High-quality stylized clips under 25s. 74-89% success rate means ~19 usable videos from 2,300 credits.
 - **Kling Free tier** (~2 videos/day, 66 credits) -- For 60s content and iteration.
@@ -189,10 +193,11 @@ The Trustpilot discrepancy (1.3 vs 2.3, 189 vs 222 reviews) suggests the data wa
 
 #### Stack E: Time-Limited Opportunity (expires Feb 25, 2026)
 - **MidJourney Standard** ($30/month) -- Image engine
-- **Envato VideoGen** ($16.50/month) -- Promotional unlimited AI video via Luma Ray3. Includes commercial license. Speech videos capped at 30/month.
+- **Envato VideoGen** ($16.50/month) -- Promotional unlimited AI video. Now uses multiple models (Seedance 1.0, Hailuo 02, Google Veo 3 — not just Luma Ray3). Includes commercial license. Speech videos capped at 30/month.
 - Total: **$46.50/month**
 - Strength: Cheapest unlimited option available. Worth grabbing immediately for testing.
-- Limitation: Promotional pricing ends Feb 25. Luma Ray3 is 3/5 for stylized quality. Unknown throttling behavior.
+- Limitation: Promotional pricing ends Feb 25. Stylized quality was rated 3/5 when using Ray3 only — may have improved with Veo 3 and other models now available. Unknown throttling behavior.
+- **⚠️ TIME-SENSITIVE:** This promotional pricing expires **February 25, 2026**. Grab immediately for testing even if not primary tool.
 
 ### Tool Decision: What 9A Needs to Answer
 
@@ -200,7 +205,7 @@ Before finalizing, the budget optimization research (9A) should investigate:
 1. Real-world Pika Pro ($28) capacity -- is 2,300 credits enough for 15-20 finished videos?
 2. MidJourney Animate quality for stylized clay -- does it preserve the aesthetic?
 3. Kling Free tier reliability -- can 2 videos/day consistently supplement a paid primary tool?
-4. Whether any open-source video tools run on 8GB VRAM (LTX-2 once available?)
+4. Whether any open-source video tools run on 8GB VRAM locally or 15GB via Colab (LTX-2 once available?)
 5. **Hailuo actual pricing** -- is the "Unlimited" tier $94.99 or $199.99? What are the real tier names and limits?
 6. MidJourney Standard ($30) vs Pro ($60) -- confirm that Standard's unlimited Relax mode is sufficient for the image volume needed (character sheets, scene generation, style testing)
 
@@ -248,6 +253,18 @@ The data shows two competing signals:
 
 **Key insight from 2B:** A single 60-second video works well across ALL four platforms. This is the universal sweet spot for cross-posting. The 30-45s tier is a TikTok-specific optimization; the 7-15s tier is for testing.
 
+**Platform maximum durations (Feb 2026):** YouTube Shorts up to 3 minutes (Oct 2024 expansion). Instagram Reels up to 20 minutes recording. TikTok up to 60 minutes (uploaded). These maximums do not change the recommended strategy — sub-90s content still receives highest algorithmic priority across all platforms.
+
+### Platform Discovery Features (2025-2026)
+
+Three major platform updates have elevated SEO importance for short-form content:
+
+- **Instagram posts now indexable by Google and Bing** (July 2025): Each Reel functions as a micro-landing page for web search. Keywords in captions, alt text, and burned-in captions are crawlable.
+- **YouTube Shorts appear in Google Discover** (September 2025): Shorts surface in Google Discover feeds, dramatically expanding potential reach beyond YouTube itself. YouTube SEO (titles, descriptions, tags) now drives external discovery.
+- **Facebook October 2025 algorithm update**: 50% more same-day content shown in feeds. Recency advantage means posting timing matters more than ever for Facebook Reels.
+
+These changes reinforce the SEO-first strategy: keywords in narration → captions → titles matter more than hashtags for discovery.
+
 ### Hook Window
 
 All sources agree: **3 seconds** to hook the viewer. 33% scroll away within 3 seconds (Sotrender 2025). For parenting content, the two proven hook patterns are:
@@ -259,6 +276,30 @@ Post-hook, a December 2024 algorithm update extended the quality evaluation wind
 **Algorithmic boost:** Videos with **75% completion rate** trigger TikTok algorithmic boost (2A line 71). For 30-60s content, this means viewers must stay for 22-45 seconds.
 
 **Instagram-specific:** Viewers decide within **1.7 seconds** whether to continue watching (Dataslayer.ai citing Instagram research, 2B line 36). This is shorter than the general 3-second consensus across platforms. Videos featuring **faces in the first 3 seconds achieve 35% higher retention** (Zebracat 2025, 2B line 36) — relevant for the parent character in Baby Brains content.
+
+### Retention Ladder (Beyond the Hook)
+
+The hook gets viewers IN. The retention ladder keeps them watching (OLD-1 PSY-005, adapted for multi-length strategy):
+
+| Timing | Element | Purpose |
+|--------|---------|---------|
+| 0-3s | Hook | Capture attention (see 7 hook patterns in WORKFLOW.md) |
+| 3-8s | Payoff #1 | Deliver first value — reward the viewer for staying |
+| 8-15s | Payoff #2 | Deepen engagement — introduce the core content |
+| Midpoint | Pattern interrupt | Combat attention dip — visual change, new question, or mini-mystery |
+| Final 5s | Emotional moment + CTA | Create connection and prompt action |
+
+**Mid-point re-hook for 60s content** (OLD-4 CP-005): Insert a secondary hook or mini-mystery at the 25-30s mark. Examples: "But here's what nobody tells you...", a visual pattern interrupt, or a new question. Without mid-point re-hooks, 60s completion rates suffer (31% average for 60s-3min content).
+
+**Pattern interrupt catalogue** (OLD-5 CP-002/004/005): Pattern interrupts boost watch time by up to 85% and conversion by 32%. Ranked techniques for Montessori content (calibrated for calm tone — avoid frantic energy):
+
+1. **Camera angle switch** (wide → close-up → medium) — highest impact, natural in stitched content
+2. **Text overlay pop-up** — keyword emphasis, data points, quotes
+3. **B-roll insertion** — show the material/toy/environment detail
+4. **Audio shift** — music swell, SFX emphasis, pause-then-speak
+5. **On-screen question** — "But does this actually work?"
+
+**Implementation rules:** Place first interrupt within 3-4 seconds. Create contrast with what came before. Every interrupt must serve the core message. For P2/P3 educational content, prefer subtle interrupts (camera angle, B-roll) over flashy ones (text pop-ups, effects).
 
 ### Hashtag Limits (Major 2025 Platform Shift)
 
@@ -285,6 +326,8 @@ YouTube Partner Program requirements for Shorts monetization (2B lines 55-58):
 
 There is no minimum video length for Shorts monetization once a channel qualifies.
 
+**⚠️ Content ID restriction:** YouTube Shorts **over 1 minute using copyrighted/Content ID claimed music are blocked globally** — not just demonetized but blocked from publication. This is separate from the existing >60s VO-only monetization rule. Use only royalty-free or original audio for all Shorts content.
+
 ---
 
 ## DECISION GATE 3: Audio & Voice Strategy
@@ -298,9 +341,11 @@ From 3A: TikTok Business accounts **are restricted exclusively to the Commercial
 
 **⚠️ CML Cross-Platform Licensing:** CML tracks are licensed for TikTok use ONLY. Using CML music on Instagram, YouTube, or Facebook requires separate licensing — the TikTok CML license does NOT extend to other platforms (3A line 77). This is a hard constraint for any multi-platform strategy using CML audio.
 
+**January 2026 CML tightening:** TikTok updated CML terms of service in January 2026 with stricter no cross-platform clauses and off-platform tracking restrictions. The existing warning about CML being TikTok-only is now formally enforced.
+
 ### Burned-In Captions (Production Requirement)
 
-92% of U.S. mobile video viewers watch with sound off (4B line 237). Captioned videos receive **+40% higher watch time** (4B). **Neither TikTok nor Instagram support SRT sidecar files** — burned-in captions are the only reliable option on those platforms (4B lines 237-259). YouTube Shorts uniquely benefits from a hybrid approach: burned-in for visual consistency + SRT for SEO indexing and auto-translation.
+An estimated 69-74% of mobile viewers watch with sound off (4B line 237 cites 92%, but this is likely from the same category of outdated marketing statistics corrected above). Captioned videos receive **+40% higher watch time** (4B). Instagram does not support SRT sidecar files. **TikTok now supports SRT upload** via Ads Manager and the Video Editor (as of 2025), though burned-in remains the safer option for consistency. Burned-in captions remain the primary recommendation for cross-platform visual consistency. YouTube Shorts uniquely benefits from a hybrid approach: burned-in for visual consistency + SRT for SEO indexing and auto-translation.
 
 ### YouTube Shorts: Copyrighted Music Blocks Monetization
 
@@ -312,7 +357,7 @@ YouTube Shorts **over 60 seconds using copyrighted music are blocked from moneti
 
 ### Voice Generation Alternatives
 
-**Fish Audio API:** $9.99/200 min or $15/1M chars — **~70% cheaper than ElevenLabs** and ranked **#1 on TTS-Arena** with WER 0.008, CER 0.004 (best in class) (3B lines 144-146). API-only service; the local model requires 12GB+ VRAM (exceeds our 8GB). Consider as primary cloud TTS if ElevenLabs costs become a concern.
+**Fish Audio API:** ~$11/mo Plus tier ($5.50/mo annual), or $15/1M chars — **~70% cheaper than ElevenLabs** and ranked **#1 on TTS-Arena** with WER 0.008, CER 0.004 (best in class) (3B lines 144-146). API-only service; the local model requires 12GB+ VRAM (exceeds 8GB local, but could run on Colab T4 15GB). Primary cloud TTS fallback.
 
 ### Uppbeat: Music AND SFX Source
 
@@ -335,28 +380,32 @@ These data points conflict: original audio gets 3x weight, but trending audio ge
 - **Trending sounds boost educational engagement ~47%** (3A line 25)
 - **Warm female narration** dominates successful parenting accounts (3A lines 47-52)
 
-### Hardware: 8GB VRAM, 32GB RAM
+### Hardware: 8GB VRAM local + 15GB free via Colab
 
-The actual hardware has 8GB VRAM and 32GB system RAM. The 3B extraction flagged a mismatch with CLAUDE.md (which listed 4GB) -- the user confirms 8GB is correct. This unlocks local voice cloning tools:
+The actual hardware has 8GB VRAM and 32GB system RAM. The 3B extraction flagged a mismatch with CLAUDE.md (which listed 4GB) -- the user confirms 8GB is correct.
 
-**What runs on 8GB VRAM:**
+**Cloud GPU (free):** Google Colab VS Code extension provides a free NVIDIA T4 (15GB usable VRAM) directly in VS Code. 12hr max sessions, 90min idle timeout, 15-30 GPU hrs/week. This enables models that don't fit locally (Maya1 3B needs 16GB+) and parallel workflows (TTS on Colab while video gen runs locally). See: [KB source S23](../../knowledge-base/sources/S23_colab_vscode_free_gpu.md)
+
+**What runs on 8GB VRAM (local):**
 - **Chatterbox Turbo** (350M params): 8GB borderline but viable. MIT license. Voice cloning from 5-10s reference audio. 63.75% preferred over ElevenLabs in blind evaluations [CLAIMED]. Emotion exaggeration control. **$0/month.** TTS Arena #16. Note: embeds **PerTh neural watermark** (imperceptible, survives compression) (3B line 112).
 - **F5-TTS** (335M params): 8GB "comfortable fit". Excellent clone quality. **But CC-BY-NC license (non-commercial blocker).** OpenF5-TTS-Base (Apache 2.0) is an alternative but "still alpha."
 - **CosyVoice**: 8GB "at the limit" -- borderline. Apache 2.0 license. 77-78% speaker similarity. May be unstable.
 - **Sesame CSM-1B**: 4.5GB VRAM on CUDA. CC license (requires Llama 3.2-1B access). Best for conversational speech with natural pauses, "umms," and turn-taking. Voice cloning via 2-3 minute reference (3B lines 71-77).
-- **Kokoro TTS**: 2-3GB, runs easily. No voice cloning. British voices only. Good for drafts. **$0/month.**
+- **Qwen3-TTS** (0.6B params, already installed in ATLAS): Voice cloning via reference audio + transcript. ~4-6GB VRAM. Jeremy Irons voice already configured. Can clone any voice from short sample. **$0/month.**
+- **Maya1** (3B params, Apache 2.0): Voice *design* via natural language description (not cloning). 20+ inline emotion tags. #2 on Artificial Analysis TTS ranking. **Needs 16GB+ VRAM — won't run locally on 8GB.** Potential cloud/API option. See: [huggingface.co/maya-research/maya1](https://huggingface.co/maya-research/maya1)
 
 ### Recommended Audio Stack
 
 | Use Case | Tool | Cost | Notes |
 |----------|------|------|-------|
-| **Bulk daily VO** | Chatterbox Turbo (local) | $0/month | Voice cloning from 5-10s sample. MIT license. Australian accent via cloning. |
 | **Premium brand voice** | Self-recorded Australian VO | $0 | Record narration directly. Highest authenticity, best algorithm treatment. |
-| **Cloud fallback** | ElevenLabs Starter | $5/month | 30 min/month. Use when local quality insufficient. Note: **Professional Voice Cloning** requires Creator plan at $22/month (3B line 44). |
+| **Bulk daily VO** | Qwen3-TTS (local, already installed) | $0/month | Voice cloning from reference audio. 0.6B params, ~4-6GB VRAM. Already in ATLAS with Jeremy Irons voice. Clone an Australian voice from short sample. |
+| **Cloud fallback (primary)** | Fish Audio API | ~$11/mo Plus ($5.50 annual) | 70% cheaper than ElevenLabs, ranked #1 TTS-Arena (3B lines 144-146). API-based, no local VRAM needed. |
+| **Cloud fallback (alt)** | ElevenLabs Starter | $5/month | 30,000 credits ≈ 30 min/month (credit-based system). Note: **Professional Voice Cloning** requires Creator plan at $22/month (3B line 44). |
 | **Background music** | Royalty-free library | $0-19/month | Epidemic Sound ($9-19/month depending on tier, 3A line 72), Artlist ($10), or free options (Pixabay, Free Music Archive) |
-| **Drafts/testing** | Kokoro TTS (local) | $0 | Fast, no cloning, British accent approximation. |
+| **Investigate** | Maya1 (via free Colab T4) | $0 | Voice design via natural language. 20+ emotions. 3B params, needs 16GB+ — test on Colab T4 (15GB usable, borderline). Apache 2.0. See A68. |
 
-**Decision:** Primary voice is self-recorded Australian voiceover for core content. Chatterbox Turbo ($0 local) for bulk production with cloned voice. ElevenLabs ($5/month) as cloud fallback. This keeps voice costs at **$0-5/month**.
+**Decision:** Primary voice is self-recorded Australian voiceover for core content. Qwen3-TTS ($0 local, already installed) for bulk production with cloned voice. Fish Audio API (~$11/mo Plus tier) as cloud fallback. This keeps voice costs at **$0-11/month**.
 
 ---
 
@@ -428,7 +477,13 @@ For stronger character consistency beyond MJ --oref, LoRA fine-tuning is availab
 
 ### COPPA Compliance
 
-**Disney paid a $10M COPPA settlement in 2025** for child-directed content labeling failures. Penalties up to **$42,530 per violation** (6A line 101). Baby Brains content is for ADULTS (parents) — set `madeForKids: false` on YouTube. However, thumbnails showing animated children could trigger COPPA auto-classification. Monitor this and appeal if misclassified.
+**Disney paid a $10M COPPA settlement in 2025** for child-directed content labeling failures. Penalties up to **$50,120 per violation** under COPPA (16 CFR 312, 2024 inflation-adjusted; 2025 adjustment may be higher). Separate FTC Act Section 5 penalties reach $53,088 per violation (6A line 101). Baby Brains content is for ADULTS (parents) — set `madeForKids: false` on YouTube. However, thumbnails showing animated children could trigger COPPA auto-classification. Monitor this and appeal if misclassified.
+
+**⚠️ TIME-SENSITIVE: COPPA Full Compliance Deadline — April 22, 2026.** The January 2025 COPPA amendments expand biometric data protections and require separate consent for data sharing with third parties. Full compliance with all amended provisions required by April 22, 2026. Three interlocking compliance checklists apply to Baby Brains content:
+
+1. **Child Safety Checklist**: Adult supervision visible in all activity demos, avoid private spaces (bathrooms/bedrooms), age-appropriate activities only, no PII visible, privacy settings enabled on all accounts, monitor comments for child safety concerns (OLD-5 QI-002)
+2. **COPPA Compliance Checklist**: Content ABOUT children (for adult parents) vs content FOR children — explicit audience designation required. Set `madeForKids: false` on YouTube. Understand that thumbnails showing animated children could trigger COPPA auto-classification (OLD-5 QI-004)
+3. **FTC Disclosure Checklist**: Platform-specific labeling tools (Instagram Branded Content Tool, TikTok Content Disclosure, YouTube checkbox). $53,088 per violation for FTC non-compliance (OLD-5 QI-005)
 
 **Sharenting context:** 2/3 of identity fraud by 2030 is projected to come from sharenting (5A line 86). Australian TikTok ban for under-16s (5A line 117). Both reinforce the privacy-first positioning.
 
@@ -449,6 +504,35 @@ From 6A:
 Baby Brains content is for **PARENTS (adults)**, not for children to watch. The Montessori community's philosophical opposition to screens for under-6 does not apply here -- this is adult educational content about child development, not children's media. This distinction eliminates the perceived "positioning minefield" from the 6A research.
 
 That said, some Montessori purists may still object to AI-generated content on principle. This is a minor concern, not a strategic blocker.
+
+### Australian Market Data
+
+The Australian market directly supports the multi-platform strategy (OLD-5 AS-001):
+- **78% social media penetration** across the Australian population
+- **1 hour 51 minutes** average daily social media use
+- **6.5 platforms** per person on average
+- **TikTok**: 38+ hours/month per user (highest engagement platform)
+- **Facebook Reels**: 5.91% engagement rate — leads all platforms for Reels content (OLD-5 AS-009)
+
+These statistics justify investing in all four platforms simultaneously rather than focusing on one.
+
+### Australian Content Themes
+
+**Seasonal AU content calendar** (OLD-5 AS-007/008):
+- **January-February**: Back to school, summer outdoor activities, water play, sun safety
+- **March-May**: Autumn activities, indoor play transitions, Easter
+- **June-August**: Winter indoor activities, rainy day play, school holiday content
+- **September-October**: Spring, gardening with toddlers, outdoor exploration
+- **November-December**: Holiday season, summer prep, end-of-year activities
+
+**Trending AU parenting themes** (OLD-5 CS-025, Q4 2025 — refresh quarterly):
+- Lighthouse parenting (letting children navigate challenges)
+- Gentle parenting techniques
+- Budget-friendly activities (cost of living focus)
+- Tech boundaries and screen-free play
+- Sustainability and eco-friendly parenting
+
+Prioritize themes that align with Montessori philosophy: budget-friendly activities, sustainability, screen-free play, following the child's lead.
 
 ### Content Gap: Ages 0-3 Montessori
 
@@ -510,9 +594,13 @@ The audience is parents who:
 
 1. **Create base character** with --oref:
    ```
-   A stylized 3D character, [description], Pixar style, Cinema 4D render,
-   clean white background, full body, front view --ar 2:3 --v 7
+   stylized infant with simplified sculptural features, smooth ovoid head,
+   large expressive eyes, warm clay-amber skin tones with subtle subsurface
+   scattering, [description], Brancusi-inspired organic forms, soft volumetric
+   light, clean white background, full body, front view --ar 2:3 --v 7
+   --no cartoon, Disney, Pixar, anime, photorealistic, harsh shadows, plastic
    ```
+   See brand direction: `docs/research/Baby Brains unified visual system...md`
 
 2. **Generate reference sheet:**
    ```
@@ -523,9 +611,11 @@ The audience is parents who:
 
 3. **Apply across scenes:**
    ```
-   3D stylized character, [ACTION/SCENE], [key traits], Pixar render style,
-   soft lighting --oref [original_base_URL] --ow 150
-   --sref [style_reference_URL] --sw 100 --seed [consistent_seed] --v 7
+   stylized sculptural character, [ACTION/SCENE], [key traits], warm clay-amber
+   tones, subsurface scattering, soft golden ambient lighting
+   --oref [original_base_URL] --ow 150
+   --sref [style_reference_URL] --sw 300 --seed [consistent_seed] --v 7
+   --no cartoon, Disney, Pixar, anime, photorealistic, harsh shadows, plastic
    ```
 
 **Key rule:** Always reference the ORIGINAL base image. Never chain references (A->B->C degrades consistency).
@@ -572,7 +662,8 @@ wax-like texture --s 200-300 --chaos 15-20 --q 2 --style raw
 ```
 --no plastic, neon harsh, synthetic glow, artificial lighting, cheap render,
 glossy plastic, rubber texture, vinyl, stark shadows, overexposed, clinical,
-sterile, lifeless, photorealistic, horror, scary, text, watermark
+sterile, lifeless, photorealistic, horror, scary, text, watermark,
+fast pan, shaky cam, hyperlapse, strobe, bokeh balls, lens flare
 ```
 
 **Animation platform selection for glow:**
@@ -606,11 +697,19 @@ Create a 600-1200px wide image with 4-6 horizontal solid-color swatches of the B
 
 | Tool | "Claymation" Keyword | Recommended Alternative |
 |------|---------------------|------------------------|
-| **Pika** | Can cause distortions — expect iteration (PB line 60) | "3D clay animation", "Pixar-like style", "soft stop-motion feel" |
+| **Pika** | Can cause distortions — expect iteration (PB line 60) | "3D clay animation", "soft matte clay surface", "soft stop-motion feel" |
 | **Kling** | Works adequately | Standard prompting |
 | **MidJourney** | Works well with V7 | "Claymation/stop-motion aesthetic" in Character DNA |
 
 **Pikaframes temporal stability caveat:** Curious Refuge Labs scored Pika 2.2's temporal stability at **1.4/10** in benchmark testing (PB lines 52-54). This is a separate issue from character consistency (3/5) — it refers to surreal morphing tendencies in longer sequences. Mitigation: use two images with similar composition, keep backgrounds simple, and prompt camera motion + subject motion clearly.
+
+### Environment Setting Variants
+
+Beyond the standard Montessori playroom, include these settings for variety (OLD-2 SET-001/002/003):
+
+- **Compact apartment**: Montessori-in-small-spaces messaging. Open-plan living, clever storage, wall-mounted shelves, modest floor space with carefully curated activity area. Accessibility message: you don't need a dedicated playroom.
+- **Coastal bright room**: Large windows, natural light flooding in, light timber floors, linen curtains, hints of ocean colour palette. Australian coastal feel without being overtly "beach themed."
+- **Outdoor verandah/deck**: Covered outdoor area, timber decking, native plants visible, natural shade. Australian entertaining-area feel for outdoor activity videos.
 
 ### Additional Stylized Video Tools
 
@@ -638,8 +737,8 @@ Create a 600-1200px wide image with 4-6 horizontal solid-color swatches of the B
 | 8 | Core content length: 30-60s (2A line 174) vs 30-45s (original synthesis table line 223) | 2A, synthesis | Allow 60s for YouTube, 30-45s for TikTok/Reels. Fixed in DG2 strategy table. |
 | 9 | MJ tier pricing: $10 Standard (4A line 197) vs $30 Standard elsewhere | 4A, official | $10 is old "Basic" tier; $30 is current "Standard"; $60 is "Pro" — 4A uses outdated naming. |
 | 10 | Per-video time with templates: 15-25 min (PD line 229) vs 20-30 min (PE line 611) | PD, PE | Ranges overlap; PD is DaVinci-only assembly, PE is full pipeline including generation. |
-| 11 | Kling IMAGE 3.0: described as product (synthesis lines 59-67) vs "no evidence" (PC lines 120-128) | Synthesis, PC | RESOLVED: User has Reddit screenshots (Feb 2026) confirming prerelease to selected accounts. Footnote added to DG1. |
-| 12 | Video Quality MCP: "skip initially" (PE line 11, synthesis line ~1082) vs "recommended" (synthesis ~line 573) | PE, synthesis | Internal synthesis contradiction — reconciled to "Phase 2+ addition." Video Quality MCP duplicates ffmpeg + Claude vision. |
+| 11 | Kling IMAGE 3.0: described as product (see Kling IMAGE 3.0 section in DG1) vs "no evidence" (PC lines 120-128) | Synthesis, PC | RESOLVED: User has Reddit screenshots (Feb 2026) confirming prerelease to selected accounts. Footnote added to DG1. |
+| 12 | Video Quality MCP: "skip initially" (PE line 11, see DaVinci export section) vs "recommended" (see MJ V7 State section) | PE, synthesis | Internal synthesis contradiction — reconciled to "Phase 2+ addition." Video Quality MCP duplicates ffmpeg + Claude vision. |
 | 13 | Sound-off viewing: 85% (PD line 79) vs 69-74% (2B lines 110-118) | PD, 2B | 85% is from a 2016 Digiday article; use 69-74% from 2019+ data. Both agree captioned content performs better. |
 
 **Single-source data points** (no contradicting data available):
@@ -655,7 +754,7 @@ Create a 600-1200px wide image with 4-6 horizontal solid-color swatches of the B
 | 3 | AI-labeled content 23-47% lower reach on Instagram (2B) -- single source | 2B | Medium -- drives the "avoid C2PA/auto-labeling" strategy. |
 | 4 | TikTok Creator Rewards: "excludes AI" (5A summary) vs "AI-assisted can be monetized" (2A detail) | 5A, 2A | Low -- monetization is a future concern. Focus on audience building first. |
 | 5 | --ow optimal range: 100-250 (MidJourneyV6.org) vs 400-500 (TitanXT) | 8A | Low -- context-dependent. Start at 100-250, test higher for specific needs. |
-| 6 | Hailuo pricing: **RESOLVED.** $94.99 was a legacy "Unlimited" plan discontinued June 2025. Current Max Plan is $199.99/month for true unlimited. Master at $94.99 has 10,000 credits (NOT unlimited). | 1C, verified Feb 2026 | Resolved. |
+| ~~6~~ | ~~Hailuo pricing~~ | ~~1C~~ | **RESOLVED:** $94.99 was a legacy "Unlimited" plan discontinued June 2025. Current Max Plan is $199.99/month for true unlimited. Master at $94.99 has 10,000 credits (NOT unlimited). Verified Feb 2026. |
 
 ---
 
@@ -685,8 +784,8 @@ The CLAIMED proportion is high. Most "verified" data points are verified by sour
 
 1. **No data on how NEW accounts perform** at different video lengths (all studies measure existing accounts with followers)
 2. **No data on stylized AI content algorithmic performance** (only policy data, not performance data)
-3. **No Australian-specific audience data** for any platform
-4. **Voice tool benchmarks on actual 8GB VRAM** need real-world testing (Chatterbox "borderline" at 8GB -- does it run stably?)
+3. ~~No Australian-specific audience data~~ **Partially filled**: AU social media stats (78% penetration, 1h51m/day, 6.5 platforms — OLD-5 AS-001), AU posting times by platform/day (OLD-5), AU seasonal content themes (OLD-5 AS-007/008) now integrated. Remaining gap: no AU-specific algorithm performance data (what content types perform best with AU audiences specifically).
+4. **Voice tool benchmarks** — Qwen3-TTS is installed and working locally (4-6GB). Remaining: test Maya1 on Colab T4 (A68), compare Qwen3-TTS cloned Australian voice vs Fish Audio API vs self-recorded VO quality.
 5. **No real user data for Pika + MJ combined workflow** (the recommended stack)
 
 ---
@@ -748,7 +847,7 @@ Subscribe to an unlimited-tier tool for ONE month. Batch-produce 60-90 videos (3
 
 ### Recommended Burst Approach
 
-**Phase 1 (Now -- Feb 25):** Sign up for Envato VideoGen ($16.50) while promotional unlimited is active. Test Luma Ray3 quality for stylized clay content. Generate as many test clips as possible. Low risk, low cost.
+**Phase 1 (Now -- Feb 25):** Sign up for Envato VideoGen ($16.50) while promotional unlimited is active. Test quality for stylized clay content (now uses multiple models including Veo 3, Seedance 1.0, Hailuo 02 — not just Ray3). Generate as many test clips as possible. Low risk, low cost.
 
 **Phase 2 (After character + style finalized):** Subscribe to Hailuo Max ($199.99) for one intensive production month. Use Hailuo 01 Live for stylized/cartoon animations. Target 60-90 finished videos. Cancel after month.
 
@@ -779,7 +878,7 @@ The 9A prompt should be **reframed** given what we now know. The original 9A pro
 5. **Hailuo 01 Live for stylized content** -- real user quality assessments. How does it compare to Pika for clay/3D animation?
 6. **Burst production logistics** -- has anyone done a one-month Hailuo Max intensive? What was their daily output? What broke? What tools did they use for asset management?
 7. **CapCut batch workflows** -- can you template the assembly process (add VO, captions, background music, transitions) to reduce per-video assembly time?
-8. **Open-source video tools on 8GB VRAM** -- LTX-2, any others approaching production quality?
+8. **Open-source video tools on 8GB local / 15GB Colab** -- LTX-2, any others approaching production quality?
 9. **Hybrid workflows** -- what % of content can use MJ stills with ken burns/parallax (in CapCut) instead of full AI video?
 
 ---
@@ -793,8 +892,8 @@ The 9A prompt should be **reframed** given what we now know. The original 9A pro
 Before starting implementation, note these constraints that affect the entire workflow:
 - **CML music is TikTok-only** — separate licensing needed for cross-platform use (3A line 77)
 - **5-hashtag limit** on both TikTok (Aug 2025) and Instagram (Dec 2025)
-- **Burned-in captions required** — neither TikTok nor Instagram support SRT sidecar
-- **Pika Standard has NO commercial license** — must use Pro ($28+)
+- **Burned-in captions recommended** — Instagram does not support SRT sidecar. TikTok now supports SRT via Ads Manager (as of 2025) but burned-in remains the safer cross-platform option.
+- **Pika Standard now includes commercial license** ($8/month) — Pro ($28) recommended for credit allocation
 - **DaVinci Studio required** for scripting automation (free version lost UIManager in v19.1)
 - **DaVinci scripting is Windows Python only** — WSL2 not supported
 - **Character-consistent content takes 45-75 hrs/month** (not 15-25, which is simple faceless only)
@@ -803,14 +902,14 @@ Before starting implementation, note these constraints that affect the entire wo
 
 ### Immediate (This Week)
 
-1. **Sign up for Envato VideoGen** ($16.50/month) -- promotional unlimited AI video via Luma Ray3 expires Feb 25, 2026. Low-cost unlimited testing opportunity. Grab it now.
-2. **Verify Pika Pro commercial license terms** -- Standard has NO commercial license, which blocks all Pika testing if Pro terms are unacceptable.
+1. **Sign up for Envato VideoGen** ($16.50/month) -- promotional unlimited AI video (multiple models incl. Veo 3, Seedance 1.0) expires Feb 25, 2026. Low-cost unlimited testing opportunity. Grab it now.
+2. **Verify Pika Standard/Pro license terms** -- Standard now includes commercial use; confirm current terms before production use.
 3. **Sign up for MidJourney Standard** ($30/month). Unlimited Relax mode for images is sufficient.
 4. **Create Baby Brains base character** using the --oref workflow from 8A. Test --sv 1 (warmth) and --sv 6 (default).
 5. **Test --sw permutation**: `--sw {0, 200, 400, 600, 800, 1000}` with BB style reference.
 6. **Sign up for Pika free tier** (80 credits/month — budget carefully, test only) and **Kling free tier** (66 credits/day).
 7. **Record 30 seconds of Australian voiceover** for voice cloning testing.
-8. **Install Chatterbox Turbo** locally and test voice cloning quality + stability on 8GB VRAM (borderline — test stability, not just fit).
+8. **Test Qwen3-TTS** (already installed) with Australian voice reference sample. Also install VS Code Colab extension and test Maya1 on free T4 (A68).
 9. **Purchase/activate DaVinci Resolve Studio** license.
 10. **Set up Windows Python environment** for DaVinci scripting (ATLAS runs on WSL2, not supported).
 11. **Create TikTok and Instagram accounts** if not already done.
@@ -819,7 +918,7 @@ Before starting implementation, note these constraints that affect the entire wo
 
 12. **Compare results** from MJ Animate vs Pika vs Kling vs Envato/Ray3. Identify the quality winner for stylized clay.
 13. **Refine character design** based on what actually renders well across tools.
-14. **Establish the production pipeline:** MJ (images) -> [winner tool] (video) -> DaVinci Studio (assembly) -> Chatterbox/self-recorded (voice) -> scheduling.
+14. **Establish the production pipeline:** MJ (images) -> [winner tool] (video) -> DaVinci Studio (assembly) -> Qwen3-TTS/self-recorded (voice) -> scheduling.
 15. **Test burned-in caption workflow** in DaVinci Studio (Effects → Titles → Animated → Word Highlight).
 16. **Test per-platform export presets**: TikTok 3Mbps, Reels 4Mbps, Shorts 12Mbps, Facebook 6Mbps.
 
@@ -837,7 +936,7 @@ Before starting implementation, note these constraints that affect the entire wo
 23. Decide on Creator vs Business account for TikTok (CML trade-off).
 24. Release content from library at 5-7 videos/week, 5 hashtags max per post.
 25. Monitor 3-second retention (target 65%+ per OpusClip study). Diagnose by drop-off pattern.
-26. **Track with A/B spreadsheet** (10-column structure from PF).
+26. **Track with A/B spreadsheet** (12-column structure — see WORKFLOW.md Tracking Spreadsheet).
 
 ---
 
@@ -913,7 +1012,7 @@ Budget ~150-300 credits per finished 20s 720p sequence including re-rolls.
 - Seed control (`-seed ###`) only works when both prompt AND negative prompt unchanged
 
 **Prompt engineering:**
-- Style: "Claymation style, soft stop-motion feel, playful lighting" or "3D Pixar-like style"
+- Style: "Claymation style, soft stop-motion feel, warm cinematic lighting" or "3D clay animation, sculptural organic forms"
 - Bioluminescent: "subsurface scattering on gel", "inner glow", "warm translucent amber"
 - Camera: `-camera zoom in|out|pan left|right|up|down|rotate cw|ccw` (one at a time only)
 - **Essential negative prompts**: `-neg morphing, noisy, bad quality, distorted, blurry, deformed hands, extra fingers, warped face, jitter, flicker`
@@ -1004,7 +1103,7 @@ Note: The existing "8-10 Mbps universal" (from PD) is YouTube-appropriate but ov
 - **AutoSubs plugin** (github.com/tmoroney/auto-subs): Free Whisper-based, better for Australian accent
 - DaVinci 20: built-in word-by-word highlight animation (Effects → Titles → Animated → Word Highlight, PD line 92)
 - Batch: `for file in *.mp3; do whisper "$file" --model medium --output_format srt; done`
-- Styling: Montserrat Bold, 60-72pt, white + 2-4px black stroke, upper-middle third, 300-350px from bottom
+- Styling: Montserrat Bold, 60-72pt, white + 2-4px black stroke, upper-middle third, 300-350px from bottom. **TODO**: Brand text watermark design for all videos needs separate creative decision (C7 — open item).
 - Per video with automation: **6-11 minutes** vs 16-26 manual
 
 **Color grading for brand consistency:**
@@ -1043,7 +1142,7 @@ Note: The existing "8-10 Mbps universal" (from PD) is YouTube-appropriate but ov
 **Script framework:**
 - **3-Act**: Hook (0-3s, 15 words) → Meat (3-50s, structured segments) → Payoff/CTA (3-5s, 15 words)
 - 12-16 words per line maximum
-- Visual change every **6-8 seconds**
+- Visual change cadence: **3-5 seconds** for P1 content (hooks, snackable clips — viral energy), **6-8 seconds** for P2/P3 content (educational, deep dives — calm Montessori tone)
 - Scene counts: 15s = 5-8 scenes, 30s = 8-15, 60s = 15-30
 
 **7 proven hook patterns for parenting content:**
@@ -1130,7 +1229,7 @@ CTA (5s, 15 words): [P1 CORE] Follow + share prompt
 - Entertainment/Trending: 15%
 
 **A/B testing protocol:**
-- **North star metric: 65%+ 3-second retention** → 4-7x more impressions
+- **North star metric: 65%+ 3-second retention** → 4-7x more impressions (OpusClip Nov 2025 study of general short-form content; parenting/educational niche benchmarks may differ — establish own baseline in weeks 1-4)
 - Single variable isolation per test
 - Wait 24-48 hours, TikTok needs ~20K views for significance
 - Track: 3-sec retention, avg watch time, completion rate, save rate, share rate
@@ -1223,7 +1322,7 @@ This makes stitching pre-scripted and deterministic rather than ad-hoc in post.
 │   ├── /instagram/
 │   ├── /youtube/
 │   └── /facebook/
-├── /08_VOICEOVER/               # VO files (self-recorded + Chatterbox)
+├── /08_VOICEOVER/               # VO files (self-recorded + Qwen3-TTS)
 ├── /09_CAPTIONS/                # SRT files
 └── /10_AUDIO/                   # Music beds, SFX
 ```
@@ -1258,14 +1357,21 @@ Example: `VID023_S02_T01_pika_approved.mp4`
 
 **Skip initially**: Video Quality MCP -- its VMAF calculation duplicates what ffmpeg + Claude vision can do.
 
-#### Critical Constraint: 8GB VRAM Sharing
+#### Critical Constraint: 8GB Local VRAM Sharing
 
-Chatterbox Turbo uses **4-6GB VRAM**. It **cannot run simultaneously** with video generation or other GPU-heavy tasks on 8GB. Pipeline must be sequential:
-1. Generate all video clips (GPU)
-2. Then run Chatterbox for all voiceovers (GPU)
+Qwen3-TTS uses **4-6GB VRAM**. It **cannot run simultaneously** with video generation or other GPU-heavy tasks on the local 8GB GPU. Two approaches:
+
+**Option A — Sequential (local only):**
+1. Generate all video clips (local GPU)
+2. Then run Qwen3-TTS for all voiceovers (local GPU)
 3. Then QC and assembly (CPU-bound)
 
-Or use ElevenLabs ($5/month cloud) during generation bursts to avoid GPU contention.
+**Option B — Parallel (local + Colab):**
+1. Generate video clips on local GPU (8GB)
+2. Simultaneously run TTS on Colab T4 (15GB free) — eliminates VRAM contention
+3. QC and assembly (CPU-bound)
+
+Cloud fallback: Fish Audio API (~$11/mo Plus tier) during GPU-heavy periods.
 
 #### CRITICAL FINDING: fal.ai Charges Separately from Hailuo
 
@@ -1319,13 +1425,18 @@ Or use ElevenLabs ($5/month cloud) during generation bursts to avoid GPU content
 
 **⚠️ PE BUG: YouTube upload code sets `selfDeclaredMadeForKids: True`** -- this is WRONG. Baby Brains content is for ADULTS (parents), NOT children. This flag disables comments, notifications, and severely limits reach. Must be `False`.
 
-#### Voice Pipeline: Chatterbox + aeneas
+#### Voice Pipeline: Qwen3-TTS + aeneas
 
-**Chatterbox Turbo** ($0 local):
-- Install: `pip install chatterbox-tts` (conda env, Python 3.11, CUDA 12.4)
-- Voice cloning: 10+ seconds clean WAV, single speaker, no background noise
-- Can run as local API: `chatterbox-tts-api` repo (OpenAI-compatible endpoint at :4123)
-- ~4-6GB VRAM, first run downloads ~5GB models
+**Qwen3-TTS** ($0 local, already installed in ATLAS):
+- Location: `atlas/voice/tts_qwen.py`
+- Voice cloning via reference audio + transcript (ICL mode)
+- ~4-6GB VRAM. Jeremy Irons voice already configured; clone an Australian voice from short sample
+- Config: `config/voice/qwen_tts_voices.json`
+
+**Maya1** ($0 via Colab T4, investigate):
+- 3B params, Apache 2.0, voice *design* via natural language description
+- 20+ inline emotion tags (`<laugh>`, `<whisper>`, `<sigh>`, etc.)
+- Needs 16GB+ VRAM — test on free Colab T4 (15GB usable, borderline). See A68
 
 **aeneas** for forced alignment (text → timed SRT):
 - Accent-agnostic (better than Whisper for known script text)
@@ -1352,16 +1463,16 @@ Or use ElevenLabs ($5/month cloud) during generation bursts to avoid GPU content
 > **Detailed week-by-week implementation plan in [WORKFLOW.md](WORKFLOW.md)** — see Build Priority section.
 
 **Phase 1 (Week 1-2): Foundation + Testing**
-- Verify Pika Pro commercial license, DaVinci Studio purchase, Windows Python setup
+- Verify Pika Standard/Pro license terms, DaVinci Studio purchase, Windows Python setup
 - MJ character reference sheet with --oref + --sref + --sv testing
 - Test clay keyword variants and multi-person success rate
-- Chatterbox Turbo VRAM stability test on 8GB
+- Qwen3-TTS Australian voice test (already installed); Maya1 test on Colab T4 (A68)
 - SQLite database with schema + Anthropic SQLite MCP
 - ffmpeg scripts: keyframe extraction, per-platform exports, metadata stripping
 - Basic QC workflow (manual trigger)
 
 **Phase 2 (Week 3-4): Audio + Assembly**
-- Chatterbox (if VRAM test passes) or Fish Audio API as primary TTS
+- Qwen3-TTS vs Fish Audio API vs Maya1 (Colab) comparison for primary TTS
 - Music licensing setup (Uppbeat/Epidemic Sound), verify CML cross-platform limitations
 - 5 script templates adapted from PF
 - DaVinci scripting spike (Windows Python, confirm append-only constraint)
@@ -1410,14 +1521,15 @@ PHASE 3: VIDEO GENERATION
      - Standard Mode for iteration, Professional for finals
   → BURST: Hailuo Max ($199.99 one month) for library building
      - 01 Live model for stylized content
-     - API automation via fal.ai + n8n
+     - Web interface batch submission (fal.ai charges separately — see Pipeline Decision 8)
      - Virtual credit card, download immediately
 
 PHASE 4: VOICE & AUDIO
   Script text
   → Self-recorded Australian VO (primary, gold standard)
-  → Chatterbox Turbo ($0 local) for bulk/backup
-  → ElevenLabs ($5/month) cloud fallback
+  → Qwen3-TTS ($0 local, already installed) for bulk/backup
+  → OR run TTS on Colab T4 ($0, 15GB) in parallel with local video gen
+  → Fish Audio API (~$11/mo Plus tier; $5.50/mo annual) cloud fallback
   → Whisper → SRT for captions
 
 PHASE 5: QC (in Claude Code via MCP)
@@ -1440,12 +1552,11 @@ PHASE 6: ASSEMBLY (DaVinci Resolve Studio -- Windows Python, NOT WSL2)
   → pybmd script: batch render 3 lengths × 4 platforms = up to 12 exports
   → 20-30 minutes per video (template + 3 scripts approach)
 
-PHASE 7: VOICE & CAPTIONS (sequential GPU task -- after video generation)
-  Script text
-  → Chatterbox Turbo ($0 local, 4-6GB VRAM -- cannot run alongside video gen)
-  → OR ElevenLabs MCP ($5/month, 30 min) during GPU-heavy periods
+PHASE 7: CAPTION ALIGNMENT & BURN-IN (uses voice files from Phase 4)
+  Voice audio (.wav) from Phase 4 + script text
   → aeneas forced alignment: script text + .wav → word-timed .srt
   → ASS format with \kf tags for karaoke highlighting (ffmpeg drawtext can't do this)
+  → Caption QC: WER ≤10%, sync tolerance ≤0.2s
 
 PHASE 8: DISTRIBUTION
   Final exports
@@ -1473,8 +1584,9 @@ PHASE 8: DISTRIBUTION
 | **Length** | Cross-platform sweet spot | 60 seconds | Derived from 2A+2B |
 | **Length** | Hook window | 3 seconds | VERIFIED (multi-source) |
 | **Audio** | AI voiceover FYP penalty | -38% | CLAIMED (single source) |
-| **Audio** | Chatterbox Turbo (local) | $0/month, voice cloning, MIT license | CLAIMED |
-| **Audio** | ElevenLabs Starter (cloud fallback) | $5/month, 30 min | CLAIMED |
+| **Audio** | Qwen3-TTS (local, installed) | $0/month, voice cloning, 0.6B params | VERIFIED (installed) |
+| **Audio** | Fish Audio API (cloud primary) | ~$11/mo Plus tier, #1 TTS-Arena | CLAIMED (3B) |
+| **Audio** | Colab T4 for parallel TTS | Free 15GB GPU, 12hr sessions | VERIFIED (S23) |
 | **Policy** | Stylized AI content labeling | Optional/exempt (all platforms) | VERIFIED |
 | **Policy** | MidJourney C2PA embedding | Does NOT embed | VERIFIED |
 | **Competition** | Montessori+AI accounts worldwide | ZERO | CLAIMED (6A search) |
@@ -1485,11 +1597,11 @@ PHASE 8: DISTRIBUTION
 | **MJ V7** | Video costs | 8x image GPU time | CLAIMED |
 | **Glow** | Best SSS formula | `subsurface scattering, lit from within, soft clay texture, wax-like texture --s 200-300` | CLAIMED (community) |
 | **Glow** | Best animation tool for glow | Luma Ray3 (HDR) or Kling 2.1 Pro (stability) | CLAIMED |
-| **Schedule** | Best posting time (AEST) | Thursday 7-10 PM | CLAIMED (4B) |
+| **Schedule** | Best posting time (AEDT Oct-Apr; AEST May-Sep) | Thursday 7-10 PM | CLAIMED (4B) |
 | **Schedule** | Optimal frequency | 5-7 videos/week | CLAIMED (4B) |
 | **Schedule** | Cross-post penalty (TikTok) | Up to 40% | CLAIMED (4B) |
 | **Schedule** | Best free scheduler | Metricool (50 posts/month free) | CLAIMED (4B) |
-| **Production** | Real-world time for 25 videos | 15-25 hours/month | CLAIMED (4A) |
+| **Production** | Real-world time for 25 videos | 15-25 hrs/mo (simple faceless); 45-75 hrs/mo (character-consistent) | CLAIMED (4A) |
 | **Production** | Generations per keeper (simple) | 2-3 | CLAIMED (4A) |
 | **Production** | Generations per keeper (complex) | Up to 10 | CLAIMED (4A) |
 | **Production** | Real-world cost per video | $2-5 including failures | CLAIMED (4A) |
@@ -1508,14 +1620,20 @@ PHASE 8: DISTRIBUTION
 | **DaVinci** | Caption automation saving | 6-11 min (automated) vs 16-26 min (manual) | CLAIMED (PD) |
 | **DaVinci** | LUFS target | -14 LUFS universal safe target | VERIFIED (PD) |
 | **Script** | Critical metric | 65%+ 3-second retention → 4-7x impressions | CLAIMED (PF) |
+| **Benchmarks** | Engagement rate (likes) | >50 likes per 1K views = very good | CLAIMED (OLD-1 ANL-005) |
+| **Benchmarks** | Engagement rate (comments) | >5 comments per 1K views = good | CLAIMED (OLD-1 ANL-006) |
+| **Benchmarks** | Hook rate benchmark | 30.7% average, 40-45% top quartile | CLAIMED (OLD-5 AK-001) |
+| **Benchmarks** | Completion rate (20s) | >80% = achievable for hits | CLAIMED (OLD-1 ANL-003) |
+| **Benchmarks** | Completion rate (60s) | >60% = very solid, 50%+ = successful | CLAIMED (OLD-1 ANL-003) |
+| **Benchmarks** | 3-second retention target | 65% = good (algorithmic boost), 80% = excellent (stretch goal) | CLAIMED (PF + OLD-1) |
 | **Script** | Words per line | 12-16 max | CLAIMED (PF) |
-| **Script** | Scene change frequency | Every 6-8 seconds | CLAIMED (PF) |
+| **Script** | Scene change frequency | 3-5s (P1 hooks/snackable), 6-8s (P2/P3 educational) | CLAIMED (PF + OLD-4) |
 | **Script** | Hook variations per entry | 7 (one per hook pattern) | Derived (PF) |
 | **Automation** | MCP servers available | 8 confirmed (see PE section) | VERIFIED (PE) |
 | **Automation** | MCP for MJ/Pika/Kling | NONE exist -- use direct API | VERIFIED (PE) |
 | **Automation** | DaVinci MCP | samuelgursky/davinci-resolve-mcp (426 stars) | VERIFIED (PE) |
 | **Automation** | DaVinci + WSL2 | NOT supported -- Windows Python only | VERIFIED (PE) |
-| **Automation** | Chatterbox VRAM | 4-6GB, cannot coexist with video gen on 8GB | VERIFIED (PE) |
+| **Automation** | TTS VRAM (Qwen3-TTS) | 4-6GB, cannot coexist with video gen on local 8GB. Colab T4 (15GB free) enables parallel. | VERIFIED (PE) + S23 |
 | **Automation** | fal.ai + Hailuo | SEPARATE billing (~$0.27/video, NOT pass-through) | VERIFIED (PE) |
 | **Automation** | TikTok API posting | Private-only until audit approved (weeks) | VERIFIED (PE) |
 | **Automation** | VMAF social media threshold | 80-85 acceptable | CLAIMED (PE) |
@@ -1523,3 +1641,81 @@ PHASE 8: DISTRIBUTION
 | **Automation** | Per-video time (template+scripts) | 20-30 min | CLAIMED (PE) |
 | **Automation** | Setup time (Phases 1-3) | 40-60 hours total | CLAIMED (PE) |
 | **Automation** | Template approach break-even | Month 2 | CLAIMED (PE) |
+
+---
+
+## APPENDIX: Australian Localisation Guide
+
+> Cross-reference: BB-Writer agent at `/web/.claude/agents/BabyBrains-Writer.md` handles AU English in text generation. This guide covers visual and production localisation.
+
+### Indoor Visual Cues (1-2 per AI prompt)
+
+| Cue | Prompt Description (NO brand names) | Source |
+|-----|--------------------------------------|--------|
+| Power outlets | Three-pin Australian power outlets on wall | OLD-1 SET-001 |
+| Skirting boards | Timber skirting boards, painted or stained | OLD-1 SET-002 |
+| Rugs | Jute, sisal, or natural fibre rugs | OLD-1 SET-003 |
+| Textiles | Linen textures on curtains, cushions, throws | OLD-1 SET-004 |
+| Ceiling fans | White ceiling fans | OLD-1 SET-005 |
+| Doors | Sliding glass doors leading to outdoor area | OLD-1 SET-006 |
+| Flooring | Polished concrete, light timber, or tiles | OLD-1 SET-007 |
+| Plants (indoor) | Fiddle-leaf fig, monstera, devil's ivy | OLD-1 SET-008 |
+| Light switches | Australian rocker-style light switches (not toggle) | OLD-3 AU pack |
+| Furniture | Mid-century modern mixed with natural timber | OLD-3 AU pack |
+
+### Outdoor Visual Cues (1-2 per AI prompt)
+
+| Cue | Prompt Description (NO brand names) | Source |
+|-----|--------------------------------------|--------|
+| Fences | Timber or Colorbond-style fencing | OLD-1 SET-012 |
+| Plants (outdoor) | Bottlebrush, grevillea, kangaroo paw, native grasses | OLD-1 SET-013 |
+| Lighting | North-facing windows for natural light | OLD-1 VIS-001 |
+| Architecture | Weatherboard, brick, or rendered exterior | OLD-1 SET-014 |
+| Entertaining | Covered outdoor area, pergola or verandah, timber decking | OLD-3 AU pack |
+
+### Language and Spelling Reference
+
+Cross-reference: BB-Writer agent handles this in text generation. This table is for manual QC and review.
+
+| AU English | NOT | Notes |
+|-----------|-----|-------|
+| Mum | Mom | Always |
+| Nappies | Diapers | Always |
+| Kindy / Kinder | Kindergarten / Pre-K | Regional variation OK |
+| Bub | Baby (informal) | Use sparingly for warmth |
+| Organise | Organize | -ise endings throughout |
+| Colour | Color | -our endings throughout |
+| Behaviour | Behavior | -our endings throughout |
+| Centre | Center | -re endings throughout |
+| Practise (verb) | Practice (verb) | Noun = practice |
+| Favourite | Favorite | -our endings throughout |
+
+### Localisation Dosage Rules
+
+- **1-2 AU localisers per MJ/AI prompt** (OLD-3 AUD-002): Avoids overt clichés, keeps prompts focused
+- **2-3 AU cues per finished video** (OLD-1 SET-016): Enough for subconscious recognition without making it "about" Australia
+- **Subtlety principle**: AU details should be noticed subconsciously, never foregrounded (OLD-3 PSY-005, OLD-1 AUD-003). The goal is "I have that same rug!" recognition, not "this is an Australian video"
+
+### Avoid List
+
+| Do NOT Include | Why | Source |
+|---------------|-----|--------|
+| American power outlets | Instantly breaks AU immersion | OLD-1 SET-001 |
+| Snow/winter imagery | AU content = southern hemisphere seasons | OLD-5 AS-007 |
+| Brand names in prompts | Hallucination risk, trademark risk, AI generation artifacts | OLD-3 AUD-004 |
+| "Mom" / American spelling | Primary audience is Australian | OLD-1 BRV-003 |
+| Loud kookaburra audio | Startling for infants. Magpie ambient OK. | OLD-1 PRD-007 |
+| Toggle light switches | American style, not AU | OLD-3 AU pack |
+
+**Note**: "Carpet (wall-to-wall)" and "Front-loading dryers" removed from avoid list per user decision — both are common enough in Australian homes.
+
+### Products and Brands (Describe, Never Name)
+
+When depicting Australian baby/toddler products, describe the product TYPE and material, never the brand name. This avoids hallucination risk and trademark issues.
+
+| Category | Describe as... |
+|----------|---------------|
+| Sleep bags | Organic cotton zip-front sleep bags |
+| Wooden toys | Natural timber stacking toys, wooden blocks |
+| Safety gates | Pressure-mounted safety gate, white metal frame |
+| Textiles | Natural linen, organic cotton throws |
