@@ -23,35 +23,51 @@ _OPEN_TAG = re.compile(r"<([a-z_]+)>")
 _CLOSE_TAG_FMT = "</{name}>"
 
 # Key sections relevant to different generation tasks
+#
+# IMPORTANT: These must match actual XML tags in BabyBrains-Writer.md
+# Verified tags (grep -n "^<[a-z_]*>"):
+#   L16: voice_dna (contains australian_authenticity_strict as nested tag at L39)
+#   L57: ai_detection_avoidance
+#   L180: format_adaptations
+#   L312: evidence_framework
+#   L448: neuro_translation_protocols
+#   L452: safety_compliance
+#   L627: few_shot_examples
+#   L728: content_rules
+#
+# NOTE: australian_authenticity_strict is NESTED inside voice_dna (L39-53).
+# Requesting both would produce duplicated content (~500 chars overlap).
+# We include it only in COMMENT_SECTIONS where voice_dna is also present,
+# but the parser extracts nested sections independently.
+
 COMMENT_SECTIONS = [
     "voice_dna",
     "ai_detection_avoidance",
-    "australian_literary_voice",
+    "australian_authenticity_strict",  # Nested in voice_dna but extracted separately
     "content_rules",
 ]
 
 SCRIPT_SECTIONS = [
-    "voice_dna",
+    "voice_dna",                       # Contains australian_authenticity_strict
     "ai_detection_avoidance",
-    "australian_literary_voice",
-    "world_class_writer_craft",
     "format_adaptations",
-    "neural_science_bridge",
+    "neuro_translation_protocols",     # Fixed: was neural_science_bridge
     "evidence_framework",
+    "safety_compliance",               # Added: critical for content safety
     "content_rules",
+    # NOTE: few_shot_examples (~100 lines, 3-4KB) EXCLUDED to manage prompt size
+    # Inject skill-specific examples directly in skill prompts instead
 ]
 
 FULL_SECTIONS = [
     "voice_dna",
-    "montessori_philosophy_deep",
     "ai_detection_avoidance",
-    "australian_literary_voice",
-    "world_class_writer_craft",
     "format_adaptations",
     "evidence_framework",
-    "neural_science_bridge",
+    "neuro_translation_protocols",     # Fixed: was neural_science_bridge
     "safety_compliance",
     "content_rules",
+    "few_shot_examples",               # Only in FULL context (for reference docs)
 ]
 
 

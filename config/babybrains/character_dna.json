@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "description": "Character definitions and visual style guide for Baby Brains AI generation",
+    "version": "1.0.0",
+    "last_verified": "2026-02-03",
+    "status": "PLACEHOLDER - awaiting final character designs"
+  },
+  "style": {
+    "primary": "warm watercolour illustration",
+    "description": "Soft, approachable, premium feel with hand-drawn warmth",
+    "influences": ["Studio Ghibli warmth", "modern children's book illustration"],
+    "avoid": ["harsh lines", "neon colors", "3D rendered", "photorealistic"]
+  },
+  "color_palette": {
+    "primary": {
+      "warm_cream": "#F5EDE4",
+      "soft_terracotta": "#D4A574",
+      "sage_green": "#9CAF88",
+      "dusty_rose": "#D4A5A5"
+    },
+    "secondary": {
+      "warm_brown": "#8B6F5D",
+      "soft_gold": "#D4B896",
+      "muted_blue": "#8BA5B5"
+    },
+    "accent": {
+      "coral": "#E8A598",
+      "eucalyptus": "#7FA074"
+    }
+  },
+  "characters": {
+    "baby_generic": {
+      "description": "Diverse representation of babies 0-3 years",
+      "diversity": "Rotate through various ethnicities and presentations",
+      "style_notes": "Soft features, expressive eyes, natural poses",
+      "reference_url": null
+    },
+    "parent_generic": {
+      "description": "Diverse representation of parents/caregivers",
+      "diversity": "Include mums, dads, grandparents, carers",
+      "style_notes": "Warm, attentive, present",
+      "reference_url": null
+    },
+    "toddler_generic": {
+      "description": "Diverse representation of toddlers 1-3 years",
+      "diversity": "Various ethnicities, abilities, presentations",
+      "style_notes": "Active, curious, engaged in work",
+      "reference_url": null
+    }
+  },
+  "environments": {
+    "home_indoor": {
+      "description": "Warm, prepared Montessori-style home environment",
+      "elements": ["natural light", "wooden furniture", "low shelves", "floor space"],
+      "avoid": ["clutter", "TV visible", "plastic toys"]
+    },
+    "home_outdoor": {
+      "description": "Australian backyard/garden setting",
+      "elements": ["eucalyptus trees", "native plants", "grass", "natural shade"],
+      "avoid": ["artificial turf", "excessive hardscape"]
+    },
+    "park": {
+      "description": "Australian park setting",
+      "elements": ["gum trees", "open grass", "natural play elements"],
+      "avoid": ["plastic playground equipment prominence"]
+    }
+  },
+  "prompt_prefixes": {
+    "midjourney": "warm watercolour illustration style, soft natural lighting, children's book aesthetic, --ar 9:16 --style raw",
+    "pika": "warm illustration, soft colors, natural movement",
+    "kling": "gentle movement, natural lighting, warm color palette"
+  },
+  "block_codes": {
+    "CHARACTER_OFF_BRAND": "Visual style doesn't match Baby Brains character DNA",
+    "CHARACTER_PALETTE_VIOLATION": "Colors outside approved palette"
+  }
+}

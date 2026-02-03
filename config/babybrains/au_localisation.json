@@ -1,0 +1,128 @@
+{
+  "_meta": {
+    "description": "Australian English localisation rules for Baby Brains content",
+    "version": "1.0.0",
+    "last_verified": "2026-02-03"
+  },
+  "spelling_pairs": {
+    "mom": "mum",
+    "diaper": "nappy",
+    "stroller": "pram",
+    "pacifier": "dummy",
+    "crib": "cot",
+    "onesie": "jumpsuit",
+    "preschool": "kindy",
+    "kindergarten": "kindy",
+    "pediatrician": "paediatrician",
+    "pediatric": "paediatric",
+    "color": "colour",
+    "favorite": "favourite",
+    "behavior": "behaviour",
+    "center": "centre",
+    "organize": "organise",
+    "recognize": "recognise",
+    "realize": "realise",
+    "apologize": "apologise",
+    "analyze": "analyse",
+    "defense": "defence",
+    "offense": "offence",
+    "license": "licence",
+    "practice": "practise",
+    "gray": "grey",
+    "pajamas": "pyjamas",
+    "program": "programme",
+    "canceled": "cancelled",
+    "traveled": "travelled",
+    "labeling": "labelling",
+    "modeling": "modelling"
+  },
+  "vocabulary_pairs": {
+    "sidewalk": "footpath",
+    "crosswalk": "pedestrian crossing",
+    "apartment": "flat",
+    "vacation": "holiday",
+    "cookie": "biscuit",
+    "fries": "chips",
+    "chips": "crisps",
+    "candy": "lollies",
+    "line": "queue",
+    "trunk": "boot",
+    "hood": "bonnet",
+    "gas": "petrol",
+    "flashlight": "torch",
+    "sneakers": "runners",
+    "fall": "autumn"
+  },
+  "visual_cues": {
+    "indoor": [
+      "indoor setting",
+      "home environment",
+      "living room",
+      "nursery",
+      "playroom",
+      "kitchen"
+    ],
+    "outdoor": [
+      "backyard",
+      "garden",
+      "park",
+      "beach",
+      "bush",
+      "eucalyptus",
+      "gum tree"
+    ],
+    "australian_elements": [
+      "australian animals",
+      "native plants",
+      "beach setting",
+      "bush setting",
+      "australian home style"
+    ]
+  },
+  "avoid_list": {
+    "us_specific": [
+      "thanksgiving",
+      "fourth of july",
+      "labor day",
+      "memorial day",
+      "president's day"
+    ],
+    "us_brands": [
+      "target us",
+      "walmart",
+      "costco us",
+      "trader joe's"
+    ],
+    "us_references": [
+      "state fair",
+      "county fair",
+      "little league",
+      "soccer mom"
+    ]
+  },
+  "australian_references": {
+    "holidays": [
+      "australia day",
+      "anzac day",
+      "melbourne cup",
+      "christmas in summer"
+    ],
+    "services": [
+      "centrelink",
+      "medicare",
+      "child care subsidy",
+      "parenting payment"
+    ],
+    "retailers": [
+      "kmart",
+      "big w",
+      "target australia",
+      "bunnings"
+    ]
+  },
+  "block_codes": {
+    "AU_SPELLING_US": "US spelling detected - should use Australian English",
+    "AU_VOCABULARY_US": "US vocabulary detected - use Australian equivalent",
+    "AU_CULTURAL_US": "US cultural reference - not relevant for AU audience"
+  }
+}

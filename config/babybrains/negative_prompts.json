@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "description": "Negative prompt keywords per AI generation tool for Baby Brains content",
+    "version": "1.0.0",
+    "last_verified": "2026-02-03"
+  },
+  "universal_blocklist": [
+    "text",
+    "watermark",
+    "logo",
+    "signature",
+    "words",
+    "letters",
+    "numbers",
+    "caption",
+    "subtitle",
+    "label",
+    "brand name",
+    "copyright"
+  ],
+  "quality_blocklist": [
+    "blurry",
+    "pixelated",
+    "low quality",
+    "low resolution",
+    "grainy",
+    "noisy",
+    "artifacts",
+    "compression",
+    "jpeg artifacts",
+    "distorted",
+    "deformed"
+  ],
+  "anatomy_blocklist": [
+    "extra fingers",
+    "missing fingers",
+    "extra limbs",
+    "missing limbs",
+    "deformed hands",
+    "bad anatomy",
+    "malformed",
+    "mutated",
+    "disfigured",
+    "disproportionate"
+  ],
+  "style_blocklist": [
+    "3d render",
+    "photorealistic",
+    "hyper realistic",
+    "cgi",
+    "anime",
+    "manga",
+    "cartoon",
+    "caricature",
+    "neon",
+    "harsh lighting",
+    "dark",
+    "gloomy",
+    "scary"
+  ],
+  "content_blocklist": [
+    "violence",
+    "blood",
+    "injury",
+    "weapon",
+    "gun",
+    "knife",
+    "danger",
+    "scary",
+    "frightening",
+    "sad",
+    "crying",
+    "distressed",
+    "angry"
+  ],
+  "brand_safety_blocklist": [
+    "celebrity",
+    "famous person",
+    "politician",
+    "religious symbol",
+    "political symbol",
+    "controversial",
+    "offensive"
+  ],
+  "tool_specific": {
+    "midjourney": {
+      "additional_negatives": [
+        "ugly",
+        "tiling",
+        "poorly drawn",
+        "out of frame",
+        "mutation",
+        "cross-eyed",
+        "body out of frame"
+      ],
+      "format": "--no {negatives}"
+    },
+    "pika": {
+      "additional_negatives": [
+        "static",
+        "frozen",
+        "jumpy motion",
+        "unnatural movement"
+      ],
+      "format": "negative_prompt: {negatives}"
+    },
+    "kling": {
+      "additional_negatives": [
+        "glitchy",
+        "flickering",
+        "inconsistent lighting"
+      ],
+      "format": "negative_prompt: {negatives}"
+    },
+    "stable_diffusion": {
+      "additional_negatives": [
+        "bad quality",
+        "worst quality",
+        "normal quality"
+      ],
+      "format": "negative prompt: {negatives}"
+    }
+  },
+  "baby_content_specific": [
+    "unsafe",
+    "unsupervised",
+    "dangerous",
+    "choking hazard",
+    "small parts",
+    "sharp objects",
+    "plastic toys",
+    "battery powered",
+    "electronic",
+    "screen",
+    "tv",
+    "phone",
+    "tablet"
+  ],
+  "block_codes": {
+    "PROMPT_MISSING_NEGATIVES": "Prompt missing required negative keywords",
+    "PROMPT_CONTAINS_BLOCKLIST": "Prompt contains blocklisted content terms"
+  }
+}

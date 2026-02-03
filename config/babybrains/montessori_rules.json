@@ -1,0 +1,163 @@
+{
+  "_meta": {
+    "description": "Montessori alignment validation rules for Baby Brains content QC",
+    "version": "1.0.0",
+    "last_verified": "2026-02-03"
+  },
+  "material_blocklist": {
+    "plastic_toys": [
+      "plastic toys",
+      "battery-powered",
+      "electronic toys",
+      "flashing lights",
+      "noisy toys",
+      "talking toys"
+    ],
+    "character_merchandise": [
+      "cartoon character",
+      "branded toy",
+      "disney",
+      "paw patrol",
+      "peppa pig",
+      "cocomelon",
+      "bluey merchandise"
+    ],
+    "reward_systems": [
+      "sticker chart",
+      "reward chart",
+      "star chart",
+      "prize",
+      "treat reward"
+    ]
+  },
+  "material_allowlist": {
+    "natural_materials": [
+      "wood",
+      "cotton",
+      "wool",
+      "silk",
+      "bamboo",
+      "natural fibre",
+      "glass",
+      "metal",
+      "ceramic"
+    ],
+    "montessori_materials": [
+      "pink tower",
+      "brown stair",
+      "knobbed cylinders",
+      "moveable alphabet",
+      "sandpaper letters",
+      "number rods",
+      "spindle box",
+      "practical life",
+      "sensorial materials"
+    ],
+    "open_ended": [
+      "blocks",
+      "stacking toys",
+      "nesting cups",
+      "balls",
+      "scarves",
+      "baskets",
+      "real tools",
+      "child-size"
+    ]
+  },
+  "fantasy_rules": {
+    "under_6_prohibited": [
+      "fairy",
+      "dragon",
+      "monster",
+      "unicorn",
+      "magic",
+      "wizard",
+      "princess",
+      "superhero",
+      "santa",
+      "easter bunny",
+      "tooth fairy"
+    ],
+    "exception_contexts": [
+      "after age 6",
+      "older child",
+      "fantasy play after",
+      "imaginative play develops naturally"
+    ],
+    "allowed_imaginative": [
+      "pretend play",
+      "dramatic play",
+      "role play",
+      "real-life scenarios",
+      "kitchen play",
+      "doctor play",
+      "shop play"
+    ]
+  },
+  "language_requirements": {
+    "preferred_terms": {
+      "play": "work",
+      "toy room": "prepared environment",
+      "praise": "acknowledgment",
+      "good job": "I see you...",
+      "well done": "you did it",
+      "teaching": "guiding",
+      "mistake": "learning opportunity"
+    },
+    "avoid_extrinsic": [
+      "good boy",
+      "good girl",
+      "well done",
+      "good job",
+      "I'm so proud",
+      "clever",
+      "smart",
+      "amazing"
+    ],
+    "preferred_acknowledgment": [
+      "you did it",
+      "I see you",
+      "you worked hard on",
+      "you focused on",
+      "you completed",
+      "describe what they did"
+    ]
+  },
+  "core_principles": {
+    "follow_the_child": [
+      "observe",
+      "follow their lead",
+      "child-led",
+      "wait and watch",
+      "let them explore"
+    ],
+    "prepared_environment": [
+      "child-height",
+      "accessible",
+      "orderly",
+      "beautiful",
+      "real materials",
+      "purpose"
+    ],
+    "respect": [
+      "respect their work",
+      "don't interrupt",
+      "ask permission",
+      "independence",
+      "capability"
+    ],
+    "sensitive_periods": [
+      "sensitive period",
+      "absorbent mind",
+      "planes of development",
+      "developmental window"
+    ]
+  },
+  "block_codes": {
+    "MONTESSORI_PLASTIC_TOYS": "Content features plastic/electronic toys instead of natural materials",
+    "MONTESSORI_FANTASY_UNDER6": "Fantasy content shown for under-6 age range",
+    "MONTESSORI_EXTRINSIC_REWARD": "Content uses extrinsic praise/reward language",
+    "MONTESSORI_BRANDED_CHARACTER": "Content features branded character merchandise",
+    "MONTESSORI_LANGUAGE": "Non-Montessori language used (play vs work, praise vs acknowledgment)"
+  }
+}

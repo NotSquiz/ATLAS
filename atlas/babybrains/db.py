@@ -17,6 +17,7 @@ from atlas.babybrains.models import (
     ContentBrief,
     EngagementLog,
     Export,
+    PipelineRun,
     Script,
     TrendResult,
     VisualAsset,
@@ -54,12 +55,13 @@ def get_bb_connection(db_path: Optional[Path] = None) -> sqlite3.Connection:
     Get a standalone BB database connection.
 
     Prefers using the ATLAS shared database. Falls back to ~/.atlas/atlas.db.
+    Enables WAL mode for concurrent access.
 
     Args:
         db_path: Optional explicit database path
 
     Returns:
-        SQLite connection with row_factory set
+        SQLite connection with row_factory set and WAL mode enabled
     """
     if db_path is None:
         db_path = Path.home() / ".atlas" / "atlas.db"
@@ -67,7 +69,91 @@ def get_bb_connection(db_path: Optional[Path] = None) -> sqlite3.Connection:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
+    # Enable WAL mode for concurrent access (must be set after connect, before use)
+    conn.execute("PRAGMA journal_mode=WAL;")
     return conn
+
+
+# ============================================
+# SCHEMA MIGRATION HELPERS
+# ============================================
+
+
+def _column_exists(conn: sqlite3.Connection, table: str, column: str) -> bool:
+    """Check if a column exists in a table."""
+    cursor = conn.execute(f"PRAGMA table_info({table})")
+    return any(row[1] == column for row in cursor.fetchall())
+
+
+def _migrate_add_column(
+    conn: sqlite3.Connection, table: str, column: str, col_type: str
+) -> None:
+    """Add column if it doesn't exist (idempotent)."""
+    if not _column_exists(conn, table, column):
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}")
+        logger.info(f"Added column {table}.{column}")
+    else:
+        logger.debug(f"Column {table}.{column} already exists")
+
+
+def run_content_migration(conn: sqlite3.Connection) -> None:
+    """
+    Run all content production schema migrations (idempotent).
+
+    Adds columns needed for the content production pipeline.
+    Safe to call multiple times - uses _column_exists() checks.
+    """
+    # bb_content_briefs (17 new columns including Round 7 additions)
+    _migrate_add_column(conn, "bb_content_briefs", "age_range", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "hook_text", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "target_length", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "priority_tier", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "montessori_principle", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "setting", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "au_localisers", "TEXT")  # JSON
+    _migrate_add_column(conn, "bb_content_briefs", "safety_lines", "TEXT")   # JSON
+    _migrate_add_column(conn, "bb_content_briefs", "camera_notes", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "hook_pattern", "INTEGER")
+    _migrate_add_column(conn, "bb_content_briefs", "content_pillar", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "tags", "TEXT")           # JSON
+    # Round 7 audit additions
+    _migrate_add_column(conn, "bb_content_briefs", "source", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "canonical_id", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "grok_confidence", "REAL")
+    _migrate_add_column(conn, "bb_content_briefs", "knowledge_coverage", "TEXT")
+    _migrate_add_column(conn, "bb_content_briefs", "all_principles", "TEXT")  # JSON
+
+    # bb_scripts (7 new columns)
+    _migrate_add_column(conn, "bb_scripts", "scenes", "TEXT")               # JSON
+    _migrate_add_column(conn, "bb_scripts", "derivative_cuts", "TEXT")      # JSON
+    _migrate_add_column(conn, "bb_scripts", "cta_text", "TEXT")
+    _migrate_add_column(conn, "bb_scripts", "safety_disclaimers", "TEXT")   # JSON
+    _migrate_add_column(conn, "bb_scripts", "hook_pattern_used", "INTEGER")
+    _migrate_add_column(conn, "bb_scripts", "reviewed_by", "TEXT")
+    _migrate_add_column(conn, "bb_scripts", "reviewed_at", "TEXT")
+
+    # bb_visual_assets (6 new columns)
+    _migrate_add_column(conn, "bb_visual_assets", "tool", "TEXT")
+    _migrate_add_column(conn, "bb_visual_assets", "parameters", "TEXT")     # JSON
+    _migrate_add_column(conn, "bb_visual_assets", "negative_prompt", "TEXT")
+    _migrate_add_column(conn, "bb_visual_assets", "motion_prompt", "TEXT")
+    _migrate_add_column(conn, "bb_visual_assets", "estimated_credits", "REAL")
+    _migrate_add_column(conn, "bb_visual_assets", "scene_number", "INTEGER")
+
+    # bb_exports (4 new columns)
+    _migrate_add_column(conn, "bb_exports", "alt_text", "TEXT")
+    _migrate_add_column(conn, "bb_exports", "title", "TEXT")
+    _migrate_add_column(conn, "bb_exports", "description", "TEXT")
+    _migrate_add_column(conn, "bb_exports", "export_tags", "TEXT")          # JSON (renamed to avoid column name conflict)
+
+    conn.commit()
+
+    # Create indexes for new columns
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_briefs_canonical ON bb_content_briefs(canonical_id)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_briefs_source ON bb_content_briefs(source)")
+    conn.commit()
+
+    logger.info("Content production schema migration complete")
 
 
 # ============================================
@@ -554,29 +640,109 @@ def get_recent_trends(
 def add_content_brief(
     conn: sqlite3.Connection,
     topic: str,
-    hooks: list[str],
-    core_message: str,
+    hooks: Optional[list[str]] = None,
+    core_message: Optional[str] = None,
     evidence: Optional[list[dict]] = None,
     visual_concepts: Optional[list[str]] = None,
     target_platforms: Optional[list[str]] = None,
     audience_segment: Optional[str] = None,
     trend_id: Optional[int] = None,
+    # Content production fields
+    age_range: Optional[str] = None,
+    hook_text: Optional[str] = None,
+    target_length: Optional[str] = None,
+    priority_tier: Optional[str] = None,
+    montessori_principle: Optional[str] = None,
+    setting: Optional[str] = None,
+    au_localisers: Optional[list[str]] = None,
+    safety_lines: Optional[list[str]] = None,
+    camera_notes: Optional[str] = None,
+    hook_pattern: Optional[int] = None,
+    content_pillar: Optional[str] = None,
+    tags: Optional[list[str]] = None,
+    # Source tracking fields
+    source: Optional[str] = None,
+    canonical_id: Optional[str] = None,
+    grok_confidence: Optional[float] = None,
+    knowledge_coverage: Optional[str] = None,
+    all_principles: Optional[list[str]] = None,
 ) -> int:
-    """Add a content brief."""
+    """
+    Add a content brief.
+
+    All list fields use `or []` pattern to ensure JSON produces "[]" not "null".
+    """
     cursor = conn.execute(
         """INSERT INTO bb_content_briefs
            (trend_id, topic, hooks, core_message, evidence,
-            visual_concepts, target_platforms, audience_segment)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            visual_concepts, target_platforms, audience_segment,
+            age_range, hook_text, target_length, priority_tier,
+            montessori_principle, setting, au_localisers, safety_lines,
+            camera_notes, hook_pattern, content_pillar, tags,
+            source, canonical_id, grok_confidence, knowledge_coverage, all_principles)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (
-            trend_id, topic, json.dumps(hooks), core_message,
-            json.dumps(evidence or []), json.dumps(visual_concepts or []),
+            trend_id, topic,
+            json.dumps(hooks or []),              # FIX: or [] prevents "null"
+            core_message,
+            json.dumps(evidence or []),
+            json.dumps(visual_concepts or []),
             json.dumps(target_platforms or ["youtube", "instagram", "tiktok"]),
             audience_segment,
+            age_range, hook_text, target_length, priority_tier,
+            montessori_principle, setting,
+            json.dumps(au_localisers or []),      # FIX: or []
+            json.dumps(safety_lines or []),       # FIX: or []
+            camera_notes, hook_pattern, content_pillar,
+            json.dumps(tags or []),               # FIX: or []
+            source, canonical_id, grok_confidence, knowledge_coverage,
+            json.dumps(all_principles or []),     # FIX: or []
         ),
     )
     conn.commit()
     return cursor.lastrowid
+
+
+def get_brief_by_id(conn: sqlite3.Connection, brief_id: int) -> Optional[ContentBrief]:
+    """Get a content brief by ID."""
+    cursor = conn.execute(
+        "SELECT * FROM bb_content_briefs WHERE id = ?",
+        (brief_id,),
+    )
+    row = cursor.fetchone()
+    if not row:
+        return None
+
+    return ContentBrief(
+        id=row["id"],
+        trend_id=row["trend_id"],
+        topic=row["topic"],
+        hooks=json.loads(row["hooks"] or "[]"),
+        core_message=row["core_message"],
+        evidence=json.loads(row["evidence"] or "[]"),
+        visual_concepts=json.loads(row["visual_concepts"] or "[]"),
+        target_platforms=json.loads(row["target_platforms"] or "[]"),
+        audience_segment=row["audience_segment"],
+        status=row["status"],
+        # Content production fields (may not exist in older rows)
+        age_range=row["age_range"] if "age_range" in row.keys() else None,
+        hook_text=row["hook_text"] if "hook_text" in row.keys() else None,
+        target_length=row["target_length"] if "target_length" in row.keys() else None,
+        priority_tier=row["priority_tier"] if "priority_tier" in row.keys() else None,
+        montessori_principle=row["montessori_principle"] if "montessori_principle" in row.keys() else None,
+        setting=row["setting"] if "setting" in row.keys() else None,
+        au_localisers=json.loads(row["au_localisers"] or "[]") if "au_localisers" in row.keys() else [],
+        safety_lines=json.loads(row["safety_lines"] or "[]") if "safety_lines" in row.keys() else [],
+        camera_notes=row["camera_notes"] if "camera_notes" in row.keys() else None,
+        hook_pattern=row["hook_pattern"] if "hook_pattern" in row.keys() else None,
+        content_pillar=row["content_pillar"] if "content_pillar" in row.keys() else None,
+        tags=json.loads(row["tags"] or "[]") if "tags" in row.keys() else [],
+        source=row["source"] if "source" in row.keys() else None,
+        canonical_id=row["canonical_id"] if "canonical_id" in row.keys() else None,
+        grok_confidence=row["grok_confidence"] if "grok_confidence" in row.keys() else None,
+        knowledge_coverage=row["knowledge_coverage"] if "knowledge_coverage" in row.keys() else None,
+        all_principles=json.loads(row["all_principles"] or "[]") if "all_principles" in row.keys() else [],
+    )
 
 
 def get_briefs_by_status(
@@ -773,3 +939,343 @@ def get_bb_status(conn: sqlite3.Connection) -> dict:
             "draft_briefs": len(draft_briefs),
         },
     }
+
+
+# ============================================
+# SCRIPT QUERIES
+# ============================================
+
+
+def get_script_by_id(conn: sqlite3.Connection, script_id: int) -> Optional[Script]:
+    """Get a script by ID."""
+    cursor = conn.execute(
+        "SELECT * FROM bb_scripts WHERE id = ?",
+        (script_id,),
+    )
+    row = cursor.fetchone()
+    if not row:
+        return None
+
+    keys = row.keys()
+    return Script(
+        id=row["id"],
+        brief_id=row["brief_id"],
+        format_type=row["format_type"],
+        script_text=row["script_text"],
+        voiceover=row["voiceover"],
+        word_count=row["word_count"],
+        captions_youtube=row["captions_youtube"],
+        captions_instagram=row["captions_instagram"],
+        captions_tiktok=row["captions_tiktok"],
+        hashtags=json.loads(row["hashtags"] or "[]"),
+        status=row["status"],
+        # Content production fields
+        scenes=json.loads(row["scenes"] or "[]") if "scenes" in keys else [],
+        derivative_cuts=json.loads(row["derivative_cuts"] or "[]") if "derivative_cuts" in keys else [],
+        cta_text=row["cta_text"] if "cta_text" in keys else None,
+        safety_disclaimers=json.loads(row["safety_disclaimers"] or "[]") if "safety_disclaimers" in keys else [],
+        hook_pattern_used=row["hook_pattern_used"] if "hook_pattern_used" in keys else None,
+        reviewed_by=row["reviewed_by"] if "reviewed_by" in keys else None,
+        reviewed_at=row["reviewed_at"] if "reviewed_at" in keys else None,
+    )
+
+
+def update_script_fields(conn: sqlite3.Connection, script_id: int, **fields) -> None:
+    """
+    Update specific fields on a script.
+
+    Handles JSON serialization for list/dict fields.
+    """
+    if not fields:
+        return
+
+    # JSON-encode list/dict fields
+    json_fields = {"scenes", "derivative_cuts", "safety_disclaimers", "hashtags"}
+    for key in json_fields:
+        if key in fields and isinstance(fields[key], (list, dict)):
+            fields[key] = json.dumps(fields[key])
+
+    set_clauses = ", ".join(f"{k} = ?" for k in fields.keys())
+    values = list(fields.values()) + [script_id]
+
+    conn.execute(
+        f"UPDATE bb_scripts SET {set_clauses}, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        values,
+    )
+    conn.commit()
+
+
+# ============================================
+# VISUAL ASSET QUERIES
+# ============================================
+
+
+def add_visual_asset(
+    conn: sqlite3.Connection,
+    script_id: int,
+    asset_type: str,
+    prompt_text: Optional[str] = None,
+    file_path: Optional[str] = None,
+    notes: Optional[str] = None,
+    tool: Optional[str] = None,
+    parameters: Optional[dict] = None,
+    negative_prompt: Optional[str] = None,
+    motion_prompt: Optional[str] = None,
+    estimated_credits: Optional[float] = None,
+    scene_number: Optional[int] = None,
+) -> int:
+    """Add a visual asset for a script."""
+    cursor = conn.execute(
+        """INSERT INTO bb_visual_assets
+           (script_id, asset_type, prompt_text, file_path, notes,
+            tool, parameters, negative_prompt, motion_prompt,
+            estimated_credits, scene_number)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (
+            script_id, asset_type, prompt_text, file_path, notes,
+            tool, json.dumps(parameters) if parameters else None,
+            negative_prompt, motion_prompt, estimated_credits, scene_number,
+        ),
+    )
+    conn.commit()
+    return cursor.lastrowid
+
+
+def get_visual_assets_by_script(
+    conn: sqlite3.Connection, script_id: int
+) -> list[VisualAsset]:
+    """Get all visual assets for a script."""
+    cursor = conn.execute(
+        "SELECT * FROM bb_visual_assets WHERE script_id = ? ORDER BY scene_number, id",
+        (script_id,),
+    )
+    keys = None
+    results = []
+    for row in cursor.fetchall():
+        if keys is None:
+            keys = row.keys()
+        results.append(VisualAsset(
+            id=row["id"],
+            script_id=row["script_id"],
+            asset_type=row["asset_type"],
+            prompt_text=row["prompt_text"],
+            file_path=row["file_path"],
+            notes=row["notes"],
+            status=row["status"],
+            tool=row["tool"] if "tool" in keys else None,
+            parameters=json.loads(row["parameters"] or "{}") if "parameters" in keys else None,
+            negative_prompt=row["negative_prompt"] if "negative_prompt" in keys else None,
+            motion_prompt=row["motion_prompt"] if "motion_prompt" in keys else None,
+            estimated_credits=row["estimated_credits"] if "estimated_credits" in keys else None,
+            scene_number=row["scene_number"] if "scene_number" in keys else None,
+        ))
+    return results
+
+
+# ============================================
+# EXPORT QUERIES
+# ============================================
+
+
+def add_export(
+    conn: sqlite3.Connection,
+    script_id: int,
+    platform: str,
+    caption: Optional[str] = None,
+    hashtags: Optional[str] = None,
+    alt_text: Optional[str] = None,
+    title: Optional[str] = None,
+    description: Optional[str] = None,
+    export_tags: Optional[list[str]] = None,
+) -> int:
+    """Add an export entry for a script."""
+    cursor = conn.execute(
+        """INSERT INTO bb_exports
+           (script_id, platform, caption, hashtags,
+            alt_text, title, description, export_tags)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (
+            script_id, platform, caption, hashtags,
+            alt_text, title, description,
+            json.dumps(export_tags or []),
+        ),
+    )
+    conn.commit()
+    return cursor.lastrowid
+
+
+def get_exports_by_script(conn: sqlite3.Connection, script_id: int) -> list[Export]:
+    """Get all exports for a script."""
+    cursor = conn.execute(
+        "SELECT * FROM bb_exports WHERE script_id = ? ORDER BY platform",
+        (script_id,),
+    )
+    keys = None
+    results = []
+    for row in cursor.fetchall():
+        if keys is None:
+            keys = row.keys()
+        results.append(Export(
+            id=row["id"],
+            script_id=row["script_id"],
+            platform=row["platform"],
+            caption=row["caption"],
+            hashtags=row["hashtags"],
+            scheduled_at=row["scheduled_at"],
+            published_at=row["published_at"],
+            post_url=row["post_url"],
+            performance_data=json.loads(row["performance_data"] or "{}") if row["performance_data"] else None,
+            status=row["status"],
+            alt_text=row["alt_text"] if "alt_text" in keys else None,
+            title=row["title"] if "title" in keys else None,
+            description=row["description"] if "description" in keys else None,
+            export_tags=json.loads(row["export_tags"] or "[]") if "export_tags" in keys else [],
+        ))
+    return results
+
+
+# ============================================
+# PIPELINE RUN QUERIES
+# ============================================
+
+
+def add_pipeline_run(
+    conn: sqlite3.Connection,
+    brief_id: int,
+    current_stage: str = "brief",
+    max_retries: int = 3,
+) -> int:
+    """Add a new pipeline run."""
+    cursor = conn.execute(
+        """INSERT INTO bb_pipeline_runs
+           (brief_id, current_stage, max_retries)
+           VALUES (?, ?, ?)""",
+        (brief_id, current_stage, max_retries),
+    )
+    conn.commit()
+    return cursor.lastrowid
+
+
+def update_pipeline_run(conn: sqlite3.Connection, run_id: int, **fields) -> None:
+    """
+    Update specific fields on a pipeline run.
+
+    Handles JSON serialization for hook_failures list.
+    """
+    if not fields:
+        return
+
+    # JSON-encode list fields
+    if "hook_failures" in fields and isinstance(fields["hook_failures"], list):
+        fields["hook_failures"] = json.dumps(fields["hook_failures"])
+
+    set_clauses = ", ".join(f"{k} = ?" for k in fields.keys())
+    values = list(fields.values()) + [run_id]
+
+    conn.execute(
+        f"UPDATE bb_pipeline_runs SET {set_clauses}, updated_at = datetime('now') WHERE id = ?",
+        values,
+    )
+    conn.commit()
+
+
+def get_pipeline_run(conn: sqlite3.Connection, run_id: int) -> Optional[PipelineRun]:
+    """Get a pipeline run by ID."""
+    cursor = conn.execute(
+        "SELECT * FROM bb_pipeline_runs WHERE id = ?",
+        (run_id,),
+    )
+    row = cursor.fetchone()
+    if not row:
+        return None
+
+    return PipelineRun(
+        id=row["id"],
+        brief_id=row["brief_id"],
+        script_id=row["script_id"],
+        current_stage=row["current_stage"],
+        retry_count=row["retry_count"],
+        max_retries=row["max_retries"],
+        scratch_pad_key=row["scratch_pad_key"],
+        hook_failures=json.loads(row["hook_failures"] or "[]"),
+        started_at=row["started_at"],
+        updated_at=row["updated_at"],
+        completed_at=row["completed_at"],
+    )
+
+
+def get_pipeline_run_by_script_id(
+    conn: sqlite3.Connection, script_id: int
+) -> Optional[PipelineRun]:
+    """Get a pipeline run by script ID."""
+    cursor = conn.execute(
+        "SELECT * FROM bb_pipeline_runs WHERE script_id = ? ORDER BY id DESC LIMIT 1",
+        (script_id,),
+    )
+    row = cursor.fetchone()
+    if not row:
+        return None
+
+    return PipelineRun(
+        id=row["id"],
+        brief_id=row["brief_id"],
+        script_id=row["script_id"],
+        current_stage=row["current_stage"],
+        retry_count=row["retry_count"],
+        max_retries=row["max_retries"],
+        scratch_pad_key=row["scratch_pad_key"],
+        hook_failures=json.loads(row["hook_failures"] or "[]"),
+        started_at=row["started_at"],
+        updated_at=row["updated_at"],
+        completed_at=row["completed_at"],
+    )
+
+
+def get_active_pipeline_runs(conn: sqlite3.Connection) -> list[PipelineRun]:
+    """Get all active (non-complete, non-failed) pipeline runs."""
+    cursor = conn.execute(
+        """SELECT * FROM bb_pipeline_runs
+           WHERE current_stage NOT IN ('complete')
+           AND current_stage NOT LIKE '%_failed'
+           ORDER BY updated_at DESC""",
+    )
+    results = []
+    for row in cursor.fetchall():
+        results.append(PipelineRun(
+            id=row["id"],
+            brief_id=row["brief_id"],
+            script_id=row["script_id"],
+            current_stage=row["current_stage"],
+            retry_count=row["retry_count"],
+            max_retries=row["max_retries"],
+            scratch_pad_key=row["scratch_pad_key"],
+            hook_failures=json.loads(row["hook_failures"] or "[]"),
+            started_at=row["started_at"],
+            updated_at=row["updated_at"],
+            completed_at=row["completed_at"],
+        ))
+    return results
+
+
+def get_all_pipeline_runs(conn: sqlite3.Connection, limit: int = 50) -> list[PipelineRun]:
+    """Get all pipeline runs including failed and complete."""
+    cursor = conn.execute(
+        "SELECT * FROM bb_pipeline_runs ORDER BY updated_at DESC LIMIT ?",
+        (limit,),
+    )
+    results = []
+    for row in cursor.fetchall():
+        results.append(PipelineRun(
+            id=row["id"],
+            brief_id=row["brief_id"],
+            script_id=row["script_id"],
+            current_stage=row["current_stage"],
+            retry_count=row["retry_count"],
+            max_retries=row["max_retries"],
+            scratch_pad_key=row["scratch_pad_key"],
+            hook_failures=json.loads(row["hook_failures"] or "[]"),
+            started_at=row["started_at"],
+            updated_at=row["updated_at"],
+            completed_at=row["completed_at"],
+        ))
+    return results

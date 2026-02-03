@@ -1,0 +1,128 @@
+{
+  "_meta": {
+    "description": "Caption safe zone thresholds per platform",
+    "version": "1.0.0",
+    "last_verified": "2026-02-03",
+    "note": "Values in pixels for 1080x1920 (9:16) vertical video"
+  },
+  "platforms": {
+    "tiktok": {
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "safe_zones": {
+        "top": {
+          "pixels": 150,
+          "reason": "Username and follow button overlay"
+        },
+        "bottom": {
+          "pixels": 270,
+          "reason": "Caption text, like/comment/share buttons, music ticker"
+        },
+        "left": {
+          "pixels": 40,
+          "reason": "Edge safety margin"
+        },
+        "right": {
+          "pixels": 100,
+          "reason": "Engagement buttons (like, comment, share, bookmark)"
+        }
+      },
+      "caption_area": {
+        "max_height": 1500,
+        "suggested_y_position": 1400,
+        "font_size_range": [36, 48]
+      }
+    },
+    "instagram_reels": {
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "safe_zones": {
+        "top": {
+          "pixels": 120,
+          "reason": "Username and header elements"
+        },
+        "bottom": {
+          "pixels": 320,
+          "reason": "Caption text, music info, engagement buttons"
+        },
+        "left": {
+          "pixels": 40,
+          "reason": "Edge safety margin"
+        },
+        "right": {
+          "pixels": 100,
+          "reason": "Engagement buttons"
+        }
+      },
+      "caption_area": {
+        "max_height": 1480,
+        "suggested_y_position": 1350,
+        "font_size_range": [32, 44]
+      }
+    },
+    "youtube_shorts": {
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "safe_zones": {
+        "top": {
+          "pixels": 100,
+          "reason": "Search and notifications"
+        },
+        "bottom": {
+          "pixels": 200,
+          "reason": "Subscribe button, video title, engagement"
+        },
+        "left": {
+          "pixels": 40,
+          "reason": "Edge safety margin"
+        },
+        "right": {
+          "pixels": 80,
+          "reason": "Engagement buttons"
+        }
+      },
+      "caption_area": {
+        "max_height": 1620,
+        "suggested_y_position": 1500,
+        "font_size_range": [36, 52]
+      }
+    },
+    "facebook_reels": {
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "safe_zones": {
+        "top": {
+          "pixels": 130,
+          "reason": "Header elements"
+        },
+        "bottom": {
+          "pixels": 280,
+          "reason": "Caption, reactions, share"
+        },
+        "left": {
+          "pixels": 40,
+          "reason": "Edge safety margin"
+        },
+        "right": {
+          "pixels": 90,
+          "reason": "Engagement buttons"
+        }
+      },
+      "caption_area": {
+        "max_height": 1510,
+        "suggested_y_position": 1380,
+        "font_size_range": [34, 46]
+      }
+    }
+  },
+  "block_codes": {
+    "SAFEZONE_TOP_VIOLATION": "Caption text extends into top safe zone",
+    "SAFEZONE_BOTTOM_VIOLATION": "Caption text extends into bottom safe zone",
+    "SAFEZONE_SIDE_VIOLATION": "Caption text extends into side safe zones",
+    "SAFEZONE_FORMAT_UNSUPPORTED": "Caption format lacks position metadata for validation"
+  },
+  "supported_formats": ["ass", "vtt"],
+  "unsupported_formats": {
+    "srt": "SRT format lacks position metadata required for safe zone validation. Use ASS or VTT format."
+  }
+}

@@ -118,7 +118,7 @@ class TrendResult:
 
 @dataclass
 class ContentBrief:
-    """A content brief generated from trends."""
+    """A content brief generated from trends or activity canonicals."""
 
     id: int = 0
     trend_id: Optional[int] = None
@@ -132,6 +132,25 @@ class ContentBrief:
     status: str = "draft"
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    # Content production fields
+    age_range: Optional[str] = None              # e.g., "0-6m", "6-12m", "12-24m"
+    hook_text: Optional[str] = None              # Primary hook for video
+    target_length: Optional[str] = None          # "21s", "60s", "90s"
+    priority_tier: Optional[str] = None          # "p1", "p2", "p3"
+    montessori_principle: Optional[str] = None   # Primary principle slug
+    setting: Optional[str] = None                # "indoor", "outdoor", "both"
+    au_localisers: list[str] = field(default_factory=list)  # AU visual cues
+    safety_lines: list[str] = field(default_factory=list)   # Safety warnings
+    camera_notes: Optional[str] = None           # Camera/filming notes
+    hook_pattern: Optional[int] = None           # Hook pattern number
+    content_pillar: Optional[str] = None         # Content pillar/category
+    tags: list[str] = field(default_factory=list)  # Search/discovery tags
+    # Source tracking (Round 7 additions)
+    source: Optional[str] = None                 # "canonical:{id}", "grok:{topic}"
+    canonical_id: Optional[str] = None           # FK to activity canonical file
+    grok_confidence: Optional[float] = None      # Grok trend confidence 0-1
+    knowledge_coverage: Optional[str] = None     # "strong", "partial", "none"
+    all_principles: list[str] = field(default_factory=list)  # All principle slugs
 
     def hooks_json(self) -> str:
         return json.dumps(self.hooks)
@@ -144,6 +163,18 @@ class ContentBrief:
 
     def target_platforms_json(self) -> str:
         return json.dumps(self.target_platforms)
+
+    def au_localisers_json(self) -> str:
+        return json.dumps(self.au_localisers)
+
+    def safety_lines_json(self) -> str:
+        return json.dumps(self.safety_lines)
+
+    def tags_json(self) -> str:
+        return json.dumps(self.tags)
+
+    def all_principles_json(self) -> str:
+        return json.dumps(self.all_principles)
 
 
 @dataclass
@@ -163,9 +194,26 @@ class Script:
     status: str = "draft"
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    # Content production fields
+    scenes: list[dict] = field(default_factory=list)  # Scene-by-scene breakdown
+    derivative_cuts: list[dict] = field(default_factory=list)  # P1/P2/P3 derivatives
+    cta_text: Optional[str] = None               # Call to action text
+    safety_disclaimers: list[str] = field(default_factory=list)  # Required disclaimers
+    hook_pattern_used: Optional[int] = None      # Which hook pattern was used
+    reviewed_by: Optional[str] = None            # Reviewer identifier
+    reviewed_at: Optional[datetime] = None       # Review timestamp
 
     def hashtags_json(self) -> str:
         return json.dumps(self.hashtags)
+
+    def scenes_json(self) -> str:
+        return json.dumps(self.scenes)
+
+    def derivative_cuts_json(self) -> str:
+        return json.dumps(self.derivative_cuts)
+
+    def safety_disclaimers_json(self) -> str:
+        return json.dumps(self.safety_disclaimers)
 
 
 @dataclass
@@ -180,6 +228,16 @@ class VisualAsset:
     notes: Optional[str] = None
     status: str = "pending"
     created_at: Optional[datetime] = None
+    # Content production fields
+    tool: Optional[str] = None                   # "midjourney", "pika", "kling"
+    parameters: Optional[dict] = None            # Tool-specific parameters
+    negative_prompt: Optional[str] = None        # Negative prompt for generation
+    motion_prompt: Optional[str] = None          # Motion/animation prompt
+    estimated_credits: Optional[float] = None    # Estimated cost in credits
+    scene_number: Optional[int] = None           # Which scene this is for
+
+    def parameters_json(self) -> str:
+        return json.dumps(self.parameters) if self.parameters else "{}"
 
 
 @dataclass
@@ -198,6 +256,14 @@ class Export:
     status: str = "draft"
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    # Content production fields
+    alt_text: Optional[str] = None               # Accessibility alt text
+    title: Optional[str] = None                  # Video/post title
+    description: Optional[str] = None            # Extended description
+    export_tags: list[str] = field(default_factory=list)  # Platform-specific tags
+
+    def export_tags_json(self) -> str:
+        return json.dumps(self.export_tags)
 
 
 @dataclass
@@ -210,3 +276,38 @@ class CrossRepoEntry:
     file_path: str = ""
     summary: Optional[str] = None
     last_indexed: Optional[datetime] = None
+
+
+@dataclass
+class PipelineRun:
+    """A content production pipeline run."""
+
+    id: int = 0
+    brief_id: Optional[int] = None
+    script_id: Optional[int] = None
+    current_stage: str = "brief"
+    retry_count: int = 0
+    max_retries: int = 3
+    scratch_pad_key: Optional[str] = None
+    hook_failures: list[dict] = field(default_factory=list)  # [{hook, code, msg, timestamp}]
+    started_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+    def hook_failures_json(self) -> str:
+        return json.dumps(self.hook_failures)
+
+    @property
+    def is_failed(self) -> bool:
+        """Check if the pipeline is in a failed state."""
+        return self.current_stage.endswith("_failed")
+
+    @property
+    def is_complete(self) -> bool:
+        """Check if the pipeline has completed."""
+        return self.current_stage == "complete"
+
+    @property
+    def is_waiting_for_human(self) -> bool:
+        """Check if the pipeline is waiting for human action."""
+        return self.current_stage in ("manual_visual", "manual_assembly", "review")

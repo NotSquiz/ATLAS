@@ -1,12 +1,25 @@
 """Tests for Baby Brains database layer."""
 
+import json
 import sqlite3
 
 import pytest
 
 from atlas.babybrains import db
-from atlas.babybrains.db import init_bb_tables
-from atlas.babybrains.models import WarmingTarget, TrendResult, CrossRepoEntry
+from atlas.babybrains.db import (
+    init_bb_tables,
+    run_content_migration,
+    _column_exists,
+    _migrate_add_column,
+)
+from atlas.babybrains.models import (
+    WarmingTarget,
+    TrendResult,
+    CrossRepoEntry,
+    ContentBrief,
+    Script,
+    PipelineRun,
+)
 
 
 BB_TABLES = [
@@ -20,19 +33,21 @@ BB_TABLES = [
     "bb_visual_assets",
     "bb_exports",
     "bb_cross_repo_index",
+    "bb_pipeline_runs",  # New table
 ]
 
 
 class TestInitBBTables:
     """Test table initialization."""
 
-    def test_creates_all_10_tables(self, bb_conn):
+    def test_creates_all_11_tables(self, bb_conn):
         cursor = bb_conn.execute(
             "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'bb_%'"
         )
         tables = {row["name"] for row in cursor.fetchall()}
         for table_name in BB_TABLES:
             assert table_name in tables, f"Missing table: {table_name}"
+        assert len(tables) == 11
 
     def test_idempotent_init(self, bb_conn):
         """Calling init_bb_tables twice should not error."""
@@ -43,14 +58,15 @@ class TestInitBBTables:
             "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'bb_%'"
         )
         tables = {row["name"] for row in cursor.fetchall()}
-        assert len(tables) == 10
+        assert len(tables) == 11
 
     def test_indexes_created(self, bb_conn):
         cursor = bb_conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'idx_bb_%'"
+            "SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'idx_%'"
         )
         indexes = [row["name"] for row in cursor.fetchall()]
-        assert len(indexes) >= 10
+        # Now includes pipeline run indexes
+        assert len(indexes) >= 13
 
 
 class TestAccountQueries:
@@ -265,3 +281,303 @@ class TestStatusDashboard:
         assert len(status["accounts"]) == 1
         assert status["today"]["targets"] == 1
         assert status["trends"]["recent_count"] == 1
+
+
+class TestSchemaMigration:
+    """Test schema migration utilities."""
+
+    def test_column_exists_true(self, bb_conn):
+        """Column that exists should return True."""
+        assert _column_exists(bb_conn, "bb_content_briefs", "topic") is True
+
+    def test_column_exists_false(self, bb_conn):
+        """Column that doesn't exist should return False."""
+        assert _column_exists(bb_conn, "bb_content_briefs", "nonexistent_column") is False
+
+    def test_migrate_add_column_adds_new_column(self, bb_conn):
+        """_migrate_add_column should add a new column."""
+        assert _column_exists(bb_conn, "bb_content_briefs", "test_column_xyz") is False
+        _migrate_add_column(bb_conn, "bb_content_briefs", "test_column_xyz", "TEXT")
+        assert _column_exists(bb_conn, "bb_content_briefs", "test_column_xyz") is True
+
+    def test_migrate_add_column_idempotent(self, bb_conn):
+        """_migrate_add_column should not error when column exists."""
+        _migrate_add_column(bb_conn, "bb_content_briefs", "test_col_abc", "TEXT")
+        # Calling again should not raise
+        _migrate_add_column(bb_conn, "bb_content_briefs", "test_col_abc", "TEXT")
+        assert _column_exists(bb_conn, "bb_content_briefs", "test_col_abc") is True
+
+    def test_run_content_migration_idempotent(self, bb_conn):
+        """run_content_migration should be safe to call multiple times."""
+        run_content_migration(bb_conn)
+        run_content_migration(bb_conn)  # Should not error
+        # Verify some columns exist
+        assert _column_exists(bb_conn, "bb_content_briefs", "age_range") is True
+        assert _column_exists(bb_conn, "bb_scripts", "scenes") is True
+
+    def test_content_migration_adds_all_brief_columns(self, bb_conn):
+        """Migration should add all 17 ContentBrief columns."""
+        run_content_migration(bb_conn)
+        expected_columns = [
+            "age_range", "hook_text", "target_length", "priority_tier",
+            "montessori_principle", "setting", "au_localisers", "safety_lines",
+            "camera_notes", "hook_pattern", "content_pillar", "tags",
+            "source", "canonical_id", "grok_confidence", "knowledge_coverage",
+            "all_principles",
+        ]
+        for col in expected_columns:
+            assert _column_exists(bb_conn, "bb_content_briefs", col), f"Missing: {col}"
+
+    def test_content_migration_adds_all_script_columns(self, bb_conn):
+        """Migration should add all 7 Script columns."""
+        run_content_migration(bb_conn)
+        expected_columns = [
+            "scenes", "derivative_cuts", "cta_text", "safety_disclaimers",
+            "hook_pattern_used", "reviewed_by", "reviewed_at",
+        ]
+        for col in expected_columns:
+            assert _column_exists(bb_conn, "bb_scripts", col), f"Missing: {col}"
+
+    def test_content_migration_creates_indexes(self, bb_conn):
+        """Migration should create source/canonical indexes."""
+        run_content_migration(bb_conn)
+        cursor = bb_conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'idx_briefs_%'"
+        )
+        indexes = {row["name"] for row in cursor.fetchall()}
+        assert "idx_briefs_canonical" in indexes
+        assert "idx_briefs_source" in indexes
+
+
+class TestWALMode:
+    """Test WAL mode is enabled."""
+
+    def test_wal_mode_enabled(self, tmp_path):
+        """get_bb_connection should enable WAL mode."""
+        db_path = tmp_path / "test_wal.db"
+        conn = db.get_bb_connection(db_path)
+        cursor = conn.execute("PRAGMA journal_mode;")
+        mode = cursor.fetchone()[0]
+        assert mode == "wal"
+        conn.close()
+
+
+class TestContentBriefNullHandling:
+    """Test that None values produce [] not null in JSON columns."""
+
+    def test_add_brief_with_none_hooks_produces_empty_list(self, bb_conn):
+        """hooks=None should store as '[]' not 'null'."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(
+            bb_conn,
+            topic="Test topic",
+            hooks=None,  # Explicitly None
+            core_message=None,
+        )
+        cursor = bb_conn.execute(
+            "SELECT hooks FROM bb_content_briefs WHERE id = ?", (brief_id,)
+        )
+        row = cursor.fetchone()
+        # Should be "[]" not "null"
+        assert row["hooks"] == "[]"
+        parsed = json.loads(row["hooks"])
+        assert parsed == []
+
+    def test_add_brief_with_none_tags_produces_empty_list(self, bb_conn):
+        """tags=None should store as '[]' not 'null'."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(
+            bb_conn,
+            topic="Test topic",
+            tags=None,
+        )
+        cursor = bb_conn.execute(
+            "SELECT tags FROM bb_content_briefs WHERE id = ?", (brief_id,)
+        )
+        row = cursor.fetchone()
+        assert row["tags"] == "[]"
+
+    def test_get_brief_by_id_returns_brief(self, bb_conn):
+        """get_brief_by_id should return a ContentBrief object."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(
+            bb_conn,
+            topic="Test topic",
+            age_range="6-12m",
+            montessori_principle="follow_the_child",
+            source="canonical:test123",
+        )
+        brief = db.get_brief_by_id(bb_conn, brief_id)
+        assert isinstance(brief, ContentBrief)
+        assert brief.topic == "Test topic"
+        assert brief.age_range == "6-12m"
+        assert brief.montessori_principle == "follow_the_child"
+        assert brief.source == "canonical:test123"
+
+    def test_get_brief_by_id_missing_returns_none(self, bb_conn):
+        """get_brief_by_id should return None for missing ID."""
+        brief = db.get_brief_by_id(bb_conn, 99999)
+        assert brief is None
+
+
+class TestScriptQueries:
+    """Test script query helpers."""
+
+    def test_get_script_by_id(self, bb_conn):
+        """get_script_by_id should return a Script object."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(bb_conn, topic="Test")
+        script_id = db.add_script(
+            bb_conn, brief_id, "60s", "Test script text here."
+        )
+        script = db.get_script_by_id(bb_conn, script_id)
+        assert isinstance(script, Script)
+        assert script.format_type == "60s"
+        assert "Test script" in script.script_text
+
+    def test_update_script_fields(self, bb_conn):
+        """update_script_fields should update specific fields."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(bb_conn, topic="Test")
+        script_id = db.add_script(bb_conn, brief_id, "60s", "Original text")
+        db.update_script_fields(
+            bb_conn, script_id,
+            cta_text="Follow for more!",
+            scenes=[{"number": 1, "vo_text": "Hello"}],
+        )
+        script = db.get_script_by_id(bb_conn, script_id)
+        assert script.cta_text == "Follow for more!"
+        assert len(script.scenes) == 1
+        assert script.scenes[0]["number"] == 1
+
+
+class TestVisualAssetQueries:
+    """Test visual asset query helpers."""
+
+    def test_add_visual_asset(self, bb_conn):
+        """add_visual_asset should create a visual asset."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(bb_conn, topic="Test")
+        script_id = db.add_script(bb_conn, brief_id, "60s", "Text")
+        asset_id = db.add_visual_asset(
+            bb_conn, script_id, "midjourney_prompt",
+            prompt_text="A baby playing with blocks",
+            tool="midjourney",
+            scene_number=1,
+        )
+        assert asset_id > 0
+
+    def test_get_visual_assets_by_script(self, bb_conn):
+        """get_visual_assets_by_script should return all assets."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(bb_conn, topic="Test")
+        script_id = db.add_script(bb_conn, brief_id, "60s", "Text")
+        db.add_visual_asset(bb_conn, script_id, "mj", prompt_text="P1", scene_number=1)
+        db.add_visual_asset(bb_conn, script_id, "mj", prompt_text="P2", scene_number=2)
+        assets = db.get_visual_assets_by_script(bb_conn, script_id)
+        assert len(assets) == 2
+        assert assets[0].scene_number == 1
+        assert assets[1].scene_number == 2
+
+
+class TestExportQueries:
+    """Test export query helpers."""
+
+    def test_add_export(self, bb_conn):
+        """add_export should create an export entry."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(bb_conn, topic="Test")
+        script_id = db.add_script(bb_conn, brief_id, "60s", "Text")
+        export_id = db.add_export(
+            bb_conn, script_id, "instagram",
+            caption="Great content!",
+            title="Test Video",
+            export_tags=["parenting", "montessori"],
+        )
+        assert export_id > 0
+
+    def test_get_exports_by_script(self, bb_conn):
+        """get_exports_by_script should return all exports."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(bb_conn, topic="Test")
+        script_id = db.add_script(bb_conn, brief_id, "60s", "Text")
+        db.add_export(bb_conn, script_id, "instagram", caption="IG caption")
+        db.add_export(bb_conn, script_id, "tiktok", caption="TT caption")
+        exports = db.get_exports_by_script(bb_conn, script_id)
+        assert len(exports) == 2
+        platforms = {e.platform for e in exports}
+        assert "instagram" in platforms
+        assert "tiktok" in platforms
+
+
+class TestPipelineRunQueries:
+    """Test pipeline run query helpers."""
+
+    def test_add_pipeline_run(self, bb_conn):
+        """add_pipeline_run should create a pipeline run."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(bb_conn, topic="Test")
+        run_id = db.add_pipeline_run(bb_conn, brief_id, "brief")
+        assert run_id > 0
+
+    def test_get_pipeline_run(self, bb_conn):
+        """get_pipeline_run should return a PipelineRun object."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(bb_conn, topic="Test")
+        run_id = db.add_pipeline_run(bb_conn, brief_id, "brief", max_retries=5)
+        run = db.get_pipeline_run(bb_conn, run_id)
+        assert isinstance(run, PipelineRun)
+        assert run.brief_id == brief_id
+        assert run.current_stage == "brief"
+        assert run.max_retries == 5
+
+    def test_update_pipeline_run(self, bb_conn):
+        """update_pipeline_run should update specific fields."""
+        run_content_migration(bb_conn)
+        brief_id = db.add_content_brief(bb_conn, topic="Test")
+        run_id = db.add_pipeline_run(bb_conn, brief_id, "brief")
+        db.update_pipeline_run(
+            bb_conn, run_id,
+            current_stage="script",
+            retry_count=1,
+            hook_failures=[{"hook": "qc_safety", "code": "SAFETY_CHOKING", "msg": "Hazard"}],
+        )
+        run = db.get_pipeline_run(bb_conn, run_id)
+        assert run.current_stage == "script"
+        assert run.retry_count == 1
+        assert len(run.hook_failures) == 1
+        assert run.hook_failures[0]["code"] == "SAFETY_CHOKING"
+
+    def test_get_active_pipeline_runs(self, bb_conn):
+        """get_active_pipeline_runs should exclude complete and failed."""
+        run_content_migration(bb_conn)
+        brief1 = db.add_content_brief(bb_conn, topic="Active")
+        brief2 = db.add_content_brief(bb_conn, topic="Complete")
+        brief3 = db.add_content_brief(bb_conn, topic="Failed")
+        run1 = db.add_pipeline_run(bb_conn, brief1, "script")
+        run2 = db.add_pipeline_run(bb_conn, brief2, "complete")
+        run3 = db.add_pipeline_run(bb_conn, brief3, "script_failed")
+        active = db.get_active_pipeline_runs(bb_conn)
+        assert len(active) == 1
+        assert active[0].id == run1
+
+    def test_pipeline_run_is_failed_property(self, bb_conn):
+        """PipelineRun.is_failed should detect failed stages."""
+        run = PipelineRun(current_stage="script_failed")
+        assert run.is_failed is True
+        run.current_stage = "script"
+        assert run.is_failed is False
+
+    def test_pipeline_run_is_complete_property(self, bb_conn):
+        """PipelineRun.is_complete should detect complete stage."""
+        run = PipelineRun(current_stage="complete")
+        assert run.is_complete is True
+        run.current_stage = "review"
+        assert run.is_complete is False
+
+    def test_pipeline_run_is_waiting_for_human_property(self, bb_conn):
+        """PipelineRun.is_waiting_for_human should detect manual gates."""
+        run = PipelineRun(current_stage="manual_visual")
+        assert run.is_waiting_for_human is True
+        run.current_stage = "script"
+        assert run.is_waiting_for_human is False

@@ -1,0 +1,95 @@
+{
+  "_meta": {
+    "description": "Video export presets per platform for Baby Brains content",
+    "version": "1.0.0",
+    "last_verified": "2026-02-03"
+  },
+  "platforms": {
+    "tiktok": {
+      "resolution": "1080x1920",
+      "aspect_ratio": "9:16",
+      "frame_rate": 30,
+      "video_codec": "h264",
+      "video_bitrate": "8M",
+      "audio_codec": "aac",
+      "audio_bitrate": "192k",
+      "audio_sample_rate": 44100,
+      "max_duration_seconds": 180,
+      "recommended_duration_seconds": [21, 60],
+      "file_format": "mp4",
+      "max_file_size_mb": 287
+    },
+    "instagram_reels": {
+      "resolution": "1080x1920",
+      "aspect_ratio": "9:16",
+      "frame_rate": 30,
+      "video_codec": "h264",
+      "video_bitrate": "10M",
+      "audio_codec": "aac",
+      "audio_bitrate": "192k",
+      "audio_sample_rate": 44100,
+      "max_duration_seconds": 90,
+      "recommended_duration_seconds": [15, 30, 60],
+      "file_format": "mp4",
+      "max_file_size_mb": 650
+    },
+    "youtube_shorts": {
+      "resolution": "1080x1920",
+      "aspect_ratio": "9:16",
+      "frame_rate": 30,
+      "video_codec": "h264",
+      "video_bitrate": "12M",
+      "audio_codec": "aac",
+      "audio_bitrate": "256k",
+      "audio_sample_rate": 48000,
+      "max_duration_seconds": 60,
+      "recommended_duration_seconds": [30, 60],
+      "file_format": "mp4",
+      "max_file_size_mb": 128
+    },
+    "facebook_reels": {
+      "resolution": "1080x1920",
+      "aspect_ratio": "9:16",
+      "frame_rate": 30,
+      "video_codec": "h264",
+      "video_bitrate": "8M",
+      "audio_codec": "aac",
+      "audio_bitrate": "192k",
+      "audio_sample_rate": 44100,
+      "max_duration_seconds": 90,
+      "recommended_duration_seconds": [15, 30, 60],
+      "file_format": "mp4",
+      "max_file_size_mb": 1024
+    }
+  },
+  "audio_specs": {
+    "voiceover": {
+      "target_lufs": -14,
+      "true_peak_max": -1.0,
+      "format": "wav",
+      "sample_rate": 48000,
+      "bit_depth": 24
+    },
+    "music_bed": {
+      "target_lufs": -24,
+      "duck_during_vo": true,
+      "duck_amount_db": -6
+    },
+    "master": {
+      "target_lufs": -14,
+      "true_peak_max": -1.0,
+      "loudness_range": 6
+    }
+  },
+  "ffmpeg_presets": {
+    "tiktok": "-c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 44100 -movflags +faststart",
+    "instagram": "-c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 44100 -movflags +faststart",
+    "youtube": "-c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p -c:a aac -b:a 256k -ar 48000 -movflags +faststart",
+    "facebook": "-c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 44100 -movflags +faststart"
+  },
+  "block_codes": {
+    "EXPORT_RESOLUTION_MISMATCH": "Video resolution doesn't match platform requirements",
+    "EXPORT_DURATION_EXCEEDED": "Video duration exceeds platform maximum",
+    "EXPORT_FILE_SIZE_EXCEEDED": "File size exceeds platform maximum"
+  }
+}

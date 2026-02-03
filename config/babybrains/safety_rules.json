@@ -1,0 +1,138 @@
+{
+  "_meta": {
+    "description": "Safety validation rules for Baby Brains content QC",
+    "version": "1.0.0",
+    "last_verified": "2026-02-03"
+  },
+  "hazard_keywords": {
+    "choking_hazards": [
+      "marble",
+      "coin",
+      "button",
+      "battery",
+      "small ball",
+      "grape",
+      "cherry tomato",
+      "popcorn",
+      "hard candy",
+      "hot dog",
+      "whole nut",
+      "peanut"
+    ],
+    "unsupervised_activities": [
+      "leave alone",
+      "unsupervised",
+      "without watching",
+      "step away",
+      "leave them",
+      "on their own"
+    ],
+    "dangerous_items": [
+      "sharp",
+      "knife",
+      "scissors",
+      "glass",
+      "medication",
+      "chemicals",
+      "cleaning products",
+      "plastic bag",
+      "balloon",
+      "cord",
+      "string",
+      "blind cord"
+    ],
+    "water_hazards": [
+      "bath alone",
+      "pool unsupervised",
+      "bucket",
+      "water table"
+    ]
+  },
+  "supervision_requirements": {
+    "always_supervised_activities": [
+      "water play",
+      "bath time",
+      "eating",
+      "climbing",
+      "outdoor play",
+      "sensory bin"
+    ],
+    "supervision_phrases": [
+      "always supervise",
+      "never leave unattended",
+      "constant supervision",
+      "close supervision",
+      "adult present"
+    ]
+  },
+  "medical_claim_patterns": [
+    "diagnose",
+    "cure",
+    "treat",
+    "therapy",
+    "symptom",
+    "patient",
+    "prescription",
+    "medication",
+    "disease",
+    "disorder",
+    "syndrome",
+    "clinical",
+    "therapeutic"
+  ],
+  "allowed_medical_alternatives": [
+    "educational support",
+    "developmental opportunity",
+    "growth",
+    "healthcare provider",
+    "healthcare professional",
+    "practitioner they trust",
+    "paediatrician",
+    "child health nurse"
+  ],
+  "age_appropriate_rules": {
+    "0-6m": {
+      "prohibited_items": ["solid food", "small objects", "pillows", "blankets in crib"],
+      "required_supervision": "constant",
+      "sleep_safety": ["back to sleep", "firm mattress", "no loose bedding"]
+    },
+    "6-12m": {
+      "prohibited_items": ["honey", "whole nuts", "hard foods"],
+      "required_supervision": "constant",
+      "food_safety": ["soft foods", "appropriate size", "no choking hazards"]
+    },
+    "12-24m": {
+      "prohibited_items": ["whole grapes", "hot dogs", "popcorn"],
+      "required_supervision": "close",
+      "mobility_safety": ["stair gates", "corner protectors", "secured furniture"]
+    },
+    "24-36m": {
+      "prohibited_items": ["small toys", "balloons"],
+      "required_supervision": "active",
+      "independence_balance": true
+    }
+  },
+  "coppa_compliance": {
+    "prohibited_data_collection": [
+      "name",
+      "email",
+      "address",
+      "photo",
+      "location",
+      "device identifier"
+    ],
+    "required_disclosures": [
+      "educational content",
+      "not a substitute for professional advice"
+    ]
+  },
+  "block_codes": {
+    "SAFETY_CHOKING_HAZARD": "Content mentions choking hazard without age-appropriate warning",
+    "SAFETY_UNSUPERVISED": "Activity suggests leaving child unsupervised",
+    "SAFETY_DANGEROUS_ITEM": "Content includes dangerous item without safety context",
+    "SAFETY_WATER_HAZARD": "Water activity without supervision requirement",
+    "SAFETY_MEDICAL_CLAIM": "Content makes medical claim - must use educational framing",
+    "SAFETY_AGE_INAPPROPRIATE": "Activity not appropriate for stated age range",
+    "SAFETY_MISSING_DISCLAIMER": "Missing required safety disclaimer"
+  }
+}

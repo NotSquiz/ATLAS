@@ -148,6 +148,29 @@ CREATE TABLE IF NOT EXISTS bb_exports (
 );
 
 -- ============================================
+-- CONTENT PRODUCTION PIPELINE
+-- ============================================
+
+-- Pipeline run tracking for content production workflow
+-- Stages: brief, brief_qc, brief_failed, script, script_qc, script_failed,
+--         localise, localise_failed, prompts, prompts_failed,
+--         manual_visual, manual_visual_qc, manual_assembly,
+--         assembly_qc, assembly_failed, review, captions, captions_failed, complete
+CREATE TABLE IF NOT EXISTS bb_pipeline_runs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    brief_id INTEGER REFERENCES bb_content_briefs(id),
+    script_id INTEGER REFERENCES bb_scripts(id),
+    current_stage TEXT NOT NULL,
+    retry_count INTEGER DEFAULT 0,
+    max_retries INTEGER DEFAULT 3,
+    scratch_pad_key TEXT,
+    hook_failures TEXT,  -- JSON: [{hook, code, msg, timestamp}]
+    started_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    completed_at TEXT
+);
+
+-- ============================================
 -- CROSS-REPO INTELLIGENCE
 -- ============================================
 
@@ -177,3 +200,6 @@ CREATE INDEX IF NOT EXISTS idx_bb_scripts_status ON bb_scripts(status);
 CREATE INDEX IF NOT EXISTS idx_bb_exports_platform ON bb_exports(platform);
 CREATE INDEX IF NOT EXISTS idx_bb_exports_status ON bb_exports(status);
 CREATE INDEX IF NOT EXISTS idx_bb_cross_repo_topic ON bb_cross_repo_index(topic);
+CREATE INDEX IF NOT EXISTS idx_pipeline_runs_brief ON bb_pipeline_runs(brief_id);
+CREATE INDEX IF NOT EXISTS idx_pipeline_runs_script ON bb_pipeline_runs(script_id);
+CREATE INDEX IF NOT EXISTS idx_pipeline_runs_stage ON bb_pipeline_runs(current_stage);

@@ -7,19 +7,38 @@ Provides deterministic verification without LLM involvement.
 Principle: Wrap existing validators, don't rebuild.
 
 Hooks:
-    babybrains-os:
-        - hook_qc_runner: Wraps qc/qc_runner.py (blocking)
+    babybrains:
+        - qc_runner: Wraps qc/qc_runner.py (blocking)
+
+    babybrains_content:
+        - qc_brief: Brief structural validation (30s)
+        - qc_safety: Safety gate with hazard/supervision checks (30s)
+        - qc_montessori: Montessori alignment validation (30s)
+        - qc_hook_token: Hook in scene 1 validation (30s)
+        - qc_script: Script requirements validation (30s)
+        - qc_audio: Audio levels validation via ffmpeg (180s)
+        - qc_caption_wer: Caption WER via faster-whisper (180s)
+        - qc_safezone: Caption safe zones validation (30s)
 
     knowledge:
-        - hook_tier1_validators: Wraps scripts/validate_*.py (blocking)
+        - tier1_validators: Wraps scripts/validate_*.py (blocking)
+        - activity_qc: Activity quality/voice validation (blocking)
 
     web:
-        - hook_pre_pr: Wraps npm run pre-pr (blocking)
-        - hook_vale: Wraps Vale linter (blocking)
+        - pre_pr: Wraps npm run pre-pr (blocking)
 
 Usage:
     runner = HookRunner()
+
+    # Run hook with stdin input
     result = await runner.run("babybrains", "qc_runner", input_data={"format": "s21", ...})
+
+    # Run hook with CLI args (for file-based hooks)
+    result = await runner.run(
+        "babybrains_content", "qc_audio",
+        cli_args=["path/to/audio.wav", "--master"]
+    )
+
     if not result.passed:
         print(f"Hook blocked: {result.issues}")
 """
@@ -147,6 +166,154 @@ class HookRunner:
                 "timing": HookTiming.POST_EXECUTION,
             },
         },
+        # Baby Brains Content Production QC Hooks (Phase 1)
+        # All hooks output JSON: {"pass": bool, "issues": [{"code": str, "msg": str}]}
+        "babybrains_content": {
+            "qc_brief": {
+                "cmd": ["python3", "-m", "atlas.babybrains.content.hooks.qc_brief"],
+                "cwd": "/home/squiz/code/ATLAS",
+                "blocking": True,
+                "input_mode": "stdin",
+                "output_format": "json",
+                "timing": HookTiming.POST_EXECUTION,
+                "timeout": 30,
+                "block_codes": [
+                    "BRIEF_MISSING_TITLE",
+                    "BRIEF_MISSING_HOOK_TEXT",
+                    "BRIEF_MISSING_AGE_RANGE",
+                    "BRIEF_INVALID_AGE_RANGE",
+                    "BRIEF_MISSING_TARGET_LENGTH",
+                    "BRIEF_INVALID_TARGET_LENGTH",
+                    "BRIEF_INVALID_MONTESSORI_PRINCIPLE",
+                    "BRIEF_INVALID_CONTENT_PILLAR",
+                    "BRIEF_INVALID_HOOK_PATTERN",
+                    "BRIEF_HOOK_TOO_LONG",
+                ],
+            },
+            "qc_safety": {
+                "cmd": ["python3", "-m", "atlas.babybrains.content.hooks.qc_safety"],
+                "cwd": "/home/squiz/code/ATLAS",
+                "blocking": True,
+                "input_mode": "stdin",
+                "output_format": "json",
+                "timing": HookTiming.POST_EXECUTION,
+                "timeout": 30,
+                "block_codes": [
+                    "SAFETY_CHOKING_HAZARD",
+                    "SAFETY_UNSUPERVISED",
+                    "SAFETY_MEDICAL_CLAIM",
+                    "SAFETY_DANGEROUS_ITEM",
+                    "SAFETY_WATER_HAZARD",
+                    "SAFETY_AGE_INAPPROPRIATE",
+                ],
+            },
+            "qc_montessori": {
+                "cmd": ["python3", "-m", "atlas.babybrains.content.hooks.qc_montessori"],
+                "cwd": "/home/squiz/code/ATLAS",
+                "blocking": True,
+                "input_mode": "stdin",
+                "output_format": "json",
+                "timing": HookTiming.POST_EXECUTION,
+                "timeout": 30,
+                "block_codes": [
+                    "MONTESSORI_PLASTIC_TOYS",
+                    "MONTESSORI_BRANDED_CHARACTER",
+                    "MONTESSORI_FANTASY_UNDER6",
+                    "MONTESSORI_EXTRINSIC_REWARD",
+                    "MONTESSORI_LANGUAGE",
+                ],
+            },
+            "qc_hook_token": {
+                "cmd": ["python3", "-m", "atlas.babybrains.content.hooks.qc_hook_token"],
+                "cwd": "/home/squiz/code/ATLAS",
+                "blocking": True,
+                "input_mode": "stdin",
+                "output_format": "json",
+                "timing": HookTiming.POST_EXECUTION,
+                "timeout": 30,
+                "block_codes": [
+                    "HOOK_TOKEN_MISSING",
+                    "HOOK_TOO_LATE",
+                    "HOOK_WORD_COUNT",
+                    "HOOK_PATTERN_MISMATCH",
+                ],
+            },
+            "qc_script": {
+                "cmd": ["python3", "-m", "atlas.babybrains.content.hooks.qc_script"],
+                "cwd": "/home/squiz/code/ATLAS",
+                "blocking": True,
+                "input_mode": "stdin",
+                "output_format": "json",
+                "timing": HookTiming.POST_EXECUTION,
+                "timeout": 30,
+                "block_codes": [
+                    "SCRIPT_INVALID_FORMAT",
+                    "SCRIPT_WORD_BUDGET_UNDER",
+                    "SCRIPT_WORD_BUDGET_EXCEEDED",
+                    "SCRIPT_SCENE_COUNT_LOW",
+                    "SCRIPT_SCENE_COUNT_HIGH",
+                    "SCRIPT_AU_SPELLING",
+                    "SCRIPT_EM_DASH",
+                    "SCRIPT_FORMAL_TRANSITION",
+                    "SCRIPT_NO_CONTRACTION",
+                    "SCRIPT_EMPTY_SCENE",
+                    "SCRIPT_SCENE_TOO_LONG",
+                    "SCRIPT_INVALID_JSON",
+                ],
+            },
+            # CLI-based hooks (take file paths as arguments, not stdin)
+            # These require special handling in the pipeline - pass file paths via cmd
+            "qc_audio": {
+                "cmd": ["python3", "-m", "atlas.babybrains.content.hooks.qc_audio"],
+                "cwd": "/home/squiz/code/ATLAS",
+                "blocking": True,
+                "input_mode": "args",  # Takes file path as positional arg
+                "output_format": "json",
+                "timing": HookTiming.POST_EXECUTION,
+                "timeout": 180,  # Longer timeout for ffmpeg processing
+                "block_codes": [
+                    "AUDIO_FILE_NOT_FOUND",
+                    "AUDIO_MEASUREMENT_FAILED",
+                    "AUDIO_MEASUREMENT_INVALID",
+                    "AUDIO_LUFS_TOO_QUIET",
+                    "AUDIO_LUFS_TOO_LOUD",
+                    "AUDIO_TRUE_PEAK_EXCEEDED",
+                    "AUDIO_LRA_EXCEEDED",
+                ],
+            },
+            "qc_caption_wer": {
+                "cmd": ["python3", "-m", "atlas.babybrains.content.hooks.qc_caption_wer"],
+                "cwd": "/home/squiz/code/ATLAS",
+                "blocking": True,
+                "input_mode": "args",  # Takes --video and --srt as args
+                "output_format": "json",
+                "timing": HookTiming.POST_EXECUTION,
+                "timeout": 180,  # Longer timeout for Whisper processing
+                "block_codes": [
+                    "CAPTION_VIDEO_NOT_FOUND",
+                    "CAPTION_SRT_NOT_FOUND",
+                    "CAPTION_SRT_EMPTY",
+                    "CAPTION_TRANSCRIPTION_FAILED",
+                    "CAPTION_WER_TOO_HIGH",
+                ],
+            },
+            "qc_safezone": {
+                "cmd": ["python3", "-m", "atlas.babybrains.content.hooks.qc_safezone"],
+                "cwd": "/home/squiz/code/ATLAS",
+                "blocking": True,
+                "input_mode": "args",  # Takes --subtitle and --platform as args
+                "output_format": "json",
+                "timing": HookTiming.POST_EXECUTION,
+                "timeout": 30,
+                "block_codes": [
+                    "SAFEZONE_FILE_NOT_FOUND",
+                    "SAFEZONE_UNKNOWN_PLATFORM",
+                    "SAFEZONE_TOP_VIOLATION",
+                    "SAFEZONE_BOTTOM_VIOLATION",
+                    "SAFEZONE_SIDE_VIOLATION",
+                ],
+            },
+        },
     }
 
     def __init__(self):
@@ -210,7 +377,7 @@ class HookRunner:
         timing: HookTiming,
         input_data: Optional[dict] = None,
         stop_on_block: bool = True,
-        timeout: int = 60,
+        timeout: Optional[int] = None,
     ) -> list[HookResult]:
         """
         Run all hooks for a specific timing phase.
@@ -221,7 +388,7 @@ class HookRunner:
             input_data: Data to pass to hooks via stdin (if hook expects it)
             stop_on_block: If True, stop on first blocking failure.
                            If False, run all hooks and collect all results.
-            timeout: Per-hook timeout in seconds (passed to run())
+            timeout: Per-hook timeout override (uses config timeout if None)
 
         Returns:
             List of HookResults in execution order.
@@ -231,6 +398,10 @@ class HookRunner:
             - Hooks run sequentially in definition order
             - Each result includes hook_name for identification
             - If stop_on_block=True and a blocking hook fails, remaining hooks are skipped
+            - Each hook uses its configured timeout unless overridden
+
+        Note:
+            Hooks with input_mode="args" require individual run() calls with cli_args.
         """
         hook_names = self.get_hooks_by_timing(repo, timing)
         results = []
@@ -252,17 +423,19 @@ class HookRunner:
         hook_name: str,
         input_data: Optional[dict] = None,
         input_file: Optional[Path] = None,
-        timeout: int = 60,
+        timeout: Optional[int] = None,
+        cli_args: Optional[list[str]] = None,
     ) -> HookResult:
         """
         Run a hook and return the result.
 
         Args:
-            repo: Repository name (babybrains, knowledge, web)
-            hook_name: Hook name (qc_runner, tier1_validators, etc.)
-            input_data: Data to pass as JSON via stdin
+            repo: Repository name (babybrains, knowledge, web, babybrains_content)
+            hook_name: Hook name (qc_runner, tier1_validators, qc_brief, etc.)
+            input_data: Data to pass as JSON via stdin (for input_mode="stdin")
             input_file: File path to pass as argument
-            timeout: Timeout in seconds
+            timeout: Timeout in seconds (overrides config timeout if provided)
+            cli_args: Command-line arguments to append (for input_mode="args")
 
         Returns:
             HookResult with pass/fail status and issues
@@ -277,20 +450,26 @@ class HookRunner:
                 hook_name=hook_name,
             )
 
-        cmd = hook_config["cmd"]
+        cmd = list(hook_config["cmd"])  # Copy to avoid mutating config
         cwd = hook_config["cwd"]
         blocking = hook_config["blocking"]
         input_mode = hook_config["input_mode"]
         output_format = hook_config["output_format"]
 
-        logger.debug(f"Running hook {repo}/{hook_name} (timeout={timeout}s, blocking={blocking})")
+        # Use config timeout if not overridden, default to 60s
+        effective_timeout = timeout if timeout is not None else hook_config.get("timeout", 60)
 
-        # Prepare input
+        logger.debug(f"Running hook {repo}/{hook_name} (timeout={effective_timeout}s, blocking={blocking})")
+
+        # Prepare input based on mode
         stdin_data = None
         if input_mode == "stdin" and input_data:
             stdin_data = json.dumps(input_data)
         elif input_mode == "stdin" and input_file:
             stdin_data = input_file.read_text()
+        elif input_mode == "args" and cli_args:
+            # Append CLI arguments to command
+            cmd.extend(cli_args)
 
         # Run the command
         try:
@@ -303,14 +482,14 @@ class HookRunner:
                     capture_output=True,
                     text=True,
                 ),
-                timeout=timeout,
+                timeout=effective_timeout,
             )
         except asyncio.TimeoutError:
-            logger.warning(f"Hook {repo}/{hook_name} timed out after {timeout}s")
+            logger.warning(f"Hook {repo}/{hook_name} timed out after {effective_timeout}s")
             return HookResult(
                 passed=False,
                 blocking=blocking,
-                message=f"Hook timed out after {timeout}s",
+                message=f"Hook timed out after {effective_timeout}s",
                 issues=[HookIssue(code="TIMEOUT", message=f"Hook execution timed out")],
                 hook_name=hook_name,
             )
