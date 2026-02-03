@@ -1,0 +1,117 @@
+{
+  "_meta": {
+    "description": "Evergreen fallback topics when Grok API unavailable",
+    "version": "1.0.0",
+    "updated": "2026-02"
+  },
+  "topics": [
+    {
+      "topic": "Tummy time benefits and positioning tips",
+      "description": "Evidence-based tummy time guidance for new parents struggling with the basics",
+      "relevance_score": 0.9,
+      "confidence": 0.85,
+      "opportunity_level": "high",
+      "audience_segment": "anxious_new_parent",
+      "content_angle": "Reassurance + practical how-to with Montessori observation techniques"
+    },
+    {
+      "topic": "Baby sleep regressions by age",
+      "description": "Understanding sleep pattern changes at 4, 8, 12, and 18 months",
+      "relevance_score": 0.95,
+      "confidence": 0.9,
+      "opportunity_level": "high",
+      "audience_segment": "anxious_new_parent",
+      "content_angle": "Normalize the regression + evidence-based gentle strategies"
+    },
+    {
+      "topic": "Sensory play ideas for infants",
+      "description": "Safe, age-appropriate sensory activities for 0-12 month babies",
+      "relevance_score": 0.85,
+      "confidence": 0.8,
+      "opportunity_level": "medium",
+      "audience_segment": "developmental_optimizer",
+      "content_angle": "Montessori-aligned sensory exploration without expensive equipment"
+    },
+    {
+      "topic": "Language development milestones",
+      "description": "When to expect babbling, first words, and two-word phrases",
+      "relevance_score": 0.88,
+      "confidence": 0.85,
+      "opportunity_level": "high",
+      "audience_segment": "developmental_optimizer",
+      "content_angle": "Evidence-based milestone ranges + how to encourage communication"
+    },
+    {
+      "topic": "Independent play for toddlers",
+      "description": "How to foster self-directed play in 1-3 year olds",
+      "relevance_score": 0.9,
+      "confidence": 0.85,
+      "opportunity_level": "high",
+      "audience_segment": "montessori_curious",
+      "content_angle": "Montessori prepared environment principles for everyday homes"
+    },
+    {
+      "topic": "Screen time guidelines for babies",
+      "description": "WHO and AAP recommendations on screen exposure under age 2",
+      "relevance_score": 0.85,
+      "confidence": 0.8,
+      "opportunity_level": "medium",
+      "audience_segment": "anxious_new_parent",
+      "content_angle": "Non-judgmental guidance with practical alternatives"
+    },
+    {
+      "topic": "Baby-led weaning basics",
+      "description": "Introduction to self-feeding approach for starting solids",
+      "relevance_score": 0.87,
+      "confidence": 0.82,
+      "opportunity_level": "medium",
+      "audience_segment": "developmental_optimizer",
+      "content_angle": "Safety-first approach with Montessori independence principles"
+    },
+    {
+      "topic": "Toddler tantrums and emotional regulation",
+      "description": "Understanding big emotions in 1-3 year olds and co-regulation strategies",
+      "relevance_score": 0.92,
+      "confidence": 0.88,
+      "opportunity_level": "high",
+      "audience_segment": "gentle_parenting_advocate",
+      "content_angle": "Brain science meets practical in-the-moment strategies"
+    },
+    {
+      "topic": "Motor skill development activities",
+      "description": "Activities to support gross and fine motor development by age",
+      "relevance_score": 0.84,
+      "confidence": 0.8,
+      "opportunity_level": "medium",
+      "audience_segment": "developmental_optimizer",
+      "content_angle": "Home-based activities aligned with Montessori movement principles"
+    },
+    {
+      "topic": "Setting up a Montessori baby space",
+      "description": "Creating an accessible, developmentally appropriate environment",
+      "relevance_score": 0.88,
+      "confidence": 0.85,
+      "opportunity_level": "high",
+      "audience_segment": "montessori_curious",
+      "content_angle": "Budget-friendly Australian-sourced setup guide"
+    },
+    {
+      "topic": "Reading to babies and toddlers",
+      "description": "Benefits and techniques for early literacy",
+      "relevance_score": 0.82,
+      "confidence": 0.78,
+      "opportunity_level": "medium",
+      "audience_segment": "developmental_optimizer",
+      "content_angle": "Interactive reading strategies that build language and bonding"
+    },
+    {
+      "topic": "Separation anxiety stages",
+      "description": "Understanding and supporting through separation anxiety peaks",
+      "relevance_score": 0.86,
+      "confidence": 0.82,
+      "opportunity_level": "medium",
+      "audience_segment": "anxious_new_parent",
+      "content_angle": "Developmental normalcy + gentle transition strategies"
+    }
+  ]
+}

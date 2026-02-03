@@ -4,7 +4,7 @@ import sqlite3
 
 import pytest
 
-from atlas.babybrains.db import init_bb_tables, run_content_migration
+from atlas.babybrains.db import init_bb_tables, run_content_migration, run_trends_migration
 
 
 @pytest.fixture
@@ -33,8 +33,9 @@ def bb_conn(tmp_path):
     # Init BB tables
     init_bb_tables(conn)
 
-    # Run content production migration to add new columns
+    # Run all migrations to add new columns
     run_content_migration(conn)
+    run_trends_migration(conn)
 
     yield conn
     conn.close()

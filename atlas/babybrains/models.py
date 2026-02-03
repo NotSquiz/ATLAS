@@ -93,6 +93,13 @@ class TrendResult:
     sample_urls: list[str] = field(default_factory=list)
     expires_at: Optional[datetime] = None
     created_at: Optional[datetime] = None
+    # Extended fields from Grok (S2.6-lite)
+    description: Optional[str] = None
+    content_angle: Optional[str] = None
+    confidence: float = 0.0
+    hashtags: list[str] = field(default_factory=list)
+    saturation: Optional[str] = None
+    platform_signals: list[str] = field(default_factory=list)
 
     def sources_json(self) -> str:
         return json.dumps(self.sources)
@@ -100,10 +107,18 @@ class TrendResult:
     def sample_urls_json(self) -> str:
         return json.dumps(self.sample_urls)
 
+    def hashtags_json(self) -> str:
+        return json.dumps(self.hashtags)
+
+    def platform_signals_json(self) -> str:
+        return json.dumps(self.platform_signals)
+
     @classmethod
     def from_row(cls, row: dict) -> "TrendResult":
         sources = json.loads(row.get("sources") or "[]")
         sample_urls = json.loads(row.get("sample_urls") or "[]")
+        hashtags = json.loads(row.get("hashtags") or "[]")
+        platform_signals = json.loads(row.get("platform_signals") or "[]")
         return cls(
             id=row["id"],
             topic=row["topic"],
@@ -113,6 +128,13 @@ class TrendResult:
             audience_segment=row.get("audience_segment"),
             knowledge_graph_match=bool(row.get("knowledge_graph_match", False)),
             sample_urls=sample_urls,
+            # Extended fields
+            description=row.get("description"),
+            content_angle=row.get("content_angle"),
+            confidence=row.get("confidence", 0.0) or 0.0,
+            hashtags=hashtags,
+            saturation=row.get("saturation"),
+            platform_signals=platform_signals,
         )
 
 

@@ -33,21 +33,22 @@ BB_TABLES = [
     "bb_visual_assets",
     "bb_exports",
     "bb_cross_repo_index",
-    "bb_pipeline_runs",  # New table
+    "bb_pipeline_runs",
+    "bb_grok_costs",  # S2.6-lite cost tracking
 ]
 
 
 class TestInitBBTables:
     """Test table initialization."""
 
-    def test_creates_all_11_tables(self, bb_conn):
+    def test_creates_all_12_tables(self, bb_conn):
         cursor = bb_conn.execute(
             "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'bb_%'"
         )
         tables = {row["name"] for row in cursor.fetchall()}
         for table_name in BB_TABLES:
             assert table_name in tables, f"Missing table: {table_name}"
-        assert len(tables) == 11
+        assert len(tables) == 12
 
     def test_idempotent_init(self, bb_conn):
         """Calling init_bb_tables twice should not error."""
@@ -58,7 +59,7 @@ class TestInitBBTables:
             "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'bb_%'"
         )
         tables = {row["name"] for row in cursor.fetchall()}
-        assert len(tables) == 11
+        assert len(tables) == 12
 
     def test_indexes_created(self, bb_conn):
         cursor = bb_conn.execute(

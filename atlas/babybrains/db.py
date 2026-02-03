@@ -96,6 +96,40 @@ def _migrate_add_column(
         logger.debug(f"Column {table}.{column} already exists")
 
 
+def run_trends_migration(conn: sqlite3.Connection) -> None:
+    """
+    Run trends schema migration for S2.6-lite (idempotent).
+
+    Adds columns to bb_trends for extended Grok data and creates
+    bb_grok_costs table for budget tracking.
+    """
+    # Extended bb_trends columns from Grok
+    _migrate_add_column(conn, "bb_trends", "description", "TEXT")
+    _migrate_add_column(conn, "bb_trends", "content_angle", "TEXT")
+    _migrate_add_column(conn, "bb_trends", "confidence", "REAL")
+    _migrate_add_column(conn, "bb_trends", "hashtags", "TEXT")       # JSON
+    _migrate_add_column(conn, "bb_trends", "saturation", "TEXT")
+    _migrate_add_column(conn, "bb_trends", "platform_signals", "TEXT")  # JSON
+
+    # Cost tracking table for budget gates
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS bb_grok_costs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL,
+            operation TEXT NOT NULL,
+            cost_usd REAL NOT NULL,
+            tokens_used INTEGER,
+            search_calls INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_grok_costs_date ON bb_grok_costs(date)"
+    )
+    conn.commit()
+    logger.info("Trends schema migration complete")
+
+
 def run_content_migration(conn: sqlite3.Connection) -> None:
     """
     Run all content production schema migrations (idempotent).
@@ -602,21 +636,202 @@ def add_trend(
     audience_segment: Optional[str] = None,
     knowledge_graph_match: bool = False,
     sample_urls: Optional[list[str]] = None,
+    # Extended fields from Grok (S2.6-lite)
+    description: Optional[str] = None,
+    content_angle: Optional[str] = None,
+    confidence: float = 0.0,
+    hashtags: Optional[list[str]] = None,
+    saturation: Optional[str] = None,
+    platform_signals: Optional[list[str]] = None,
 ) -> int:
-    """Add a trend scan result."""
+    """Add a trend scan result with optional extended Grok fields."""
     cursor = conn.execute(
         """INSERT INTO bb_trends
            (topic, score, sources, opportunity_level, audience_segment,
-            knowledge_graph_match, sample_urls)
-           VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            knowledge_graph_match, sample_urls, description, content_angle,
+            confidence, hashtags, saturation, platform_signals)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (
             topic, score, json.dumps(sources), opportunity_level,
             audience_segment, knowledge_graph_match,
             json.dumps(sample_urls or []),
+            description, content_angle, confidence,
+            json.dumps(hashtags or []),
+            saturation,
+            json.dumps(platform_signals or []),
         ),
     )
     conn.commit()
     return cursor.lastrowid
+
+
+def upsert_trend(
+    conn: sqlite3.Connection,
+    topic: str,
+    score: float,
+    sources: list[str],
+    opportunity_level: str = "low",
+    audience_segment: Optional[str] = None,
+    knowledge_graph_match: bool = False,
+    sample_urls: Optional[list[str]] = None,
+    description: Optional[str] = None,
+    content_angle: Optional[str] = None,
+    confidence: float = 0.0,
+    hashtags: Optional[list[str]] = None,
+    saturation: Optional[str] = None,
+    platform_signals: Optional[list[str]] = None,
+) -> int:
+    """Insert or update a trend by topic (upsert)."""
+    cursor = conn.execute(
+        "SELECT id FROM bb_trends WHERE topic = ?", (topic,)
+    )
+    existing = cursor.fetchone()
+
+    if existing:
+        conn.execute(
+            """UPDATE bb_trends SET
+               score = ?, sources = ?, opportunity_level = ?, audience_segment = ?,
+               knowledge_graph_match = ?, sample_urls = ?, description = ?,
+               content_angle = ?, confidence = ?, hashtags = ?, saturation = ?,
+               platform_signals = ?
+               WHERE id = ?""",
+            (
+                score, json.dumps(sources), opportunity_level, audience_segment,
+                knowledge_graph_match, json.dumps(sample_urls or []),
+                description, content_angle, confidence,
+                json.dumps(hashtags or []), saturation,
+                json.dumps(platform_signals or []),
+                existing["id"],
+            ),
+        )
+        conn.commit()
+        return existing["id"]
+
+    return add_trend(
+        conn, topic, score, sources, opportunity_level, audience_segment,
+        knowledge_graph_match, sample_urls, description, content_angle,
+        confidence, hashtags, saturation, platform_signals,
+    )
+
+
+# ============================================
+# GROK COST TRACKING (S2.6-lite)
+# ============================================
+
+
+def add_grok_cost(
+    conn: sqlite3.Connection,
+    operation: str,
+    cost_usd: float,
+    tokens_used: int = 0,
+    search_calls: int = 0,
+    cost_date: Optional[str] = None,
+) -> int:
+    """
+    Record a Grok API cost entry.
+
+    Args:
+        conn: SQLite connection
+        operation: Operation type (scan, deep_dive, suggest)
+        cost_usd: Cost in USD
+        tokens_used: Total tokens used
+        search_calls: Number of search tool calls
+        cost_date: Date string (YYYY-MM-DD), defaults to today (UTC)
+
+    Returns:
+        Row ID of inserted cost entry
+    """
+    if cost_date is None:
+        cost_date = datetime.now().strftime("%Y-%m-%d")
+
+    cursor = conn.execute(
+        """INSERT INTO bb_grok_costs
+           (date, operation, cost_usd, tokens_used, search_calls)
+           VALUES (?, ?, ?, ?, ?)""",
+        (cost_date, operation, cost_usd, tokens_used, search_calls),
+    )
+    conn.commit()
+    return cursor.lastrowid
+
+
+def get_grok_costs_for_date(
+    conn: sqlite3.Connection,
+    cost_date: Optional[str] = None,
+) -> dict:
+    """
+    Get total Grok costs for a specific date.
+
+    Args:
+        conn: SQLite connection
+        cost_date: Date string (YYYY-MM-DD), defaults to today (UTC)
+
+    Returns:
+        Dict with total_cost_usd, operations, tokens_used, search_calls
+    """
+    if cost_date is None:
+        cost_date = datetime.now().strftime("%Y-%m-%d")
+
+    cursor = conn.execute(
+        """SELECT
+            COALESCE(SUM(cost_usd), 0.0) as total_cost_usd,
+            COUNT(*) as operations,
+            COALESCE(SUM(tokens_used), 0) as tokens_used,
+            COALESCE(SUM(search_calls), 0) as search_calls
+           FROM bb_grok_costs WHERE date = ?""",
+        (cost_date,),
+    )
+    row = cursor.fetchone()
+    return {
+        "date": cost_date,
+        "total_cost_usd": row["total_cost_usd"],
+        "operations": row["operations"],
+        "tokens_used": row["tokens_used"],
+        "search_calls": row["search_calls"],
+    }
+
+
+def get_grok_costs_for_month(
+    conn: sqlite3.Connection,
+    year: Optional[int] = None,
+    month: Optional[int] = None,
+) -> dict:
+    """
+    Get total Grok costs for a specific month.
+
+    Args:
+        conn: SQLite connection
+        year: Year (defaults to current year)
+        month: Month 1-12 (defaults to current month)
+
+    Returns:
+        Dict with total_cost_usd, operations, tokens_used, search_calls
+    """
+    now = datetime.now()
+    if year is None:
+        year = now.year
+    if month is None:
+        month = now.month
+
+    month_prefix = f"{year:04d}-{month:02d}"
+
+    cursor = conn.execute(
+        """SELECT
+            COALESCE(SUM(cost_usd), 0.0) as total_cost_usd,
+            COUNT(*) as operations,
+            COALESCE(SUM(tokens_used), 0) as tokens_used,
+            COALESCE(SUM(search_calls), 0) as search_calls
+           FROM bb_grok_costs WHERE date LIKE ?""",
+        (f"{month_prefix}%",),
+    )
+    row = cursor.fetchone()
+    return {
+        "year": year,
+        "month": month,
+        "total_cost_usd": row["total_cost_usd"],
+        "operations": row["operations"],
+        "tokens_used": row["tokens_used"],
+        "search_calls": row["search_calls"],
+    }
 
 
 def get_recent_trends(

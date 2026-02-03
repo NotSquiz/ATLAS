@@ -1,12 +1,120 @@
 # ATLAS Session Handoff
 
-**Date:** February 2, 2026
-**Status:** Content production research COMPLETE. SYNTHESIS.md (1525 lines) + WORKFLOW.md (564 lines) verified by 12 agents. Ready for M1 (manual content).
+**Date:** February 4, 2026
+**Status:** S2.6-lite TrendService COMPLETE. Budget gates, brand safety, fallback chain implemented.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: Content Production Research Synthesis (Feb 2, 2026 - Session 13)
+## Current Session: S2.6-lite TrendService Implementation (Feb 4, 2026 - Session 16)
+
+### What We Did
+1. **Implemented S2.6-lite TrendService** — thin wrapper around GrokClient with:
+   - **Budget gates**: Daily ($0.50) and monthly ($5.00) limits, SQLite-based cost tracking
+   - **Brand safety filtering**: Phrase-level blocking with allowlist exceptions (D6)
+   - **Fallback chain**: 12 evergreen topics when Grok unavailable (D4 trigger conditions)
+   - **Data mapping**: GrokTrendTopic → TrendResult with full field preservation (D1)
+   - **Storage**: Extended bb_trends schema + upsert behavior
+
+2. **Schema migrations** (run_trends_migration):
+   - Added 6 columns to bb_trends: description, content_angle, confidence, hashtags, saturation, platform_signals
+   - Created bb_grok_costs table for budget tracking
+
+3. **CLI commands** added to `trends` subparser:
+   - `trends scan [--focus X] [--max 10]` — scan for trending topics
+   - `trends latest [--limit 10]` — show stored trends
+   - `trends budget` — show daily/monthly budget status
+   - `trends suggest [-n 5]` — get content suggestions
+
+4. **40 tests** across 6 categories (all passing):
+   - Budget gate (8 tests): limits, soft warning, post-hoc recording
+   - Fallback chain (7 tests): all D4 trigger conditions
+   - Brand-safety filter (8 tests): phrases, strict terms, allowlist
+   - Data mapping (5 tests): field preservation, enum mapping
+   - Storage (4 tests): insert, upsert, get_latest, suggest
+   - CLI integration (3 tests) + Scan integration (5 tests)
+
+### Files Created
+- `atlas/babybrains/trends/__init__.py` — Package exports
+- `atlas/babybrains/trends/engine.py` — TrendService class (420 lines)
+- `config/babybrains/fallback_topics.json` — 12 evergreen topics
+- `config/babybrains/brand_safety_blocklist.json` — Phrase-level safety rules
+- `tests/babybrains/test_trend_service.py` — 40 tests
+
+### Files Modified
+- `atlas/babybrains/models.py` — Extended TrendResult with 6 new fields
+- `atlas/babybrains/db.py` — Added run_trends_migration, extended add_trend, added upsert_trend, cost tracking functions
+- `atlas/babybrains/cli.py` — Added trends subcommand (scan, latest, budget, suggest)
+- `tests/babybrains/conftest.py` — Added run_trends_migration to fixture
+- `tests/babybrains/test_db.py` — Updated table count from 11 to 12
+
+### Test Results
+- TrendService tests: 40/40 passing
+- Full BB suite: 635 passed, 7 skipped (API key gated)
+
+### Design Decisions Implemented (from plan audit)
+- **D1**: Extended bb_trends schema + TrendResult for Grok fields
+- **D2**: SQLite bb_grok_costs table (not JSON file) for budget tracking
+- **D3**: Post-hoc cost accounting (record after API call completes)
+- **D4**: Fallback trigger conditions (empty+no cost+not cached = API failure)
+- **D5**: No additional circuit breaker (GrokClient manages its own)
+- **D6**: Phrase-level brand safety with allowlist exceptions
+
+### NOT Implemented (Deferred to Month 2+)
+- Temporal decay
+- Competitor saturation scoring
+- Learning loops
+- Cross-source aggregation (YouTube ToS)
+
+---
+
+## Previous Session: AI Detection Audit Implementation (Feb 4, 2026 - Session 15)
+
+### What We Did
+1. **Implemented verified audit plan** (3 independent agents verified per P54):
+   - **Bug fix (#16)**: Fixed `_is_superlative_exception()` position checking
+     - Before: Exception anywhere in text would exempt ALL matches of that word
+     - After: Exception must contain the specific match position
+     - Example: "Follow best practices. This is the best." — now correctly flags "the best"
+   - **Exception patterns (#10)**: Added "at best" and "suboptimal" patterns
+
+2. **Dropped 7 findings** (verified as intentional design differences):
+   - LLM-assisted context checking — destroys pipeline performance
+   - Generic negation detection — explicit exceptions are more precise
+   - Activity missing 7 categories — different content type (YAML vs prose)
+   - Unify "imperfect" approach — identical outcomes already
+   - Add severity to issue dicts — already has 4-level model via helpers
+   - Pre-compile regex — Python caches; premature optimization
+   - Line numbers — Content joins text; would need scene numbers (architectural change)
+
+### Files Modified
+- `atlas/babybrains/ai_detection.py`:
+  - Fixed `_is_superlative_exception()` to verify match position (lines 83-97)
+  - Added `\bat\s+best\b` to "best" exceptions (line 56)
+  - Added `\bsub-?optimal\b` to "optimal" exceptions (lines 79-81)
+- `tests/babybrains/test_ai_detection.py`:
+  - Added `test_position_checking_prevents_false_negative()` (lines 161-169)
+  - Added `test_best_exception_at_best()` (lines 171-174)
+  - Added `test_optimal_exception_suboptimal()` (lines 176-179)
+  - Added `test_optimal_exception_sub_optimal()` (lines 181-184)
+
+### Test Results
+- AI detection tests: 118/118 passing (114 existing + 4 new)
+- Full BB suite: 595 passed, 7 skipped (API key gated)
+
+### Manual Verification
+```bash
+echo '{"scenes":[{"vo_text":"Best practices are important. This is the best."}], "format_type":"60s"}' | python3 -m atlas.babybrains.content.hooks.qc_script
+```
+Returns: `SCRIPT_SUPERLATIVE` for "the best" (second instance) ✓
+
+---
+
+## Previous Session: AI Detection Cross-Reference Audit (Feb 4, 2026 - Session 14)
+
+---
+
+## Previous Session: Content Production Research Synthesis (Feb 2, 2026 - Session 13)
 
 ### What We Did
 1. **Implemented 5-phase content production research plan** (verified by 12 independent agents across 3 rounds):
@@ -734,8 +842,8 @@ Key insights (from 4-round audit):
 
 ---
 
-*Session updated: February 1, 2026 (Session 12 — S2.BF1 + V0.1 + V0.2)*
+*Session updated: February 4, 2026 (Session 16 — S2.6-lite TrendService)*
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
-*BB tests: 362 passing (54 YouTube + 59 Grok + 35 integration + 11 populate + 83 browser + 29 warming integration + 91 existing)*
+*BB tests: 635 passing (54 YouTube + 59 Grok + 35 integration + 11 populate + 83 browser + 29 warming integration + 40 trend service + 324 existing)*
 *Sprint Plan: babybrains-os/docs/automation/SPRINT_PLAN_V3.md (authoritative)*
 *Next: M1 (manual content production) — all code tasks and API validations complete*
