@@ -1,12 +1,553 @@
 # ATLAS Session Handoff
 
-**Date:** February 4, 2026
-**Status:** S2.6-lite TrendService COMPLETE. Budget gates, brand safety, fallback chain implemented.
+**Date:** February 10, 2026
+**Status:** Activity Conversion Pipeline pre-production audit fixes COMPLETE (Phases 1-5). Ready for Phase 6 smoke test.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: S2.6-lite TrendService Implementation (Feb 4, 2026 - Session 16)
+## Current Session: Activity Conversion Pipeline Pre-Production Audit & Fix (Feb 10, 2026 - Session 34)
+
+### What Was Done
+Implemented 5 phases from the 4-round Opus audit plan for the activity conversion pipeline (3,471 lines). The pipeline has never been run end-to-end in automated mode; all 28 canonical files were produced manually.
+
+### Phase 1: Unit Tests (102 tests)
+- Created `tests/pipelines/__init__.py`, `conftest.py`, `test_activity_conversion.py`
+- 102 tests covering 11 functions: `_parse_age_label`, `_detect_truncation`, `_fix_canonical_slug`, `_fix_principle_slugs` (24 parametrized mappings), `_remove_em_dashes`, `_quick_validate`, `_extract_audit_json`, `_should_skip`, `_get_group_info`, `_update_summary_counts`, `_fix_age_range`, `reconcile_progress`
+- Fixture uses `object.__new__()` to bypass heavy `__init__` constructor
+
+### Phase 2: Wire `_quick_validate` + `_fix_age_range` into ALL 3 code paths
+- **H7 fix:** `_fix_age_range` was only called in `elevate_existing_file`. Now called in all 3 paths: `convert_activity`, `_convert_from_cached_transform`, `elevate_existing_file`
+- **V1 fix:** `_quick_validate` was dead code (defined but never called). Now wired into all 3 paths as a fast pre-filter before expensive QC hook
+- **P5 fix:** `_quick_validate` now uses `ai_detection.py`'s `check_superlatives` (context-aware exceptions) and `check_pressure_language`. "best practices" no longer false-flagged.
+- Added `"ideal"` to `ai_detection.py` SUPERLATIVES with Montessori exception (`ideal period`)
+- Behavior differs per path: `convert_activity`/`_convert_from_cached_transform` return QC_FAILED; `elevate_existing_file` continues to next retry
+
+### Phase 3: Fix `_update_summary_counts` (C5)
+- Was only writing Done/Pending/Failed. Skipped was counted but not written.
+- Now writes all 7 statuses: Done, Pending, Failed, Skipped, Revision Needed, QC Failed, In Progress
+- Uses conditional insertion for fields that may not exist in the progress file header
+
+### Phase 4: Progress Tracker Reconciliation
+- Added `reconcile_progress()` method: scans canonical output dir, cross-references with progress data
+- Added `--reconcile` CLI argument
+- Reports: files on disk vs tracked, untracked files, missing files, status counts
+
+### Phase 5: QC Hook `--no-llm-context` Flag (V8)
+- Added `--no-llm-context` CLI flag and `QC_NO_LLM_CONTEXT` env var to `check_activity_quality.py`
+- When set, `LLM_CONTEXT_CHECK_ENABLED = False` -- all 4 LLM functions return False (default to flagging)
+- Gives regex-only QC: <1s vs 30-60s per activity
+
+### Files Created
+| File | Purpose |
+|------|---------|
+| `tests/pipelines/__init__.py` | Test package |
+| `tests/pipelines/conftest.py` | Pipeline fixture (object.__new__ approach) |
+| `tests/pipelines/test_activity_conversion.py` | 102 tests for 12 functions |
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `atlas/pipelines/activity_conversion.py` | Import ai_detection; rewrite `_quick_validate` to use shared module; wire `_fix_age_range` into 2 missing paths; wire `_quick_validate` into all 3 paths; fix `_update_summary_counts` for 7 statuses; add `reconcile_progress()`; add `--reconcile` CLI |
+| `atlas/babybrains/ai_detection.py` | Add `"ideal"` to SUPERLATIVES (9 words), add Montessori exception `ideal period` |
+| `knowledge/scripts/check_activity_quality.py` | Add `--no-llm-context` flag and `QC_NO_LLM_CONTEXT` env var |
+
+### Test Results
+- Pipeline tests: **102/102 passed**
+- AI detection tests: **118/118 passed**
+- Full BB suite: **660 passed, 7 skipped** (API key gated)
+
+### Next Steps (Phases 6-7)
+1. **Phase 6: Smoke Test** -- Run 3 diverse activities end-to-end with `--no-llm-context`:
+   ```bash
+   python -m atlas.pipelines.activity_conversion --activity <id> --retry 2
+   ```
+2. **Phase 7: Batch Configuration** -- Decide batch size, LLM context on/off, set up monitoring
+3. **BEGIN BATCH PROCESSING** -- ~202 pending activities
+
+---
+
+## Previous Session: Phase D Documentation & Config Sync (Feb 10, 2026 - Session 33)
+
+### What Was Done
+Updated all documentation, config files, and code to reflect Phase D four-layer architecture. 12 identified gaps between CHARACTER_GLOW_GUIDE.md and actual Phase D findings.
+
+### Files Modified
+
+| File | Action | Summary |
+|------|--------|---------|
+| `docs/research/bb-content-production/CHARACTER_GLOW_GUIDE.md` | EDIT (13 targeted edits) | Updated Production Reference Architecture to four-layer, fixed SSS from "DROPPED" to "CONFIRMED SAFE", updated --cref→--oref throughout, added Phase D findings, updated config schema to v3.0, added V7 incompatibilities |
+| `config/babybrains/mj_prompts.json` | REWRITE | V8→V9 Phase D. Added oref+sref dual reference, Phase D prompt language, updated negatives, removed SSS from keywords_to_avoid, added compound anatomical expression descriptors |
+| `config/babybrains/character_dna.json` | REWRITE | "Warm watercolour illustration"→"Phase D sculpted clay figurine". Documented four-layer architecture, expression library, production rules, V7 incompatibilities |
+| `atlas/babybrains/content/assets.py` | EDIT | Updated SSS_FORMULA to Phase D language, fixed KEYWORDS_TO_AVOID (removed SSS, added porcelain/vinyl) |
+| `tests/babybrains/test_assets.py` | EDIT | 5 tests updated for Phase D assertions |
+| `docs/research/bb-content-production/RESEARCH_PROMPT_DIRECTOR_AGENT_PIPELINE.md` | CREATE | Comprehensive Opus research prompt for Director Agent pipeline design |
+| `docs/research/bb-content-production/EXPRESSION_LIBRARY_PROMPTS.md` | CREATE | 8 copy-paste MJ prompts for expression library with evaluation rubrics |
+
+### Test Results
+- `test_assets.py`: **25/25 passed**
+- Full BB suite: **660 passed, 7 skipped, 0 failures**
+
+### Key SSS Correction
+Phase C Test 3 found SSS was not a visible TOGGLE (no difference with/without when warmth already present). This was misinterpreted as "SSS is unsafe" and it was DROPPED from prompts. Phase D testing (12+ images) confirmed SSS is SAFE when used alone — zero eye glow artifacts. It was only problematic when triple-stacked with "lit from within" + "bioluminescent." SSS phrase restored to production prompts for warmth control.
+
+### Next Steps
+1. User selects final oref (skin warmth candidate)
+2. Generate Phase D.2 expression library using prompts from EXPRESSION_LIBRARY_PROMPTS.md
+3. Give RESEARCH_PROMPT_DIRECTOR_AGENT_PIPELINE.md to Opus Research Agent for pipeline design doc
+4. Phase E: Kling animation testing
+5. Phase F: DaVinci glow post-production
+
+---
+
+## Previous Session: BB Mascot Phase D — Oref Refinement & Skin Warmth (Feb 9-10, 2026 - Sessions 31-32)
+
+### Context
+Phase D: solving the clay texture identity problem. Clay texture via clothing PROVEN. New oref created from best MJ output (Testing 1/clothing1.png) through sequential Gemini edits. Remaining blocker: skin warmth/radiance lost through editing passes.
+
+### Phase D Results Summary — Clay Texture & Architecture (Feb 9-10, ~200+ images)
+
+| Test | Verdict | Key Finding |
+|------|---------|-------------|
+| R1: --cref vs --oref | **SKIPPED** | MJ web UI "Omni Reference" box IS --oref. We've been using --oref all along. |
+| R2: Double-anchor (oref+sref) | **R2b WINS** | --sw 100 = 100% usable, best consistency. --sw 200 = clothing contamination. |
+| R3a: Current material language | **POOR** | 25-37% usable. Eye issues 50%, hand/foot issues 100%. |
+| R3b: Research material language | **CLEAN BUT NO CLAY** | 100% usable but reads as vinyl/3D render. Zero clay texture on skin. |
+| R3c: Stop-motion clay language | **MARGINAL** | Slight forehead texture. Still reads as 3D render. Clothing slightly more textile. |
+| Oref assessment | **ROOT CAUSE** | Current oref has ZERO clay texture → overrides all prompt language. |
+| Separated sref (real clay photo) | **BREAKTHROUGH** | Clay sculpture as sref + baby as oref = clay clothing texture achieved. |
+| New oref generation (raw clay sref) | **TOO AGGRESSIVE** | --sw 150 with raw clay sref = brown/monochrome, heavy, lost colour. |
+| New oref (Clothing 1 as sref) | **CLOSE** | --sw 75 = subtle texture. Good eyes but clothing texture too light for oref baseline. |
+| Clothing-to-clay conversion | **PROVEN** | Two-step: catalogue clothing → clay conversion via clay sref + image prompt. |
+| Gemini outfit edit (sage→cream) | **SUCCESS** | Clean colour swap, texture preserved. |
+| Gemini eye edit (→cornflower blue) | **SUCCESS** | Took 2 attempts (first too saturated cobalt). Final: soft cornflower blue. |
+| Gemini gaze edit (→direct camera) | **FAILED x3** | Gemini cannot do sub-pixel pupil repositioning. Gaze ~85% direct. |
+| Gemini background (→white) | **SUCCESS** | Clean cutout, no fringing. |
+| Photopea warmth grading | **PARTIAL** | Curves+CB+Sat got to ~80% of original warmth. Vintage/yellow feel, not radiant. |
+| Photopea Soft Light overlay | **FAILED** | Muddy, killed eye sparkle. Avoid. |
+| MJ warmth via old cref sref | **WARMTH YES, ARTIFACTS** | Grey bg bleed, grainy surface, blobby hands. Proves MJ can do warmth. |
+| **Skin warmth** | **UNSOLVED** | Post-processing cannot replicate MJ's baked-in warm lighting/luminosity. |
+
+### Phase D Critical Findings
+
+1. **--stop is NOT compatible with V7.** Research paper was wrong. Remove from all prompts.
+2. **The oref image is the strongest texture signal.** Prompt words cannot override a smooth oref. The oref must carry the desired texture.
+3. **Clay identity lives in the CLOTHING, not the skin.** Smooth skin + clay clothing = parents immediately recognise "clay figurine." Rough skin = unattractive.
+4. **Separated reference architecture works:** oref = character identity, sref = clay texture. BUT the sref must be the right intensity — raw clay sculpture is too aggressive (kills colour, makes everything brown).
+5. **Two-step clothing pipeline PROVEN:** Step 1: Convert catalogue clothing → clay using clay sref + clothing image prompt. Step 2: Apply clay clothing to character.
+6. **Batch-to-batch variance is significant.** Single batches can't determine true hit rates. R2b showed 100% in one batch, R3a (same params) showed 25% in another.
+7. **MJ V7 "polymer clay" = smooth/polished.** MJ interprets this as finished Sculpey figurines. Use "sculpted clay" or "modeling clay" for rougher texture.
+8. **Hands/feet remain the weakest point across ALL variants.** Blobby fists hide finger issues. Kling animation needs clear geometry.
+
+### Phase D New Architecture (Replacing Phase C Architecture)
+
+**Old:** Single --cref (smooth baby) + prompt text for everything
+**New:** Upgraded oref (baby WITH clay-textured clothing) + clay sref for texture reinforcement
+
+```
+Omni Reference (oref)  → CHARACTER + CLAY CLOTHING BASELINE (new image with sculpted clay garment)
+Style References (sref) → CLAY TEXTURE REINFORCEMENT (real clay sculpture photo, --sw 75-150)
+Image Prompts           → CLOTHING COLOUR/PATTERN (catalogue images converted to clay first)
+Prompt text             → SCENE, EXPRESSION, SPECIFIC OUTFIT DESCRIPTION
+```
+
+### Two-Step Clothing Pipeline
+
+```
+STEP 1: Convert catalogue clothing → clay
+  - Style References: Clay sculpture photo (Clay ref 1 or 2)
+  - Image Prompts: Catalogue clothing photo
+  - Prompt: "sculpted polymer clay [colour] [pattern] onesie, hand-formed clay
+    with visible tool marks and sculpting texture, miniature clothing, white background"
+  - Output: Clay interpretation of the garment
+
+STEP 2: Apply clay clothing to character
+  - Omni Reference: New master oref (baby with clay clothing)
+  - Style References: Clay sculpture photo
+  - Prompt: Full character prompt with outfit description
+  - Output: Baby character wearing clay-textured version of catalogue outfit
+```
+
+### Clay Style References
+
+| File | Description | Best --sw | Notes |
+|------|-------------|-----------|-------|
+| `Phase D/CLAY ref.png` | Raw clay baby sculpture close-up | 75-150 | Strong texture. At --sw 150+ kills colour → brown/monochrome |
+| `Phase D/CLAY 2 ref.png` | Olive/brown clay child sculpture | 75-150 | Heavier texture than ref 1. Good for aggressive clay look |
+| `Phase D/clothing1.png` | Baby with sage green clay onesie | 75 | Best balance of texture + colour. Use as sref for subtle clay |
+
+### New Oref Status: SELECTING FROM CANDIDATES
+
+The new oref has been refined through Gemini edits to achieve: cream clay-textured clothing, cornflower blue eyes, white background. The remaining issue is skin warmth — lost through multiple editing passes. User has several candidate images to evaluate.
+
+**Current image files in `docs/research/bb-illustrative/`:**
+- `--oref.png` — Base new oref (white bg, cream outfit, cornflower eyes, COOL skin)
+- `--oref-adjusted.png` — Photopea warmth-graded version (~80% of original warmth)
+- `--oref - adjusted.Fill.png` — Soft Light attempt (REJECTED - muddy)
+- `--cref.archived.png` — Original cref (perfect warmth, no clay clothing) — REFERENCE ONLY
+- `colour graded.png` — Gemini warmth attempt (REJECTED - yellow foundation look)
+- `maybe 1.png` — MJ gen with old cref as sref (best warmth but artifacts)
+- `1.png, 3.png, 6.png, 8.png` — Additional candidates user is evaluating
+- `test/` — Archived test images from earlier phases (moved to clean up)
+
+**Target oref qualities:**
+- Baby character identity preserved (face, eyes, proportions)
+- Clothing clearly reads as sculpted clay (visible tool marks, hand-formed)
+- Warm golden-peach skin tone with rosy cheeks (radiant, not yellow/vintage)
+- Cornflower blue eyes with catchlights
+- Cream/neutral outfit (won't bias future colour generations)
+- Clean white background
+- Front-facing sitting pose
+
+**Skin warmth options for next session:**
+1. Accept oref-adjusted (~80% warmth) — let prompt language carry the rest
+2. Strategic MJ run: --ow 200 + old cref as sref at --sw 50 + full warmth language. 2-3 batches only.
+3. Try Photopea "Photo Filter > Warming 85" at 10-20% density (not yet tested, reportedly forgiving)
+
+### Gemini (Nano Banana) Capabilities & Limits (Learned Session 32)
+- **Good at:** Outfit colour swaps, background removal, eye colour changes
+- **Bad at:** Sub-pixel gaze adjustment, subtle colour grading (applies flat tint), warmth/luminosity
+- **Each pass slightly degrades** image quality and shifts colour balance — minimize passes
+- **AI Moderator blocks** "nappy/diaper" + baby, "realistic clothing" in negatives
+
+### Photopea Techniques (Learned Session 32)
+- **Curves per-channel** (Red channel up, Blue channel down in midtones): Removes cool cast
+- **Color Balance** (Midtones: Red +8, Yellow +5; Highlights: Red +3): Targeted warmth
+- **Saturation +8-12**: Restores life to desaturated Gemini output
+- **Soft Light overlay**: AVOID — tints eyes, kills sparkle, muddy result
+- **Photo Filter (Warming 85)**: Not yet tested — reportedly most forgiving
+- Save PSD for working file, Export PNG for MJ use
+
+### Key Insight: Post-Processing Cannot Replicate MJ Baked-In Warmth
+The original cref's "radiant alive" quality comes from how MJ rendered warm light at generation time (subsurface scattering, clean highlights, directional warmth). Colour grading shifts hue/saturation but cannot add luminosity to a flat-lit image. Warming a dull image just makes it yellow/vintage, not radiant. If warmth is critical, it must come from MJ generation (prompt language + lighting) not post-processing.
+
+### Research Paper Errors Discovered
+
+| Claim | Reality |
+|-------|---------|
+| "--cref is dead in V7, migrate to --oref" | MJ web UI "Omni Reference" IS --oref. We were already using it. |
+| "--stop 85-90 preserves rough clay texture" | **--stop is NOT compatible with V7.** Prompt rejected. |
+| "Visible fingerprints" is the strongest texture cue | Prompt words cannot override a smooth oref. Reference image is stronger. |
+| "--stylize 500-700 fights photorealistic pull" | Not yet tested in isolation. May still be valid with image prompts. |
+
+### Phase C Results Summary (4 tests, ~80 images)
+
+| Test | Verdict | Key Finding |
+|------|---------|-------------|
+| 1. Colour palette (6 colours) | **PASS** | All colours hold, no grey-pulling. Knit/sleeves fail via text negatives. |
+| 2. Scene contexts (4 scenes) | **PASS** | All scenes render, character holds. Cool colours desaturate in warm light. |
+| 3. Warmth toggle (SSS A/B) | **FAIL** | No visible difference. SSS phrase is redundant. Skin nicer without it. **DROPPED from prompts.** |
+| 4. Image prompts (2 outfits) | **CONDITIONAL** | Garment shape YES, complex prints NO, degrades clay toward vinyl/porcelain. |
+
+### Phase C.5 Results — Image Prompt Refinement (3 sub-tests)
+
+| Sub-test | Image Prompt | Result |
+|----------|-------------|--------|
+| C.5a: --cref as --sref + flat-lay romper | Flat-lay product photo + --cref doubled as --sref at --sw 200 | Jumbo/ballooning clothing. --sref fought image prompt. |
+| C.5b: Full baby wearing clothes | Baby in striped onesie (white bg, no filter) | Expression contaminated (open mouth), clay → porcelain, but garment fit GOOD |
+| **C.5c: Cropped body (no face)** | Baby torso only, head removed, transparent bg | **WINNER.** Expression clean, garment fit good, short sleeves, hands/feet improved. Transparent bg → black (use white fill). Clay slightly degraded but usable. |
+
+**Validated clothing image prompt recipe:**
+```
+1. Product photo of garment ON a baby (fitted proportions)
+2. Crop head off (prevents expression contamination)
+3. Crop/remove background
+4. Fill background WHITE (not transparent — MJ reads transparent as black)
+5. Upload as image prompt alongside --cref
+```
+
+**Production rule:** Simple patterns (stripes, solids, colour-blocking) transfer cleanly. Complex illustrated prints don't. Garment SHAPE always transfers.
+
+### Key Decisions This Session
+1. **SSS phrase DROPPED from production prompts.** Test 3 proved no visible toggle effect. Skin nicer without it.
+2. **Clothing control via cropped image prompt, not text.** Text negatives cannot override MJ V7 knit prior. Image prompts solve garment shape + sleeves.
+3. **Colour-scene compatibility rules** for Director Agent: cool colours avoid warm interiors, cream avoids warm light.
+4. **--sref as clay anchor did NOT work** (C.5a). The --sref fights the image prompt rather than complementing it.
+5. **Cropped body (no face) is the optimal image prompt format** for clothing. Preserves garment fit info while avoiding expression/identity contamination.
+
+### PRODUCTION REFERENCES (Phase D — Evolving)
+
+| Reference | MJ Box | File | Description |
+|-----------|--------|------|-------------|
+| **Master oref (OLD)** | Omni Reference | `docs/research/bb-illustrative/--cref.archived.png` | Smooth baby, no clothing. ARCHIVED — has zero clay texture. Reference for warmth/skin tone only. |
+| **Master oref (NEW)** | Omni Reference | `docs/research/bb-illustrative/--oref.png` or `--oref-adjusted.png` (PENDING SELECTION) | Baby with clay-textured cream onesie, cornflower eyes, white bg. Skin warmth TBD. |
+| **Clay sref 1** | Style References | `test/` (moved to archive) | Raw clay baby sculpture. Use at --sw 75-150. |
+| **Clay sref 2** | Style References | `test/` (moved to archive) | Olive clay child sculpture. Heavier texture. |
+
+### Architecture: Four Independent Layers (Phase D)
+```
+Omni Reference (oref)    → CHARACTER + CLAY CLOTHING BASELINE
+Style References (sref)   → CLAY TEXTURE REINFORCEMENT (--sw 75-150)
+Image Prompts + text      → SPECIFIC OUTFIT (catalogue→clay conversion)
+DaVinci PowerGrade        → GLOW (breathing animation, post-production)
+```
+
+### Key Decisions Made This Session
+1. **--sref ABANDONED.** Phase B testing proved --sref contaminates clothing colour (blue→grey), sleeve length (short→long), garment style at ALL --sw levels (100/200/300). Not tunable.
+2. **Single --cref architecture adopted.** --cref carries character identity only. Clothing, warmth, scene, expression all via prompt text. Full creative freedom.
+3. **SSS warmth via PROMPT, not reference.** "Subtle warm subsurface scattering in the clay" in prompt text — include for warm scenes, omit for neutral. Proven to work with --cref-only.
+4. **No SSS baked into --cref.** Neutral skin baseline gives maximum flexibility. Warmth is scene-dependent, not character-dependent.
+5. **MJ V7 cannot produce fine hair.** After 30+ generations across multiple prompts/parameters, MJ stubbornly renders thick combed strands. Fixed via Nano Banana external AI editing.
+6. **Director Agent = animation studio pipeline.** Preset emotions, clothing options, scene templates, warmth levels. Agent composes from validated library.
+
+### Key Document: CHARACTER_GLOW_GUIDE.md
+`docs/research/bb-content-production/CHARACTER_GLOW_GUIDE.md` — ~1600+ lines, living document.
+Now includes: full Production Reference Architecture, Director Agent pipeline design, single --cref architecture rationale, config file structure, expression library plan, 11 agent guidance notes.
+
+### Phase Order (Current → Future)
+
+| Phase | Status | Description |
+|-------|--------|-------------|
+| **A: R14 Screening** | DONE | SSS confirmed as warmth trigger |
+| **B: Reference Architecture** | DONE | --sref abandoned, single --cref locked, prompt warmth |
+| **C: Colour + Scene Validation** | DONE | Colour PASS, scene PASS, SSS toggle FAIL (dropped), image prompt CONDITIONAL |
+| **C.5: Image Prompt Refinement** | DONE | Cropped body (no face) + white bg = best clothing method. --cref as --sref failed. |
+| **D: Clay Texture & New Oref** | **IN PROGRESS** | Clay identity via clothing (not skin). New oref with clay clothing. Two-step clothing pipeline proven. |
+| D.2: Expression Library | Pending | 6-8 emotion refs (after oref locked) |
+| E: Kling Animation Test | Pending | Breathing animation from production stills |
+| F: DaVinci PowerGrade | Pending | Tier 0/1/2 glow grades + Fusion breathing macro |
+| G: Director Agent Build | Pending | Agent reads config, assembles prompts from asset library |
+
+### Phase C+C.5 Protocol — COMPLETE
+All 4 Phase C tests + 3 Phase C.5 sub-tests complete (~80+ images analysed). See results tables above. Next phase: D (Expression Library).
+
+**Base prompt for Test 1:**
+```
+A stylized clay baby figurine sitting, smooth refined clay, smooth warm
+golden tan skin, round head, wearing a simple [COLOUR] short-sleeve
+onesie. Subtle warm subsurface scattering in the clay. Round silvery
+blue eyes full of wonder, fine wispy blonde hair close to scalp, calm
+gentle expression, small rounded hands with defined fingers, bare feet
+with five distinct small toes. Premium collectible figurine, art toy
+quality. Front lighting, soft warm fill light. Clean studio photography,
+neutral grey background, shallow depth of field.
+--cref [CREF_URL] --v 7 --style raw --s 250 --ar 2:3
+--no side lighting, rim light, backlit, rough texture, photorealistic,
+Disney, Pixar, glossy, neon, fire, sparks, cracks, veins, lava, heart,
+eyelashes, makeup, deformed hands, extra fingers, fused toes, missing
+fingers, transparent, translucent, thick hair, styled hair, volumized hair
+```
+
+### Image Analysis Protocol
+When user shares MidJourney generations, analyze each image with this scoring:
+
+| Dimension | What "Good" Looks Like |
+|-----------|----------------------|
+| **Glow quality (1-5)** | Warm, diffuse, internal-feeling, not side-lit or surface flush |
+| **Glow type** | Classify: diffuse body / heart-shaped / side-lit / surface warm / none |
+| **Character consistency (1-5)** | Peach fuzz hair, blue eyes with catchlights, clay texture, proportions |
+| **Video suitability (Y/N/Maybe)** | Clean forms, no complex textures that will morph, stable silhouette |
+| **--sref suitability** | Neutral bg, no distinctive clothing, controlled blush, even warmth |
+
+### Key Learnings from Reference Selection
+| Finding | Impact |
+|---------|--------|
+| --sref captures background + clothing + colour palette | Neutral bg MANDATORY for --sref |
+| Pupil-to-iris ratio determines engagement quality | SSS/8 rejected despite technical quality — "staring off" |
+| MJ V7 renders knit textures for baby figurines despite negatives | Accepted as unavoidable — prompt overrides at moderate --sw |
+| Nude baby prompts blocked by MJ moderator | Use "bodysuit matching clay skin tone" or neutral onesie |
+| "Bodysuit matching skin tone" creates colour zone differential | Grey onesie is safer — no colour contamination |
+| Expression library MUST use locked --sref | Generate emotions AFTER --sref is locked (Phase D) |
+| Three independent controls: --cref + --sref + prompt | Character identity, warmth style, and scene are separable |
+
+### --sref Winning Prompt (produced v2/6)
+```
+A stylized clay baby figurine sitting, smooth refined clay, smooth warm
+golden tan skin, round head, wearing a simple smooth plain light grey
+onesie. Subtle warm subsurface scattering in the clay. Round silvery
+blue eyes, subtle blonde hair close to scalp, calm gentle expression,
+small rounded hands with defined fingers, bare feet with five small
+toes. Premium collectible figurine, art toy quality. Front lighting,
+soft warm fill light. Clean studio photography, neutral grey background,
+shallow depth of field.
+--v 7 --style raw --s 250 --ar 2:3
+--no side lighting, rim light, backlit, rough texture, textured skin,
+pores, photorealistic, Disney, Pixar, glossy, neon, fire, sparks,
+cracks, veins, lava, heart, eyelashes, makeup, blush, deformed hands,
+extra fingers, fused toes, missing fingers, transparent, translucent,
+knitted, knit texture, woven, buttons, patterns, embroidery
+```
+
+### Files to Read
+1. `.claude/handoff.md` — This file (current state)
+2. `docs/research/bb-content-production/CHARACTER_GLOW_GUIDE.md` — Living glow reference (~1400+ lines) with LOCKED REFERENCES and Production Reference Architecture
+3. `docs/research/bb-content-production/ROUND_14_PROMPTS.md` — R14 results, contradiction resolutions, V7 compatibility
+4. `docs/research/bb-illustrative/Controlling inner glow on AI-generated clay figurines.md` — Research agent results (450 lines)
+5. `docs/research/bb-illustrative/bb baby ref.png` — LOCKED --cref (character identity)
+6. `docs/research/bb-illustrative/sss.v2/6.png` — LOCKED --sref (warmth/style reference)
+
+### Files Updated This Session
+- `.claude/handoff.md` — This file (full rewrite of current session section)
+- `docs/research/bb-content-production/CHARACTER_GLOW_GUIDE.md` — LOCKED REFERENCES table, Production Reference Architecture, dual reference system, expression library plan, agent guidance notes
+- `docs/research/bb-content-production/ROUND_14_PROMPTS.md` — Contradiction resolutions, full results section, V7 compatibility table
+
+---
+
+## Previous Session: BB Baby Character Asset V4 Update (Feb 4, 2026 - Session 18)
+
+### What We Did
+1. **Updated hero prompt with bioluminescent SSS language** (`atlas/babybrains/content/assets.py`):
+   - Added "subsurface scattering, lit from within" for inner glow effect
+   - Added "bioluminescent inner glow, soft inner luminance"
+   - Added "subtle translucency" for light passing through edges
+   - Added "wax-like warmth" for tactile quality (not plastic)
+   - Increased `--stylize 250` and added `--chaos 15` for SSS variation
+   - Added "Brancusi" reference for sculptural aesthetic
+
+2. **Added brand DNA constants**:
+   - `SSS_FORMULA`: Core subsurface scattering prompt formula
+   - `KEYWORDS_TO_AVOID`: Terms that cause generic drift (cute, adorable, plastic, etc.)
+   - Glow spectrum philosophy documented in code comments
+
+3. **Updated turnaround and expression prompts**:
+   - All prompts now include SSS language
+   - Added "cold lighting" to negative prompts
+   - Increased --stylize to 100 for consistency
+
+4. **Updated CharacterFeatures dataclass**:
+   - Added `translucency` and `texture` properties
+   - Updated `lighting` to describe bioluminescent inner glow
+
+5. **Updated config/babybrains/mj_prompts.json**:
+   - Added `brand_version: "V4 - Bioluminescent Subsurface Glow"`
+   - Added `brand_dna` section with visual language documentation
+   - All character prompts include SSS language
+
+6. **Added 7 new tests** for SSS language verification:
+   - `test_hero_prompt_has_sss_language`
+   - `test_hero_prompt_has_increased_stylize`
+   - `test_hero_prompt_has_chaos_for_variation`
+   - `test_sss_formula_constant_exists`
+   - `test_keywords_to_avoid_exists`
+   - `test_turnaround_prompts_have_sss`
+   - `test_expression_template_has_sss`
+
+### Files Modified
+- `atlas/babybrains/content/assets.py` — Added SSS language, brand DNA constants, updated CharacterFeatures
+- `config/babybrains/mj_prompts.json` — V4 brand-aligned prompts with SSS
+- `tests/babybrains/test_assets.py` — 7 new tests for SSS verification
+
+### Test Results
+- Asset tests: 25/25 passing (18 existing + 7 new)
+- Full BB suite: 660 passed, 7 skipped (API key gated)
+
+### Key Changes in V4 Hero Prompt
+
+**Before (Iteration 1 - missing inner glow):**
+```
+stylized sculptural infant, smooth ovoid head, soft matte clay surface,
+large expressive bright blue eyes, small natural swirl of warm light
+blonde hair at front of head, warm tan clay-amber skin, inner glow...
+--stylize 100
+```
+
+**After (V4 - Bioluminescent SSS):**
+```
+stylized sculptural infant, smooth ovoid head referencing Brancusi,
+soft matte clay surface with warm subsurface scattering, lit from within,
+large expressive bright blue eyes, small natural swirl of warm light
+blonde hair at front of head, warm tan clay-amber skin with subtle translucency,
+bioluminescent inner glow, soft inner luminance, simplified rounded body,
+soft cotton onesie in muted earth tones, clean white background, full body,
+front view, soft volumetric light, warm golden ambient lighting,
+stop-motion aesthetic, wax-like warmth
+--stylize 250 --chaos 15
+```
+
+### What to Look For in Iteration 2 Results
+- Warm amber inner luminance emanating FROM the character (not just surface lighting)
+- Subtle translucency at edges (ears, fingertips)
+- Character feels like it belongs with wooden brain & cosmic sphere assets
+- "Lit from within" quality similar to Maple Vertical brain asset
+
+### Next Steps (Phase 1 Iteration 2)
+1. Run V4 hero prompt in MidJourney (10-15 variations)
+2. Look for: bioluminescent inner glow visible, not just soft lighting
+3. Select best candidate with SSS quality
+4. Proceed to Phase 2 video validation
+
+---
+
+## Previous Session: BB Baby Character Asset Workflow (Feb 4, 2026 - Session 17)
+
+### What We Did
+1. **Implemented BB Baby character asset management module** (`atlas/babybrains/content/assets.py`):
+   - `AssetWorkflowState` class with 8 phases (Feature Spec → Photo Integration)
+   - `CharacterAsset`, `VideoValidationResult`, `StyleLockConfig` dataclasses
+   - `CharacterFeatures` dataclass with YOUR distinctive features (blonde swirl, blue eyes, tan skin)
+   - `AssetPhase` enum for workflow phases
+   - MidJourney V7 prompt templates (hero, turnaround, expressions, environments)
+   - Video tool prompts for Pika and Kling
+   - AU localisation cues and avoid list
+   - Persistent state at `~/.atlas/.babybrains/assets/workflow_state.json`
+
+2. **Created config files**:
+   - `config/babybrains/mj_prompts.json` — Full MidJourney V7 prompt library with syntax notes
+   - `config/babybrains/video_validation.json` — Pika/Kling test settings and success criteria
+
+3. **Added 8 CLI commands** (`assets` subcommand):
+   - `assets status` — Show workflow phase, decision gates, assets count
+   - `assets prompts` — Show MidJourney prompts for current phase
+   - `assets validate` — Record video validation result (--tool pika/kling --passed)
+   - `assets advance` — Advance to next workflow phase (with gate checks)
+   - `assets add-hero` — Add a hero character asset (--file, --url, --score, --notes)
+   - `assets select-hero` — Select hero as master reference
+   - `assets style-lock` — Lock calibrated style parameters (--sw, --ow)
+   - `assets select-tool` — Select video tool for production (--tool pika/kling)
+
+4. **Created test suite** (`tests/babybrains/test_assets.py`):
+   - 18 tests covering workflow state, assets, video validation, prompts
+   - All tests passing
+
+### Files Created
+- `atlas/babybrains/content/assets.py` — Asset management module (450+ lines)
+- `config/babybrains/mj_prompts.json` — MidJourney V7 prompt library
+- `config/babybrains/video_validation.json` — Video validation settings
+- `~/.atlas/.babybrains/assets/workflow_state.json` — Workflow state (auto-created)
+- `~/.atlas/.babybrains/assets/01_HERO/` through `08_PHOTO_REFS/` — Asset folder structure
+- `tests/babybrains/test_assets.py` — 18 tests
+
+### Files Modified
+- `atlas/babybrains/cli.py` — Added assets subcommand with 8 commands and routing
+
+### Test Results
+- New tests: 18/18 passing
+- Full BB suite: 653+ passed (635 existing + 18 new)
+
+### Key Design Decisions
+- **V7 syntax only** — Uses `--oref`/`--ow` (not deprecated `--cref`/`--cw`/`--iw`)
+- **TEXT-FIRST approach** — Generate character from text prompts first, photos optional later
+- **Decision gates** — Cannot advance phases without meeting criteria (hero selected, video validated, etc.)
+- **Fail-fast video validation** — Phase 2 tests in Pika/Kling before creating full asset library
+- **File-based state** — `workflow_state.json` persists across sessions
+
+### Usage
+```bash
+# Check status
+python3 -m atlas.babybrains.cli assets status
+
+# See prompts for current phase
+python3 -m atlas.babybrains.cli assets prompts
+
+# Advance to next phase
+python3 -m atlas.babybrains.cli assets advance
+
+# Add hero asset after generating in MidJourney
+python3 -m atlas.babybrains.cli assets add-hero --file ~/.atlas/.babybrains/assets/01_HERO/hero_v1.png --score 8.5
+
+# Select as master reference
+python3 -m atlas.babybrains.cli assets select-hero hero_v1
+
+# Record video validation
+python3 -m atlas.babybrains.cli assets validate --tool pika --passed
+
+# Lock style parameters after calibration
+python3 -m atlas.babybrains.cli assets style-lock --sw 300 --ow 150
+```
+
+---
+
+## Previous Session: S2.6-lite TrendService Implementation (Feb 4, 2026 - Session 16)
 
 ### What We Did
 1. **Implemented S2.6-lite TrendService** — thin wrapper around GrokClient with:
@@ -842,8 +1383,12 @@ Key insights (from 4-round audit):
 
 ---
 
-*Session updated: February 4, 2026 (Session 16 — S2.6-lite TrendService)*
+*Session updated: February 10, 2026 (Session 32 — Oref refinement, skin warmth is final blocker)*
 *Knowledge base: 22 sources, 338 items, 55 patterns, 67 actions*
-*BB tests: 635 passing (54 YouTube + 59 Grok + 35 integration + 11 populate + 83 browser + 29 warming integration + 40 trend service + 324 existing)*
+*BB tests: 660 passing, 7 skipped (API key gated)*
 *Sprint Plan: babybrains-os/docs/automation/SPRINT_PLAN_V3.md (authoritative)*
-*Next: M1 (manual content production) — all code tasks and API validations complete*
+*Phase A+B+C+C.5: COMPLETE*
+*Phase D: NEARLY COMPLETE — Clay texture, eyes, outfit, background all solved. Skin warmth is final issue. User selecting from candidates.*
+*Architecture: oref (baby+clay clothing) + sref (clay texture) + image prompts (catalogue→clay) + DaVinci post*
+*Key files: TESTING_PIPELINE_PHASE_D.md, CHARACTER_GLOW_GUIDE.md, bb-illustrative/ (images reorganised, test images in test/ subfolder)*
+*Tools used: MidJourney V7, Gemini Nano Banana (image editing), Photopea (colour grading)*

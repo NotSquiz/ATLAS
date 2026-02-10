@@ -42,6 +42,10 @@ from typing import Any, Optional
 
 import yaml
 
+from atlas.babybrains.ai_detection import (
+    check_superlatives as _ai_check_superlatives,
+    check_pressure_language as _ai_check_pressure,
+)
 from atlas.orchestrator.hooks import HookRunner
 from atlas.orchestrator.skill_executor import SkillExecutor, SkillLoader
 from atlas.orchestrator.scratch_pad import ScratchPad
@@ -393,6 +397,57 @@ class ActivityConversionPipeline:
                 }
         return None
 
+    def reconcile_progress(self) -> dict:
+        """
+        Reconcile progress tracker with actual files on disk.
+
+        C3 fix: Scans canonical output directory, cross-references with
+        progress data, identifies discrepancies:
+        - Files on disk but not tracked as 'done'
+        - Tracked as 'done' but no file on disk
+        - Count mismatches in header
+
+        Returns:
+            Dict with reconciliation report
+        """
+        on_disk = set()
+        disk_files = []
+
+        if self.CANONICAL_OUTPUT_DIR.exists():
+            for yaml_file in self.CANONICAL_OUTPUT_DIR.rglob("*.yaml"):
+                canonical_id = yaml_file.stem
+                on_disk.add(canonical_id)
+                disk_files.append(str(yaml_file.relative_to(self.CANONICAL_OUTPUT_DIR)))
+
+        # Activities tracked as done in progress
+        tracked_done = set()
+        for raw_id, data in self.progress_data.items():
+            if data.get("status") == "done":
+                tracked_done.add(raw_id)
+
+        # Find discrepancies
+        # Files on disk but not tracked (could be under canonical_id, not raw_id)
+        untracked = on_disk - tracked_done
+        # Tracked as done but no file on disk
+        missing_files = tracked_done - on_disk
+
+        # Build report
+        report = {
+            "files_on_disk": len(on_disk),
+            "tracked_done": len(tracked_done),
+            "untracked_files": sorted(untracked),
+            "missing_files": sorted(missing_files),
+            "disk_files": sorted(disk_files),
+            "status_counts": {},
+        }
+
+        # Count by status
+        for data in self.progress_data.values():
+            status = data.get("status", "unknown")
+            report["status_counts"][status] = report["status_counts"].get(status, 0) + 1
+
+        return report
+
     def get_deduplication_report(self) -> dict:
         """
         Generate a deduplication/grouping report.
@@ -543,8 +598,16 @@ class ActivityConversionPipeline:
             return False
 
     def _update_summary_counts(self, content: str) -> str:
-        """Update summary counts in progress file content."""
-        # Count statuses
+        """Update all 7 summary counts in progress file content.
+
+        C5 fix: Previously only wrote Done/Pending/Failed.
+        Now writes all 7 statuses: Done, Pending, Failed, Skipped,
+        Revision Needed, QC Failed, In Progress.
+
+        For fields that may not exist in the header, uses conditional
+        insertion after the "- Failed:" line.
+        """
+        # Count all statuses
         done = len([p for p in self.progress_data.values() if p["status"] == "done"])
         pending = len(
             [p for p in self.progress_data.values() if p["status"] == "pending"]
@@ -555,11 +618,38 @@ class ActivityConversionPipeline:
         skipped = len(
             [p for p in self.progress_data.values() if p["status"] == "skipped"]
         )
+        revision_needed = len(
+            [p for p in self.progress_data.values() if p["status"] == "revision_needed"]
+        )
+        qc_failed = len(
+            [p for p in self.progress_data.values() if p["status"] == "qc_failed"]
+        )
+        in_progress = len(
+            [p for p in self.progress_data.values() if p["status"] == "in_progress"]
+        )
 
-        # Update summary section
+        # Update existing fields via re.sub
         content = re.sub(r"- Done: \d+", f"- Done: {done}", content)
         content = re.sub(r"- Pending: \d+", f"- Pending: {pending}", content)
         content = re.sub(r"- Failed: \d+", f"- Failed: {failed}", content)
+        content = re.sub(r"- Skipped: \d+", f"- Skipped: {skipped}", content)
+
+        # C5 fix: Conditionally insert or update fields that may not exist
+        for label, count in [
+            ("Revision Needed", revision_needed),
+            ("QC Failed", qc_failed),
+            ("In Progress", in_progress),
+        ]:
+            pattern = f"- {label}: \\d+"
+            if re.search(pattern, content):
+                content = re.sub(pattern, f"- {label}: {count}", content)
+            else:
+                # Insert after "- Failed: \d+" line
+                content = re.sub(
+                    r"(- Failed: \d+)",
+                    f"\\1\n- {label}: {count}",
+                    content,
+                )
 
         return content
 
@@ -967,6 +1057,14 @@ class ActivityConversionPipeline:
         Catches the most common failures early to enable quick retry with
         targeted feedback, without running the full QC hook.
 
+        Uses ai_detection.py's check_superlatives (context-aware exceptions)
+        and check_pressure_language for consistency with the QC hook.
+        Keeps inline em-dash check and "make sure to" (not in ai_detection).
+
+        Design principle: This is an optimistic PRE-FILTER -- a fast subset
+        of what the QC hook checks. It must NOT be stricter than the QC hook
+        (or it would cause false retries). The QC hook remains authoritative.
+
         Args:
             yaml_content: Elevated YAML content to check
 
@@ -975,30 +1073,42 @@ class ActivityConversionPipeline:
         """
         issues = []
 
-        # Common anti-patterns with their codes
-        quick_checks = [
-            (r"\byou\s+need\s+to\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'you need to'"),
-            (r"\byou\s+must\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'you must'"),
-            (r"\byou\s+have\s+to\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'you have to'"),
-            (r"\bnever\s+allow\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'never allow'"),
-            (r"\bmake\s+sure\s+to\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'make sure to'"),
-            (r"\byou\s+should\s+always\b", "VOICE_PRESSURE_LANGUAGE", "pressure", "Found 'you should always'"),
-            (r"\b(amazing|incredible|wonderful|fantastic)\b", "VOICE_SUPERLATIVE", "superlative", "Found superlative"),
-            (r"\b(perfect|optimal|best|ideal)\b", "VOICE_SUPERLATIVE", "superlative", "Found superlative"),
-            (r"—", "VOICE_EM_DASH", "emdash", "Found em-dash character"),
-        ]
+        # 1. Superlatives via ai_detection (context-aware exceptions)
+        # Maps SCRIPT_* codes to VOICE_* codes for pipeline consistency
+        for ai_issue in _ai_check_superlatives(yaml_content):
+            issues.append({
+                "code": "VOICE_SUPERLATIVE",
+                "category": "superlative",
+                "issue": ai_issue["msg"],
+                "severity": "block",
+            })
 
-        for pattern, code, category, base_msg in quick_checks:
-            matches = re.findall(pattern, yaml_content, re.IGNORECASE)
-            if matches:
-                # Include the actual matched text in the message
-                match_text = matches[0] if isinstance(matches[0], str) else matches[0][0]
-                issues.append({
-                    "code": code,
-                    "category": category,
-                    "issue": f"{base_msg}: '{match_text}'",
-                    "severity": "block",
-                })
+        # 2. Pressure language via ai_detection
+        for ai_issue in _ai_check_pressure(yaml_content):
+            issues.append({
+                "code": "VOICE_PRESSURE_LANGUAGE",
+                "category": "pressure",
+                "issue": ai_issue["msg"],
+                "severity": "block",
+            })
+
+        # 3. "make sure to" -- unique to pipeline, not in ai_detection
+        if re.search(r"\bmake\s+sure\s+to\b", yaml_content, re.IGNORECASE):
+            issues.append({
+                "code": "VOICE_PRESSURE_LANGUAGE",
+                "category": "pressure",
+                "issue": "Found 'make sure to'. Use supportive language instead.",
+                "severity": "block",
+            })
+
+        # 4. Em-dash check (simple presence check)
+        if "—" in yaml_content:
+            issues.append({
+                "code": "VOICE_EM_DASH",
+                "category": "emdash",
+                "issue": "Found em-dash character. Use commas, periods, or line breaks.",
+                "severity": "block",
+            })
 
         if issues:
             logger.info(f"[QUICK-VALIDATE] Found {len(issues)} anti-patterns before full QC")
@@ -1768,6 +1878,22 @@ OR if blocking issues found:
             # LLMs sometimes generate slugs like 'practical-life' instead of 'practical_life'
             elevated_yaml = self._fix_principle_slugs(elevated_yaml)
 
+            # H7: Fix age range to match original (ELEVATE may incorrectly change it)
+            elevated_yaml = self._fix_age_range(elevated_yaml, canonical_yaml)
+
+            # V1: Quick pre-validation -- catch obvious failures before expensive QC/audit
+            quick_issues = self._quick_validate(elevated_yaml)
+            if quick_issues:
+                issue_msgs = [i["issue"] for i in quick_issues]
+                return ConversionResult(
+                    activity_id=raw_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=issue_msgs,
+                    elevated_yaml=elevated_yaml,
+                )
+
             # D78: Early truncation detection - check before expensive QC/AUDIT stages
             # All canonical Activity Atoms end with parent_search_terms list
             is_truncated, truncation_reason = self._detect_truncation(elevated_yaml)
@@ -2219,6 +2345,22 @@ If ANY of these appear, rewrite that sentence before outputting.
         elevated_yaml = self._fix_canonical_slug(elevated_yaml, canonical_id)
         elevated_yaml = self._fix_principle_slugs(elevated_yaml)
 
+        # H7: Fix age range to match original (ELEVATE may incorrectly change it)
+        elevated_yaml = self._fix_age_range(elevated_yaml, canonical_yaml)
+
+        # V1: Quick pre-validation -- catch obvious failures before expensive QC/audit
+        quick_issues = self._quick_validate(elevated_yaml)
+        if quick_issues:
+            issue_msgs = [i["issue"] for i in quick_issues]
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.QC_FAILED,
+                canonical_id=canonical_id,
+                file_path=file_path,
+                qc_issues=issue_msgs,
+                elevated_yaml=elevated_yaml,
+            )
+
         # D78: Early truncation detection
         is_truncated, truncation_reason = self._detect_truncation(elevated_yaml)
         if is_truncated:
@@ -2658,6 +2800,22 @@ If ANY of these appear, rewrite that sentence before outputting.
 
             # Fix age range to match original file (ELEVATE may incorrectly change it)
             elevated_yaml = self._fix_age_range(elevated_yaml, existing_yaml)
+
+            # V1: Quick pre-validation -- catch obvious failures before expensive QC/audit
+            quick_issues = self._quick_validate(elevated_yaml)
+            if quick_issues:
+                issue_msgs = [i["issue"] for i in quick_issues]
+                if not is_final_attempt:
+                    feedback = f"Quick validation issues: {issue_msgs}"
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=issue_msgs,
+                    elevated_yaml=elevated_yaml,
+                )
 
             # Check for truncation
             is_truncated, truncation_reason = self._detect_truncation(elevated_yaml)
@@ -3106,7 +3264,11 @@ Quality audit requires Grade A to proceed to human review.
     )
     action.add_argument(
         "--elevate-existing", metavar="YAML_PATH",
-        help="Elevate an existing YAML file through stages 4-7 (ELEVATE → VALIDATE → QC → AUDIT)"
+        help="Elevate an existing YAML file through stages 4-7 (ELEVATE -> VALIDATE -> QC -> AUDIT)"
+    )
+    action.add_argument(
+        "--reconcile", action="store_true",
+        help="Reconcile progress tracker with files on disk (C3 fix)"
     )
 
     # Options
@@ -3182,6 +3344,40 @@ Quality audit requires Grade A to proceed to human review.
         else:
             print("✓ All conversion map references validated")
             print()
+
+    elif args.reconcile:
+        report = pipeline.reconcile_progress()
+
+        print(f"\n{'='*60}")
+        print("PROGRESS RECONCILIATION REPORT")
+        print(f"{'='*60}\n")
+        print(f"Files on disk:    {report['files_on_disk']}")
+        print(f"Tracked as done:  {report['tracked_done']}")
+        print()
+
+        if report["status_counts"]:
+            print("Status counts (from progress tracker):")
+            for status, count in sorted(report["status_counts"].items()):
+                print(f"  {status}: {count}")
+            print()
+
+        if report["untracked_files"]:
+            print(f"Untracked files ({len(report['untracked_files'])} on disk, not tracked as done):")
+            for f in report["untracked_files"][:20]:
+                print(f"  - {f}")
+            if len(report["untracked_files"]) > 20:
+                print(f"  ... and {len(report['untracked_files']) - 20} more")
+            print()
+
+        if report["missing_files"]:
+            print(f"Missing files ({len(report['missing_files'])} tracked as done, no file):")
+            for f in report["missing_files"][:20]:
+                print(f"  - {f}")
+            print()
+
+        if not report["untracked_files"] and not report["missing_files"]:
+            print("No discrepancies found.")
+        print(f"{'='*60}\n")
 
     elif args.list_pending:
         pending = pipeline.get_pending_activities()

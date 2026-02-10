@@ -413,6 +413,10 @@ python -m atlas.orchestrator.skill_executor --skill draft_21s --repo babybrains-
 | SKIPPED Handler (D86) | `activity_conversion.py` | ✅ Complete | Handle SKIPPED status in CLI paths (Jan 23) |
 | Adversarial Coverage (D87) | `activity_conversion.py` | ✅ Complete | Increase from 5000 to 15000 chars (~75% coverage) (Jan 23) |
 | File Lock on Parse (D88) | `activity_conversion.py` | ✅ Complete | Add LOCK_SH when reading progress file (Jan 23) |
+| Pre-Production Audit Fix (D89) | `activity_conversion.py` | ✅ Complete | Wire `_quick_validate` + `_fix_age_range` into all 3 code paths; fix `_update_summary_counts` for 7 statuses; add `reconcile_progress()` + `--reconcile` CLI (Feb 10) |
+| AI Detection Ideal (D90) | `ai_detection.py` | ✅ Complete | Add "ideal" to SUPERLATIVES (9 words) with Montessori exception `ideal period` (Feb 10) |
+| QC No-LLM Flag (D91) | `check_activity_quality.py` | ✅ Complete | `--no-llm-context` flag + `QC_NO_LLM_CONTEXT` env var for regex-only QC (Feb 10) |
+| Pipeline Unit Tests | `tests/pipelines/test_activity_conversion.py` | ✅ Complete | 102 tests covering 12 deterministic pipeline functions (Feb 10) |
 | CLI Mode | `SkillExecutor(timeout=300)` | ✅ Complete | Max subscription - no API key needed (Jan 9) |
 | Stdin-Based CLI (D24) | `skill_executor.py`, `subagent_executor.py` | ✅ Complete | Pass prompts via stdin to avoid ARG_MAX (Jan 10) |
 | Deterministic Slug (D25) | `activity_conversion.py:_fix_canonical_slug()` | ✅ Complete | Post-process canonical_slug derivation (Jan 10) |
