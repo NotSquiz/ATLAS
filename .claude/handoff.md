@@ -1,12 +1,218 @@
 # ATLAS Session Handoff
 
-**Date:** February 11, 2026
-**Status:** Guidance Content Gap Remediation Batch 1 COMPLETE (3 files). Pipeline fix from Session 37 still active.
+**Date:** February 12, 2026
+**Status:** 4 Pipeline Robustness Fixes COMPLETE. 146 pipeline tests pass (132 original + 14 new). P54 critic review done, BUG-1/3/4/SEC-1 addressed.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: Guidance Content Gap Remediation Batch 1 (Feb 11, 2026 - Session 38)
+## Current Session: Pipeline Robustness Fixes (Feb 12, 2026 - Session 40)
+
+### What Was Done
+
+**Fixed 4 pipeline robustness issues blocking automated activity conversion:**
+
+| # | Fix | Severity | Files |
+|---|-----|----------|-------|
+| 1 | Stage cache persistence across runs | CRITICAL | activity_conversion.py |
+| 2 | Non-interactive stdin detection | HIGH | activity_conversion.py |
+| 3 | Graceful shutdown + orphaned progress cleanup | MEDIUM | activity_conversion.py |
+| 4 | Per-stage timeout configuration | LOW | activity_conversion.py, skill_executor.py |
+
+**Fix 1 details:**
+- Session ID changed from `convert_{raw_id}_{timestamp}` to `convert_{raw_id}` (deterministic)
+- `convert_with_retry()` reloads cached transform from disk at start
+- Loop condition changed from `attempt == 0 or cached_transform is None` to `cached_transform is None` (P54 BUG-1 fix)
+- Cache path sanitized against path traversal (P54 SEC-1 fix)
+
+**Fix 2 details:**
+- `present_for_review()` checks `sys.stdin.isatty()` at top
+- Non-interactive: auto-approves Grade A, auto-rejects below
+
+**Fix 3 details:**
+- Flag-based signal handlers (SIGINT/SIGTERM) with atexit cleanup (P54 BUG-3/4 fix: avoids deadlock)
+- `_current_activity_id` tracked in `_update_progress_file()`
+- `cleanup_stale_progress()` method + `--cleanup-stale` CLI flag
+- `last_updated` timestamp added to progress cache
+
+**Fix 4 details:**
+- `STAGE_TIMEOUTS` class constant: ingest=300s, research=600s, transform=900s, elevate=1500s, validate=300s, qc_hook=60s, quality_audit=900s
+- `timeout` parameter added to `SkillExecutor.execute()` and `_execute_cli()`
+- Stage timing logs: `[STAGE_NAME] Completed in {duration:.1f}s`
+
+**P54 Independent Critic findings (addressed):**
+- BUG-1 (HIGH): Disk cache loaded but never used on attempt 0 -- FIXED (changed `or` to `and` logic)
+- BUG-3/4 (MEDIUM): Signal handler deadlock risk -- FIXED (flag-based + atexit)
+- SEC-1 (LOW): raw_id in cache path not sanitized -- FIXED (regex sanitization)
+- BUG-2 (latent): Deferred -- only triggers if scratch_pad/session uninitialized, which won't happen with current _convert_from_cached_transform path
+
+**Test Results:**
+- Pipeline tests: 146 pass (132 original + 14 new)
+- Full suite: 1033 pass, 2 pre-existing fails (Garmin auth, UI state file)
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `atlas/pipelines/activity_conversion.py` | All 4 fixes + P54 corrections |
+| `atlas/orchestrator/skill_executor.py` | timeout parameter added to execute() and _execute_cli() |
+| `tests/pipelines/test_activity_conversion.py` | 14 new tests (4 cache persistence, 2 stdin detection, 4 graceful shutdown, 4 stage timeouts) |
+
+### Next Session: Re-run Activities + Live Pipeline Testing
+
+**IMPORTANT FINDING:** 4 previously converted activities (January 2026) are missing guidance
+cross-references because the guidance files didn't exist at conversion time. These must be
+RE-RUN through the full pipeline (not patched) — the pipeline now has the guidance catalog
+and will produce proper cross-references during the RESEARCH stage.
+
+**Phase A: Clear stale scratch pad caches for re-runs**
+The 4 existing activities may have stale scratch pads from their original conversion.
+Delete them before re-running so the pipeline does a full fresh conversion:
+```bash
+rm -f ~/.atlas/scratch/convert_narrating-daily-care*.json
+rm -f ~/.atlas/scratch/convert_infant-sign-language*.json
+rm -f ~/.atlas/scratch/convert_reciting-and-acting-out-nursery-rhymes*.json
+rm -f ~/.atlas/scratch/convert_washing-fruits-and-vegetables*.json
+```
+Also reset their progress status if needed:
+```bash
+python3 -m atlas.pipelines.activity_conversion --cleanup-stale
+```
+
+**Phase B: Re-run the 4 existing activities (full pipeline, one at a time)**
+
+| # | Activity | Domain | Age | Missing Guidance Link | File Exists |
+|---|----------|--------|-----|----------------------|-------------|
+| 1 | `narrating-daily-care` | language | 0-12m | GUIDANCE_LANGUAGE_0001 | Yes (overwrite) |
+| 2 | `infant-sign-language` | language | 6-36m | GUIDANCE_LANGUAGE_0001 + 0002 | Yes (overwrite) |
+| 3 | `reciting-and-acting-out-nursery-rhymes` | language | 12-36m | GUIDANCE_LANGUAGE_0002 | Yes (overwrite) |
+| 4 | `washing-fruits-and-vegetables` | practical_life | 12-36m | GUIDANCE_PRACTICAL_LIFE_0001 | Yes (overwrite) |
+
+```bash
+# Run each one sequentially, ~15-21 min each
+python3 -m atlas.pipelines.activity_conversion --activity narrating-daily-care --retry 3 --verbose --auto-approve
+```
+
+**NOTE:** These activities already have canonical YAML files on disk. The pipeline should
+overwrite them with improved versions that include proper guidance cross-references. Verify
+the output files have `links_to_guidance` entries referencing the new guidance IDs.
+
+**Phase C: New activities (verify pipeline fixes work end-to-end)**
+
+| # | Activity | Why | Status |
+|---|----------|-----|--------|
+| 5 | `treasure-baskets-of-real-objects` | Cache test — got Grade A in Session 40, should use cached transform | Re-run |
+| 6 | `using-vocabulary-books` | Tests GUIDANCE_LANGUAGE_0002 cross-ref | New |
+| 7 | `cutting-a-banana` | Group primary (4 sources), hardest test | New |
+
+**After each activity, verify:**
+- Output file exists in `/home/squiz/code/knowledge/data/canonical/activities/{domain}/`
+- Grade A achieved
+- `links_to_guidance` contains expected guidance IDs
+- No QC violations
+- Australian English throughout
+
+**Phase D: Commit + push all results to knowledge repo**
+After all activities pass, commit the new/updated files to the knowledge repo.
+
+### Deferred Items
+1. Add 7 evidence IDs to EVIDENCE_BACKLOG.csv for tracking
+2. Batch 2 guidance files (3 more) when ready
+3. P54 BUG-2: Initialize scratch_pad/session in _convert_from_cached_transform path (latent, not triggerable currently)
+4. Systemic: Add post-guidance-creation process to scan existing activities for missing cross-references
+
+---
+
+## Previous Session: 7-Phase Production Test Suite (Feb 11, 2026 - Session 39)
+
+### What Was Done
+
+**Executed 7-phase production-grade testing suite on Batch 1 guidance YAMLs.**
+
+| Phase | Test | Verdict |
+|-------|------|---------|
+| 1 | Knowledge repo Tier 1 validation scripts (5 scripts) | PASS (1 pre-existing fail) |
+| 2 | YAML schema + catalog + referential integrity | PASS |
+| 3 | Content quality anti-pattern scan (QC rules) | PASS (4 false positives) |
+| 4 | Pytest regression suite (1019 tests) | PASS (0 regressions, 2 pre-existing fails) |
+| 5 | Activity conversion pipeline smoke test | PASS |
+| 6 | P54 independent critic audit (cold review) | PASS after fixes |
+| 7 | Cross-repo consistency verification | PASS |
+
+**P54 Critic (Phase 6) found 2 issues in GUIDANCE_LANGUAGE_0002, now fixed:**
+- Line 62: "bin lorry" -> "garbage truck" (British English, not Australian)
+- Line 195: "astonishing capacity" -> "genuine capacity" (superlative removal)
+- Line 195: "an" -> "a" (article grammar fix from replacement)
+
+**Phase 1 notable findings (all pre-existing):**
+- `check_ledger_activities_materials.py`: FAIL (4 canonical entries missing, 3 legacy placeholders)
+- `check_guidance_evidence_refs.py`: FAIL (7 unknown evidence IDs from new files -- expected, evidence atoms not yet created)
+
+**Phase 7 cross-repo verification:**
+- Catalog-to-filesystem: 38/38 bidirectional match, zero orphans
+- Dangling guidance refs: 16/17 resolve; 1 dangling (GUIDANCE_COMMUNICATION_0001 pre-existing)
+- Materials catalog: 20 entries (unchanged)
+- 7 new evidence IDs NOT yet in EVIDENCE_BACKLOG.csv (follow-up needed)
+
+### Files Modified (this session)
+| File | Repo | Changes |
+|------|------|---------|
+| `data/canonical/guidance/language/GUIDANCE_LANGUAGE_0002.yaml` | knowledge | P54 fixes: "bin lorry"->"garbage truck", "astonishing"->"genuine" |
+
+### Completed Between Sessions
+- P54 fixes committed and pushed to knowledge repo (commit 0b86239)
+- `spreading-on-a-cracker` correctly skipped by pipeline (non-primary group member — validates grouping logic)
+- `treasure-baskets-of-real-objects` achieved **Grade A on attempt 2** but pipeline hung at interactive approval prompt
+
+### Next Session: Fix Pipeline Robustness Issues, Then Resume Live Testing
+
+**Problem discovered:** The pipeline has 4 robustness issues that block reliable automated execution. These must be fixed BEFORE continuing live testing.
+
+**Issue 1 (HIGH): Interactive prompt blocks non-interactive execution**
+- File: `atlas/pipelines/activity_conversion.py` line ~3027
+- `input("> ")` blocks when stdin is non-interactive (background mode, piped input)
+- `--auto-approve` exists but shouldn't be required for programmatic use
+- Fix: Add `sys.stdin.isatty()` check at start of `present_for_review()`, auto-skip if non-interactive
+
+**Issue 2 (CRITICAL): Stage cache doesn't persist across runs**
+- File: `atlas/pipelines/activity_conversion.py` lines ~2085-2087
+- Each run creates a NEW scratch pad with unique timestamp in session_id
+- Cache is in-memory only within `convert_with_retry()` — the `cached_transform` variable is local
+- Scratch pad IS written to disk (`~/.atlas/scratch/convert_{raw_id}_{timestamp}.json`) but is NEVER reloaded on subsequent runs
+- Fix: Use deterministic session_id (no timestamp), reload existing scratch pad on startup, extract cached transform
+
+**Issue 3 (MEDIUM): No per-stage timeout configuration**
+- File: `atlas/orchestrator/skill_executor.py` line ~586
+- Global 1200s (20min) timeout for ALL stages via `ATLAS_CLI_TIMEOUT`
+- Simple stages (INGEST, VALIDATE) don't need 20 min; complex stages (ELEVATE) might need more
+- Fix: Add per-stage timeout dict, pass stage-specific timeout to skill executor
+
+**Issue 4 (MEDIUM): Orphaned IN_PROGRESS on interruption**
+- File: `atlas/pipelines/activity_conversion.py` lines ~3341, 3383
+- If process is killed mid-execution, status stays IN_PROGRESS forever
+- No staleness detection or cleanup mechanism
+- Fix: Add signal handler for graceful shutdown, add `--cleanup-stale` CLI command, add timestamp to progress entries
+
+**Key file locations for fixes:**
+- Pipeline main: `atlas/pipelines/activity_conversion.py` (~3900 lines)
+- Scratch pad: `atlas/orchestrator/scratch_pad.py`
+- Skill executor: `atlas/orchestrator/skill_executor.py` (subprocess calls at ~line 586)
+- Progress file: `/home/squiz/code/knowledge/.claude/workflow/CONVERSION_PROGRESS.md`
+
+**After fixes, resume live testing with:**
+
+| # | Activity | Why | Status |
+|---|----------|-----|--------|
+| 1 | `treasure-baskets-of-real-objects` | Got Grade A but wasn't written to disk | Re-run with fixes |
+| 2 | `using-vocabulary-books` | Tests GUIDANCE_LANGUAGE_0002 | Pending |
+| 3 | `cutting-a-banana` | Group primary (4 sources), hardest test | Pending |
+
+### Deferred Items
+1. Add 7 evidence IDs to EVIDENCE_BACKLOG.csv for tracking
+2. Batch 2 guidance files (3 more) when ready
+
+---
+
+## Previous Session: Guidance Content Gap Remediation Batch 1 (Feb 11, 2026 - Session 38)
 
 ### What Was Done
 
