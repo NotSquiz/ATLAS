@@ -453,6 +453,7 @@ class SkillExecutor:
         validate: bool = True,
         max_tokens: int = 4096,
         temperature: float = 0.3,  # Lower temp for structured output
+        timeout: Optional[int] = None,  # Per-stage timeout override (seconds)
     ) -> SkillResult:
         """
         Execute a skill and return structured output.
@@ -498,7 +499,7 @@ class SkillExecutor:
             )
         else:
             raw_output, tokens_used, duration_ms, exec_error = await self._execute_cli(
-                prompt, skill_markdown
+                prompt, skill_markdown, timeout=timeout
             )
 
         if exec_error:
@@ -543,6 +544,7 @@ class SkillExecutor:
         self,
         prompt: str,
         system_prompt: str,
+        timeout: Optional[int] = None,
     ) -> tuple[str, int, float, Optional[str]]:
         """
         Execute via Claude CLI (uses Max subscription - $0).
@@ -565,6 +567,7 @@ class SkillExecutor:
                 "claude",
                 "-p",  # Print mode (non-interactive)
                 "--output-format", "text",  # Get raw text output
+                "--tools", "",  # Disable tools — skills are pure generation
             ]
 
             # Handle large system prompts via temp file
@@ -580,7 +583,9 @@ class SkillExecutor:
             else:
                 cmd.extend(["--system-prompt", system_prompt])
 
-            # Run CLI command with prompt via stdin (10 minute timeout)
+            # Run CLI command with prompt via stdin
+            # Per-stage timeout overrides env var, which overrides default 1200s
+            cli_timeout = timeout or int(os.environ.get("ATLAS_CLI_TIMEOUT", "1200"))
             result = await asyncio.wait_for(
                 asyncio.to_thread(
                     subprocess.run,
@@ -588,12 +593,12 @@ class SkillExecutor:
                     input=prompt,  # Pass prompt via stdin to avoid ARG_MAX
                     capture_output=True,
                     text=True,
-                    timeout=600,  # 10 minute timeout for complex skills
+                    timeout=cli_timeout,
                 ),
-                timeout=610,  # Slightly longer async timeout
+                timeout=cli_timeout + 10,  # Slightly longer async timeout
             )
         except asyncio.TimeoutError:
-            return "", 0, 0.0, "CLI execution timed out after 10 minutes"
+            return "", 0, 0.0, f"CLI execution timed out after {cli_timeout} seconds"
         except Exception as e:
             return "", 0, 0.0, f"CLI execution failed: {e}"
         finally:

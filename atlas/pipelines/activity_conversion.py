@@ -31,7 +31,9 @@ import json
 import logging
 import os
 import re
+import signal
 import subprocess
+import time
 import sys
 import tempfile
 from dataclasses import dataclass, field
@@ -122,6 +124,18 @@ class ActivityConversionPipeline:
     QC_HOOK_PATH = Path("/home/squiz/code/knowledge/scripts/check_activity_quality.py")
     KNOWLEDGE_REPO = Path("/home/squiz/code/knowledge")
 
+    # Per-stage timeout configuration (seconds)
+    # Simple stages get shorter timeouts; complex stages get longer
+    STAGE_TIMEOUTS = {
+        "ingest": 300,      # 5 min - simple data extraction
+        "research": 600,    # 10 min - cross-referencing
+        "transform": 900,   # 15 min - building 34-section YAML
+        "elevate": 1500,    # 25 min - voice elevation (most complex)
+        "validate": 300,    # 5 min - structural checks
+        "qc_hook": 60,      # 1 min - deterministic script
+        "quality_audit": 900,  # 15 min - voice rubric grading
+    }
+
     # Valid domains for activities
     # Includes both raw source domains and canonical output domains
     VALID_DOMAINS = {
@@ -188,8 +202,96 @@ class ActivityConversionPipeline:
         self.conversion_map: dict[str, Any] = {}
         self.progress_data: dict[str, dict] = {}
 
+        # Graceful shutdown: track current activity for signal handler
+        self._current_activity_id: Optional[str] = None
+        self._setup_signal_handlers()
+
         # Load source data
         self._load_source_data()
+
+    def _setup_signal_handlers(self) -> None:
+        """Install signal handlers for graceful shutdown.
+
+        Uses flag-based approach to avoid deadlocks: signal handler sets
+        a flag, and cleanup runs outside the handler via atexit.
+        """
+        import atexit
+
+        self._shutdown_requested = False
+
+        def _handle_shutdown(signum, frame):
+            self._shutdown_requested = True
+            # Re-raise as KeyboardInterrupt for SIGINT, exit for SIGTERM
+            if signum == signal.SIGINT:
+                raise KeyboardInterrupt
+            else:
+                sys.exit(1)
+
+        def _cleanup_on_exit():
+            """Reset current activity to PENDING if interrupted."""
+            if self._current_activity_id and self._shutdown_requested:
+                try:
+                    self._update_progress_file(
+                        self._current_activity_id, ActivityStatus.PENDING,
+                        "Reset: interrupted by signal"
+                    )
+                except Exception:
+                    pass  # Best-effort cleanup at exit
+
+        try:
+            signal.signal(signal.SIGINT, _handle_shutdown)
+            signal.signal(signal.SIGTERM, _handle_shutdown)
+            atexit.register(_cleanup_on_exit)
+        except (OSError, ValueError):
+            # Can't set signal handlers in non-main thread
+            pass
+
+    def cleanup_stale_progress(self, max_age_hours: int = 2) -> list[str]:
+        """
+        Reset IN_PROGRESS entries older than max_age_hours to PENDING.
+
+        Args:
+            max_age_hours: Maximum age in hours before considering stale
+
+        Returns:
+            List of activity IDs that were reset
+        """
+        reset_ids = []
+        for raw_id, data in self.progress_data.items():
+            if data.get("status") == ActivityStatus.IN_PROGRESS.value:
+                last_updated = data.get("last_updated")
+                if last_updated:
+                    try:
+                        updated_dt = datetime.fromisoformat(last_updated)
+                        if updated_dt.tzinfo is None:
+                            updated_dt = updated_dt.replace(tzinfo=timezone.utc)
+                        age_hours = (
+                            datetime.now(timezone.utc) - updated_dt
+                        ).total_seconds() / 3600
+                        if age_hours > max_age_hours:
+                            self._update_progress_file(
+                                raw_id, ActivityStatus.PENDING,
+                                f"Reset: stale IN_PROGRESS ({age_hours:.1f}h)"
+                            )
+                            reset_ids.append(raw_id)
+                            logger.info(
+                                f"Reset stale IN_PROGRESS: {raw_id} ({age_hours:.1f}h old)"
+                            )
+                    except (ValueError, TypeError):
+                        # Can't parse timestamp, reset anyway
+                        self._update_progress_file(
+                            raw_id, ActivityStatus.PENDING,
+                            "Reset: stale IN_PROGRESS (no timestamp)"
+                        )
+                        reset_ids.append(raw_id)
+                else:
+                    # No timestamp at all — reset
+                    self._update_progress_file(
+                        raw_id, ActivityStatus.PENDING,
+                        "Reset: stale IN_PROGRESS (no timestamp)"
+                    )
+                    reset_ids.append(raw_id)
+        return reset_ids
 
     def _load_source_data(self) -> None:
         """Load raw activities and conversion map from YAML files."""
@@ -265,6 +367,58 @@ class ActivityConversionPipeline:
 
         # Parse progress file
         self._parse_progress_file()
+
+    def _load_guidance_catalog(self) -> list[dict]:
+        """
+        Load the guidance catalog index for cross-domain matching.
+
+        Returns cached catalog on subsequent calls. Returns empty list
+        if the catalog file doesn't exist (graceful degradation).
+        """
+        if hasattr(self, "_guidance_catalog_cache"):
+            return self._guidance_catalog_cache
+
+        catalog_path = Path(__file__).resolve().parent.parent.parent / "config" / "babybrains" / "guidance_catalog.json"
+        if not catalog_path.exists():
+            logger.warning(f"Guidance catalog not found: {catalog_path}")
+            self._guidance_catalog_cache = []
+            return self._guidance_catalog_cache
+
+        try:
+            with open(catalog_path) as f:
+                self._guidance_catalog_cache = json.load(f)
+            logger.info(f"Loaded guidance catalog: {len(self._guidance_catalog_cache)} entries")
+        except (json.JSONDecodeError, OSError) as e:
+            logger.error(f"Failed to load guidance catalog: {e}")
+            self._guidance_catalog_cache = []
+
+        return self._guidance_catalog_cache
+
+    def _load_materials_catalog(self) -> list[dict]:
+        """
+        Load the materials catalog index for material existence checking.
+
+        Returns cached catalog on subsequent calls. Returns empty list
+        if the catalog file doesn't exist (graceful degradation).
+        """
+        if hasattr(self, "_materials_catalog_cache"):
+            return self._materials_catalog_cache
+
+        catalog_path = Path(__file__).resolve().parent.parent.parent / "config" / "babybrains" / "materials_catalog.json"
+        if not catalog_path.exists():
+            logger.warning(f"Materials catalog not found: {catalog_path}")
+            self._materials_catalog_cache = []
+            return self._materials_catalog_cache
+
+        try:
+            with open(catalog_path) as f:
+                self._materials_catalog_cache = json.load(f)
+            logger.info(f"Loaded materials catalog: {len(self._materials_catalog_cache)} entries")
+        except (json.JSONDecodeError, OSError) as e:
+            logger.error(f"Failed to load materials catalog: {e}")
+            self._materials_catalog_cache = []
+
+        return self._materials_catalog_cache
 
     def _parse_progress_file(self) -> None:
         """
@@ -567,10 +721,26 @@ class ActivityConversionPipeline:
                                 break
 
                     if updated:
+                        # Track current activity for signal handler
+                        if status == ActivityStatus.IN_PROGRESS:
+                            self._current_activity_id = raw_id
+                        elif status in (
+                            ActivityStatus.DONE,
+                            ActivityStatus.FAILED,
+                            ActivityStatus.SKIPPED,
+                            ActivityStatus.PENDING,
+                            ActivityStatus.QC_FAILED,
+                            ActivityStatus.REVISION_NEEDED,
+                        ):
+                            if self._current_activity_id == raw_id:
+                                self._current_activity_id = None
+
                         # Update local cache FIRST (D83: fix stale cache bug)
+                        now_str = datetime.now(timezone.utc).isoformat()
                         if raw_id in self.progress_data:
                             self.progress_data[raw_id]["status"] = status_str
                             self.progress_data[raw_id]["date"] = date_str
+                            self.progress_data[raw_id]["last_updated"] = now_str
                             if notes:
                                 self.progress_data[raw_id]["notes"] = notes
 
@@ -868,11 +1038,15 @@ class ActivityConversionPipeline:
         if group_info:
             input_data["group_info"] = group_info
 
+        stage_start = time.perf_counter()
         result = await self.skill_executor.execute(
             skill_name="activity/ingest_activity",
             input_data=input_data,
             validate=True,
+            timeout=self.STAGE_TIMEOUTS.get("ingest"),
         )
+        duration = time.perf_counter() - stage_start
+        logger.info(f"[INGEST] Completed in {duration:.1f}s")
 
         if not result.success:
             return False, {}, result.error or "Ingest skill failed"
@@ -892,6 +1066,10 @@ class ActivityConversionPipeline:
         """
         Execute the research_activity skill.
 
+        Injects guidance and materials catalogs into input_data so the
+        RESEARCH LLM can perform cross-domain matching without filesystem
+        access. Uses .copy() to avoid mutating the caller's dict.
+
         Args:
             ingest_output: Output from ingest skill
 
@@ -900,16 +1078,119 @@ class ActivityConversionPipeline:
         """
         logger.info(f"[RESEARCH] Starting for {ingest_output.get('activity_id')}")
 
+        # Inject catalogs for cross-domain matching (copy to avoid mutation)
+        enriched_input = ingest_output.copy()
+        enriched_input["guidance_catalog"] = self._load_guidance_catalog()
+        enriched_input["materials_catalog"] = self._load_materials_catalog()
+
+        stage_start = time.perf_counter()
         result = await self.skill_executor.execute(
             skill_name="activity/research_activity",
-            input_data=ingest_output,
+            input_data=enriched_input,
             validate=True,
+            timeout=self.STAGE_TIMEOUTS.get("research"),
         )
+        duration = time.perf_counter() - stage_start
+        logger.info(f"[RESEARCH] Completed in {duration:.1f}s")
 
         if not result.success:
             return False, {}, result.error or "Research skill failed"
 
         return True, result.output or {}, None
+
+    def _extract_transform_yaml_fallback(self, raw_output: str) -> tuple[bool, dict, Optional[str]]:
+        """
+        Fallback extraction for TRANSFORM output when JSON parsing fails.
+
+        When the LLM embeds large YAML inside a JSON string value, unescaped
+        characters can break JSON parsing. This method bypasses JSON entirely
+        and extracts the YAML content directly from the raw output.
+
+        Returns:
+            Tuple of (success, output_dict, error_message)
+        """
+        if not raw_output:
+            return False, {}, "No raw output for fallback extraction"
+
+        # Find the YAML value start — it's after "canonical_yaml": "
+        yaml_key = '"canonical_yaml": "'
+        yaml_start = raw_output.find(yaml_key)
+        if yaml_start == -1:
+            # Try alternate: YAML might start directly with type: Activity
+            yaml_start = raw_output.find("type: Activity")
+            if yaml_start == -1:
+                return False, {}, "Fallback: no 'canonical_yaml' or 'type: Activity' found"
+            yaml_escaped = raw_output[yaml_start:]
+        else:
+            yaml_escaped = raw_output[yaml_start + len(yaml_key):]
+
+        # Trim trailing JSON/markdown artifacts
+        # Look for the next JSON key after the YAML value
+        for end_pattern in [
+            '",\n  "canonical_id"',
+            '",\n"canonical_id"',
+            '", "canonical_id"',
+            '"\n}',
+            '"\n```',
+        ]:
+            end_idx = yaml_escaped.find(end_pattern)
+            if end_idx > 0:
+                yaml_escaped = yaml_escaped[:end_idx]
+                break
+
+        # Unescape JSON string encoding
+        yaml_content = yaml_escaped.replace("\\n", "\n")
+        yaml_content = yaml_content.replace('\\"', '"')
+        yaml_content = yaml_content.replace("\\\\", "\\")
+        yaml_content = yaml_content.replace("\\t", "\t")
+        yaml_content = yaml_content.strip()
+
+        if len(yaml_content) < 500:
+            return False, {}, f"Fallback: extracted YAML too short ({len(yaml_content)} chars)"
+
+        # Validate it looks like YAML
+        if not yaml_content.startswith("type: Activity"):
+            return False, {}, "Fallback: extracted content doesn't start with 'type: Activity'"
+
+        # Extract canonical_id from the YAML
+        canonical_id = ""
+        for line in yaml_content.split("\n"):
+            if line.startswith("canonical_id:"):
+                canonical_id = line.split(":", 1)[1].strip()
+                break
+
+        if not canonical_id:
+            return False, {}, "Fallback: could not extract canonical_id from YAML"
+
+        # Derive file_path from canonical_id
+        file_path = f"activities/{canonical_id}.yaml"
+
+        # Try extracting canonical_id and file_path from JSON keys too
+        for key, var_name in [
+            ('"canonical_id": "', "canonical_id"),
+            ('"file_path": "', "file_path"),
+        ]:
+            idx = raw_output.find(key)
+            if idx > 0:
+                value_start = idx + len(key)
+                value_end = raw_output.find('"', value_start)
+                if value_end > value_start:
+                    extracted = raw_output[value_start:value_end]
+                    if var_name == "canonical_id" and extracted:
+                        canonical_id = extracted
+                    elif var_name == "file_path" and extracted:
+                        file_path = extracted
+
+        logger.info(
+            f"[TRANSFORM] Fallback extraction succeeded: "
+            f"yaml={len(yaml_content)} chars, id={canonical_id}"
+        )
+
+        return True, {
+            "canonical_yaml": yaml_content,
+            "canonical_id": canonical_id,
+            "file_path": file_path,
+        }, None
 
     async def _execute_transform(
         self,
@@ -928,6 +1209,7 @@ class ActivityConversionPipeline:
         """
         logger.info(f"[TRANSFORM] Starting for {ingest_output.get('activity_id')}")
 
+        stage_start = time.perf_counter()
         result = await self.skill_executor.execute(
             skill_name="activity/transform_activity",
             input_data={
@@ -935,9 +1217,31 @@ class ActivityConversionPipeline:
                 "research_result": research_output,
             },
             validate=True,
+            timeout=self.STAGE_TIMEOUTS.get("transform"),
         )
+        duration = time.perf_counter() - stage_start
+        logger.info(f"[TRANSFORM] Completed in {duration:.1f}s")
 
         if not result.success:
+            # Log raw output for debugging JSON parse failures
+            if result.raw_output:
+                logger.warning(
+                    f"[TRANSFORM] Failed. Raw output preview ({len(result.raw_output)} chars): "
+                    f"{result.raw_output[:500]}"
+                )
+
+                # Attempt fallback YAML extraction when JSON parsing fails
+                if "Invalid JSON" in (result.error or ""):
+                    logger.info("[TRANSFORM] Attempting fallback YAML extraction...")
+                    fb_ok, fb_data, fb_err = self._extract_transform_yaml_fallback(
+                        result.raw_output
+                    )
+                    if fb_ok:
+                        logger.info("[TRANSFORM] Fallback extraction succeeded")
+                        return True, fb_data, None
+                    else:
+                        logger.warning(f"[TRANSFORM] Fallback also failed: {fb_err}")
+
             return False, {}, result.error or "Transform skill failed"
 
         return True, result.output or {}, None
@@ -1006,13 +1310,35 @@ class ActivityConversionPipeline:
             input_data["retry_feedback"] = feedback
             input_data["is_retry"] = True
 
+        stage_start = time.perf_counter()
         result = await self.skill_executor.execute(
             skill_name="activity/elevate_voice_activity",
             input_data=input_data,
             validate=True,
+            timeout=self.STAGE_TIMEOUTS.get("elevate"),
         )
+        duration = time.perf_counter() - stage_start
+        logger.info(f"[ELEVATE] Completed in {duration:.1f}s")
 
         if not result.success:
+            if result.raw_output:
+                logger.warning(
+                    f"[ELEVATE] Failed. Raw output preview ({len(result.raw_output)} chars): "
+                    f"{result.raw_output[:500]}"
+                )
+
+                # Attempt fallback YAML extraction when JSON parsing fails
+                if "Invalid JSON" in (result.error or ""):
+                    logger.info("[ELEVATE] Attempting fallback YAML extraction...")
+                    fb_ok, fb_data, fb_err = self._extract_elevate_yaml_fallback(
+                        result.raw_output
+                    )
+                    if fb_ok:
+                        logger.info("[ELEVATE] Fallback extraction succeeded")
+                        return True, fb_data, None
+                    else:
+                        logger.warning(f"[ELEVATE] Fallback also failed: {fb_err}")
+
             return False, {}, result.error or "Elevate skill failed"
 
         # D38: Validate output has required fields - don't silently return empty dict
@@ -1024,6 +1350,56 @@ class ActivityConversionPipeline:
             return False, {}, "Elevate output missing 'elevated_yaml' field"
 
         return True, output, None
+
+    def _extract_elevate_yaml_fallback(self, raw_output: str) -> tuple[bool, dict, Optional[str]]:
+        """
+        Fallback extraction for ELEVATE output when JSON parsing fails.
+
+        Similar to TRANSFORM fallback but looks for 'elevated_yaml' key.
+
+        Returns:
+            Tuple of (success, output_dict, error_message)
+        """
+        if not raw_output:
+            return False, {}, "No raw output for fallback extraction"
+
+        # Find the YAML value start
+        yaml_key = '"elevated_yaml": "'
+        yaml_start = raw_output.find(yaml_key)
+        if yaml_start == -1:
+            # Try alternate: look for type: Activity directly
+            yaml_start = raw_output.find("type: Activity")
+            if yaml_start == -1:
+                return False, {}, "Fallback: no 'elevated_yaml' or 'type: Activity' found"
+            yaml_escaped = raw_output[yaml_start:]
+        else:
+            yaml_escaped = raw_output[yaml_start + len(yaml_key):]
+
+        # Trim trailing JSON/markdown artifacts
+        for end_pattern in ['"\n}', '"\n```', '"}']:
+            end_idx = yaml_escaped.rfind(end_pattern)
+            if end_idx > 0:
+                yaml_escaped = yaml_escaped[:end_idx]
+                break
+
+        # Unescape JSON string encoding
+        yaml_content = yaml_escaped.replace("\\n", "\n")
+        yaml_content = yaml_content.replace('\\"', '"')
+        yaml_content = yaml_content.replace("\\\\", "\\")
+        yaml_content = yaml_content.replace("\\t", "\t")
+        yaml_content = yaml_content.strip()
+
+        if len(yaml_content) < 500:
+            return False, {}, f"Fallback: extracted YAML too short ({len(yaml_content)} chars)"
+
+        if not yaml_content.startswith("type: Activity"):
+            return False, {}, "Fallback: extracted content doesn't start with 'type: Activity'"
+
+        logger.info(
+            f"[ELEVATE] Fallback extraction succeeded: yaml={len(yaml_content)} chars"
+        )
+
+        return True, {"elevated_yaml": yaml_content}, None
 
     def _remove_em_dashes(self, content: str) -> str:
         """
@@ -1073,9 +1449,21 @@ class ActivityConversionPipeline:
         """
         issues = []
 
+        # Strip parent_search_terms section before superlative checking.
+        # Search terms contain SEO queries ("best books for...") that use
+        # marketing language parents actually search for — not our voice.
+        content_for_check = yaml_content
+        pst_match = re.search(
+            r"^parent_search_terms:.*",
+            yaml_content,
+            re.MULTILINE | re.DOTALL,
+        )
+        if pst_match:
+            content_for_check = yaml_content[: pst_match.start()]
+
         # 1. Superlatives via ai_detection (context-aware exceptions)
         # Maps SCRIPT_* codes to VOICE_* codes for pipeline consistency
-        for ai_issue in _ai_check_superlatives(yaml_content):
+        for ai_issue in _ai_check_superlatives(content_for_check):
             issues.append({
                 "code": "VOICE_SUPERLATIVE",
                 "category": "superlative",
@@ -1115,6 +1503,32 @@ class ActivityConversionPipeline:
 
         return issues
 
+    def _fix_canonical_id(self, content: str, canonical_id: str) -> str:
+        """
+        Fix canonical_id in YAML to match the TRANSFORM-determined ID.
+
+        ELEVATE sometimes changes the canonical_id (e.g., renaming
+        "FOOD_PREPARATION_ACTIVITIES" to "FOOD_PREPARATION_PROGRESSION").
+        The TRANSFORM canonical_id is authoritative.
+
+        Args:
+            content: YAML content that may have modified canonical_id
+            canonical_id: The authoritative canonical_id from TRANSFORM
+
+        Returns:
+            Content with corrected canonical_id
+        """
+        pattern = r"(canonical_id:\s*)([^\n]+)"
+
+        def replacer(match):
+            current_id = match.group(2).strip().strip('"').strip("'")
+            if current_id != canonical_id:
+                logger.info(f"[POST-PROCESS] Fixing canonical_id: '{current_id}' -> '{canonical_id}'")
+                return f"{match.group(1)}{canonical_id}"
+            return match.group(0)
+
+        return re.sub(pattern, replacer, content)
+
     def _fix_canonical_slug(self, content: str, canonical_id: str) -> str:
         """
         Fix canonical_slug to match the deterministic derivation from canonical_id.
@@ -1129,8 +1543,6 @@ class ActivityConversionPipeline:
         Returns:
             Content with corrected canonical_slug
         """
-        import re
-
         expected_slug = canonical_id.lower().replace("_", "-")
 
         # Match canonical_slug: followed by any value
@@ -1139,7 +1551,7 @@ class ActivityConversionPipeline:
         def replacer(match):
             current_slug = match.group(2).strip().strip('"').strip("'")
             if current_slug != expected_slug:
-                logger.info(f"[TRANSFORM] Fixing canonical_slug: '{current_slug}' -> '{expected_slug}'")
+                logger.info(f"[POST-PROCESS] Fixing canonical_slug: '{current_slug}' -> '{expected_slug}'")
                 return f"{match.group(1)}{expected_slug}"
             return match.group(0)
 
@@ -1285,6 +1697,79 @@ class ActivityConversionPipeline:
             logger.warning(f"[POST-PROCESS] Metadata preservation failed: {e}")
             return elevated_yaml
 
+    # Patterns that indicate guidance/materials reference issues (move to warnings)
+    _GUIDANCE_MATERIAL_WARN_PATTERNS = [
+        re.compile(r"GUIDANCE_[A-Z_]+_\d{4}\s+(not found|does not exist|missing)", re.IGNORECASE),
+        re.compile(r"[Mm]aterial\s+slug\s+.+?\s+not\s+(found|in catalog)"),
+        re.compile(r"[Mm]aterial.+?not\s+in\s+(catalog|materials catalog)"),
+        re.compile(r"catalog\s+(is\s+)?incomplete", re.IGNORECASE),
+        re.compile(r"may\s+need\s+creation", re.IGNORECASE),
+    ]
+
+    # Patterns that indicate real structural issues (keep blocking even if above match)
+    _STRUCTURAL_EXCLUDE_KEYWORDS = ["section", "field", "YAML", "syntax"]
+
+    def _fix_validation_misclassification(self, validate_output: dict) -> dict:
+        """
+        Move guidance/materials reference issues from blocking_issues to warnings.
+
+        The VALIDATE LLM sometimes misclassifies guidance/materials reference
+        problems as blocking when they should be warnings (the guidance and
+        materials catalogs are intentionally incomplete).
+
+        Uses tightly anchored patterns to avoid false positives on real
+        structural issues (e.g., "guidance_components section not found").
+
+        Args:
+            validate_output: Raw output from validate skill
+
+        Returns:
+            validate_output with corrected classification
+        """
+        validation_result = validate_output.get("validation_result")
+        if not validation_result:
+            return validate_output
+
+        blocking = validation_result.get("blocking_issues", [])
+        if not blocking:
+            return validate_output
+
+        warnings = validation_result.get("warnings", [])
+        new_blocking = []
+        moved_count = 0
+
+        for issue in blocking:
+            if not isinstance(issue, str):
+                new_blocking.append(issue)
+                continue
+
+            # Check if this looks like a guidance/materials reference issue
+            is_ref_issue = any(p.search(issue) for p in self._GUIDANCE_MATERIAL_WARN_PATTERNS)
+
+            # But exclude real structural issues
+            is_structural = any(kw in issue for kw in self._STRUCTURAL_EXCLUDE_KEYWORDS)
+
+            if is_ref_issue and not is_structural:
+                warnings.append(issue)
+                moved_count += 1
+            else:
+                new_blocking.append(issue)
+
+        if moved_count > 0:
+            logger.info(
+                f"[POST-PROCESS] Reclassified {moved_count} guidance/materials "
+                f"issues from blocking to warnings"
+            )
+            validation_result["blocking_issues"] = new_blocking
+            validation_result["warnings"] = warnings
+
+            # Recalculate passed if no remaining blockers
+            if not new_blocking:
+                validation_result["passed"] = True
+                logger.info("[POST-PROCESS] No remaining blockers — validation now passes")
+
+        return validate_output
+
     def _detect_truncation(self, yaml_content: str) -> tuple[bool, str]:
         """
         Detect if Activity Atom YAML output is truncated.
@@ -1351,6 +1836,7 @@ class ActivityConversionPipeline:
         """
         logger.info(f"[VALIDATE] Starting for {canonical_id}")
 
+        stage_start = time.perf_counter()
         result = await self.skill_executor.execute(
             skill_name="activity/validate_activity",
             input_data={
@@ -1359,7 +1845,10 @@ class ActivityConversionPipeline:
                 "canonical_id": canonical_id,
             },
             validate=True,
+            timeout=self.STAGE_TIMEOUTS.get("validate"),
         )
+        duration = time.perf_counter() - stage_start
+        logger.info(f"[VALIDATE] Completed in {duration:.1f}s")
 
         if not result.success:
             return False, {}, result.error or "Validate skill failed"
@@ -1732,7 +2221,8 @@ OR if blocking issues found:
         logger.info(f"Starting conversion for: {raw_id}")
 
         # Initialize scratch pad for this conversion
-        session_id = f"convert_{raw_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        # Deterministic session_id enables cache persistence across runs
+        session_id = f"convert_{raw_id}"
         self.scratch_pad = ScratchPad(session_id=session_id)
 
         # C-3: SPEC COMPLIANCE - Start SessionManager session
@@ -1870,8 +2360,9 @@ OR if blocking issues found:
                     elevated_yaml=elevated_yaml,
                 )
 
-            # D36: DETERMINISTIC FIX - Ensure canonical_slug is correct after ELEVATE
-            # ELEVATE regenerates YAML, so we need to fix slug again
+            # DETERMINISTIC FIXES after ELEVATE (LLMs modify IDs/slugs during elevation)
+            # Fix canonical_id first (ELEVATE may rename it), then slug derives from ID
+            elevated_yaml = self._fix_canonical_id(elevated_yaml, canonical_id)
             elevated_yaml = self._fix_canonical_slug(elevated_yaml, canonical_id)
 
             # D35: DETERMINISTIC FIX - Ensure principle slugs use underscores
@@ -1952,6 +2443,9 @@ OR if blocking issues found:
                 step=5,
                 skill_name="validate_activity",
             )
+
+            # Fix guidance/materials misclassification before checking
+            validate_output = self._fix_validation_misclassification(validate_output)
 
             validation_result = validate_output.get("validation_result", {})
             if not validation_result.get("passed", False):
@@ -2341,7 +2835,8 @@ If ANY of these appear, rewrite that sentence before outputting.
                 elevated_yaml=elevated_yaml,
             )
 
-        # Deterministic fixes
+        # Deterministic fixes (ELEVATE may modify IDs/slugs during elevation)
+        elevated_yaml = self._fix_canonical_id(elevated_yaml, canonical_id)
         elevated_yaml = self._fix_canonical_slug(elevated_yaml, canonical_id)
         elevated_yaml = self._fix_principle_slugs(elevated_yaml)
 
@@ -2397,6 +2892,9 @@ If ANY of these appear, rewrite that sentence before outputting.
                 status=ActivityStatus.FAILED,
                 error=f"Validate failed: {error}",
             )
+
+        # Fix guidance/materials misclassification before checking
+        validate_output = self._fix_validation_misclassification(validate_output)
 
         validation_result = validate_output.get("validation_result", {})
         if not validation_result.get("passed", False):
@@ -2499,6 +2997,26 @@ If ANY of these appear, rewrite that sentence before outputting.
         feedback: Optional[str] = None
         cached_transform: Optional[dict] = None  # D78: Cache for retries
 
+        # D78+: Reload cached transform from disk if available (persists across runs)
+        # Sanitize raw_id to prevent path traversal (defense-in-depth)
+        safe_id = re.sub(r'[^a-zA-Z0-9_-]', '_', raw_id)
+        scratch_path = Path.home() / ".atlas" / "scratch" / f"convert_{safe_id}.json"
+        if scratch_path.exists():
+            disk_pad = ScratchPad.from_file(scratch_path)
+            if disk_pad is not None:
+                transform_output = disk_pad.get("transform_output")
+                if transform_output and isinstance(transform_output, dict):
+                    candidate = {
+                        "canonical_yaml": transform_output.get("canonical_yaml", ""),
+                        "canonical_id": transform_output.get("canonical_id", ""),
+                        "file_path": transform_output.get("file_path", ""),
+                    }
+                    if all(candidate.values()):
+                        cached_transform = candidate
+                        logger.info(
+                            f"[D78+] Resuming from cached transform (disk): {scratch_path.name}"
+                        )
+
         for attempt in range(max_retries + 1):
             if attempt > 0:
                 logger.info(f"Retry attempt {attempt}/{max_retries} for {raw_id}")
@@ -2508,8 +3026,8 @@ If ANY of these appear, rewrite that sentence before outputting.
             # D28: Mark final attempt for extended timeout in quality audit
             is_final = (attempt >= max_retries)
 
-            # D78: First attempt runs full pipeline, retries use cached transform
-            if attempt == 0 or cached_transform is None:
+            # D78+: Use cached transform if available (from disk or prior attempt)
+            if cached_transform is None:
                 # Full pipeline - stages 1-7
                 result = await self.convert_activity(raw_id, feedback=feedback, is_final_attempt=is_final)
 
@@ -2604,6 +3122,17 @@ If ANY of these appear, rewrite that sentence before outputting.
         Returns:
             User decision: 'approve', 'reject', 'skip', or 'quit'
         """
+        # Non-interactive detection: auto-approve Grade A, auto-reject below
+        if not sys.stdin.isatty():
+            if result.status == ActivityStatus.DONE:
+                logger.warning("Non-interactive stdin: auto-approving Grade A result")
+                return "approve"
+            else:
+                logger.warning(
+                    f"Non-interactive stdin: auto-rejecting {result.status.value}"
+                )
+                return "reject"
+
         # Get activity metadata
         raw_activity = self.raw_activities.get(result.activity_id, {})
         domain = raw_activity.get("domain", "unknown")
@@ -2794,7 +3323,8 @@ If ANY of these appear, rewrite that sentence before outputting.
                     error="Elevate output missing 'elevated_yaml'",
                 )
 
-            # Fix canonical_slug
+            # Deterministic fixes (ELEVATE may modify IDs/slugs)
+            elevated_yaml = self._fix_canonical_id(elevated_yaml, canonical_id)
             elevated_yaml = self._fix_canonical_slug(elevated_yaml, canonical_id)
             elevated_yaml = self._fix_principle_slugs(elevated_yaml)
 
@@ -2843,6 +3373,9 @@ If ANY of these appear, rewrite that sentence before outputting.
                     status=ActivityStatus.FAILED,
                     error=f"Validate failed: {error}",
                 )
+
+            # Fix guidance/materials misclassification before checking
+            validate_output = self._fix_validation_misclassification(validate_output)
 
             validation_result = validate_output.get("validation_result", {})
             if not validation_result.get("passed", False):
@@ -3270,6 +3803,10 @@ Quality audit requires Grade A to proceed to human review.
         "--reconcile", action="store_true",
         help="Reconcile progress tracker with files on disk (C3 fix)"
     )
+    action.add_argument(
+        "--cleanup-stale", action="store_true",
+        help="Reset IN_PROGRESS entries older than 2 hours to PENDING"
+    )
 
     # Options
     parser.add_argument(
@@ -3344,6 +3881,15 @@ Quality audit requires Grade A to proceed to human review.
         else:
             print("✓ All conversion map references validated")
             print()
+
+    elif args.cleanup_stale:
+        reset_ids = pipeline.cleanup_stale_progress(max_age_hours=2)
+        if reset_ids:
+            print(f"Reset {len(reset_ids)} stale IN_PROGRESS entries:")
+            for rid in reset_ids:
+                print(f"  - {rid}")
+        else:
+            print("No stale IN_PROGRESS entries found.")
 
     elif args.reconcile:
         report = pipeline.reconcile_progress()
