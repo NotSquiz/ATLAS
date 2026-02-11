@@ -1,0 +1,1187 @@
+[
+  {
+    "id": "GUIDANCE_ADULT_PREPARATION_0001",
+    "slug": "adult-montessori-guide-mindset-0-36m",
+    "title": "Adult Montessori Guide Mindset: From Servant to Humble Observer (0-36 months)",
+    "domain_tags": [
+      "adult_preparation",
+      "regulation",
+      "responsive_parenting",
+      "inner_work"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 36,
+    "tags": [
+      "adult-preparation",
+      "0-36-months",
+      "inner-work",
+      "mindset",
+      "montessori-foundations",
+      "respect",
+      "humility",
+      "observation",
+      "spiritual-preparation",
+      "foundational",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/adult_preparation/GUIDANCE_ADULT_PREPARATION_0001.yaml"
+  },
+  {
+    "id": "GUIDANCE_ADULT_PREPARATION_0002",
+    "slug": "observation-and-non-interference-0-36m",
+    "title": "Observation & Non-Interference: Learning to See and Step Back (0-36 months)",
+    "domain_tags": [
+      "adult_preparation",
+      "regulation",
+      "responsive_parenting",
+      "concentration",
+      "inner_work"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 36,
+    "tags": [
+      "adult-preparation",
+      "0-36-months",
+      "observation",
+      "concentration",
+      "non-interference",
+      "inner-work",
+      "montessori-foundations",
+      "follow-the-child",
+      "foundational",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/adult_preparation/GUIDANCE_ADULT_PREPARATION_0002.yaml"
+  },
+  {
+    "id": "GUIDANCE_ADULT_PREPARATION_0003",
+    "slug": "adult-self-regulation-scaffold-0-36m",
+    "title": "Adult Self-Regulation as Scaffolding: The Pause, Repair, and Resilience Practice (0-36 months)",
+    "domain_tags": [
+      "adult_preparation",
+      "regulation",
+      "social_emotional",
+      "responsive_parenting",
+      "co_regulation",
+      "inner_work"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 36,
+    "tags": [
+      "adult-preparation",
+      "0-36-months",
+      "regulation",
+      "co-regulation",
+      "self-regulation",
+      "repair",
+      "self-compassion",
+      "inner-work",
+      "responsive-parenting",
+      "foundational",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/adult_preparation/GUIDANCE_ADULT_PREPARATION_0003.yaml"
+  },
+  {
+    "id": "GUIDANCE_ADULT_PREPARATION_0004",
+    "slug": "adult-presence-environment-priorities-0-36m",
+    "title": "Adult Presence & Environment Priorities: Less-is-More Practice (0-36 months)",
+    "domain_tags": [
+      "adult_preparation",
+      "prepared_environment",
+      "responsive_parenting",
+      "attachment",
+      "inner_work"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 36,
+    "tags": [
+      "adult-preparation",
+      "0-36-months",
+      "presence",
+      "prepared-environment",
+      "simplicity",
+      "less-is-more",
+      "mindfulness",
+      "device-free",
+      "slowing-down",
+      "inner-work",
+      "foundational",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/adult_preparation/GUIDANCE_ADULT_PREPARATION_0004.yaml"
+  },
+  {
+    "id": "GUIDANCE_FEEDING_0001",
+    "slug": "responsive-feeding-hunger-cues-0-12m-au",
+    "title": "Responsive Feeding & Following Hunger Cues (0-12 months, AU)",
+    "domain_tags": [
+      "feeding",
+      "regulation",
+      "attachment",
+      "responsive_parenting"
+    ],
+    "montessori_principles": [
+      "follow_the_child",
+      "respect_for_the_individual",
+      "observation_as_foundation"
+    ],
+    "age_months_min": 0,
+    "age_months_max": 12,
+    "tags": [
+      "feeding",
+      "0-12-months",
+      "responsive-parenting",
+      "follow-the-child",
+      "regulation",
+      "attachment",
+      "au-nhmrc-aligned",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/feeding/GUIDANCE_FEEDING_0001.yaml"
+  },
+  {
+    "id": "GUIDANCE_FEEDING_0002",
+    "slug": "introduction-to-solids-6-12m-au",
+    "title": "Introduction to Solids (6-12 months, AU Guidelines)",
+    "domain_tags": [
+      "feeding",
+      "independence",
+      "prepared_environment",
+      "regulation",
+      "sensorial",
+      "safety"
+    ],
+    "montessori_principles": [
+      "follow_the_child",
+      "prepared_environment",
+      "independence",
+      "freedom_within_limits"
+    ],
+    "age_months_min": 6,
+    "age_months_max": 12,
+    "tags": [
+      "feeding",
+      "6-12-months",
+      "solids-introduction",
+      "baby-led-weaning",
+      "independence",
+      "prepared-environment",
+      "au-nhmrc-aligned",
+      "au-ascia-aligned",
+      "safety-critical",
+      "allergen-introduction",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/feeding/GUIDANCE_FEEDING_0002.yaml"
+  },
+  {
+    "id": "GUIDANCE_FEEDING_0003",
+    "slug": "weaning-table-self-feeding-environment-6-18m",
+    "title": "Weaning Table & Self-Feeding Environment (6-18 months)",
+    "domain_tags": [
+      "feeding",
+      "prepared_environment",
+      "independence",
+      "practical_life"
+    ],
+    "montessori_principles": [
+      "prepared_environment",
+      "independence",
+      "freedom_within_limits",
+      "order"
+    ],
+    "age_months_min": 6,
+    "age_months_max": 18,
+    "tags": [
+      "feeding",
+      "6-18-months",
+      "prepared-environment",
+      "independence",
+      "practical-life",
+      "weaning-table",
+      "self-feeding",
+      "montessori-environment",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/feeding/GUIDANCE_FEEDING_0003.yaml"
+  },
+  {
+    "id": "GUIDANCE_FEEDING_0004",
+    "slug": "supporting-feeding-independence-9-24m",
+    "title": "Supporting Feeding Independence (9-24 months)",
+    "domain_tags": [
+      "feeding",
+      "independence",
+      "practical_life",
+      "motor_skills",
+      "self_care"
+    ],
+    "montessori_principles": [
+      "independence",
+      "follow_the_child",
+      "prepared_environment",
+      "practical_life"
+    ],
+    "age_months_min": 9,
+    "age_months_max": 24,
+    "tags": [
+      "feeding",
+      "9-24-months",
+      "independence",
+      "practical-life",
+      "self-feeding",
+      "motor-skills",
+      "self-care",
+      "toddler",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/feeding/GUIDANCE_FEEDING_0004.yaml"
+  },
+  {
+    "id": "GUIDANCE_LANGUAGE_0001",
+    "slug": "prelinguistic-communication-0-12m",
+    "title": "Prelinguistic Communication (0-12 months)",
+    "domain_tags": [
+      "language",
+      "communication",
+      "responsive_parenting",
+      "sensitive_periods"
+    ],
+    "montessori_principles": [
+      "sensitive_periods",
+      "respect_for_the_individual",
+      "absorbent_mind",
+      "follow_the_child"
+    ],
+    "age_months_min": 0,
+    "age_months_max": 12,
+    "tags": [
+      "language",
+      "0-12-months",
+      "prelinguistic",
+      "communication",
+      "babbling",
+      "cooing",
+      "responsive-parenting",
+      "sensitive-periods",
+      "narrating-care",
+      "turn-taking",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/language/GUIDANCE_LANGUAGE_0001.yaml"
+  },
+  {
+    "id": "GUIDANCE_LANGUAGE_0002",
+    "slug": "vocabulary-building-language-explosion-12-36m",
+    "title": "Vocabulary Building and the Language Explosion (12-36 months)",
+    "domain_tags": [
+      "language",
+      "communication",
+      "independence",
+      "cognitive"
+    ],
+    "montessori_principles": [
+      "sensitive_periods",
+      "absorbent_mind",
+      "concrete_to_abstract",
+      "prepared_environment"
+    ],
+    "age_months_min": 12,
+    "age_months_max": 36,
+    "tags": [
+      "language",
+      "12-36-months",
+      "vocabulary",
+      "language-explosion",
+      "naming",
+      "three-period-lesson",
+      "communication",
+      "toddler",
+      "sensitive-periods",
+      "books",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/language/GUIDANCE_LANGUAGE_0002.yaml"
+  },
+  {
+    "id": "GUIDANCE_MOVEMENT_0001",
+    "slug": "tummy-time-prone-play-0-6m-au",
+    "title": "Tummy Time & Prone Play (0-6 months, AU supervised)",
+    "domain_tags": [
+      "movement",
+      "motor_refinement",
+      "prepared_environment",
+      "regulation"
+    ],
+    "montessori_principles": [
+      "freedom_of_movement",
+      "follow_the_child",
+      "prepared_environment",
+      "respect_for_the_individual"
+    ],
+    "age_months_min": 0,
+    "age_months_max": 6,
+    "tags": [
+      "movement",
+      "0-6-months",
+      "tummy-time",
+      "motor-development",
+      "freedom-of-movement",
+      "au-safe-sleep",
+      "red-nose",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/movement/GUIDANCE_MOVEMENT_0001.yaml"
+  },
+  {
+    "id": "GUIDANCE_MOVEMENT_0002",
+    "slug": "movement-area-floor-freedom-0-12m-au",
+    "title": "Movement Area & Floor Freedom (0-12 months, AU safety)",
+    "domain_tags": [
+      "movement",
+      "motor_refinement",
+      "prepared_environment",
+      "independence",
+      "safety"
+    ],
+    "montessori_principles": [
+      "freedom_of_movement",
+      "prepared_environment",
+      "follow_the_child",
+      "independence"
+    ],
+    "age_months_min": 0,
+    "age_months_max": 12,
+    "tags": [
+      "movement",
+      "0-12-months",
+      "prepared-environment",
+      "freedom-of-movement",
+      "floor-freedom",
+      "baby-proofing",
+      "au-product-safety",
+      "accc",
+      "containers",
+      "baby-walkers",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/movement/GUIDANCE_MOVEMENT_0002.yaml"
+  },
+  {
+    "id": "GUIDANCE_MOVEMENT_0003",
+    "slug": "respectful-handling-motor-trust-0-12m",
+    "title": "Respectful Handling & Motor Trust (0-12 months)",
+    "domain_tags": [
+      "movement",
+      "motor_refinement",
+      "care_routines",
+      "independence",
+      "trust",
+      "observation"
+    ],
+    "montessori_principles": [
+      "respect_for_the_individual",
+      "follow_the_child",
+      "independence",
+      "freedom_of_movement"
+    ],
+    "age_months_min": 0,
+    "age_months_max": 12,
+    "tags": [
+      "movement",
+      "0-12-months",
+      "respectful-handling",
+      "telegraphing",
+      "motor-trust",
+      "helicopter-helping",
+      "respect-for-individual",
+      "follow-the-child",
+      "care-routines",
+      "independence",
+      "foundational",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/movement/GUIDANCE_MOVEMENT_0003.yaml"
+  },
+  {
+    "id": "GUIDANCE_MOVEMENT_0004",
+    "slug": "motor-milestones-following-child-0-18m",
+    "title": "Motor Milestones & Following the Child (0-18 months)",
+    "domain_tags": [
+      "movement",
+      "motor_refinement",
+      "observation",
+      "development",
+      "reassurance"
+    ],
+    "montessori_principles": [
+      "follow_the_child",
+      "respect_for_the_individual",
+      "freedom_of_movement",
+      "prepared_environment"
+    ],
+    "age_months_min": 0,
+    "age_months_max": 18,
+    "tags": [
+      "movement",
+      "0-18-months",
+      "motor-milestones",
+      "development",
+      "follow-the-child",
+      "milestone-variation",
+      "au-mch",
+      "reassurance",
+      "observation",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/movement/GUIDANCE_MOVEMENT_0004.yaml"
+  },
+  {
+    "id": "GUIDANCE_MOVEMENT_0005",
+    "slug": "walking-development-maximum-effort-9-24m",
+    "title": "Walking Development & Maximum Effort (9-24 months)",
+    "domain_tags": [
+      "movement",
+      "motor_refinement",
+      "sensitive_periods",
+      "independence",
+      "safety"
+    ],
+    "montessori_principles": [
+      "freedom_of_movement",
+      "follow_the_child",
+      "prepared_environment",
+      "maximum_effort",
+      "independence"
+    ],
+    "age_months_min": 9,
+    "age_months_max": 24,
+    "tags": [
+      "movement",
+      "9-24-months",
+      "walking-development",
+      "maximum-effort",
+      "sensitive-period",
+      "baby-walkers",
+      "au-product-safety",
+      "accc",
+      "footwear",
+      "falls",
+      "freedom-of-movement",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/movement/GUIDANCE_MOVEMENT_0005.yaml"
+  },
+  {
+    "id": "GUIDANCE_MOVEMENT_0006",
+    "slug": "supporting-climbing-risk-competence-12-36m-au",
+    "title": "Supporting Climbing & Risk Competence (12-36 months, AU safety)",
+    "domain_tags": [
+      "movement",
+      "motor_refinement",
+      "risk_competence",
+      "safety",
+      "prepared_environment",
+      "independence"
+    ],
+    "montessori_principles": [
+      "prepared_environment",
+      "freedom_of_movement",
+      "follow_the_child",
+      "maximum_effort",
+      "independence"
+    ],
+    "age_months_min": 12,
+    "age_months_max": 36,
+    "tags": [
+      "movement",
+      "12-36-months",
+      "climbing",
+      "risk-competence",
+      "toddler-safety",
+      "furniture-toppling",
+      "au-product-safety",
+      "accc",
+      "prepared-environment",
+      "maximum-effort",
+      "pikler",
+      "risky-play",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/movement/GUIDANCE_MOVEMENT_0006.yaml"
+  },
+  {
+    "id": "GUIDANCE_PRACTICAL_LIFE_0001",
+    "slug": "food-preparation-progression-15-36m",
+    "title": "Food Preparation Progression (15-36 months)",
+    "domain_tags": [
+      "practical_life",
+      "feeding",
+      "independence",
+      "motor_skills"
+    ],
+    "montessori_principles": [
+      "practical_life",
+      "independence",
+      "prepared_environment",
+      "meaningful_activity"
+    ],
+    "age_months_min": 15,
+    "age_months_max": 36,
+    "tags": [
+      "practical-life",
+      "food-preparation",
+      "15-36-months",
+      "independence",
+      "feeding",
+      "motor-skills",
+      "kitchen",
+      "toddler",
+      "cooking-with-kids",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/practical_life/GUIDANCE_PRACTICAL_LIFE_0001.yaml"
+  },
+  {
+    "id": "GUIDANCE_PE_0001",
+    "slug": "weaning-table-mealtime-layout-6-24m-au",
+    "title": "Weaning Table & Mealtime Layout (6-24 months, AU adaptation)",
+    "domain_tags": [
+      "prepared_environment",
+      "feeding",
+      "independence",
+      "autonomy"
+    ],
+    "montessori_principles": [
+      "prepared_environment",
+      "independence",
+      "follow_the_child",
+      "freedom_within_limits"
+    ],
+    "age_months_min": 6,
+    "age_months_max": 24,
+    "tags": [
+      "prepared-environment",
+      "feeding",
+      "6-24-months",
+      "weaning-table",
+      "independence",
+      "child-sized-furniture",
+      "au-adaptation",
+      "practical-life",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/prepared_environment/GUIDANCE_PE_0001.yaml"
+  },
+  {
+    "id": "GUIDANCE_PE_0002",
+    "slug": "toileting-environment-clothing-setup-12-36m-au",
+    "title": "Toileting Environment & Clothing Setup (12-36 months, AU)",
+    "domain_tags": [
+      "prepared_environment",
+      "toileting",
+      "independence",
+      "autonomy",
+      "practical_life"
+    ],
+    "montessori_principles": [
+      "prepared_environment",
+      "independence",
+      "follow_the_child",
+      "respect_for_the_individual"
+    ],
+    "age_months_min": 12,
+    "age_months_max": 36,
+    "tags": [
+      "prepared-environment",
+      "toileting",
+      "12-36-months",
+      "independence",
+      "practical-life",
+      "au-adaptation",
+      "bathroom-setup",
+      "clothing-independence",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/prepared_environment/GUIDANCE_PE_0002.yaml"
+  },
+  {
+    "id": "GUIDANCE_PE_0003",
+    "slug": "outdoor-environment-prep-0-36m-au-sunsmart",
+    "title": "Outdoor Environment Preparation (0-36 months, AU SunSmart)",
+    "domain_tags": [
+      "prepared_environment",
+      "movement",
+      "sensory",
+      "independence",
+      "safety"
+    ],
+    "montessori_principles": [
+      "prepared_environment",
+      "freedom_within_limits",
+      "follow_the_child",
+      "respect_for_natural_development"
+    ],
+    "age_months_min": 0,
+    "age_months_max": 36,
+    "tags": [
+      "prepared-environment",
+      "outdoor",
+      "0-36-months",
+      "sunsmart",
+      "au-climate",
+      "sun-safety",
+      "nature-connection",
+      "gross-motor",
+      "freedom-within-limits",
+      "safety-critical",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/prepared_environment/GUIDANCE_PE_0003.yaml"
+  },
+  {
+    "id": "GUIDANCE_PE_0004",
+    "slug": "language-music-art-zones-18-36m-au",
+    "title": "Language, Music & Art Zones (18-36 months, AU safe listening)",
+    "domain_tags": [
+      "prepared_environment",
+      "language",
+      "art",
+      "music",
+      "sensory",
+      "concentration"
+    ],
+    "montessori_principles": [
+      "prepared_environment",
+      "independence",
+      "freedom_within_limits",
+      "sensitive_periods"
+    ],
+    "age_months_min": 18,
+    "age_months_max": 36,
+    "tags": [
+      "prepared-environment",
+      "language",
+      "music",
+      "art",
+      "18-36-months",
+      "sound-environment",
+      "safe-listening",
+      "concentration",
+      "au-adaptation",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/prepared_environment/GUIDANCE_PE_0004.yaml"
+  },
+  {
+    "id": "GUIDANCE_PE_0005",
+    "slug": "materials-organisation-rotation-0-36m",
+    "title": "Materials Organisation & Rotation Principles (0-36 months)",
+    "domain_tags": [
+      "prepared_environment",
+      "independence",
+      "concentration",
+      "safety"
+    ],
+    "montessori_principles": [
+      "prepared_environment",
+      "freedom_within_limits",
+      "independence",
+      "order"
+    ],
+    "age_months_min": 0,
+    "age_months_max": 36,
+    "tags": [
+      "prepared-environment",
+      "materials-organization",
+      "toy-rotation",
+      "0-36-months",
+      "order",
+      "independence",
+      "toy-safety",
+      "au-adaptation",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/prepared_environment/GUIDANCE_PE_0005.yaml"
+  },
+  {
+    "id": "GUIDANCE_PE_0006",
+    "slug": "practical-life-zones-home-12-36m",
+    "title": "Practical Life Zones at Home (12-36 months)",
+    "domain_tags": [
+      "prepared_environment",
+      "practical_life",
+      "independence",
+      "self_care"
+    ],
+    "montessori_principles": [
+      "prepared_environment",
+      "independence",
+      "respect_for_the_individual",
+      "meaningful_activity"
+    ],
+    "age_months_min": 12,
+    "age_months_max": 36,
+    "tags": [
+      "prepared-environment",
+      "practical-life",
+      "12-36-months",
+      "independence",
+      "self-care",
+      "home-routines",
+      "au-adaptation",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/prepared_environment/GUIDANCE_PE_0006.yaml"
+  },
+  {
+    "id": "GUIDANCE_REGULATION_0001",
+    "slug": "newborn-regulation-comfort-0-6m",
+    "title": "Newborn Regulation & Comfort (0-6 months)",
+    "domain_tags": [
+      "regulation",
+      "social_emotional",
+      "responsive_parenting",
+      "attachment"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 6,
+    "tags": [
+      "regulation",
+      "0-6-months",
+      "newborn",
+      "crying",
+      "soothing",
+      "attachment",
+      "co-regulation",
+      "responsive-parenting",
+      "foundational",
+      "high-parent-demand"
+    ],
+    "file_path": "canonical/guidance/regulation/GUIDANCE_REGULATION_0001.yaml"
+  },
+  {
+    "id": "GUIDANCE_REGULATION_0002",
+    "slug": "co-regulation-caregiver-presence-0-36m",
+    "title": "Co-Regulation & Caregiver Presence (0-36 months)",
+    "domain_tags": [
+      "regulation",
+      "social_emotional",
+      "adult_preparation",
+      "responsive_parenting",
+      "attachment"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 36,
+    "tags": [
+      "regulation",
+      "0-36-months",
+      "co-regulation",
+      "attachment",
+      "adult-preparation",
+      "responsive-parenting",
+      "emotional-support",
+      "caregiver-self-care",
+      "foundational"
+    ],
+    "file_path": "canonical/guidance/regulation/GUIDANCE_REGULATION_0002.yaml"
+  },
+  {
+    "id": "GUIDANCE_REGULATION_0003",
+    "slug": "overstimulation-reset-routines-0-36m",
+    "title": "Overstimulation & Reset Routines (0-36 months)",
+    "domain_tags": [
+      "regulation",
+      "prepared_environment",
+      "sensory",
+      "responsive_parenting"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 36,
+    "tags": [
+      "regulation",
+      "0-36-months",
+      "overstimulation",
+      "sensory",
+      "prepared-environment",
+      "reset-routines",
+      "settling",
+      "practical"
+    ],
+    "file_path": "canonical/guidance/regulation/GUIDANCE_REGULATION_0003.yaml"
+  },
+  {
+    "id": "GUIDANCE_REGULATION_0004",
+    "slug": "separation-anxiety-reconnection-8-18m",
+    "title": "Separation Anxiety & Reconnection (8-18 months)",
+    "domain_tags": [
+      "regulation",
+      "social_emotional",
+      "attachment",
+      "responsive_parenting"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 8,
+    "age_months_max": 18,
+    "tags": [
+      "regulation",
+      "8-18-months",
+      "separation-anxiety",
+      "attachment",
+      "childcare",
+      "transitions",
+      "social-emotional",
+      "developmental-milestone"
+    ],
+    "file_path": "canonical/guidance/regulation/GUIDANCE_REGULATION_0004.yaml"
+  },
+  {
+    "id": "GUIDANCE_REGULATION_0005",
+    "slug": "biting-hitting-response-12-36m",
+    "title": "Biting & Hitting Response (12-36 months)",
+    "domain_tags": [
+      "regulation",
+      "social_emotional",
+      "freedom_within_limits",
+      "responsive_parenting"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 12,
+    "age_months_max": 36,
+    "tags": [
+      "regulation",
+      "12-36-months",
+      "biting",
+      "hitting",
+      "toddler-behaviour",
+      "freedom-within-limits",
+      "non-punitive",
+      "practical"
+    ],
+    "file_path": "canonical/guidance/regulation/GUIDANCE_REGULATION_0005.yaml"
+  },
+  {
+    "id": "GUIDANCE_REGULATION_0006",
+    "slug": "tantrums-time-in-support-18-36m",
+    "title": "Tantrums & Time-In Support (18-36 months)",
+    "domain_tags": [
+      "regulation",
+      "social_emotional",
+      "freedom_within_limits",
+      "responsive_parenting",
+      "attachment"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 18,
+    "age_months_max": 36,
+    "tags": [
+      "regulation",
+      "18-36-months",
+      "tantrums",
+      "time-in",
+      "attachment",
+      "big-feelings",
+      "toddler-behaviour",
+      "freedom-within-limits",
+      "co-regulation",
+      "foundational",
+      "high-parent-demand"
+    ],
+    "file_path": "canonical/guidance/regulation/GUIDANCE_REGULATION_0006.yaml"
+  },
+  {
+    "id": "GUIDANCE_SLEEP_0001",
+    "slug": "sleep-environment-setup-au",
+    "title": "Sleep Environment Setup (0-12 months, AU Safe Sleep)",
+    "domain_tags": [
+      "sleep",
+      "regulation",
+      "prepared_environment",
+      "safety"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 12,
+    "tags": [
+      "sleep",
+      "0-12-months",
+      "prepared-environment",
+      "au-safe-sleep",
+      "red-nose",
+      "safety-critical",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/sleep/GUIDANCE_SLEEP_0001.yaml"
+  },
+  {
+    "id": "GUIDANCE_SLEEP_0002",
+    "slug": "following-natural-sleep-rhythms-au-safe-sleep",
+    "title": "Following Natural Sleep Rhythms (0-12 months, AU Safe Sleep)",
+    "domain_tags": [
+      "sleep",
+      "regulation",
+      "follow_the_child",
+      "responsive_parenting"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 12,
+    "tags": [
+      "sleep",
+      "0-12-months",
+      "follow-the-child",
+      "responsive-parenting",
+      "au-safe-sleep",
+      "red-nose",
+      "settling",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/sleep/GUIDANCE_SLEEP_0002.yaml"
+  },
+  {
+    "id": "GUIDANCE_SLEEP_0003",
+    "slug": "night-wakings-troubleshooting-0-18m-au",
+    "title": "Night Wakings Troubleshooting (0-18 months, AU Safe Sleep)",
+    "domain_tags": [
+      "sleep",
+      "regulation",
+      "troubleshooting",
+      "responsive_parenting"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 0,
+    "age_months_max": 18,
+    "tags": [
+      "sleep",
+      "0-18-months",
+      "troubleshooting",
+      "night-waking",
+      "responsive-parenting",
+      "au-safe-sleep",
+      "red-nose",
+      "high-parent-demand",
+      "practical-guidance"
+    ],
+    "file_path": "canonical/guidance/sleep/GUIDANCE_SLEEP_0003.yaml"
+  },
+  {
+    "id": "GUIDANCE_SLEEP_0004",
+    "slug": "floor-bed-18m-plus",
+    "title": "Floor Bed Introduction (18+ months, AU Whole-Room Safety)",
+    "domain_tags": [
+      "sleep",
+      "independence",
+      "prepared_environment",
+      "safety",
+      "freedom_within_limits"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 18,
+    "age_months_max": 72,
+    "tags": [
+      "sleep",
+      "18-months-plus",
+      "floor-bed",
+      "independence",
+      "prepared-environment",
+      "au-safety-compliance",
+      "whole-room-safety",
+      "montessori-signature-practice",
+      "high-parent-interest"
+    ],
+    "file_path": "canonical/guidance/sleep/GUIDANCE_SLEEP_0004.yaml"
+  },
+  {
+    "id": "GUIDANCE_SLEEP_0005",
+    "slug": "12-18m-sleep-transitions-parent-support",
+    "title": "Supporting 12-18 Month Sleep Transitions",
+    "domain_tags": [
+      "sleep",
+      "regulation",
+      "transitions",
+      "parent_support",
+      "responsive_parenting"
+    ],
+    "montessori_principles": [],
+    "age_months_min": 12,
+    "age_months_max": 18,
+    "tags": [
+      "sleep",
+      "12-18-months",
+      "toddler-sleep",
+      "transitions",
+      "responsive-parenting",
+      "parent-support",
+      "separation-anxiety",
+      "night-waking",
+      "evidence-humble",
+      "au-safe-sleep",
+      "high-parent-demand"
+    ],
+    "file_path": "canonical/guidance/sleep/GUIDANCE_SLEEP_0005.yaml"
+  },
+  {
+    "id": "GUIDANCE_TOILETING_0001",
+    "slug": "toilet-readiness-follow-the-child-12-24m-au",
+    "title": "Toilet Readiness & Follow the Child (12-24 months, AU)",
+    "domain_tags": [
+      "toileting",
+      "autonomy",
+      "follow_the_child",
+      "independence",
+      "regulation"
+    ],
+    "montessori_principles": [
+      "follow_the_child",
+      "respect_for_the_individual",
+      "observation_as_foundation",
+      "independence",
+      "prepared_environment"
+    ],
+    "age_months_min": 12,
+    "age_months_max": 24,
+    "tags": [
+      "toileting",
+      "12-24-months",
+      "readiness",
+      "follow-the-child",
+      "independence",
+      "autonomy",
+      "au-context",
+      "non-coercive",
+      "foundational",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/toileting/GUIDANCE_TOILETING_0001.yaml"
+  },
+  {
+    "id": "GUIDANCE_TOILETING_0002",
+    "slug": "toileting-routines-co-regulation-18-36m-au",
+    "title": "Toileting Routines & Co-Regulation (18-36 months, AU)",
+    "domain_tags": [
+      "toileting",
+      "regulation",
+      "autonomy",
+      "responsive_parenting",
+      "co_regulation"
+    ],
+    "montessori_principles": [
+      "follow_the_child",
+      "independence",
+      "prepared_environment",
+      "respect_for_the_individual",
+      "freedom_within_limits"
+    ],
+    "age_months_min": 18,
+    "age_months_max": 36,
+    "tags": [
+      "toileting",
+      "18-36-months",
+      "routines",
+      "co-regulation",
+      "independence",
+      "modelling",
+      "accidents",
+      "non-shaming",
+      "au-context",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/toileting/GUIDANCE_TOILETING_0002.yaml"
+  },
+  {
+    "id": "GUIDANCE_TOILETING_0003",
+    "slug": "toileting-regressions-reset-18-36m-au",
+    "title": "Toileting Regressions & Reset (18-36 months, AU)",
+    "domain_tags": [
+      "toileting",
+      "regulation",
+      "autonomy",
+      "responsive_parenting",
+      "co_regulation"
+    ],
+    "montessori_principles": [
+      "follow_the_child",
+      "respect_for_the_individual",
+      "observation_as_foundation",
+      "prepared_environment"
+    ],
+    "age_months_min": 18,
+    "age_months_max": 36,
+    "tags": [
+      "toileting",
+      "18-36-months",
+      "regression",
+      "setbacks",
+      "co-regulation",
+      "reset",
+      "non-shaming",
+      "au-context",
+      "normalising",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/toileting/GUIDANCE_TOILETING_0003.yaml"
+  },
+  {
+    "id": "GUIDANCE_TOILETING_0004",
+    "slug": "night-time-toileting-nappies-24-48m-au",
+    "title": "Night-time Toileting & Nappies (24-48 months, AU)",
+    "domain_tags": [
+      "toileting",
+      "sleep",
+      "autonomy",
+      "follow_the_child"
+    ],
+    "montessori_principles": [
+      "follow_the_child",
+      "respect_for_the_individual",
+      "observation_as_foundation"
+    ],
+    "age_months_min": 24,
+    "age_months_max": 48,
+    "tags": [
+      "toileting",
+      "24-48-months",
+      "nighttime-dryness",
+      "bedwetting",
+      "nappies",
+      "follow-the-child",
+      "realistic-expectations",
+      "au-context",
+      "normalising",
+      "high-parent-demand",
+      "phase-3-canonical"
+    ],
+    "file_path": "canonical/guidance/toileting/GUIDANCE_TOILETING_0004.yaml"
+  }
+]

@@ -1,12 +1,195 @@
 # ATLAS Session Handoff
 
-**Date:** February 10, 2026
-**Status:** Activity Conversion Pipeline pre-production audit fixes COMPLETE (Phases 1-5). Ready for Phase 6 smoke test.
+**Date:** February 11, 2026
+**Status:** Guidance Content Gap Remediation Batch 1 COMPLETE (3 files). Pipeline fix from Session 37 still active.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: Activity Conversion Pipeline Pre-Production Audit & Fix (Feb 10, 2026 - Session 34)
+## Current Session: Guidance Content Gap Remediation Batch 1 (Feb 11, 2026 - Session 38)
+
+### What Was Done
+
+**Created 3 guidance YAML files (Batch 1 of remediation plan):**
+
+| File | Domain | Age | Path |
+|------|--------|-----|------|
+| GUIDANCE_LANGUAGE_0001 | Prelinguistic Communication | 0-12m | `knowledge/data/canonical/guidance/language/GUIDANCE_LANGUAGE_0001.yaml` |
+| GUIDANCE_LANGUAGE_0002 | Vocabulary Building & Language Explosion | 12-36m | `knowledge/data/canonical/guidance/language/GUIDANCE_LANGUAGE_0002.yaml` |
+| GUIDANCE_PRACTICAL_LIFE_0001 | Food Preparation Progression | 15-36m | `knowledge/data/canonical/guidance/practical_life/GUIDANCE_PRACTICAL_LIFE_0001.yaml` |
+
+**Source material synthesized from:**
+- Understanding the Human Being (Montanaro) pp. 137-147
+- The Joyful Child Parts 1 & 2 (Davies) pp. 10-12, 35, 39, 67-72
+- Montessori from the Start Parts 2 & 3 (Lillard & Jessen) pp. 64-67, 76-80, 111-114
+
+**P54 Independent audit completed.** Findings fixed:
+- CRITICAL: Fabricated page number "TJC pp. 1006-1037" corrected to "pp. 67-68" in LANGUAGE_0002
+- Superlatives removed: "profoundly," "remarkable" (x3), "most significant"
+- AU English fixes: "cutting board" -> "chopping board," "cookie cutters" -> "biscuit cutters"
+- Missing schema fields added: montessori_pillars (PL_0001), childcare_alignment (all 3), professional_support (PL_0001)
+- Missing synthesized_from entry added: MFTS in LANGUAGE_0001
+
+**Cross-references updated:**
+- NAMING_GAME activity: `GUIDANCE_LANGUAGE_0001` -> `GUIDANCE_LANGUAGE_0002` (correct age match 12-36m)
+- Coverage ledger: 5 entries updated from "categorized" to "synthesized" with canonical slugs
+
+**Catalog regenerated:** 35 -> 38 guidance entries in `config/babybrains/guidance_catalog.json`
+
+### Files Created (knowledge repo)
+- `knowledge/data/canonical/guidance/language/GUIDANCE_LANGUAGE_0001.yaml`
+- `knowledge/data/canonical/guidance/language/GUIDANCE_LANGUAGE_0002.yaml`
+- `knowledge/data/canonical/guidance/practical_life/GUIDANCE_PRACTICAL_LIFE_0001.yaml`
+
+### Files Modified
+| File | Repo | Changes |
+|------|------|---------|
+| `data/canonical/activities/language/ACTIVITY_LANGUAGE_NAMING_GAME_TWO_PERIOD_LESSON_12_36M.yaml` | knowledge | Fixed guidance_id: 0001 -> 0002, updated slug |
+| `data/coverage_ledger.csv` | knowledge | 5 entries: categorized -> synthesized |
+| `config/babybrains/guidance_catalog.json` | ATLAS | Regenerated (35 -> 38 entries) |
+
+### Remaining (Batch 2 - 3 files)
+- GUIDANCE_LANGUAGE_0003 (Adult Language & Modelling, 0-36m)
+- GUIDANCE_PRACTICAL_LIFE_0002 (Dressing & Self-Care, 12-36m)
+- GUIDANCE_PRACTICAL_LIFE_0003 (Care of Environment, 18-36m)
+
+### Remaining (Batch 3 - 1 file)
+- GUIDANCE_LANGUAGE_0004 (Bilingual & Multilingual, 0-36m)
+
+### Quality Notes
+- All 3 files use BB voice (warm, evidence-informed, parent-as-capable)
+- All content traces to specific source material with page numbers
+- Cross-domain tags: 4 per file (exceeds minimum of 2)
+- Australian English throughout (mum, nappy, chopping board, biscuit cutters, centre)
+- quality_review schema uses simplified format (reviewed_by, qc_status) rather than MI-SYN/MI-QA format from earlier files. The catalog generator accepts both.
+
+---
+
+## Previous Session: Pipeline Fix - Guidance/Materials Cross-Referencing (Feb 11, 2026 - Session 37)
+
+### What Was Done
+
+**Part 1: Pipeline Fix (implemented)**
+1. Created `scripts/build_guidance_catalog.py` — scans 35 guidance + 20 material YAMLs, generates JSON indexes
+2. Generated `config/babybrains/guidance_catalog.json` (35 entries) and `materials_catalog.json` (20 entries)
+3. Added `_load_guidance_catalog()` and `_load_materials_catalog()` to pipeline (cached, graceful degradation)
+4. Modified `_execute_research()` to inject catalogs into input_data for cross-domain matching
+5. Added `_fix_validation_misclassification()` — moves guidance/materials reference issues from blocking to warnings (tightly anchored patterns with structural exclusions)
+6. Wired misclassification fix at all 3 validation code paths: `convert_activity`, `_convert_from_cached_transform`, `elevate_existing_file`
+7. Updated `research_activity.md` skill: catalog-based matching instead of filesystem search (Sections 4+5)
+8. Updated `validate_activity.md` skill: added LANGUAGE/PRACTICAL_LIFE/TOILETING to Valid Categories, external validators → SKIPPED_BY_SKILL, explicit warn/block clarification (Sections 3.1, 5, 7)
+9. Added 11 unit tests (8 misclassification + 3 catalog loading) — all 132 pipeline tests pass
+
+**Part 2: Content Gap Remediation Plan (saved)**
+- `docs/PLAN_GUIDANCE_CONTENT_GAP_REMEDIATION.md` — standalone handoff for fresh agent to create 4 language + 3 practical_life guidance YAMLs
+
+### Files Modified (ATLAS repo)
+- `atlas/pipelines/activity_conversion.py` — 3 new methods + 1 modified method + 3 wiring points
+- `tests/pipelines/test_activity_conversion.py` — 11 new tests (132 total)
+- `config/babybrains/guidance_catalog.json` — NEW (generated index, 35 entries)
+- `config/babybrains/materials_catalog.json` — NEW (generated index, 20 entries)
+- `scripts/build_guidance_catalog.py` — NEW (catalog generator)
+- `docs/PLAN_GUIDANCE_CONTENT_GAP_REMEDIATION.md` — NEW (Part 2 handoff)
+
+### Files Modified (babybrains-os repo)
+- `skills/activity/research_activity.md` — Sections 4+5: catalog-based cross-domain matching
+- `skills/activity/validate_activity.md` — Sections 3.1, 5, 7: categories, validators, warn/block
+
+### Next Steps
+1. Re-run `cutting-a-banana` through pipeline to verify fix end-to-end
+2. Execute Part 2: Create missing language/practical_life guidance YAMLs (use PLAN_GUIDANCE_CONTENT_GAP_REMEDIATION.md)
+3. After guidance creation, regenerate catalogs: `python3 scripts/build_guidance_catalog.py`
+
+---
+
+## Previous Session: MJ Asset Generation Guide (Feb 11, 2026 - Session 36)
+
+### What Was Done
+
+**Created:** `docs/research/bb-content-production/MJ_ASSET_GENERATION_GUIDE.md` (~1,020 lines)
+- Production handbook with ready-to-paste MJ prompts for every Baby Brains asset type
+- 9 sections: Quick Start, Expressions, Poses, Clothing, Environments, Parameters, Defects, Checklist, Workflow
+- Synthesised 3 research extraction agents + 5 local doc reviews + conflict resolution
+- All prompts verified against 17 anti-patterns + character_dna.json canonical values
+- Independent verification audit: 11/11 criteria PASSED
+
+**Deleted:** `SYNTHESIS_PROMPT.md`, `RESEARCH_PROMPT_DIRECTOR_AGENT_PIPELINE_PART2B.md` (superseded)
+
+**Conflict Resolutions Applied:**
+- --ow 175/200 (character_dna.json user-tested values, not Part 1's 100)
+- --sw 75-150 range (not Part 3's 200-350 which conflicts with Phase D "colour death" finding)
+- "Polymer clay" safe in clothing conversion Step 1 only (anti-pattern in character prompts)
+- Hands/fingers NOT in negative prompts (deformed hands, extra fingers ARE acceptable)
+- --draft + --oref flagged as NEEDS TESTING (conflicting sources)
+- Expression orefs built at --ow 175 with master oref, production use at --ow 100
+
+### Files Created/Modified
+| File | Changes |
+|------|---------|
+| `docs/research/bb-content-production/MJ_ASSET_GENERATION_GUIDE.md` | NEW — 9-section production handbook |
+| `docs/research/bb-content-production/SYNTHESIS_PROMPT.md` | DELETED |
+| `docs/research/bb-content-production/RESEARCH_PROMPT_DIRECTOR_AGENT_PIPELINE_PART2B.md` | DELETED |
+
+### Next Steps
+- User works through guide in MidJourney sessions (expressions first, then poses, clothing, scenes)
+- Test --draft + --oref compatibility (flagged in guide)
+- After asset generation: update character_refs.json with expression oref file paths
+
+---
+
+## Current Session: Phase 6 Smoke Tests + Infrastructure Fixes (Feb 11, 2026 - Session 35)
+
+### What Was Done
+
+**P54 Independent Verification (4 findings fixed):**
+- F2 (CRITICAL): `test_truncated_json_repair` had trivially true assertion. Fixed to concrete `assert result is None`.
+- F4 (HIGH): Missing test for `_detect_truncation` Check 3. Added `test_truncated_mid_parent_search_terms`.
+- F9 (MEDIUM): `test_primary_returns_info` didn't verify `source_activities`. Added verification.
+- F6 (MEDIUM): Weak assertion in YAML parse error test. Changed to exact equality.
+
+**Infrastructure Fixes (Root Causes of Pipeline Failures):**
+1. **CLI Timeout**: 600s hardcoded → configurable via `ATLAS_CLI_TIMEOUT` env var (default 1200s). Each stage gets its own timeout.
+2. **API tool_use.name error**: `claude -p` was sending tool_use blocks with names >200 chars. Fixed by adding `--tools ""` to disable tools in CLI mode (skills are pure generation).
+3. **Raw output logging**: Added `logger.warning` for raw output preview on TRANSFORM and ELEVATE failures.
+4. **TRANSFORM JSON fallback**: Added `_extract_transform_yaml_fallback()` — when JSON parsing fails for TRANSFORM output (large YAML embedded in JSON breaks escaping), extracts YAML directly from raw output, bypassing JSON.
+5. **ELEVATE JSON fallback**: Same pattern for ELEVATE stage via `_extract_elevate_yaml_fallback()`.
+6. **"ideal" superlative exception**: Added `is ideal` (predicate suitability) and `not ideal` (negation) as exceptions in ai_detection.py. "A ripe banana is ideal" is practical language, not AI fluff.
+7. **parent_search_terms exclusion**: `_quick_validate` now strips `parent_search_terms` section before superlative checking. SEO queries like "best books for..." are what parents actually search for.
+
+### Smoke Test Results (Phase 6)
+
+| Activity | Type | Attempt 1 | Status |
+|----------|------|-----------|--------|
+| `dancing-and-singing` | Standalone, language | Grade A (1 retry) | PASS |
+| `using-vocabulary-books` | Standalone, language | QC_FAILED ("ideal") | RE-RUNNING with fix |
+| `cutting-a-banana` | Group primary (4 sources) | TRANSFORM JSON fail → QC_FAILED ("ideal") | RE-RUNNING with fix |
+
+- `dancing-and-singing` Grade A output: `/tmp/smoke_test_dancing_singing.yaml` (27,159 chars, 260 lines)
+- Independent Opus quality audit: 5/5 across all 6 categories, zero anti-pattern violations
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `atlas/orchestrator/skill_executor.py` | Configurable timeout (ATLAS_CLI_TIMEOUT env var, default 1200s), `--tools ""` flag, raw output logging |
+| `atlas/pipelines/activity_conversion.py` | TRANSFORM/ELEVATE JSON fallback extractors, parent_search_terms exclusion in `_quick_validate`, raw output logging |
+| `atlas/babybrains/ai_detection.py` | "ideal" exceptions: `is ideal` (predicate), `not ideal` (negation) |
+| `tests/pipelines/test_activity_conversion.py` | P54 fixes + fallback tests + exception tests (112→117 tests) |
+| `tests/babybrains/test_ai_detection.py` | "ideal" exception tests (118→123 tests) |
+
+### Test Results
+- Pipeline tests: **117/117 passed**
+- AI detection tests: **123/123 passed**
+- Total: **240/240 passed**
+
+### Next Steps
+1. Check results of re-running `cutting-a-banana` and `using-vocabulary-books`
+2. Quality audit any Grade A outputs
+3. Phase 7: Batch configuration for ~202 pending activities
+4. Commit all changes
+
+---
+
+## Previous Session: Activity Conversion Pipeline Pre-Production Audit & Fix (Feb 10, 2026 - Session 34)
 
 ### What Was Done
 Implemented 5 phases from the 4-round Opus audit plan for the activity conversion pipeline (3,471 lines). The pipeline has never been run end-to-end in automated mode; all 28 canonical files were produced manually.
@@ -57,13 +240,36 @@ Implemented 5 phases from the 4-round Opus audit plan for the activity conversio
 - AI detection tests: **118/118 passed**
 - Full BB suite: **660 passed, 7 skipped** (API key gated)
 
+### P54 Warning: Tests Need Independent Verification
+The 102 tests in `tests/pipelines/test_activity_conversion.py` were written by the same agent that wrote the code. Per P54 (self-review degrades quality), spawn a **fresh independent agent** to:
+1. Read ONLY the test file and the functions being tested (not the plan)
+2. Check for tests that test the mock instead of actual behavior
+3. Look for missing edge cases and boundary conditions
+4. Verify fixture correctly simulates real pipeline state
+
 ### Next Steps (Phases 6-7)
-1. **Phase 6: Smoke Test** -- Run 3 diverse activities end-to-end with `--no-llm-context`:
-   ```bash
-   python -m atlas.pipelines.activity_conversion --activity <id> --retry 2
-   ```
-2. **Phase 7: Batch Configuration** -- Decide batch size, LLM context on/off, set up monitoring
-3. **BEGIN BATCH PROCESSING** -- ~202 pending activities
+
+**IMMEDIATE: Independent test verification (before trusting any test results)**
+
+**Phase 6: Smoke Test** (3 activities end-to-end):
+1. Pick 3 diverse activities from `--list-pending` output:
+   - 1 simple movement activity
+   - 1 different domain (language or feeding)
+   - 1 group primary
+2. Run each: `python3 -m atlas.pipelines.activity_conversion --activity <id> --retry 2`
+3. Monitor memory: `watch -n5 'ps aux --sort=-rss | head -5'`
+4. Verify `_quick_validate` appears in logs (confirms Phase 2 wiring works in practice)
+5. Success criteria: at least 1 of 3 achieves Grade A
+
+**Phase 7: Batch Configuration:**
+1. Decide batch size (all ~202 pending vs chunks of 30-50)
+2. Decide LLM context: on (slower, fewer false positives) or off (faster)
+3. Set up monitoring wrapper
+4. Document production run procedure
+5. **BEGIN BATCH PROCESSING** -- ~202 pending activities
+
+### Full plan reference
+`/home/squiz/.claude/plans/iridescent-weaving-mccarthy.md`
 
 ---
 
