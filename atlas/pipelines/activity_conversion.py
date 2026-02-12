@@ -2105,8 +2105,10 @@ OR if blocking issues found:
 }}
 """
 
-        # D28: Use extended timeout for final retry to avoid truncation
-        effective_timeout = 600 if is_final_attempt else 300  # 10 min vs 5 min
+        # D28/D108: Use STAGE_TIMEOUTS for audit subprocess timeout
+        # Old hardcoded 300s/600s was insufficient — audit consistently timed out
+        base_timeout = self.STAGE_TIMEOUTS.get("quality_audit", 900)
+        effective_timeout = base_timeout if not is_final_attempt else int(base_timeout * 1.2)
         logger.info(f"Running quality audit for {activity_id} (timeout={effective_timeout}s, final={is_final_attempt})")
 
         # Use SubAgentExecutor for fresh context
