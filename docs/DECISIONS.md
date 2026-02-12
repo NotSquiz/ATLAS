@@ -2,7 +2,7 @@
 
 Decisions are logged chronologically. Future agents should read this to understand why choices were made.
 
-**Last Updated:** February 12, 2026 (D108 + D109 added: subprocess timeout audit)
+**Last Updated:** February 12, 2026 (D110: cached transform NoneType crash fix)
 
 ---
 
@@ -3492,5 +3492,17 @@ ATLAS Orchestrator (shared: memory, model router, MCP, security)
 - verify_adversarially() uses self.timeout=300 (not configurable but adequate)
 - API path in SkillExecutor ignores timeout (not used currently, CLI path only)
 - No overall pipeline-level timeout (max theoretical: 75.5 minutes)
+
+---
+
+## D110: Fix NoneType Crash in Cached Transform Path
+**Date:** February 12, 2026
+**Context:** `_convert_from_cached_transform()` crashed with `AttributeError: 'NoneType' object has no attribute 'add'` on `self.scratch_pad.add()`.
+
+**Root Cause:** When `convert_with_retry()` loads a cached transform from disk, it calls `_convert_from_cached_transform()` directly, skipping `convert_activity()`. But `self.scratch_pad` is only initialized in `convert_activity()` (line 2254), and `self.session.start_session()` is only called there (line 2257). The cached path used both without initializing them.
+
+**Fix:** Added `ScratchPad` initialization and `session.start_session()` at the top of `_convert_from_cached_transform()`, mirroring the initialization in `convert_activity()`.
+
+**Impact:** All cached retries (D78 stage caching) would crash on first `scratch_pad.add()` call. This made the retry optimization non-functional for disk-cached transforms.
 
 ---

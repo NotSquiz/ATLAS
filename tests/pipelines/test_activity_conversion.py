@@ -1237,6 +1237,74 @@ class TestScratchPadPersistence:
 
 
 # ============================================================
+# D110: Cached transform path initializes scratch_pad + session
+# ============================================================
+
+class TestCachedTransformInitialization:
+    """D110: _convert_from_cached_transform must initialize scratch_pad."""
+
+    @pytest.mark.asyncio
+    async def test_cached_path_initializes_scratch_pad(self, pipeline):
+        """scratch_pad must not be None when cached path runs."""
+        import unittest.mock
+        from atlas.orchestrator.scratch_pad import ScratchPad
+
+        pipeline.scratch_pad = None
+        pipeline.session = unittest.mock.AsyncMock()
+        pipeline._execute_elevate = unittest.mock.AsyncMock(
+            return_value=(False, None, "test short-circuit")
+        )
+
+        cached = {
+            "canonical_yaml": "type: Activity\ncanonical_id: TEST",
+            "canonical_id": "TEST",
+            "file_path": "/tmp/test.yaml",
+        }
+
+        result = await pipeline._convert_from_cached_transform("test-id", cached)
+
+        # scratch_pad should be initialized even though elevate failed
+        assert pipeline.scratch_pad is not None
+        assert isinstance(pipeline.scratch_pad, ScratchPad)
+        assert pipeline.scratch_pad.session_id == "convert_test-id"
+        # session.start_session should have been called
+        pipeline.session.start_session.assert_awaited_once_with(repo="knowledge")
+
+    @pytest.mark.asyncio
+    async def test_cached_path_scratch_pad_usable(self, pipeline):
+        """scratch_pad.add() must work in cached path (was NoneType crash)."""
+        import unittest.mock
+        from atlas.orchestrator.scratch_pad import ScratchPad
+
+        pipeline.scratch_pad = None
+        pipeline.session = unittest.mock.AsyncMock()
+        pipeline._execute_elevate = unittest.mock.AsyncMock(
+            return_value=(True, {"elevated_yaml": "type: Activity", "grade": "A"}, None)
+        )
+        # Short-circuit at quick_validate to avoid needing more stubs
+        pipeline._fix_canonical_id = lambda y, _: y
+        pipeline._fix_canonical_slug = lambda y, _: y
+        pipeline._fix_principle_slugs = lambda y: y
+        pipeline._fix_age_range = lambda y, _: y
+        pipeline._remove_dashes = lambda y: y
+        pipeline._quick_validate = lambda y: [{"code": "TEST", "category": "test",
+                                                "issue": "stop here", "severity": "error"}]
+
+        cached = {
+            "canonical_yaml": "type: Activity\ncanonical_id: TEST",
+            "canonical_id": "TEST",
+            "file_path": "/tmp/test.yaml",
+        }
+
+        result = await pipeline._convert_from_cached_transform("test-id", cached)
+
+        # Should have reached scratch_pad.add without crash
+        assert pipeline.scratch_pad is not None
+        elevate_data = pipeline.scratch_pad.get("elevate_output")
+        assert elevate_data is not None
+
+
+# ============================================================
 # Fix 2: Non-interactive stdin detection
 # ============================================================
 

@@ -1,8 +1,31 @@
 # ATLAS Session Handoff
 
 **Date:** February 12, 2026
-**Status:** Pipeline timeout audit COMPLETE (D109). All subprocess timeouts traced and fixed. Ready for live dry run.
+**Status:** D110 fix applied — cached transform path no longer crashes. Ready for live dry run.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
+
+---
+
+## D110: Fix NoneType Crash in Cached Transform Path (Feb 12, 2026)
+
+### Bug
+`_convert_from_cached_transform()` crashed with `AttributeError: 'NoneType' object has no attribute 'add'` because `self.scratch_pad` and `self.session.start_session()` were only initialized in `convert_activity()`, which the cached path bypasses.
+
+### Fix
+Added `ScratchPad` + `session.start_session()` initialization at top of `_convert_from_cached_transform()` (3 lines after line 2822).
+
+### Tests
+2 new tests in `TestCachedTransformInitialization`: verifies scratch_pad initialization and usability in cached path. All 154 tests pass.
+
+### Recent Commits
+- 2573aaa: D107 post-ELEVATE dash cleanup
+- 4b58a0d: D108 quality audit timeout fix
+- PENDING: D109 subprocess timeout audit and process cleanup
+- PENDING: D110 cached transform NoneType fix
+
+### Next Steps
+- **#25**: Single dry run (narrating-daily-care) to verify pipeline works end-to-end
+- **#26**: Prepare batch prompt for remaining activities
 
 ---
 
@@ -20,15 +43,6 @@
 - Stages 1-5 timeout propagation: correct (STAGE_TIMEOUTS → SkillExecutor._execute_cli)
 - Quality audit timeout (D108): correct (STAGE_TIMEOUTS-based with 1.2x multiplier)
 - SubAgentExecutor: proper proc.kill() on timeout
-
-### Recent Commits
-- 2573aaa: D107 post-ELEVATE dash cleanup
-- 4b58a0d: D108 quality audit timeout fix
-- PENDING: D109 subprocess timeout audit and process cleanup
-
-### Next Steps
-- **#25**: Single dry run (narrating-daily-care) to verify pipeline works end-to-end
-- **#26**: Prepare batch prompt for remaining activities
 
 ---
 

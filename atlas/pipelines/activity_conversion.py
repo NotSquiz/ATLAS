@@ -2820,6 +2820,12 @@ If ANY of these appear, rewrite that sentence before outputting.
         canonical_id = cached_transform["canonical_id"]
         file_path = cached_transform["file_path"]
 
+        # D110: Initialize scratch_pad and session for cached path
+        # (convert_activity normally does this, but cached path skips it)
+        session_id = f"convert_{raw_id}"
+        self.scratch_pad = ScratchPad(session_id=session_id)
+        await self.session.start_session(repo="knowledge")
+
         logger.info(f"[CACHED] Starting from stage 4 (ELEVATE) for {raw_id}")
 
         # Stage 4: ELEVATE VOICE (with feedback)
