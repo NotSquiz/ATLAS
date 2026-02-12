@@ -1,12 +1,127 @@
 # ATLAS Session Handoff
 
 **Date:** February 12, 2026
-**Status:** D107 Post-ELEVATE Dash Cleanup COMPLETE. 152 pipeline tests pass (146 + 6 new). 3 independent audits confirmed fix at 95%+ confidence.
+**Status:** Baby Brains Expression Oref Library — IN PROGRESS (5/8 expressions addressed)
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: Post-ELEVATE Dash Cleanup (Feb 12, 2026 - Session 41)
+## Current Session: BB Expression Oref Library via Gemini Nano Banana (Feb 12, 2026 - Session 42)
+
+### What We're Doing
+
+Building the Baby Brains character expression oref library — 8 facial expression reference images that will be used as `--oref` references in MidJourney production content. The approach PIVOTED from MJ-native generation to **Gemini "Nano Banana" image editing** because MJ at `--ow 175` is too strong — the oref's calm expression overrides prompt text across 40+ generations.
+
+**Method:** Upload the master oref image to Gemini, ask it to edit ONLY the facial expression while preserving everything else (body, pose, clothing, clay texture, hands, feet, background).
+
+### KEY LESSONS LEARNED (Critical for Next Session)
+
+#### Gemini Nano Banana Strengths
+- **Preservation is excellent** — body, clay texture, skin tone, onesie, hands, feet stay untouched
+- **Simple emotion edits work well** — surprised and sleepy both passed on 1-2 attempts
+- **Targeted fix prompts work** — "edit only the mouth" or "edit only the mouth and brow" are effective
+
+#### Gemini Nano Banana Limitations (MUST KNOW)
+1. **Cannot do subtle eye shape changes** — asking for "crescent eyes," "half-moon," "lower lid raise" all fail. Gemini either does nothing, closes the eyes completely, or creates an unnatural narrow slit
+2. **"Brow furrow" = angry/sad on baby faces** — every attempt at concentration via brow furrow produced sadness or anger instead. Concentration should use gaze intensity + slightly parted lips, NOT brow furrowing
+3. **Incremental edits degrade** — after 2-3 rounds of editing the same image, quality drops. Better to restart from master oref with a refined single prompt
+4. **Gemini sometimes ignores "do not change X"** — it moved hands on one attempt despite being told not to. Always check preservation
+5. **Emotion vocabulary matters enormously** — "joyful" with anatomical eye descriptions = drunk/squinting. "Happy and delighted" with geometric descriptions = better. Describe what it LOOKS LIKE, not what muscles do
+
+#### Prompt Writing Rules for Gemini Expression Edits
+- Always start with "Edit only the facial expression. Keep everything else exactly the same — body, pose, clothing, hands, feet, background, lighting, materials, colours."
+- Always end with "Do not change the skin tone, eye colour, hair, clothing texture, or any part of the body below the neck."
+- Be specific about what the mouth should do (parted, closed, smile, O-shape)
+- For eyes: describe the RESULT not the mechanism ("eyes three-quarters open" not "lower lids pushed up by cheeks")
+- Explicitly state what the emotion is NOT ("not sad, not angry, not scared")
+- One edit at a time works better than combined edits
+
+#### User Quality Standards
+- **Every asset must be perfect** — user iterates until right, does not accept "good enough"
+- **User has excellent instincts** — trust their gut reads on expressions. They spotted "drugged eyes," "grumpy teenager," and "sad" before I did
+- **Teeth are allowed** — user's real baby has front teeth. The research "no teeth" rule is overridden. May create separate gummy/teeth oref sets for different age content later
+- **Joy expression eyes are a known hard problem** — Gemini cannot produce Duchenne crescent eyes on this figurine's oversized proportions. Best result so far: open neutral eyes + great smile (banked as "joy maybe")
+
+### Expression Progress
+
+| # | Expression | Status | File | Notes |
+|---|-----------|--------|------|-------|
+| 1 | Calm/Content | **DONE** (is the master oref) | `orefs/master.png` | Already exists — no generation needed |
+| 2 | Curious/Wonder | **DONE** | `orefs/curious.png` | 3 attempts. Key: head tilt + parted lips "oh" mouth. Closed mouth = interested calm, not curious |
+| 3 | Joyful/Delighted | **BANKED — eyes need revisit** | `orefs/joy maybe.png` | Smile is great (open mouth, front teeth, not extreme). Eyes are neutral/unchanged — every attempt to add joy to eyes failed (squinting, drunk, cackling, slit-eyes). Come back later |
+| 4 | Surprised/Discovery | **DONE** | `orefs/surprised.png` | First attempt pass! Raised brows + wide eyes + soft O-mouth. Reads as "oh!" not "AHHH!" |
+| 5 | Sleepy/Drowsy | **DONE** | `orefs/sleepy.png` | 2 attempts. First was grumpy teenager. Fix: soften mouth into tiny smile + smooth brow tension |
+| 6 | Concentrated/Focused | **IN PROGRESS** | latest attempt banked | Hard. Brow furrow = sad/angry on baby face. Latest attempt (no furrow, wide eyes, parted lips) reads as alert/attentive — closer but similar to surprised. Needs differentiation |
+| 7 | Crying/Upset | **TODO** | — | HIGH difficulty |
+| 8 | Mischief/Playful | **TODO** | — | HIGHEST difficulty (asymmetric expression) |
+
+### Remaining Expressions — Suggested Prompts
+
+#### Expression 6: Concentrated/Focused (RETRY)
+The problem: every "focused" prompt produces sad/angry. The fix that got closest used wide eyes + parted lips + no brow furrow, but it looked too similar to surprised. Differentiation ideas:
+- **Gaze direction:** Concentrated = looking DOWN at something in hands (not straight ahead like surprised)
+- **Head angle:** Slight forward tilt, chin down — studying something below
+- **Mouth:** Lips pressed together gently (not parted like surprised) — but NOT frowning
+- This might be a case where the expression only works in context (baby with a toy/object)
+
+#### Expression 7: Crying/Upset
+```
+Edit only the facial expression. Keep everything else exactly the same — body, pose, clothing, hands, feet, background, lighting, materials, colours.
+
+Change the expression to a baby about to cry: eyes squeezed tightly shut or nearly shut with wrinkled skin around them, eyebrows pushed together and raised in the middle creating a distressed arch, mouth wide open in a wail with downturned corners, chin wrinkled and dimpled, cheeks flushed. The expression should be unmistakable distress — a baby who is upset and crying.
+
+Do not change the skin tone, eye colour, hair, clothing texture, or any part of the body below the neck.
+```
+
+#### Expression 8: Mischief/Playful
+```
+Edit only the facial expression. Keep everything else exactly the same — body, pose, clothing, hands, feet, background, lighting, materials, colours.
+
+Change the expression to playful mischief: one eyebrow slightly raised higher than the other, eyes bright and knowing with a sly sparkle, an asymmetric smile — one corner of the mouth pulled up more than the other in a cheeky smirk. Head tilted slightly with chin down, looking up through the brows. The baby knows it's being naughty and finds it hilarious.
+
+Do not change the skin tone, eye colour, hair, clothing texture, or any part of the body below the neck.
+```
+Note: HIGHEST difficulty. Asymmetric expressions are very hard for AI image editors. May need multiple attempts.
+
+### Evaluation Rubric (Apply to ALL Expressions)
+
+#### Expression-Specific Checks
+| Check | What "Pass" Looks Like | What "Fail" Looks Like |
+|-------|----------------------|----------------------|
+| Reads as intended emotion? | Instant recognition — you see the emotion before thinking about it | Ambiguous, reads as different emotion, or blank |
+| Distinct from other expressions? | Clearly different from all other approved orefs at thumbnail size | Could be confused with another expression |
+| Intensity appropriate? | Moderate, natural — a real baby would make this face | Extreme, exaggerated, cartoon-like, uncanny |
+
+#### Preservation Checks (EVERY image)
+| Check | Pass | Fail |
+|-------|------|------|
+| Clay texture on clothing | Identical sculpting marks on onesie | Smoothed out, vinyl, lost detail |
+| Skin tone | Same warm golden-peach | Shifted pink, grey, orange, yellow |
+| Eye colour | Cornflower blue with catchlights | Colour shifted or catchlights lost |
+| Body/pose/hands | Untouched, identical to master | Moved, repositioned, altered |
+| Hair | Same fine wispy blonde | Thickened, restyled, changed colour |
+| Onesie colour | Same cream | Colour shifted |
+| Background | Clean white | Added elements, changed tone |
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `docs/research/bb-content-production/orefs/` | Expression oref output folder |
+| `docs/research/bb-illustrative/--oref.png` | The master oref source image (upload this to Gemini for each expression) |
+| `docs/research/bb-content-production/MJ_ASSET_GENERATION_GUIDE.md` | Full production guide (Sections 2-9 still relevant for poses, clothing, scenes AFTER expressions are done) |
+| `docs/research/bb-content-production/research/EXPRESSION_LIBRARY_PROMPTS.md` | Original MJ expression prompts (compound anatomical descriptors still useful as reference for what each expression should look like) |
+| `config/babybrains/character_dna.json` | Canonical character config |
+
+### After Expressions Are Done — Next Steps
+1. **Revisit joyful eyes** — the smile is banked, eyes need work (may need a different tool or approach)
+2. **Pose orefs** — Section 3 of MJ_ASSET_GENERATION_GUIDE.md (5 poses). These may also work via Gemini edits on the master oref
+3. **Clothing library** — Section 4 (two-step MJ pipeline, not Gemini)
+4. **Environment/scene refs** — Section 5 (MJ generation)
+
+---
+
+## Previous Session: Post-ELEVATE Dash Cleanup (Feb 12, 2026 - Session 41)
 
 ### What Was Done
 
@@ -40,9 +155,13 @@ LLM introduces new dashes during elevation, causing token-wasting retry cycles.
 | `tests/pipelines/test_activity_conversion.py` | 6 new tests for dash cleanup and quick_validate |
 | `docs/DECISIONS.md` | D107 entry added |
 
+### Also Fixed: D108 Quality Audit Timeout
+
+`audit_quality()` hardcoded subprocess timeout at 300s/600s, ignoring `STAGE_TIMEOUTS['quality_audit']=900s`. Live testing showed audit consistently timing out at 600s. Now uses STAGE_TIMEOUTS as base (900s normal, 1080s final attempt). Commit: 4b58a0d.
+
 ### Next Session: Re-run Activities + Live Pipeline Testing
 
-Same plan as Session 40 — the D107 fix should significantly reduce dash-related retry failures.
+Same plan as Session 40 — D107 (dash cleanup) + D108 (audit timeout) should fix the two main failure modes.
 
 ---
 
