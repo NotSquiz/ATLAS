@@ -2,7 +2,7 @@
 
 Decisions are logged chronologically. Future agents should read this to understand why choices were made.
 
-**Last Updated:** February 12, 2026 (D110: cached transform NoneType crash fix)
+**Last Updated:** February 12, 2026 (D111: CLI transient failure retry)
 
 ---
 
@@ -3504,5 +3504,22 @@ ATLAS Orchestrator (shared: memory, model router, MCP, security)
 **Fix:** Added `ScratchPad` initialization and `session.start_session()` at the top of `_convert_from_cached_transform()`, mirroring the initialization in `convert_activity()`.
 
 **Impact:** All cached retries (D78 stage caching) would crash on first `scratch_pad.add()` call. This made the retry optimization non-functional for disk-cached transforms.
+
+---
+
+## D111: CLI Transient Failure Retry + Diagnostics
+**Date:** February 12, 2026
+**Context:** Pipeline VALIDATE stage failed with `CLI returned exit code 1` in 3.9s (too fast for real generation = transient failure). Adversarial check also failed with exit code 1. Both had empty stderr, providing zero diagnostic info. `_execute_cli` had no retry logic, and FAILED status is not retryable at the pipeline level.
+
+**Root Cause:** D110 fixed the cached path crash, which exposed a pre-existing gap: `_execute_cli` in `SkillExecutor` had zero retry on transient CLI failures. These fast failures (< 10s, exit code != 0) are infrastructure issues (rate limits, connection resets), not content problems.
+
+**Fix:**
+1. **Retry logic:** Added 1 retry within `_execute_cli` when failure is fast (< 10s elapsed). 3s backoff between attempts. Slow failures (content generation that fails) are NOT retried — only fast transient errors.
+2. **Better diagnostics:** Error message now includes stderr when present, falls back to stdout snippet when stderr is empty. Previously just said "CLI returned exit code 1" with no useful info.
+
+**Design Decision:** Retry is inside `_execute_cli` (not at pipeline level) because:
+- Pipeline-level retry re-runs ELEVATE (3+ min), wasteful for a 3s CLI glitch
+- Benefits ALL stages, not just VALIDATE
+- Fast-failure heuristic (< 10s) avoids retrying genuine content failures
 
 ---

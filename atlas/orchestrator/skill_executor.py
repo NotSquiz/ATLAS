@@ -586,17 +586,32 @@ class SkillExecutor:
             # Run CLI command with prompt via stdin
             # Per-stage timeout overrides env var, which overrides default 1200s
             cli_timeout = timeout or int(os.environ.get("ATLAS_CLI_TIMEOUT", "1200"))
-            result = await asyncio.wait_for(
-                asyncio.to_thread(
-                    subprocess.run,
-                    cmd,
-                    input=prompt,  # Pass prompt via stdin to avoid ARG_MAX
-                    capture_output=True,
-                    text=True,
-                    timeout=cli_timeout,
-                ),
-                timeout=cli_timeout + 10,  # Slightly longer async timeout
-            )
+
+            # D111: Retry on transient CLI failures (exit code != 0, fast failure)
+            max_cli_retries = 1
+            result = None
+            for cli_attempt in range(max_cli_retries + 1):
+                result = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        subprocess.run,
+                        cmd,
+                        input=prompt,  # Pass prompt via stdin to avoid ARG_MAX
+                        capture_output=True,
+                        text=True,
+                        timeout=cli_timeout,
+                    ),
+                    timeout=cli_timeout + 10,  # Slightly longer async timeout
+                )
+                if result.returncode == 0:
+                    break
+                # D111: Retry if fast failure (< 10s = likely transient, not content issue)
+                elapsed = time.perf_counter() - start
+                if cli_attempt < max_cli_retries and elapsed < 10:
+                    logger.warning(
+                        f"CLI transient failure (exit {result.returncode}, {elapsed:.1f}s). "
+                        f"Retrying in 3s (attempt {cli_attempt + 1}/{max_cli_retries})..."
+                    )
+                    await asyncio.sleep(3)
         except asyncio.TimeoutError:
             return "", 0, 0.0, f"CLI execution timed out after {cli_timeout} seconds"
         except Exception as e:
@@ -619,8 +634,16 @@ class SkillExecutor:
         )
 
         if result.returncode != 0:
-            error_msg = result.stderr.strip() if result.stderr else f"CLI returned exit code {result.returncode}"
-            logger.warning(f"CLI error (exit {result.returncode}): {error_msg[:200]}")
+            # D111: Include both stderr and stdout snippet for diagnostics
+            stderr_info = result.stderr.strip()[:300] if result.stderr else ""
+            stdout_info = result.stdout.strip()[:300] if result.stdout else ""
+            parts = [f"CLI returned exit code {result.returncode}"]
+            if stderr_info:
+                parts.append(f"stderr: {stderr_info}")
+            if stdout_info and not stderr_info:
+                parts.append(f"stdout: {stdout_info}")
+            error_msg = ". ".join(parts)
+            logger.warning(f"CLI error (exit {result.returncode}): {error_msg[:500]}")
             return result.stdout, 0, duration_ms, error_msg
 
         # CLI doesn't report token counts, estimate from output length

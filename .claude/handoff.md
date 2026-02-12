@@ -1,27 +1,28 @@
 # ATLAS Session Handoff
 
 **Date:** February 12, 2026
-**Status:** D110 fix applied — cached transform path no longer crashes. Ready for live dry run.
+**Status:** D110 + D111 applied. Cached path works, CLI has transient retry. Ready for live dry run.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## D110: Fix NoneType Crash in Cached Transform Path (Feb 12, 2026)
+## D111: CLI Transient Failure Retry (Feb 12, 2026)
 
 ### Bug
-`_convert_from_cached_transform()` crashed with `AttributeError: 'NoneType' object has no attribute 'add'` because `self.scratch_pad` and `self.session.start_session()` were only initialized in `convert_activity()`, which the cached path bypasses.
+First dry run after D110: VALIDATE and adversarial both failed with `CLI returned exit code 1` in <4s. Empty stderr = zero diagnostics. D110 exposed this — before D110 the cached path always crashed at scratch_pad before reaching VALIDATE.
 
 ### Fix
-Added `ScratchPad` + `session.start_session()` initialization at top of `_convert_from_cached_transform()` (3 lines after line 2822).
+1. **Retry in `_execute_cli`**: 1 retry on fast failures (<10s elapsed), 3s backoff. Benefits all stages.
+2. **Better diagnostics**: Error includes stderr when present, falls back to stdout snippet.
 
 ### Tests
-2 new tests in `TestCachedTransformInitialization`: verifies scratch_pad initialization and usability in cached path. All 154 tests pass.
+6 new tests in `tests/orchestrator/test_skill_executor.py`. All 160 tests pass.
 
 ### Recent Commits
-- 2573aaa: D107 post-ELEVATE dash cleanup
 - 4b58a0d: D108 quality audit timeout fix
 - PENDING: D109 subprocess timeout audit and process cleanup
 - PENDING: D110 cached transform NoneType fix
+- PENDING: D111 CLI transient failure retry
 
 ### Next Steps
 - **#25**: Single dry run (narrating-daily-care) to verify pipeline works end-to-end
@@ -46,118 +47,82 @@ Added `ScratchPad` + `session.start_session()` initialization at top of `_conver
 
 ---
 
-## Previous Session: BB Expression Oref Library via Gemini Nano Banana (Feb 12, 2026 - Session 42)
+## BB Expression Oref Library — COMPLETE + Clothing Pipeline Testing (Feb 12, 2026 - Sessions 42-43)
 
-### What We're Doing
+### Expression Library: COMPLETE (9/9)
 
-Building the Baby Brains character expression oref library — 8 facial expression reference images that will be used as `--oref` references in MidJourney production content. The approach PIVOTED from MJ-native generation to **Gemini "Nano Banana" image editing** because MJ at `--ow 175` is too strong — the oref's calm expression overrides prompt text across 40+ generations.
+All expressions generated via **Gemini "Nano Banana" image editing** from master oref. MJ proved unable to override the master's calm expression at `--ow 175` across 40+ attempts.
 
-**Method:** Upload the master oref image to Gemini, ask it to edit ONLY the facial expression while preserving everything else (body, pose, clothing, clay texture, hands, feet, background).
+**Master Oref Swap:** Original master archived as `master-archived.png`. New master (`neutral.png` → `master.png`) has more defined lips and direct camera gaze — more engaging, truer neutral.
 
-### KEY LESSONS LEARNED (Critical for Next Session)
+| # | Expression | Status | File | Attempts | Notes |
+|---|-----------|--------|------|----------|-------|
+| 1 | Calm/Content (Neutral) | **DONE** | `orefs/master.png` | — | New master: defined lips, direct gaze |
+| 2 | Curious/Wonder | **DONE** | `orefs/curious.png` | 3 | Distinctive eyebrow arch + 3/4 head turn. Keep only this one (not alt) |
+| 3 | Joyful/Delighted | **BANKED** | `orefs/joy.png` | 5+ | Smile great. Eyes neutral — Gemini cannot do Duchenne crescent eyes on baby proportions |
+| 4 | Surprised/Discovery | **DONE** | `orefs/surprised.png` | 1 | First attempt pass |
+| 5 | Sleepy/Drowsy | **DONE** | `orefs/sleepy.png` | 2 | First was grumpy; softened mouth + brow |
+| 6 | Concentrated/Focused | **DONE** | `orefs/focused.png` | 8 | Hardest expression. Single prompt from master solved it (multi-edit chains degrade) |
+| 7 | Crying/Upset | **DONE** | `orefs/crying.png` | 1 | First attempt — extreme expressions are Gemini's sweet spot |
+| 8 | Mischief/Playful | **DONE** | `orefs/mischievous.png` | 1 | Asymmetric smirk achieved first try — distinct from amused/cheeky |
+| 9 | Amused/Cheeky | **DONE** | `orefs/amused-cheeky.png` | — | Bonus — found during focused iterations (overcorrected mouth = clear smile) |
 
-#### Gemini Nano Banana Strengths
-- **Preservation is excellent** — body, clay texture, skin tone, onesie, hands, feet stay untouched
-- **Simple emotion edits work well** — surprised and sleepy both passed on 1-2 attempts
-- **Targeted fix prompts work** — "edit only the mouth" or "edit only the mouth and brow" are effective
+### KEY LESSONS LEARNED
 
-#### Gemini Nano Banana Limitations (MUST KNOW)
-1. **Cannot do subtle eye shape changes** — asking for "crescent eyes," "half-moon," "lower lid raise" all fail. Gemini either does nothing, closes the eyes completely, or creates an unnatural narrow slit
-2. **"Brow furrow" = angry/sad on baby faces** — every attempt at concentration via brow furrow produced sadness or anger instead. Concentration should use gaze intensity + slightly parted lips, NOT brow furrowing
-3. **Incremental edits degrade** — after 2-3 rounds of editing the same image, quality drops. Better to restart from master oref with a refined single prompt
-4. **Gemini sometimes ignores "do not change X"** — it moved hands on one attempt despite being told not to. Always check preservation
-5. **Emotion vocabulary matters enormously** — "joyful" with anatomical eye descriptions = drunk/squinting. "Happy and delighted" with geometric descriptions = better. Describe what it LOOKS LIKE, not what muscles do
+#### Expression Editing (Gemini Nano Banana)
+- **Single prompt from master > multi-edit chains** — focused took 8 attempts via chains, solved in 1 via single prompt
+- **Extreme expressions are easy** (crying, mischief = 1 attempt), **subtle ones are hard** (focused = 8 attempts)
+- **Brow LOWERING (position) works, brow CREASING (texture) triggers sad** on baby faces
+- **Gemini can't do fine-grained mouth adjustments** — swings between states (frown ↔ smile), doesn't land between
+- **Cannot do subtle eye shape changes** — crescent eyes, half-moon, lower lid raise all fail
+- **Incremental edits degrade after 2-3 rounds** — restart from master with refined single prompt
+- **Emotion vocabulary matters** — describe what it LOOKS LIKE, not what muscles do
+- **Describe the RESULT not the mechanism** ("eyes three-quarters open" not "lower lids pushed up by cheeks")
 
-#### Prompt Writing Rules for Gemini Expression Edits
-- Always start with "Edit only the facial expression. Keep everything else exactly the same — body, pose, clothing, hands, feet, background, lighting, materials, colours."
-- Always end with "Do not change the skin tone, eye colour, hair, clothing texture, or any part of the body below the neck."
-- Be specific about what the mouth should do (parted, closed, smile, O-shape)
-- For eyes: describe the RESULT not the mechanism ("eyes three-quarters open" not "lower lids pushed up by cheeks")
-- Explicitly state what the emotion is NOT ("not sad, not angry, not scared")
-- One edit at a time works better than combined edits
+#### Clothing Editing (Gemini Nano Banana) — NEW
+- **3-reference approach works**: master oref + clothing flat-lay (single image) + clay texture reference
+- **Combine multi-piece outfits into a single reference image** — 2 separate clothing photos = photorealism drift
+- **Clay texture ref is essential** — verbal "sculpted clay texture" alone produces insufficient or wrong texture
+- **Too many photo refs = photorealism drift** — 2 photo refs + 1 clay ref → Gemini produced a real baby, not clay figurine
+- **"Sculpted clay with tool marks" > "rough sculpted clay texture"** — the latter overcorrects into dried pottery
+- **Design/logo transfer is excellent** — pineapple applique, crosshatch pattern, shoulder buttons all transferred accurately (better than MJ)
+- **Seated pose = Gemini extends fabric to cover legs** — need explicit "bare legs and bare feet" language for bodysuit/romper styles
+- **Name each reference explicitly in the prompt** — "the first image is the master reference, the second is the clothing reference, the third is the clay texture reference"
 
-#### User Quality Standards
-- **Every asset must be perfect** — user iterates until right, does not accept "good enough"
-- **User has excellent instincts** — trust their gut reads on expressions. They spotted "drugged eyes," "grumpy teenager," and "sad" before I did
-- **Teeth are allowed** — user's real baby has front teeth. The research "no teeth" rule is overridden. May create separate gummy/teeth oref sets for different age content later
-- **Joy expression eyes are a known hard problem** — Gemini cannot produce Duchenne crescent eyes on this figurine's oversized proportions. Best result so far: open neutral eyes + great smile (banked as "joy maybe")
-
-### Expression Progress
-
-| # | Expression | Status | File | Notes |
-|---|-----------|--------|------|-------|
-| 1 | Calm/Content | **DONE** (is the master oref) | `orefs/master.png` | Already exists — no generation needed |
-| 2 | Curious/Wonder | **DONE** | `orefs/curious.png` | 3 attempts. Key: head tilt + parted lips "oh" mouth. Closed mouth = interested calm, not curious |
-| 3 | Joyful/Delighted | **BANKED — eyes need revisit** | `orefs/joy maybe.png` | Smile is great (open mouth, front teeth, not extreme). Eyes are neutral/unchanged — every attempt to add joy to eyes failed (squinting, drunk, cackling, slit-eyes). Come back later |
-| 4 | Surprised/Discovery | **DONE** | `orefs/surprised.png` | First attempt pass! Raised brows + wide eyes + soft O-mouth. Reads as "oh!" not "AHHH!" |
-| 5 | Sleepy/Drowsy | **DONE** | `orefs/sleepy.png` | 2 attempts. First was grumpy teenager. Fix: soften mouth into tiny smile + smooth brow tension |
-| 6 | Concentrated/Focused | **IN PROGRESS** | latest attempt banked | Hard. Brow furrow = sad/angry on baby face. Latest attempt (no furrow, wide eyes, parted lips) reads as alert/attentive — closer but similar to surprised. Needs differentiation |
-| 7 | Crying/Upset | **TODO** | — | HIGH difficulty |
-| 8 | Mischief/Playful | **TODO** | — | HIGHEST difficulty (asymmetric expression) |
-
-### Remaining Expressions — Suggested Prompts
-
-#### Expression 6: Concentrated/Focused (RETRY)
-The problem: every "focused" prompt produces sad/angry. The fix that got closest used wide eyes + parted lips + no brow furrow, but it looked too similar to surprised. Differentiation ideas:
-- **Gaze direction:** Concentrated = looking DOWN at something in hands (not straight ahead like surprised)
-- **Head angle:** Slight forward tilt, chin down — studying something below
-- **Mouth:** Lips pressed together gently (not parted like surprised) — but NOT frowning
-- This might be a case where the expression only works in context (baby with a toy/object)
-
-#### Expression 7: Crying/Upset
+#### Clothing Prompt Template (VALIDATED)
 ```
-Edit only the facial expression. Keep everything else exactly the same — body, pose, clothing, hands, feet, background, lighting, materials, colours.
+The first image is the master reference — a sculpted clay baby figurine.
+This is the character. The output must be a clay figurine, not a real baby.
 
-Change the expression to a baby about to cry: eyes squeezed tightly shut or nearly shut with wrinkled skin around them, eyebrows pushed together and raised in the middle creating a distressed arch, mouth wide open in a wail with downturned corners, chin wrinkled and dimpled, cheeks flushed. The expression should be unmistakable distress — a baby who is upset and crying.
+Dress the baby in the outfit from the clothing reference image. Keep the
+baby's face, expression, skin tone, eye colour, hair, pose, and background
+exactly the same. The clothing should look like sculpted clay with tool marks
+and texture, matching the clay texture reference — not real fabric.
 
-Do not change the skin tone, eye colour, hair, clothing texture, or any part of the body below the neck.
+I've attached: (1) master oref, (2) clothing flat-lay, (3) clay texture reference.
 ```
 
-#### Expression 8: Mischief/Playful
-```
-Edit only the facial expression. Keep everything else exactly the same — body, pose, clothing, hands, feet, background, lighting, materials, colours.
-
-Change the expression to playful mischief: one eyebrow slightly raised higher than the other, eyes bright and knowing with a sly sparkle, an asymmetric smile — one corner of the mouth pulled up more than the other in a cheeky smirk. Head tilted slightly with chin down, looking up through the brows. The baby knows it's being naughty and finds it hilarious.
-
-Do not change the skin tone, eye colour, hair, clothing texture, or any part of the body below the neck.
-```
-Note: HIGHEST difficulty. Asymmetric expressions are very hard for AI image editors. May need multiple attempts.
-
-### Evaluation Rubric (Apply to ALL Expressions)
-
-#### Expression-Specific Checks
-| Check | What "Pass" Looks Like | What "Fail" Looks Like |
-|-------|----------------------|----------------------|
-| Reads as intended emotion? | Instant recognition — you see the emotion before thinking about it | Ambiguous, reads as different emotion, or blank |
-| Distinct from other expressions? | Clearly different from all other approved orefs at thumbnail size | Could be confused with another expression |
-| Intensity appropriate? | Moderate, natural — a real baby would make this face | Extreme, exaggerated, cartoon-like, uncanny |
-
-#### Preservation Checks (EVERY image)
-| Check | Pass | Fail |
-|-------|------|------|
-| Clay texture on clothing | Identical sculpting marks on onesie | Smoothed out, vinyl, lost detail |
-| Skin tone | Same warm golden-peach | Shifted pink, grey, orange, yellow |
-| Eye colour | Cornflower blue with catchlights | Colour shifted or catchlights lost |
-| Body/pose/hands | Untouched, identical to master | Moved, repositioned, altered |
-| Hair | Same fine wispy blonde | Thickened, restyled, changed colour |
-| Onesie colour | Same cream | Colour shifted |
-| Background | Clean white | Added elements, changed tone |
+#### Best Result So Far
+`piney oref with clay ref.png` — pineapple t-shirt + pants with clay texture at the right level. Single combined prompt with 3 references (master + combined clothing image + clay texture ref).
 
 ### Files
 
 | File | Purpose |
 |------|---------|
-| `docs/research/bb-content-production/orefs/` | Expression oref output folder |
-| `docs/research/bb-illustrative/--oref.png` | The master oref source image (upload this to Gemini for each expression) |
-| `docs/research/bb-content-production/MJ_ASSET_GENERATION_GUIDE.md` | Full production guide (Sections 2-9 still relevant for poses, clothing, scenes AFTER expressions are done) |
-| `docs/research/bb-content-production/research/EXPRESSION_LIBRARY_PROMPTS.md` | Original MJ expression prompts (compound anatomical descriptors still useful as reference for what each expression should look like) |
+| `docs/research/bb-content-production/orefs/` | Expression oref library (10 files including master-archived) |
+| `docs/research/bb-content-production/orefs/master.png` | Current master oref (direct gaze, defined lips) |
+| `docs/research/bb-content-production/orefs/master-archived.png` | Original master (slight off-center gaze, softer lips) |
+| `docs/research/bb-content-production/clothing/` | Clothing test images and references |
+| `docs/research/bb-content-production/clothing/piney oref with clay ref.png` | Best clothing result — use as quality benchmark |
+| `docs/research/bb-content-production/MJ_ASSET_GENERATION_GUIDE.md` | Production guide (Sections 3-9 for poses, scenes — clothing now uses Gemini, not MJ two-step) |
 | `config/babybrains/character_dna.json` | Canonical character config |
 
-### After Expressions Are Done — Next Steps
-1. **Revisit joyful eyes** — the smile is banked, eyes need work (may need a different tool or approach)
-2. **Pose orefs** — Section 3 of MJ_ASSET_GENERATION_GUIDE.md (5 poses). These may also work via Gemini edits on the master oref
-3. **Clothing library** — Section 4 (two-step MJ pipeline, not Gemini)
-4. **Environment/scene refs** — Section 5 (MJ generation)
+### Next Steps
+1. **Clothing pipeline**: Test second outfit to confirm 3-ref workflow is repeatable
+2. **Joyful eyes revisit**: Banked joy has great smile but neutral eyes — may need different tool
+3. **Pose testing**: Try Gemini for tummy-down, reaching, standing (medium viability — MJ fallback for complex poses)
+4. **Scene generation**: MJ likely still better for scenes (Gemini untested)
+5. **SynthID/metadata**: Gemini embeds SynthID but outputs are intermediate assets, not published directly. Not a concern for current workflow. If needed, MJ pass-through would strip it.
 
 ---
 
