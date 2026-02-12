@@ -297,27 +297,55 @@ class TestFixPrincipleSlugs:
 
 
 # ============================================================
-# _remove_em_dashes (3 cases)
+# _remove_dashes / _remove_em_dashes (D80: extended dash cleanup)
 # ============================================================
 
-class TestRemoveEmDashes:
+class TestRemoveDashes:
 
     def test_replaces_em_dash_with_period(self, pipeline):
-        content = "This is great — and also fun"
-        result = pipeline._remove_em_dashes(content)
-        assert "—" not in result
+        content = "This is great \u2014 and also fun"
+        result = pipeline._remove_dashes(content)
+        assert "\u2014" not in result
         assert ". " in result
 
-    def test_no_em_dashes(self, pipeline):
+    def test_replaces_en_dash_with_period(self, pipeline):
+        """D80: En-dash (U+2013) must also be cleaned."""
+        content = "Children explore \u2013 and discover"
+        result = pipeline._remove_dashes(content)
+        assert "\u2013" not in result
+        assert ". " in result
+
+    def test_replaces_double_hyphen_with_period(self, pipeline):
+        """D80: Double-hyphen (--) must also be cleaned."""
+        content = "Children explore -- and discover"
+        result = pipeline._remove_dashes(content)
+        assert "--" not in result
+        assert ". " in result
+
+    def test_no_dashes(self, pipeline):
         content = "No special characters here."
-        result = pipeline._remove_em_dashes(content)
+        result = pipeline._remove_dashes(content)
         assert result == content
 
     def test_multiple_em_dashes(self, pipeline):
-        content = "First—second—third"
-        result = pipeline._remove_em_dashes(content)
-        assert "—" not in result
+        content = "First\u2014second\u2014third"
+        result = pipeline._remove_dashes(content)
+        assert "\u2014" not in result
         assert result.count(".") >= 2
+
+    def test_mixed_dash_types(self, pipeline):
+        """D80: All dash variants in one string."""
+        content = "Em\u2014dash and en\u2013dash and double--hyphen"
+        result = pipeline._remove_dashes(content)
+        assert "\u2014" not in result
+        assert "\u2013" not in result
+        assert "--" not in result
+
+    def test_backward_compat_alias(self, pipeline):
+        """_remove_em_dashes still works as alias."""
+        content = "Test \u2014 content"
+        result = pipeline._remove_em_dashes(content)
+        assert "\u2014" not in result
 
 
 # ============================================================
@@ -343,7 +371,19 @@ class TestQuickValidate:
         assert any(i["code"] == "VOICE_SUPERLATIVE" for i in issues)
 
     def test_finds_em_dash(self, pipeline):
-        content = "Children love this — really."
+        content = "Children love this \u2014 really."
+        issues = pipeline._quick_validate(content)
+        assert any(i["code"] == "VOICE_EM_DASH" for i in issues)
+
+    def test_finds_en_dash(self, pipeline):
+        """D80: _quick_validate must catch en-dashes (aligned with QC hook)."""
+        content = "Children love this \u2013 really."
+        issues = pipeline._quick_validate(content)
+        assert any(i["code"] == "VOICE_EM_DASH" for i in issues)
+
+    def test_finds_double_hyphen(self, pipeline):
+        """D80: _quick_validate must catch double-hyphens (aligned with QC hook)."""
+        content = "Children love this -- really."
         issues = pipeline._quick_validate(content)
         assert any(i["code"] == "VOICE_EM_DASH" for i in issues)
 

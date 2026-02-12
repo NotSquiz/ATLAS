@@ -1,12 +1,52 @@
 # ATLAS Session Handoff
 
 **Date:** February 12, 2026
-**Status:** 4 Pipeline Robustness Fixes COMPLETE. 146 pipeline tests pass (132 original + 14 new). P54 critic review done, BUG-1/3/4/SEC-1 addressed.
+**Status:** D107 Post-ELEVATE Dash Cleanup COMPLETE. 152 pipeline tests pass (146 + 6 new). 3 independent audits confirmed fix at 95%+ confidence.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: Pipeline Robustness Fixes (Feb 12, 2026 - Session 40)
+## Current Session: Post-ELEVATE Dash Cleanup (Feb 12, 2026 - Session 41)
+
+### What Was Done
+
+**D107: Deterministic post-ELEVATE dash cleanup — 3-audit consensus fix**
+
+Root cause: `_remove_em_dashes` only ran on ELEVATE INPUT (pre-processing), never on OUTPUT.
+LLM introduces new dashes during elevation, causing token-wasting retry cycles.
+
+**3 Independent Audit Results (all Opus):**
+| Audit | Method | Diagnosis Confidence | Fix Safety |
+|-------|--------|---------------------|------------|
+| 1 | Code flow trace | 95% CONFIRMED | 85% |
+| 2 | Inversion test | CONFIRMED + warned superlative replacement UNSAFE | 85% |
+| 3 | Junior analyst | CONFIRMED + recommended hybrid approach | 90% |
+
+**Consensus:** Em-dash/en-dash deterministic cleanup on output is SAFE. Superlative replacement is UNSAFE (destroys Montessori exception terms like "ideal period", "extraordinary absorptive mind").
+
+**Changes made:**
+1. `_remove_em_dashes` → `_remove_dashes`: Now handles em-dash (U+2014), en-dash (U+2013), double-hyphen (--)
+2. Added `_remove_dashes()` on ELEVATE OUTPUT in all 3 code paths (lines 2400, 2874, 3365)
+3. `_quick_validate` now checks all 3 dash variants (aligned with QC hook's DASH_PATTERN)
+4. Backward-compatible `_remove_em_dashes` alias preserved
+5. Decision documented as D107 in DECISIONS.md
+
+**Test Results:** 152 pass (146 + 6 new: en-dash cleanup, double-hyphen cleanup, mixed dashes, backward compat alias, en-dash quick_validate, double-hyphen quick_validate)
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `atlas/pipelines/activity_conversion.py` | _remove_dashes extended, post-ELEVATE cleanup in 3 paths, _quick_validate dash alignment |
+| `tests/pipelines/test_activity_conversion.py` | 6 new tests for dash cleanup and quick_validate |
+| `docs/DECISIONS.md` | D107 entry added |
+
+### Next Session: Re-run Activities + Live Pipeline Testing
+
+Same plan as Session 40 — the D107 fix should significantly reduce dash-related retry failures.
+
+---
+
+## Previous Session: Pipeline Robustness Fixes (Feb 12, 2026 - Session 40)
 
 ### What Was Done
 

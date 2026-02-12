@@ -1295,9 +1295,9 @@ class ActivityConversionPipeline:
         except Exception as e:
             logger.warning(f"[ELEVATE] Error loading context files: {e}")
 
-        # Pre-elevation em-dash removal (deterministic, not LLM-dependent)
-        # The manual process checked for these BEFORE elevation
-        canonical_yaml = self._remove_em_dashes(canonical_yaml)
+        # Pre-elevation dash removal (deterministic, not LLM-dependent)
+        # D80: Handles em-dashes, en-dashes, and double-hyphens
+        canonical_yaml = self._remove_dashes(canonical_yaml)
 
         # Build input data with full context (matching manual process)
         input_data = {
@@ -1401,29 +1401,46 @@ class ActivityConversionPipeline:
 
         return True, {"elevated_yaml": yaml_content}, None
 
-    def _remove_em_dashes(self, content: str) -> str:
+    def _remove_dashes(self, content: str) -> str:
         """
-        Pre-process content to remove em-dashes before elevation.
+        Remove em-dashes, en-dashes, and double-hyphens from content.
 
-        This is a deterministic step that doesn't rely on LLM compliance.
-        Em-dashes (—) are replaced with periods followed by space.
+        Deterministic cleanup that doesn't rely on LLM compliance.
+        Aligns with QC hook's DASH_PATTERN: (—|–|--)
+
+        Runs on ELEVATE INPUT (pre-processing) and ELEVATE OUTPUT
+        (post-processing) to catch dashes the LLM introduces.
 
         Args:
-            content: YAML content that may contain em-dashes
+            content: YAML content that may contain dash variants
 
         Returns:
-            Content with em-dashes replaced
+            Content with dashes replaced
         """
-        import re
+        em_count = content.count("\u2014")  # em-dash —
+        en_count = content.count("\u2013")  # en-dash –
+        dd_count = content.count("--")
 
-        original_count = content.count("—")
-        if original_count > 0:
-            logger.info(f"[ELEVATE] Pre-processing: removing {original_count} em-dashes")
-            # Replace em-dash followed by space with ". "
-            content = re.sub(r"—\s*", ". ", content)
-            # Replace any remaining em-dashes with "."
-            content = content.replace("—", ".")
+        total = em_count + en_count + dd_count
+        if total > 0:
+            logger.info(
+                f"[DASH-CLEANUP] Removing {total} dashes "
+                f"(em={em_count}, en={en_count}, double={dd_count})"
+            )
+            # Em-dash: replace with ". " (or "." if no trailing space)
+            content = re.sub(r"\u2014\s*", ". ", content)
+            content = content.replace("\u2014", ".")
+            # En-dash: same treatment
+            content = re.sub(r"\u2013\s*", ". ", content)
+            content = content.replace("\u2013", ".")
+            # Double-hyphen: same treatment
+            content = re.sub(r"--\s*", ". ", content)
+            content = content.replace("--", ".")
         return content
+
+    def _remove_em_dashes(self, content: str) -> str:
+        """Backward-compatible alias for _remove_dashes."""
+        return self._remove_dashes(content)
 
     def _quick_validate(self, yaml_content: str) -> list[dict]:
         """
@@ -1489,14 +1506,20 @@ class ActivityConversionPipeline:
                 "severity": "block",
             })
 
-        # 4. Em-dash check (simple presence check)
-        if "—" in yaml_content:
-            issues.append({
-                "code": "VOICE_EM_DASH",
-                "category": "emdash",
-                "issue": "Found em-dash character. Use commas, periods, or line breaks.",
-                "severity": "block",
-            })
+        # 4. Dash check -- em-dash (U+2014), en-dash (U+2013), double-hyphen
+        # D80: Aligned with QC hook's DASH_PATTERN: (—|–|--)
+        for dash_char, dash_name in [
+            ("\u2014", "em-dash"),
+            ("\u2013", "en-dash"),
+            ("--", "double-hyphen"),
+        ]:
+            if dash_char in yaml_content:
+                issues.append({
+                    "code": "VOICE_EM_DASH",
+                    "category": "emdash",
+                    "issue": f"Found {dash_name}. Use commas, periods, or line breaks.",
+                    "severity": "block",
+                })
 
         if issues:
             logger.info(f"[QUICK-VALIDATE] Found {len(issues)} anti-patterns before full QC")
@@ -2372,6 +2395,10 @@ OR if blocking issues found:
             # H7: Fix age range to match original (ELEVATE may incorrectly change it)
             elevated_yaml = self._fix_age_range(elevated_yaml, canonical_yaml)
 
+            # D80: Post-ELEVATE dash cleanup - LLM generates new dashes despite prompt
+            # instructions. Deterministic fix prevents token-wasting retries.
+            elevated_yaml = self._remove_dashes(elevated_yaml)
+
             # V1: Quick pre-validation -- catch obvious failures before expensive QC/audit
             quick_issues = self._quick_validate(elevated_yaml)
             if quick_issues:
@@ -2842,6 +2869,9 @@ If ANY of these appear, rewrite that sentence before outputting.
 
         # H7: Fix age range to match original (ELEVATE may incorrectly change it)
         elevated_yaml = self._fix_age_range(elevated_yaml, canonical_yaml)
+
+        # D80: Post-ELEVATE dash cleanup (cached transform path)
+        elevated_yaml = self._remove_dashes(elevated_yaml)
 
         # V1: Quick pre-validation -- catch obvious failures before expensive QC/audit
         quick_issues = self._quick_validate(elevated_yaml)
@@ -3330,6 +3360,9 @@ If ANY of these appear, rewrite that sentence before outputting.
 
             # Fix age range to match original file (ELEVATE may incorrectly change it)
             elevated_yaml = self._fix_age_range(elevated_yaml, existing_yaml)
+
+            # D80: Post-ELEVATE dash cleanup (elevate_existing path)
+            elevated_yaml = self._remove_dashes(elevated_yaml)
 
             # V1: Quick pre-validation -- catch obvious failures before expensive QC/audit
             quick_issues = self._quick_validate(elevated_yaml)

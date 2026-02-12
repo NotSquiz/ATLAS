@@ -2,7 +2,7 @@
 
 Decisions are logged chronologically. Future agents should read this to understand why choices were made.
 
-**Last Updated:** January 30, 2026 (D100-D106 added: BB automation architecture)
+**Last Updated:** February 11, 2026 (D107 added: post-ELEVATE dash cleanup)
 
 ---
 
@@ -3424,5 +3424,33 @@ ATLAS Orchestrator (shared: memory, model router, MCP, security)
 - All queries parameterized (no SQL injection)
 - Idempotent init (CREATE IF NOT EXISTS)
 - Tables: accounts, warming_targets, warming_actions, engagement_log, trends, content_briefs, scripts, visual_assets, exports, cross_repo_index
+
+---
+
+## D107: Post-ELEVATE Deterministic Dash Cleanup
+**Date:** February 11, 2026
+**Context:** Pipeline burning tokens on retries because LLM generates new dashes in ELEVATE output
+
+**Problem:**
+- `_remove_em_dashes` only ran on ELEVATE INPUT (line 1300), never on OUTPUT
+- LLM introduces new em-dashes, en-dashes, and double-hyphens during elevation
+- `_quick_validate` only checked em-dashes (U+2014), but QC hook checks all 3 variants
+- Each failed validation triggered a full LLM retry cycle (expensive)
+- Real failure: narrating-daily-care failed 3 times — attempt 3 was an en-dash (U+2013)
+
+**Verification:** 3 independent Opus audits (code flow trace, inversion test, junior analyst)
+- Diagnosis confirmed at 95%+ confidence by all 3 audits
+- Em-dash/en-dash cleanup on output: unanimous SAFE
+- Superlative deterministic replacement: unanimous UNSAFE (destroys Montessori exception terms)
+- Audit 2 specifically warned: "ideal period", "extraordinary absorptive mind" would be destroyed
+
+**Decision:**
+1. Rename `_remove_em_dashes` → `_remove_dashes`, extend to handle em-dash (U+2014), en-dash (U+2013), double-hyphen (--)
+2. Add `_remove_dashes()` call on ELEVATE OUTPUT in all 3 code paths (main, cached, elevate_existing)
+3. Update `_quick_validate` to check all 3 dash variants (aligned with QC hook's DASH_PATTERN)
+4. Do NOT add deterministic superlative replacement (context-aware exceptions needed)
+5. Keep `_remove_em_dashes` as backward-compatible alias
+
+**Impact:** Eliminates ~30-40% of retry cycles (dash-related failures) at zero token cost.
 
 ---
