@@ -2,7 +2,7 @@
 
 Decisions are logged chronologically. Future agents should read this to understand why choices were made.
 
-**Last Updated:** February 11, 2026 (D107 added: post-ELEVATE dash cleanup)
+**Last Updated:** February 12, 2026 (D108 + D109 added: subprocess timeout audit)
 
 ---
 
@@ -3452,5 +3452,45 @@ ATLAS Orchestrator (shared: memory, model router, MCP, security)
 5. Keep `_remove_em_dashes` as backward-compatible alias
 
 **Impact:** Eliminates ~30-40% of retry cycles (dash-related failures) at zero token cost.
+
+---
+
+## D108: Quality Audit Timeout From STAGE_TIMEOUTS
+**Date:** February 11, 2026
+**Context:** Live pipeline run — quality audit timed out at 600s on all 3 attempts
+
+**Problem:**
+- `audit_quality()` hardcoded `effective_timeout = 600 if is_final_attempt else 300`
+- This completely ignored `STAGE_TIMEOUTS['quality_audit'] = 900`
+- Audit never completed because 600s wasn't enough for the SubAgentExecutor call
+
+**Decision:** Use `self.STAGE_TIMEOUTS.get("quality_audit", 900)` as base, with 1.2x multiplier for final attempt (900s normal, 1080s final).
+
+---
+
+## D109: Pipeline Subprocess Timeout Audit and Process Cleanup
+**Date:** February 12, 2026
+**Context:** End-to-end subprocess timeout audit after repeated pipeline failures
+
+**Audit Scope:** 4 parallel Opus agents traced all 7 pipeline stages for timeout propagation.
+
+**Bugs Found and Fixed:**
+
+1. **HookRunner orphan processes (HIGH):** `hooks.py` used `subprocess.run()` with NO process-level timeout, wrapped only in `asyncio.wait_for`. When timeout fired, the thread and subprocess continued as orphans. **Fix:** Replaced with `Popen` + `proc.communicate(timeout=X)` + explicit `proc.kill()` on timeout, matching SubAgentExecutor pattern.
+
+2. **QC_HOOK hardcoded 30s, ignored STAGE_TIMEOUTS (HIGH):** `_run_qc_hook()` passed `timeout=30` literal instead of using `STAGE_TIMEOUTS['qc_hook']`. The QC hook's LLM context checks each spawn a Claude CLI subprocess with 30s timeout — with 4+ matches, 30s total is insufficient. **Fix:** Changed to use `STAGE_TIMEOUTS.get("qc_hook", 120)`, increased STAGE_TIMEOUTS value from 60s to 120s.
+
+3. **Hook config missing timeout field:** `activity_qc` hook had no `timeout` field (unlike other BB hooks). **Fix:** Added `"timeout": 120` to config for documentation consistency.
+
+**Confirmed Working Correctly:**
+- Stages 1-5 (INGEST→VALIDATE): STAGE_TIMEOUTS propagates correctly through SkillExecutor._execute_cli()
+- subprocess.run(timeout=X, capture_output=True) DOES kill process internally
+- SubAgentExecutor properly kills processes via proc.kill() + proc.wait()
+- D108 quality audit timeout: correctly uses STAGE_TIMEOUTS with 1.2x multiplier
+
+**Known Acceptable Risks:**
+- verify_adversarially() uses self.timeout=300 (not configurable but adequate)
+- API path in SkillExecutor ignores timeout (not used currently, CLI path only)
+- No overall pipeline-level timeout (max theoretical: 75.5 minutes)
 
 ---

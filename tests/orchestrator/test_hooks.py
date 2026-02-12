@@ -196,6 +196,43 @@ class TestHookResult:
         assert advisory[0].code == "ADVISORY1"
 
 
+class TestD109HookTimeouts:
+    """D109: Verify hook timeout configuration and process cleanup."""
+
+    def test_activity_qc_has_timeout_field(self):
+        """activity_qc hook config should have explicit timeout field."""
+        from atlas.orchestrator.hooks import HookRunner
+
+        config = HookRunner.HOOKS["knowledge"]["activity_qc"]
+        assert "timeout" in config, "activity_qc missing timeout field"
+        assert config["timeout"] == 120
+
+    def test_activity_qc_timeout_matches_stage_timeouts(self):
+        """Hook config timeout should match pipeline STAGE_TIMEOUTS."""
+        from atlas.orchestrator.hooks import HookRunner
+        from atlas.pipelines.activity_conversion import ActivityConversionPipeline
+
+        hook_timeout = HookRunner.HOOKS["knowledge"]["activity_qc"]["timeout"]
+        stage_timeout = ActivityConversionPipeline.STAGE_TIMEOUTS["qc_hook"]
+        assert hook_timeout == stage_timeout, (
+            f"Hook config timeout ({hook_timeout}) != STAGE_TIMEOUTS ({stage_timeout})"
+        )
+
+    def test_qc_hook_stage_timeout_is_120(self):
+        """QC hook STAGE_TIMEOUTS should be 120s (LLM context checks need >30s)."""
+        from atlas.pipelines.activity_conversion import ActivityConversionPipeline
+
+        assert ActivityConversionPipeline.STAGE_TIMEOUTS["qc_hook"] == 120
+
+    def test_all_stage_timeouts_are_positive_ints(self):
+        """All STAGE_TIMEOUTS values must be positive integers."""
+        from atlas.pipelines.activity_conversion import ActivityConversionPipeline
+
+        for stage, timeout in ActivityConversionPipeline.STAGE_TIMEOUTS.items():
+            assert isinstance(timeout, int), f"{stage} timeout is not int: {type(timeout)}"
+            assert timeout > 0, f"{stage} timeout is not positive: {timeout}"
+
+
 class TestRunHookFunction:
     """Test run_hook convenience function."""
 

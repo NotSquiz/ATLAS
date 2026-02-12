@@ -132,7 +132,7 @@ class ActivityConversionPipeline:
         "transform": 900,   # 15 min - building 34-section YAML
         "elevate": 1500,    # 25 min - voice elevation (most complex)
         "validate": 300,    # 5 min - structural checks
-        "qc_hook": 60,      # 1 min - deterministic script
+        "qc_hook": 120,     # 2 min - regex + LLM context checks (D109)
         "quality_audit": 900,  # 15 min - voice rubric grading
     }
 
@@ -1903,11 +1903,13 @@ class ActivityConversionPipeline:
                 temp_file = Path(f.name)
 
             # Run via HookRunner for structured results
+            # D109: Use STAGE_TIMEOUTS instead of hardcoded 30s
+            qc_timeout = self.STAGE_TIMEOUTS.get("qc_hook", 120)
             hook_result = await self.hook_runner.run(
                 repo="knowledge",
                 hook_name="activity_qc",
                 input_file=temp_file,
-                timeout=30,
+                timeout=qc_timeout,
             )
 
             # Convert HookResult to our format
@@ -1926,8 +1928,9 @@ class ActivityConversionPipeline:
             return hook_result.passed, issues, warnings
 
         except asyncio.TimeoutError:
-            logger.error("QC hook timed out")
-            return False, ["QC hook timed out after 30s"], []
+            qc_timeout_val = self.STAGE_TIMEOUTS.get("qc_hook", 120)
+            logger.error(f"QC hook timed out after {qc_timeout_val}s")
+            return False, [f"QC hook timed out after {qc_timeout_val}s"], []
         except Exception as e:
             logger.exception(f"QC hook execution failed: {e}")
             return False, [f"QC hook execution failed: {e}"], []

@@ -1,12 +1,38 @@
 # ATLAS Session Handoff
 
 **Date:** February 12, 2026
-**Status:** Baby Brains Expression Oref Library — IN PROGRESS (5/8 expressions addressed)
+**Status:** Pipeline timeout audit COMPLETE (D109). All subprocess timeouts traced and fixed. Ready for live dry run.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
 
 ---
 
-## Current Session: BB Expression Oref Library via Gemini Nano Banana (Feb 12, 2026 - Session 42)
+## Pipeline Subprocess Audit Complete (Feb 12, 2026)
+
+### What Was Done
+4 parallel Opus agents traced ALL 7 pipeline stages' subprocess calls and timeout propagation.
+
+### Fixes Applied (D109)
+1. **HookRunner process orphaning** — Replaced `subprocess.run()` with `Popen` + `proc.kill()` pattern (matches SubAgentExecutor)
+2. **QC_HOOK hardcoded 30s** — Changed to `STAGE_TIMEOUTS.get("qc_hook", 120)`, increased from 60→120s
+3. **Hook config consistency** — Added `"timeout": 120` to activity_qc hook config
+
+### Confirmed Working
+- Stages 1-5 timeout propagation: correct (STAGE_TIMEOUTS → SkillExecutor._execute_cli)
+- Quality audit timeout (D108): correct (STAGE_TIMEOUTS-based with 1.2x multiplier)
+- SubAgentExecutor: proper proc.kill() on timeout
+
+### Recent Commits
+- 2573aaa: D107 post-ELEVATE dash cleanup
+- 4b58a0d: D108 quality audit timeout fix
+- PENDING: D109 subprocess timeout audit and process cleanup
+
+### Next Steps
+- **#25**: Single dry run (narrating-daily-care) to verify pipeline works end-to-end
+- **#26**: Prepare batch prompt for remaining activities
+
+---
+
+## Previous Session: BB Expression Oref Library via Gemini Nano Banana (Feb 12, 2026 - Session 42)
 
 ### What We're Doing
 

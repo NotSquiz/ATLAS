@@ -144,6 +144,7 @@ class HookRunner:
                 "blocking": True,
                 "input_mode": "stdin",
                 "output_format": "json",
+                "timeout": 120,  # D109: LLM context checks need >30s
                 "timing": HookTiming.POST_EXECUTION,
                 "block_codes": [
                     "VOICE_EM_DASH",
@@ -471,20 +472,39 @@ class HookRunner:
             # Append CLI arguments to command
             cmd.extend(cli_args)
 
-        # Run the command
+        # Run the command with proper process cleanup on timeout
+        # D109: Use Popen + proc.kill() instead of subprocess.run() to prevent
+        # orphan processes when asyncio.wait_for cancels the thread.
+        proc = None
         try:
-            result = await asyncio.wait_for(
-                asyncio.to_thread(
-                    subprocess.run,
+            def _run_hook():
+                nonlocal proc
+                proc = subprocess.Popen(
                     cmd,
                     cwd=cwd,
-                    input=stdin_data,
-                    capture_output=True,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
                     text=True,
-                ),
-                timeout=effective_timeout,
+                )
+                stdout, stderr = proc.communicate(input=stdin_data, timeout=effective_timeout)
+                return subprocess.CompletedProcess(
+                    args=cmd, returncode=proc.returncode,
+                    stdout=stdout, stderr=stderr,
+                )
+
+            result = await asyncio.wait_for(
+                asyncio.to_thread(_run_hook),
+                timeout=effective_timeout + 5,  # Grace margin for thread cleanup
             )
-        except asyncio.TimeoutError:
+        except (asyncio.TimeoutError, subprocess.TimeoutExpired):
+            # Kill the process explicitly
+            if proc is not None and proc.poll() is None:
+                try:
+                    proc.kill()
+                    proc.wait(timeout=5)
+                except Exception:
+                    pass
             logger.warning(f"Hook {repo}/{hook_name} timed out after {effective_timeout}s")
             return HookResult(
                 passed=False,
@@ -512,6 +532,14 @@ class HookRunner:
                 issues=[HookIssue(code="EXECUTION_ERROR", message=str(e))],
                 hook_name=hook_name,
             )
+        finally:
+            # Belt-and-suspenders process cleanup (D109)
+            if proc is not None and proc.poll() is None:
+                try:
+                    proc.kill()
+                    proc.wait(timeout=1)
+                except Exception:
+                    pass
 
         # Parse output and set hook_name
         if output_format == "json":
