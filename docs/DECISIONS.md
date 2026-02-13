@@ -2,7 +2,7 @@
 
 Decisions are logged chronologically. Future agents should read this to understand why choices were made.
 
-**Last Updated:** February 12, 2026 (D111: CLI transient failure retry)
+**Last Updated:** February 13, 2026 (D113: Pipeline quality gate hardening)
 
 ---
 
@@ -3507,6 +3507,34 @@ ATLAS Orchestrator (shared: memory, model router, MCP, security)
 
 ---
 
+## D112: Voice Spec Overhaul + AI Detection Fixes
+**Date:** February 12, 2026
+**Context:** Independent audit of 4 pipeline-produced activities revealed: (1) `_remove_dashes()` corrupts number ranges (`5–8 cm` becomes `5. 8 cm`), and (2) conversational AI-smell patterns ("Here's the thing:", "Here's something worth knowing") pass undetected. Root cause: the voice spec itself (BabyBrains-Writer.md) produced these patterns. Line 128 explicitly endorsed "Here's the thing" as acceptable.
+
+**Changes:**
+1. **Voice Spec Overhaul** (BabyBrains-Writer.md, web repo): Replaced 2-line persona with full persona architecture (Montessori + integrative lens). Added wonder-science bridge (brand heart). Replaced ai_detection_avoidance with ai_proof_architecture (burstiness targets, colon limits, list variation, banned AI patterns). Added 3 before/after anti-pattern examples. Expanded chain of thought with step 2.5. Fixed "Here's the thing" in examples. Updated year 2025->2026.
+2. **Number Range Fix** (_remove_dashes): Two-phase regex preserves digit-dash-digit as hyphens BEFORE replacing prose dashes. `5–8 cm` -> `5-8 cm` instead of `5. 8 cm`.
+3. **Category 13 Detection** (ai_detection.py): Added 12 conversational AI tell regex patterns (SCRIPT_CONVERSATIONAL_AI_TELL, HIGH severity). Wired into check_ai_tells().
+4. **AI Smell Audit** (activity_conversion.py): Added `_audit_ai_smell()` blocking check in all 3 code paths (after truncation, before adversarial). Enhanced `_format_issue_feedback()` with dedicated AI-smell section.
+
+**D112-audit (Feb 13):** 3 independent Opus audit agents found 12 issues. All fixed:
+- **C1**: voice_spec.py referenced deleted tag `ai_detection_avoidance` → updated to `ai_proof_architecture`
+- **C2**: ELEVATE_VOICE_EXTRACT.md stale (missing persona_architecture, wonder_science_bridge, ai_proof_architecture, anti_pattern_examples) → fully updated
+- **C3**: `_audit_ai_smell()` returned `list[str]` but `_format_issue_feedback()` expected dicts → now returns `list[dict]` with `code="CONVERSATIONAL_AI_TELL"`
+- **H1**: 8 voice spec bans missing from Category 13 detection → added (in_other_words, simply_put, what_does_this_mean, i_want_to_talk_about, important_note/pro_tip/quick_note, whether_its, from_x_to_y)
+- **H2**: "Here's what the science actually says" in example → fixed
+- **H3**: Curly apostrophe (U+2019) not handled in regex → `['\u2019]?` patterns
+- **H4**: Category 13 `break` after first match → removed (all matches reported)
+- **M1**: wonder_science_bridge/persona_architecture missing from section lists → added
+- **M2**: Wrong sentence length counts in anti_pattern_examples → corrected
+- **M3**: `_remove_dashes()` double-period edge case → cleanup pass added
+- **M4**: Test gaps → 20+ new tests
+- **M5**: "extraordinary" in examples → replaced with non-superlative alternatives
+
+**Tests:** 297 + ~20 new audit fix tests.
+
+---
+
 ## D111: CLI Transient Failure Retry + Diagnostics
 **Date:** February 12, 2026
 **Context:** Pipeline VALIDATE stage failed with `CLI returned exit code 1` in 3.9s (too fast for real generation = transient failure). Adversarial check also failed with exit code 1. Both had empty stderr, providing zero diagnostic info. `_execute_cli` had no retry logic, and FAILED status is not retryable at the pipeline level.
@@ -3521,5 +3549,43 @@ ATLAS Orchestrator (shared: memory, model router, MCP, security)
 - Pipeline-level retry re-runs ELEVATE (3+ min), wasteful for a 3s CLI glitch
 - Benefits ALL stages, not just VALIDATE
 - Fast-failure heuristic (< 10s) avoids retrying genuine content failures
+
+---
+
+## D113: Pipeline Quality Gate Hardening
+**Date:** February 13, 2026
+**Context:** Tummy-time pipeline run achieved Grade A despite having 6+ non-contractions ("It is", "There is"), filler phrases ("in the truest sense"), mid-field content truncation (contraindications cut off mid-sentence), wrong dates (2025), and fabricated citations. Root cause: 8 of 13 AI detection categories existed in `ai_detection.py` but were NOT wired into any blocking gate. The adversarial check caught all issues but was non-blocking (L2511: "Don't fail, but add to warnings").
+
+**Architecture Gap:**
+```
+ai_detection.py has 13 categories:
+  Cat 1-4:  Checked by QC hook subprocess
+  Cat 5-11: NOT CHECKED BY ANYTHING  ← The gap
+  Cat 12:   Checked by QC hook + _remove_dashes
+  Cat 13:   Checked by _audit_ai_smell
+```
+
+**Fix (6 changes):**
+
+1. **Wire Categories 5-11 into blocking gate** — New `_audit_ai_patterns()` runs non-contractions, hollow affirmations, AI clichés, hedge stacking, list intros, enthusiasm markers, filler phrases as blocking checks. Strips `parent_search_terms` section before checking to avoid SEO false positives.
+
+2. **Date post-processing** — New `_fix_dates()` replaces LLM-hallucinated dates in `last_updated` and `elevated_at` with actual `datetime.now(UTC)`.
+
+3. **Mid-field truncation detection** — New `_detect_midfield_truncation()` checks long-form fields for trailing connectors ("and ", ", "), missing sentence terminators, and incomplete execution steps.
+
+4. **Adversarial findings feed into audit** — `audit_quality()` gains `adversarial_warnings` parameter. Warnings injected into audit prompt for independent verification (not auto-fail).
+
+5. **Schema knowledge for adversarial** — `ACTIVITY_SCHEMA_SUMMARY` constant passed to adversarial calls so it knows valid vs invented fields.
+
+6. **Feedback routing expanded** — `_format_issue_feedback()` gains 3 new sections: NON-CONTRACTIONS (replacement table), AI WRITING PATTERNS (clichés + hollow affirmations), FILLER PHRASES (simplification table).
+
+**Design Decisions:**
+- All 7 new categories are BLOCKING (not advisory) because they're explicit voice spec violations
+- `parent_search_terms` is excluded from AI pattern checks — SEO content legitimately uses phrases like "in order to"
+- Mid-field truncation uses standalone connector detection (" and", " the") to avoid false positives on words ending in these sequences
+- Adversarial warnings are injected as "verify independently" context, not auto-fail triggers
+- Path 3 (`elevate_existing_file`) now has adversarial verification (was missing entirely)
+
+**Tests:** 25 new cases across 5 classes. 192 pipeline tests, 1082 total pass.
 
 ---

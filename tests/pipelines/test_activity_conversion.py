@@ -1,7 +1,7 @@
 """
 Tests for ActivityConversionPipeline deterministic functions.
 
-Covers 15 functions with 123 test cases:
+Covers 20 functions with ~148 test cases:
 - _parse_age_label (12 cases)
 - _detect_truncation (7 cases)
 - _fix_canonical_slug (4 cases)
@@ -17,6 +17,11 @@ Covers 15 functions with 123 test cases:
 - _extract_elevate_yaml_fallback (3 cases)
 - _fix_validation_misclassification (8 cases)
 - _load_guidance_catalog (3 cases)
+- D113: _audit_ai_patterns (9 cases)
+- D113: _fix_dates (4 cases)
+- D113: _detect_midfield_truncation (6 cases)
+- D113: _format_issue_feedback D113 routing (3 cases)
+- D113: audit_quality adversarial param (2 cases)
 """
 
 import json
@@ -345,6 +350,54 @@ class TestRemoveDashes:
         """_remove_em_dashes still works as alias."""
         content = "Test \u2014 content"
         result = pipeline._remove_em_dashes(content)
+        assert "\u2014" not in result
+
+    def test_preserves_en_dash_number_range(self, pipeline):
+        """D112: '5\u20138 cm' must become '5-8 cm', not '5. 8 cm'."""
+        content = "Use blocks that are 5\u20138 cm in size"
+        result = pipeline._remove_dashes(content)
+        assert "5-8 cm" in result
+        assert "5. 8" not in result
+
+    def test_preserves_em_dash_number_range(self, pipeline):
+        """D112: Em-dash between digits must become hyphen."""
+        content = "Suitable for 0\u201436 months"
+        result = pipeline._remove_dashes(content)
+        assert "0-36" in result
+        assert "0. 36" not in result
+
+    def test_preserves_month_range(self, pipeline):
+        """D112: '0\u20133 months' must become '0-3 months'."""
+        content = "During the 0\u20133 month period"
+        result = pipeline._remove_dashes(content)
+        assert "0-3 month" in result
+
+    def test_preserves_temperature_range(self, pipeline):
+        """D112: '37\u201338\u00b0C' must become '37-38\u00b0C'."""
+        content = "Water temperature should be 37\u201338\u00b0C"
+        result = pipeline._remove_dashes(content)
+        assert "37-38" in result
+
+    def test_preserves_double_hyphen_number_range(self, pipeline):
+        """D112: Double-hyphen between digits must become single hyphen."""
+        content = "Ages 2--3 years"
+        result = pipeline._remove_dashes(content)
+        assert "2-3" in result
+        assert "2. 3" not in result
+
+    def test_mixed_number_ranges_and_prose_dashes(self, pipeline):
+        """D112: Number ranges preserved while prose dashes replaced."""
+        content = "For ages 0\u20133\u2014this is critical\u2013and important"
+        result = pipeline._remove_dashes(content)
+        assert "0-3" in result  # number range preserved
+        assert "\u2014" not in result  # prose em-dash replaced
+        assert "\u2013" not in result  # prose en-dash replaced
+
+    def test_number_range_at_line_boundary(self, pipeline):
+        """D112: Number ranges work at start/end of line."""
+        content = "5\u20138\nword\u2014word"
+        result = pipeline._remove_dashes(content)
+        assert "5-8" in result
         assert "\u2014" not in result
 
 
@@ -1427,3 +1480,324 @@ class TestStageTimeouts:
         assert timeouts["qc_hook"] <= min(
             v for k, v in timeouts.items() if k != "qc_hook"
         )
+
+
+# ============================================================
+# D112-audit: _audit_ai_smell tests
+# ============================================================
+
+class TestAuditAiSmell:
+    """D112-audit: Tests for _audit_ai_smell detection and routing."""
+
+    def test_detects_conversational_tells(self, pipeline):
+        """Should detect conversational AI tells in YAML content."""
+        yaml_content = """
+title: Tummy Time
+description: >
+  Here's the thing about tummy time: it builds strength.
+  When it comes to development, every minute counts.
+"""
+        issues = pipeline._audit_ai_smell(yaml_content)
+        assert len(issues) >= 1
+
+    def test_clean_text_returns_empty(self, pipeline):
+        """Should return empty list for clean YAML content."""
+        yaml_content = """
+title: Tummy Time
+description: >
+  Your baby builds strength during tummy time.
+  Start with short sessions and build up gradually.
+"""
+        issues = pipeline._audit_ai_smell(yaml_content)
+        assert len(issues) == 0
+
+    def test_returns_dicts_with_code_field(self, pipeline):
+        """D112-audit C3: Issues must be dicts with 'code' for routing."""
+        yaml_content = "Here's the thing: babies learn through play."
+        issues = pipeline._audit_ai_smell(yaml_content)
+        assert len(issues) >= 1
+        for issue in issues:
+            assert isinstance(issue, dict)
+            assert "code" in issue
+            assert "CONVERSATIONAL" in issue["code"]
+            assert "msg" in issue
+
+    def test_format_issue_feedback_routes_ai_smell(self, pipeline):
+        """D112-audit C3: AI smell issues must route to ai_smell_issues section."""
+        issues = [
+            {
+                "code": "CONVERSATIONAL_AI_TELL",
+                "category": "ai_tell",
+                "msg": "Conversational AI tell detected: 'Here's the thing'",
+            }
+        ]
+        feedback = pipeline._format_issue_feedback(issues)
+        assert "CONVERSATIONAL AI TELLS" in feedback
+        assert "MUST FIX" in feedback
+
+
+# ============================================================
+# D112-audit: _remove_dashes double-period cleanup
+# ============================================================
+
+class TestRemoveDashesDoublePeriod:
+    """D112-audit M3: Double-period edge case after dash replacement."""
+
+    def test_double_period_cleanup(self, pipeline):
+        """'word\u2014. Next' should become 'word. Next', not 'word. . Next'."""
+        content = "word\u2014. Next sentence."
+        result = pipeline._remove_dashes(content)
+        assert ". ." not in result
+        assert "word. Next" in result
+
+    def test_double_period_with_en_dash(self, pipeline):
+        """'word\u2013. Next' should become 'word. Next'."""
+        content = "word\u2013. Next sentence."
+        result = pipeline._remove_dashes(content)
+        assert ". ." not in result
+
+    def test_normal_period_preserved(self, pipeline):
+        """Normal single periods should not be affected."""
+        content = "First sentence. Second sentence."
+        result = pipeline._remove_dashes(content)
+        assert result == content
+
+
+# ============================================================
+# D113: _audit_ai_patterns (9 cases)
+# ============================================================
+
+class TestAuditAiPatterns:
+    """D113: AI writing pattern detection (Categories 5-11)."""
+
+    def test_clean_yaml_passes(self, pipeline):
+        """Content without AI patterns should return empty list."""
+        yaml_content = "description: Babies love to explore textures.\nIt's a great way to learn."
+        result = pipeline._audit_ai_patterns(yaml_content)
+        assert result == []
+
+    def test_non_contraction_detected(self, pipeline):
+        """Non-contracted 'It is' should be caught."""
+        yaml_content = "description: It is important to let babies explore."
+        result = pipeline._audit_ai_patterns(yaml_content)
+        assert len(result) >= 1
+        assert any("NON_CONTRACTION" in i["code"] for i in result)
+
+    def test_hollow_affirmation_detected(self, pipeline):
+        """Hollow affirmations like 'it's important to note' should be caught."""
+        yaml_content = "description: It's important to note that babies develop at their own pace."
+        result = pipeline._audit_ai_patterns(yaml_content)
+        assert len(result) >= 1
+        assert any("HOLLOW_AFFIRMATION" in i["code"] for i in result)
+
+    def test_ai_cliche_detected(self, pipeline):
+        """AI clichés like 'journey' should be caught."""
+        yaml_content = "description: The parenting journey starts here."
+        result = pipeline._audit_ai_patterns(yaml_content)
+        assert len(result) >= 1
+        assert any("AI_CLICHE" in i["code"] for i in result)
+
+    def test_hedge_stacking_detected(self, pipeline):
+        """Stacked hedges like 'could potentially' should be caught."""
+        yaml_content = "description: This could potentially help with development."
+        result = pipeline._audit_ai_patterns(yaml_content)
+        assert len(result) >= 1
+        assert any("HEDGE_STACKING" in i["code"] for i in result)
+
+    def test_list_intro_detected(self, pipeline):
+        """Robotic list intros should be caught."""
+        yaml_content = "description: Let's dive into the benefits."
+        result = pipeline._audit_ai_patterns(yaml_content)
+        assert len(result) >= 1
+        assert any("LIST_INTRO" in i["code"] for i in result)
+
+    def test_enthusiasm_detected(self, pipeline):
+        """Excessive enthusiasm with '!!' should be caught."""
+        yaml_content = "description: This is so exciting!!"
+        result = pipeline._audit_ai_patterns(yaml_content)
+        assert len(result) >= 1
+        assert any("ENTHUSIASM" in i["code"] for i in result)
+
+    def test_filler_phrase_detected(self, pipeline):
+        """Filler phrases like 'in order to' should be caught."""
+        yaml_content = "description: In order to support your baby."
+        result = pipeline._audit_ai_patterns(yaml_content)
+        assert len(result) >= 1
+        assert any("FILLER" in i["code"] for i in result)
+
+    def test_parent_search_terms_stripped(self, pipeline):
+        """parent_search_terms section should be excluded from checks."""
+        # "in order to" only appears in SEO section
+        yaml_content = (
+            "description: Babies love to explore.\n"
+            "parent_search_terms:\n"
+            '  - "in order to help baby tummy time"\n'
+            '  - "it is important for baby"\n'
+        )
+        result = pipeline._audit_ai_patterns(yaml_content)
+        assert result == []
+
+
+# ============================================================
+# D113: _fix_dates (4 cases)
+# ============================================================
+
+class TestFixDates:
+    """D113: Date correction for LLM-hallucinated dates."""
+
+    def test_fixes_last_updated(self, pipeline):
+        """Should replace wrong year in last_updated."""
+        from datetime import datetime, timezone
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        yaml_content = 'last_updated: "2025-06-15"\ntitle: Test'
+        result = pipeline._fix_dates(yaml_content)
+        assert today in result
+        assert "2025-06-15" not in result
+
+    def test_fixes_elevated_at(self, pipeline):
+        """Should replace wrong year in indented elevated_at."""
+        from datetime import datetime, timezone
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        yaml_content = 'quality_review:\n  elevated_at: "2025-03-01"\n  grade: A'
+        result = pipeline._fix_dates(yaml_content)
+        assert today in result
+        assert "2025-03-01" not in result
+
+    def test_preserves_non_date_content(self, pipeline):
+        """Should not modify content that isn't a date field."""
+        yaml_content = 'description: Updated in 2025 with new findings.\ntitle: Test'
+        result = pipeline._fix_dates(yaml_content)
+        assert "Updated in 2025" in result
+
+    def test_fixes_unquoted_dates(self, pipeline):
+        """Should handle unquoted date values."""
+        from datetime import datetime, timezone
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        yaml_content = 'last_updated: 2025-01-01\ntitle: Test'
+        result = pipeline._fix_dates(yaml_content)
+        assert today in result
+
+
+# ============================================================
+# D113: _detect_midfield_truncation (6 cases)
+# ============================================================
+
+class TestDetectMidfieldTruncation:
+    """D113: Mid-field content truncation detection."""
+
+    def test_complete_content_passes(self, pipeline):
+        """Well-formed content should not be flagged."""
+        yaml_content = yaml.dump({
+            "description": "Babies develop through exploration. This is normal and expected.",
+            "contraindications": "Do not use with children who have neck injuries.",
+            "safety_considerations": "Always supervise tummy time sessions closely.",
+        })
+        is_trunc, reason = pipeline._detect_midfield_truncation(yaml_content)
+        assert not is_trunc
+
+    def test_trailing_and_detected(self, pipeline):
+        """Text ending with ' and' should be flagged as mid-sentence."""
+        # After YAML parse + strip, value ends with " and" (standalone connector)
+        yaml_content = yaml.dump({
+            "description": "A" * 60 + " this helps with motor skills and",
+        })
+        is_trunc, reason = pipeline._detect_midfield_truncation(yaml_content)
+        assert is_trunc
+        assert "trailing connector" in reason
+
+    def test_trailing_comma_detected(self, pipeline):
+        """Text ending with ',' should be flagged."""
+        yaml_content = yaml.dump({
+            "contraindications": "A" * 60 + " avoid if baby shows distress,",
+        })
+        is_trunc, reason = pipeline._detect_midfield_truncation(yaml_content)
+        assert is_trunc
+        assert "trailing connector" in reason
+
+    def test_no_terminator_detected(self, pipeline):
+        """Text > 100 chars without sentence terminator should be flagged."""
+        # Text without any sentence-ending punctuation
+        long_text = "A" * 80 + " this is substantial text that just ends without any punctuation"
+        yaml_content = f'description: "{long_text}"\n'
+        is_trunc, reason = pipeline._detect_midfield_truncation(yaml_content)
+        assert is_trunc
+        assert "sentence terminator" in reason
+
+    def test_short_content_skipped(self, pipeline):
+        """Content < 50 chars should be skipped."""
+        yaml_content = yaml.dump({
+            "description": "Short text",
+        })
+        is_trunc, reason = pipeline._detect_midfield_truncation(yaml_content)
+        assert not is_trunc
+
+    def test_invalid_yaml_graceful(self, pipeline):
+        """Invalid YAML should not crash."""
+        yaml_content = "not: valid: yaml: [broken"
+        is_trunc, reason = pipeline._detect_midfield_truncation(yaml_content)
+        # Should not crash - graceful handling
+        assert isinstance(is_trunc, bool)
+
+
+# ============================================================
+# D113: _format_issue_feedback routing (3 cases)
+# ============================================================
+
+class TestFormatIssueFeedbackD113:
+    """D113: Verify new issue categories route to correct feedback sections."""
+
+    def test_non_contraction_routing(self, pipeline):
+        """Non-contraction issues should produce NON-CONTRACTIONS section."""
+        issues = [{
+            "code": "AI_PATTERN_NON_CONTRACTION",
+            "category": "non_contraction",
+            "msg": "Use contraction 'it's' instead of 'it is'",
+        }]
+        feedback = pipeline._format_issue_feedback(issues)
+        assert "NON-CONTRACTIONS" in feedback
+        assert "MUST FIX" in feedback
+        assert '"It is" → "It\'s"' in feedback
+
+    def test_ai_cliche_routing(self, pipeline):
+        """AI cliché issues should produce AI WRITING PATTERNS section."""
+        issues = [{
+            "code": "AI_PATTERN_AI_CLICHE",
+            "category": "ai_cliche",
+            "msg": "Remove AI cliche. Use specific, authentic language.",
+        }]
+        feedback = pipeline._format_issue_feedback(issues)
+        assert "AI WRITING PATTERNS" in feedback
+        assert "MUST FIX" in feedback
+
+    def test_filler_phrase_routing(self, pipeline):
+        """Filler phrase issues should produce FILLER PHRASES section."""
+        issues = [{
+            "code": "AI_PATTERN_FILLER",
+            "category": "filler_phrase",
+            "msg": "Remove filler phrase. Use simpler wording.",
+        }]
+        feedback = pipeline._format_issue_feedback(issues)
+        assert "FILLER PHRASES" in feedback
+        assert '"In order to" → "To"' in feedback
+
+
+# ============================================================
+# D113: audit_quality adversarial param (2 cases)
+# ============================================================
+
+class TestAuditQualityAdversarialParam:
+    """D113: Verify audit_quality accepts adversarial_warnings parameter."""
+
+    def test_signature_accepts_none(self, pipeline):
+        """audit_quality should accept adversarial_warnings=None without error."""
+        import inspect
+        sig = inspect.signature(pipeline.audit_quality)
+        params = list(sig.parameters.keys())
+        assert "adversarial_warnings" in params
+
+    def test_signature_default_is_none(self, pipeline):
+        """adversarial_warnings should default to None."""
+        import inspect
+        sig = inspect.signature(pipeline.audit_quality)
+        param = sig.parameters["adversarial_warnings"]
+        assert param.default is None

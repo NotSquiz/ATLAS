@@ -1,8 +1,99 @@
 # ATLAS Session Handoff
 
-**Date:** February 12, 2026
-**Status:** D110 + D111 applied. Cached path works, CLI has transient retry. Ready for live dry run.
+**Date:** February 13, 2026
+**Status:** D113 complete. Wired AI detection categories 5-11 into blocking gates. All 1082 tests pass.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
+
+---
+
+## D113: Pipeline Quality Gate Hardening (Feb 13, 2026)
+
+### Problem
+Grade A was awarded despite 6+ non-contractions, filler phrases, mid-field truncation, wrong dates, and fabricated citations. Root cause: 8 of 13 AI detection categories existed in `ai_detection.py` but were NOT wired into any blocking gate.
+
+### What Was Done
+
+**3 new methods in `activity_conversion.py`:**
+1. `_audit_ai_patterns()` — Runs categories 5-11 (non-contractions, hollow affirmations, AI clichés, hedge stacking, list intros, enthusiasm, filler phrases) as blocking gate. Strips `parent_search_terms` to avoid SEO false positives.
+2. `_fix_dates()` — Replaces LLM-hallucinated dates in `last_updated` and `elevated_at` with actual UTC date.
+3. `_detect_midfield_truncation()` — Detects mid-sentence cutoffs in long-form fields (trailing connectors, missing sentence terminators).
+
+**Wired into all 3 code paths:**
+- Path 1: `convert_activity` — hard fail on detection
+- Path 2: `_convert_from_cached_transform` — hard fail
+- Path 3: `elevate_existing_file` — retry with feedback on non-final, hard fail on final
+
+**`_format_issue_feedback()` expanded** with 3 new feedback sections:
+- NON-CONTRACTIONS (with full replacement table)
+- AI WRITING PATTERNS (hollow affirmations + clichés)
+- FILLER PHRASES (with simplification table)
+
+**Adversarial verification improvements:**
+- Capture adversarial warnings and pass to `audit_quality()` (new param `adversarial_warnings`)
+- Inject adversarial findings into audit prompt for independent verification
+- Added adversarial check to Path 3 (was missing)
+- Pass `ACTIVITY_SCHEMA_SUMMARY` to adversarial calls for schema awareness
+
+**Tests:** 25 new test cases across 5 test classes (192 total pipeline tests, all pass)
+
+---
+
+## D112: Voice Spec Overhaul + AI Detection Fixes (Feb 12-13, 2026)
+
+### What Was Done (Feb 12)
+
+**Voice Spec (BabyBrains-Writer.md in web repo):**
+1. Replaced 2-line persona with full persona_architecture (who_you_are, how_you_think, how_you_speak, what_you_never_do, your_montessori_voice, your_integrative_lens)
+2. Added wonder_science_bridge section (brand philosophical heart)
+3. Replaced ai_detection_avoidance with ai_proof_architecture (burstiness_protocol, colon_limit, list_variation, strategic_imperfection, expanded self_check)
+4. Added 3 before/after anti_pattern_examples
+5. Added chain of thought step 2.5 (AI pattern deep scan)
+6. Expanded final_output_gate with AI tell + burstiness scans
+7. Fixed "Here's the thing" in 2 examples, removed from casual interjections list
+8. Updated year 2025->2026, expanded temperature with wonder/awe
+
+**Pipeline (ATLAS repo):**
+1. `_remove_dashes()`: Two-phase regex preserves number ranges (digit-dash-digit -> hyphen)
+2. `ai_detection.py`: Category 13 CONVERSATIONAL_AI_TELLS (12 patterns, HIGH severity)
+3. `activity_conversion.py`: `_audit_ai_smell()` blocking check in all 3 code paths
+4. `_format_issue_feedback()`: Dedicated AI-smell feedback section
+
+### D112-audit (Feb 13) — Post-Implementation Audit Fixes
+
+3 independent Opus audit agents found 12 issues. All fixed:
+- **C1**: voice_spec.py section lists → `ai_proof_architecture` (was `ai_detection_avoidance`)
+- **C2**: ELEVATE_VOICE_EXTRACT.md → full update (persona_architecture, wonder_science_bridge, ai_proof_architecture, anti_pattern_examples, removed "Here's the thing" recommendations)
+- **C3**: `_audit_ai_smell()` → returns `list[dict]` with `code="CONVERSATIONAL_AI_TELL"` (was `list[str]`, broke routing)
+- **H1**: 8 missing patterns added to Category 13 (in_other_words, simply_put, etc.)
+- **H2**: "Here's what the science actually says" → "The science on this is clear"
+- **H3**: Curly apostrophe (U+2019) handling in regex patterns
+- **H4**: Removed `break` in check_conversational_ai_tells (all matches now reported)
+- **M1**: `wonder_science_bridge` + `persona_architecture` added to section lists
+- **M2**: Sentence length counts corrected in anti_pattern_examples
+- **M3**: Double-period cleanup in `_remove_dashes()` (`word—. Next` → `word. Next`)
+- **M5**: "extraordinary" replaced in wonder_science_bridge and anti_pattern example
+
+### Tests
+297 + ~20 new audit fix tests.
+
+### Files Modified
+| File | Repo | Changes |
+|------|------|---------|
+| `.claude/agents/BabyBrains-Writer.md` | web | Voice spec overhaul + audit fixes (H2, M2, M5) |
+| `atlas/babybrains/voice_spec.py` | ATLAS | Section list fixes (C1, M1) |
+| `atlas/pipelines/activity_conversion.py` | ATLAS | _audit_ai_smell return type (C3), double-period (M3) |
+| `atlas/babybrains/ai_detection.py` | ATLAS | 8 new patterns (H1), curly apostrophe (H3), no break (H4) |
+| `skills/activity/ELEVATE_VOICE_EXTRACT.md` | babybrains-os | Full update (C2) |
+| `tests/babybrains/test_ai_detection.py` | ATLAS | ~16 new tests (M4) |
+| `tests/pipelines/test_activity_conversion.py` | ATLAS | ~7 new tests (M4) |
+| `docs/DECISIONS.md` | ATLAS | D112-audit entry |
+| `docs/VERIFICATION_PROMPTS.md` | ATLAS | D112 verification section |
+
+### Next Steps
+1. Clear caches: `rm -f ~/.atlas/scratch/convert_*.json`
+2. Re-run 2 previously-failed activities with new voice spec
+3. Run 2 fresh activities
+4. If all 4 pass Grade A, approve for batch run
 
 ---
 

@@ -47,6 +47,15 @@ import yaml
 from atlas.babybrains.ai_detection import (
     check_superlatives as _ai_check_superlatives,
     check_pressure_language as _ai_check_pressure,
+    check_conversational_ai_tells as _ai_check_conversational,
+    # D113: Categories 5-11
+    check_non_contractions as _ai_check_non_contractions,
+    check_hollow_affirmations as _ai_check_hollow_affirmations,
+    check_ai_cliches as _ai_check_ai_cliches,
+    check_hedge_stacking as _ai_check_hedge_stacking,
+    check_list_intros as _ai_check_list_intros,
+    check_enthusiasm as _ai_check_enthusiasm,
+    check_filler_phrases as _ai_check_filler_phrases,
 )
 from atlas.orchestrator.hooks import HookRunner
 from atlas.orchestrator.skill_executor import SkillExecutor, SkillLoader
@@ -123,6 +132,18 @@ class ActivityConversionPipeline:
     CANONICAL_OUTPUT_DIR = Path("/home/squiz/code/knowledge/data/canonical/activities")
     QC_HOOK_PATH = Path("/home/squiz/code/knowledge/scripts/check_activity_quality.py")
     KNOWLEDGE_REPO = Path("/home/squiz/code/knowledge")
+
+    # D113: Valid schema fields for adversarial verification context
+    ACTIVITY_SCHEMA_SUMMARY = (
+        "Valid top-level fields: type, canonical_id, canonical_slug, version, "
+        "last_updated, canonical, quality_review, title, summary, age_months_min, "
+        "age_months_max, domain, description, goals, setup, environment_preparation, "
+        "execution_steps, observation_focus, typical_progression, safety_considerations, "
+        "contraindications, requires_materials, grounded_in_principles, links_to_guidance, "
+        "evidence_strength, stated_in_sources, modern_validation, au_cultural_adaptation, "
+        "au_compliance_standards, production_notes, tags, priority_ranking, "
+        "query_frequency_estimate, parent_search_terms"
+    )
 
     # Per-stage timeout configuration (seconds)
     # Simple stages get shorter timeouts; complex stages get longer
@@ -1427,6 +1448,13 @@ class ActivityConversionPipeline:
                 f"[DASH-CLEANUP] Removing {total} dashes "
                 f"(em={em_count}, en={en_count}, double={dd_count})"
             )
+            # D112 Phase 1: Preserve number ranges (digit-dash-digit -> hyphen)
+            # Must run BEFORE prose dash replacement to avoid "5–8" -> "5. 8"
+            content = re.sub(r"(\d)\u2014(\d)", r"\1-\2", content)
+            content = re.sub(r"(\d)\u2013(\d)", r"\1-\2", content)
+            content = re.sub(r"(\d)--(\d)", r"\1-\2", content)
+
+            # D112 Phase 2: Remaining prose dashes -> ". "
             # Em-dash: replace with ". " (or "." if no trailing space)
             content = re.sub(r"\u2014\s*", ". ", content)
             content = content.replace("\u2014", ".")
@@ -1436,6 +1464,10 @@ class ActivityConversionPipeline:
             # Double-hyphen: same treatment
             content = re.sub(r"--\s*", ". ", content)
             content = content.replace("--", ".")
+
+            # D112-audit: Clean up double periods from dash-before-period replacement
+            # e.g., "word—. Next" -> "word. . Next" -> "word. Next"
+            content = re.sub(r"\.\s*\.\s+", ". ", content)
         return content
 
     def _remove_em_dashes(self, content: str) -> str:
@@ -1720,6 +1752,50 @@ class ActivityConversionPipeline:
             logger.warning(f"[POST-PROCESS] Metadata preservation failed: {e}")
             return elevated_yaml
 
+    def _fix_dates(self, yaml_content: str) -> str:
+        """
+        D113: Fix LLM-generated dates with actual current date.
+
+        LLMs often hallucinate dates (e.g., 2025 instead of 2026).
+        Replace last_updated and elevated_at with actual UTC date.
+
+        Args:
+            yaml_content: YAML content with potentially wrong dates
+
+        Returns:
+            YAML content with corrected dates
+        """
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        fixed = yaml_content
+        count = 0
+
+        # Fix top-level last_updated (unindented or minimal indent)
+        new_fixed = re.sub(
+            r'^(last_updated:\s*)"?\d{4}-\d{2}-\d{2}"?',
+            rf'\g<1>"{today}"',
+            fixed,
+            flags=re.MULTILINE,
+        )
+        if new_fixed != fixed:
+            count += 1
+            fixed = new_fixed
+
+        # Fix elevated_at inside quality_review (indented)
+        new_fixed = re.sub(
+            r'^(\s+elevated_at:\s*)"?\d{4}-\d{2}-\d{2}"?',
+            rf'\g<1>"{today}"',
+            fixed,
+            flags=re.MULTILINE,
+        )
+        if new_fixed != fixed:
+            count += 1
+            fixed = new_fixed
+
+        if count:
+            logger.info(f"[POST-PROCESS] Fixed {count} date field(s) to {today}")
+
+        return fixed
+
     # Patterns that indicate guidance/materials reference issues (move to warnings)
     _GUIDANCE_MATERIAL_WARN_PATTERNS = [
         re.compile(r"GUIDANCE_[A-Z_]+_\d{4}\s+(not found|does not exist|missing)", re.IGNORECASE),
@@ -1840,6 +1916,185 @@ class ActivityConversionPipeline:
 
         return (False, "Output appears complete")
 
+    def _detect_midfield_truncation(self, yaml_content: str) -> tuple[bool, str]:
+        """
+        D113: Detect content truncation within YAML fields.
+
+        Checks long-form text fields for signs of mid-sentence cutoff:
+        - Text ending without sentence terminator (., !, ?)
+        - Trailing connectors ("and ", "the ", ", ")
+        - Incomplete last execution step
+
+        Args:
+            yaml_content: Elevated YAML content to check
+
+        Returns:
+            Tuple of (is_truncated: bool, reason: str)
+        """
+        try:
+            data = yaml.safe_load(yaml_content)
+        except Exception:
+            return (False, "YAML parse error, skipping midfield check")
+
+        if not isinstance(data, dict):
+            return (False, "Not a dict, skipping midfield check")
+
+        # Long-form text fields to check
+        text_fields = [
+            "description",
+            "contraindications",
+            "safety_considerations",
+            "observation_focus",
+        ]
+
+        for field_name in text_fields:
+            value = data.get(field_name)
+            if not value or not isinstance(value, str):
+                continue
+            text = value.strip()
+            if len(text) < 50:
+                continue
+
+            # Check for trailing connectors (mid-sentence cutoff)
+            # Match standalone connector words at end (space before ensures word boundary)
+            if re.search(r'(?:,\s*| and\s*| the\s*| or\s*| with\s*| for\s*| in\s*| to\s*)$', text):
+                return (True, f"Field '{field_name}' ends mid-sentence (trailing connector)")
+
+            # Check for missing sentence terminator on substantial text
+            if len(text) > 100 and not re.search(r'[.!?:)\]"\']\s*$', text):
+                return (True, f"Field '{field_name}' ends without sentence terminator")
+
+        # Check last execution_step for truncation
+        steps = data.get("execution_steps")
+        if steps and isinstance(steps, list) and len(steps) > 0:
+            last_step = steps[-1]
+            if isinstance(last_step, str):
+                text = last_step.strip()
+                if len(text) > 30 and re.search(r'(?:,\s*| and\s*| the\s*)$', text):
+                    return (True, "Last execution_step ends mid-sentence")
+
+        return (False, "No midfield truncation detected")
+
+    def _audit_ai_smell(self, yaml_content: str) -> list[dict]:
+        """
+        D112: Scan elevated YAML for conversational AI tell patterns.
+
+        Uses regex-based detection from ai_detection.py Category 13.
+        Runs as a blocking check after truncation detection but before
+        adversarial verification. Any AI smell patterns found cause
+        QC failure with specific rewrite guidance.
+
+        Args:
+            yaml_content: Elevated YAML content to scan
+
+        Returns:
+            List of issue dicts with code/category/msg (empty = clean)
+        """
+        issues = _ai_check_conversational(yaml_content)
+        if issues:
+            # D112-audit: Wrap with CONVERSATIONAL code so _format_issue_feedback routes correctly
+            smell_issues = []
+            for issue in issues:
+                smell_issues.append({
+                    "code": "CONVERSATIONAL_AI_TELL",
+                    "category": "ai_tell",
+                    "msg": issue.get("msg", "Conversational AI tell detected"),
+                })
+            logger.warning(
+                f"[AI-SMELL] Found {len(smell_issues)} conversational AI tell(s)"
+            )
+            return smell_issues
+        return []
+
+    def _audit_ai_patterns(self, yaml_content: str) -> list[dict]:
+        """
+        D113: Scan elevated YAML for AI writing patterns (Categories 5-11).
+
+        Checks for non-contractions, hollow affirmations, AI clichés,
+        hedge stacking, list intros, enthusiasm markers, and filler phrases.
+        Strips parent_search_terms section before checking (SEO content
+        would produce false positives).
+
+        Args:
+            yaml_content: Elevated YAML content to scan
+
+        Returns:
+            List of issue dicts with code/category/msg (empty = clean)
+        """
+        # Strip parent_search_terms section (SEO keywords would false-positive)
+        text = re.sub(
+            r'^parent_search_terms:.*',
+            '',
+            yaml_content,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+
+        all_issues = []
+
+        # Category 5: Non-contractions
+        for issue in _ai_check_non_contractions(text):
+            all_issues.append({
+                "code": "AI_PATTERN_NON_CONTRACTION",
+                "category": "non_contraction",
+                "msg": issue.get("msg", "Non-contraction detected"),
+            })
+
+        # Category 6: Hollow affirmations
+        for issue in _ai_check_hollow_affirmations(text):
+            all_issues.append({
+                "code": "AI_PATTERN_HOLLOW_AFFIRMATION",
+                "category": "hollow_affirmation",
+                "msg": issue.get("msg", "Hollow affirmation detected"),
+            })
+
+        # Category 7: AI clichés
+        for issue in _ai_check_ai_cliches(text):
+            all_issues.append({
+                "code": "AI_PATTERN_AI_CLICHE",
+                "category": "ai_cliche",
+                "msg": issue.get("msg", "AI cliché detected"),
+            })
+
+        # Category 8: Hedge stacking
+        for issue in _ai_check_hedge_stacking(text):
+            all_issues.append({
+                "code": "AI_PATTERN_HEDGE_STACKING",
+                "category": "hedge_stacking",
+                "msg": issue.get("msg", "Hedge stacking detected"),
+            })
+
+        # Category 9: List intros
+        for issue in _ai_check_list_intros(text):
+            all_issues.append({
+                "code": "AI_PATTERN_LIST_INTRO",
+                "category": "list_intro",
+                "msg": issue.get("msg", "Robotic list intro detected"),
+            })
+
+        # Category 10: Enthusiasm
+        for issue in _ai_check_enthusiasm(text):
+            all_issues.append({
+                "code": "AI_PATTERN_ENTHUSIASM",
+                "category": "enthusiasm",
+                "msg": issue.get("msg", "Excessive enthusiasm detected"),
+            })
+
+        # Category 11: Filler phrases
+        for issue in _ai_check_filler_phrases(text):
+            all_issues.append({
+                "code": "AI_PATTERN_FILLER",
+                "category": "filler_phrase",
+                "msg": issue.get("msg", "Filler phrase detected"),
+            })
+
+        if all_issues:
+            logger.warning(
+                f"[AI-PATTERNS] Found {len(all_issues)} AI writing pattern(s): "
+                + ", ".join(i["category"] for i in all_issues)
+            )
+
+        return all_issues
+
     async def _execute_validate(
         self,
         elevated_yaml: str,
@@ -1943,7 +2198,8 @@ class ActivityConversionPipeline:
                     pass
 
     async def audit_quality(
-        self, elevated_yaml: str, activity_id: str, is_final_attempt: bool = False
+        self, elevated_yaml: str, activity_id: str, is_final_attempt: bool = False,
+        adversarial_warnings: list[str] | None = None,
     ) -> dict:
         """
         Audit activity quality using BabyBrains voice standards.
@@ -2011,6 +2267,16 @@ class ActivityConversionPipeline:
             logger.warning(f"Reference activity not found: {reference_path}")
             reference = "Reference not found - grade based on rubric only"
 
+        # D113: Build adversarial context section if warnings available
+        adversarial_section = ""
+        if adversarial_warnings:
+            warning_lines = "\n".join(f"- {w}" for w in adversarial_warnings[:10])
+            adversarial_section = f"""
+## PRIOR ADVERSARIAL REVIEW FINDINGS (verify independently)
+{warning_lines}
+NOTE: Do NOT auto-fail on these. Verify each independently against the rubric.
+"""
+
         audit_prompt = f"""You are a SKEPTICAL quality auditor for BabyBrains Activity Atoms.
 
 Your job is to FIND REAL PROBLEMS, not rubber-stamp approval. Be adversarial but fair.
@@ -2027,7 +2293,7 @@ Your job is to FIND REAL PROBLEMS, not rubber-stamp approval. Be adversarial but
 ```yaml
 {elevated_yaml}
 ```
-
+{adversarial_section}
 ## BLOCKING vs ADVISORY ISSUES
 
 ### BLOCKING ISSUES (must fail - Grade B+ maximum):
@@ -2400,6 +2666,9 @@ OR if blocking issues found:
             # H7: Fix age range to match original (ELEVATE may incorrectly change it)
             elevated_yaml = self._fix_age_range(elevated_yaml, canonical_yaml)
 
+            # D113: Fix LLM-hallucinated dates
+            elevated_yaml = self._fix_dates(elevated_yaml)
+
             # D80: Post-ELEVATE dash cleanup - LLM generates new dashes despite prompt
             # instructions. Deterministic fix prevents token-wasting retries.
             elevated_yaml = self._remove_dashes(elevated_yaml)
@@ -2431,11 +2700,53 @@ OR if blocking issues found:
                     elevated_yaml=elevated_yaml,
                 )
 
+            # D113: Mid-field truncation detection
+            is_midfield_truncated, midfield_reason = self._detect_midfield_truncation(elevated_yaml)
+            if is_midfield_truncated:
+                logger.warning(f"[MIDFIELD-TRUNCATION] Detected: {midfield_reason}")
+                return ConversionResult(
+                    activity_id=raw_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=[f"Content truncated mid-field: {midfield_reason}"],
+                    elevated_yaml=elevated_yaml,
+                )
+
+            # D112: AI smell check - catch conversational AI tells before expensive stages
+            ai_smell_issues = self._audit_ai_smell(elevated_yaml)
+            if ai_smell_issues:
+                return ConversionResult(
+                    activity_id=raw_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=ai_smell_issues,
+                    elevated_yaml=elevated_yaml,
+                )
+
+            # D113: AI writing pattern check (Categories 5-11)
+            ai_pattern_issues = self._audit_ai_patterns(elevated_yaml)
+            if ai_pattern_issues:
+                return ConversionResult(
+                    activity_id=raw_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=ai_pattern_issues,
+                    elevated_yaml=elevated_yaml,
+                )
+
             # C-1: SPEC COMPLIANCE - Adversarial verification via SubAgentExecutor
             # Per masterclass [4147s]: Use fresh context to verify work
+            adversarial_warnings = None  # D113: Capture for quality audit
             try:
                 verification = await self.sub_executor.verify_adversarially(
-                    output={"yaml": elevated_yaml[:15000], "grade": grade or "A"},
+                    output={
+                        "yaml": elevated_yaml[:15000],
+                        "grade": grade or "A",
+                        "valid_schema_fields": self.ACTIVITY_SCHEMA_SUMMARY,
+                    },
                     skill_name="elevate_voice_activity",
                     persona="senior Montessori education specialist",
                 )
@@ -2453,7 +2764,7 @@ OR if blocking issues found:
                     logger.warning(
                         f"Adversarial check found issues: {verification.issues}"
                     )
-                    # Don't fail, but add to warnings
+                    adversarial_warnings = verification.issues  # D113
             except Exception as adv_err:
                 logger.warning(f"Adversarial verification skipped: {adv_err}")
 
@@ -2508,6 +2819,7 @@ OR if blocking issues found:
                 elevated_yaml=elevated_yaml,
                 activity_id=raw_id,
                 is_final_attempt=is_final_attempt,  # D28: Extended timeout on final attempt
+                adversarial_warnings=adversarial_warnings,  # D113
             )
 
             # Store audit results in scratch pad for retry reflection
@@ -2612,6 +2924,12 @@ OR if blocking issues found:
         pressure_issues = []
         superlative_issues = []
         emdash_issues = []
+        ai_smell_issues = []
+        # D113: New issue groups for categories 5-11
+        non_contraction_issues = []
+        hollow_affirmation_issues = []
+        ai_cliche_issues = []
+        filler_issues = []
         other_issues = []
 
         for issue in issues:
@@ -2625,6 +2943,20 @@ OR if blocking issues found:
                 superlative_issues.append(msg)
             elif "EM_DASH" in code or "emdash" in category or "em-dash" in msg.lower():
                 emdash_issues.append(msg)
+            elif "CONVERSATIONAL" in code or "ai_tell" in category or "ai smell" in msg.lower():
+                ai_smell_issues.append(msg)
+            # D113: Route new categories
+            elif "NON_CONTRACTION" in code or "non_contraction" in category:
+                non_contraction_issues.append(msg)
+            elif "HOLLOW" in code or "hollow" in category:
+                hollow_affirmation_issues.append(msg)
+            elif "AI_CLICHE" in code or "ai_cliche" in category:
+                ai_cliche_issues.append(msg)
+            elif "FILLER" in code or "filler" in category:
+                filler_issues.append(msg)
+            elif "HEDGE" in code or "LIST_INTRO" in code or "ENTHUSIASM" in code:
+                # Group remaining D113 patterns under AI writing
+                ai_cliche_issues.append(msg)
             else:
                 other_issues.append(f"[{category}] {msg}")
 
@@ -2693,13 +3025,112 @@ CRITICAL: Before outputting, search for ALL these words and remove them.
         if emdash_issues:
             section = """### EM-DASHES - MUST FIX (Automatic Failure)
 
-Found em-dashes (—) in the output. Replace with:
+Found em-dashes in the output. Replace with:
 - Comma for short pauses
 - Period and new sentence for longer breaks
 - Parentheses for asides
-- Colon for explanations
+- Colon for explanations (max 2 per 500 words)
 
-NEVER use the em-dash character (—).
+NEVER use the em-dash or en-dash characters. Number ranges use hyphens: "5-8 cm".
+"""
+            sections.append(section)
+
+        if ai_smell_issues:
+            section = """### CONVERSATIONAL AI TELLS - MUST FIX (D112)
+
+Found fake-casual patterns that betray AI authorship:
+"""
+            for issue in ai_smell_issues[:5]:
+                section += f"- {issue}\n"
+
+            section += """
+BANNED PATTERNS (never use):
+- "Here's the thing" / "Here's what you need to know"
+- "Here's something worth knowing/trying/considering"
+- "When it comes to..." (filler, adds nothing)
+- "Think of it as..." (announce the metaphor, don't label it)
+- "The reality is..." / "The truth is..."
+- "Not just X, but Y" (balanced reveal construction)
+- "Key insight:" / "Bottom line:" / "The takeaway:"
+
+HOW TO FIX:
+- Remove the framing phrase entirely and start with the actual point
+- BEFORE: "Here's the thing: babies absorb everything."
+- AFTER: "Babies absorb everything."
+- BEFORE: "When it comes to tummy time, start small."
+- AFTER: "Start tummy time small."
+- BEFORE: "Think of it as a brain workout."
+- AFTER: "It's a brain workout." (or just use the metaphor directly)
+"""
+            sections.append(section)
+
+        # D113: New feedback sections for categories 5-11
+        if non_contraction_issues:
+            section = """### NON-CONTRACTIONS - MUST FIX (D113)
+
+Voice spec requires contractions ALWAYS. Found non-contracted forms:
+"""
+            for issue in non_contraction_issues[:5]:
+                section += f"- {issue}\n"
+
+            section += """
+REQUIRED REPLACEMENTS:
+- "It is" → "It's"
+- "There is" → "There's"
+- "That is" → "That's"
+- "You are" → "You're"
+- "We are" → "We're"
+- "Does not" → "Doesn't"
+- "Do not" → "Don't"
+- "Cannot" → "Can't"
+- "Will not" → "Won't"
+
+CRITICAL: Search for ALL non-contracted forms and replace them. Every single one.
+"""
+            sections.append(section)
+
+        if hollow_affirmation_issues or ai_cliche_issues:
+            section = """### AI WRITING PATTERNS - MUST FIX (D113)
+
+Found AI-typical writing patterns that betray non-human authorship:
+"""
+            for issue in (hollow_affirmation_issues + ai_cliche_issues)[:5]:
+                section += f"- {issue}\n"
+
+            section += """
+PATTERNS TO REMOVE:
+- "It's important to note" → State the point directly
+- "Interestingly" / "Notably" / "Importantly" → Delete, start with content
+- "Journey" → Use specific language about the experience
+- "Delve into" → "Look at" or "Explore"
+- "Game-changer" → Describe the actual benefit
+- "Embark on" → "Start" or "Begin"
+- "Could potentially" → "Could" or "May" (one hedge, not two)
+- "First and foremost" / "Last but not least" → Delete, just list items
+
+Remove the pattern entirely. Don't replace with another filler.
+"""
+            sections.append(section)
+
+        if filler_issues:
+            section = """### FILLER PHRASES - MUST FIX (D113)
+
+Found wordy filler phrases that should be simplified:
+"""
+            for issue in filler_issues[:5]:
+                section += f"- {issue}\n"
+
+            section += """
+REQUIRED SIMPLIFICATIONS:
+- "In order to" → "To"
+- "Due to the fact that" → "Because"
+- "In terms of" → Delete or rephrase
+- "With regard to" → "About" or "For"
+- "At this point in time" → "Now"
+- "For the purpose of" → "To"
+- "The fact that" → Delete and rephrase
+
+Every filler phrase has a shorter, clearer replacement. Use it.
 """
             sections.append(section)
 
@@ -2881,6 +3312,9 @@ If ANY of these appear, rewrite that sentence before outputting.
         # H7: Fix age range to match original (ELEVATE may incorrectly change it)
         elevated_yaml = self._fix_age_range(elevated_yaml, canonical_yaml)
 
+        # D113: Fix LLM-hallucinated dates
+        elevated_yaml = self._fix_dates(elevated_yaml)
+
         # D80: Post-ELEVATE dash cleanup (cached transform path)
         elevated_yaml = self._remove_dashes(elevated_yaml)
 
@@ -2910,15 +3344,58 @@ If ANY of these appear, rewrite that sentence before outputting.
                 elevated_yaml=elevated_yaml,
             )
 
-        # Adversarial check (non-blocking)
+        # D113: Mid-field truncation detection
+        is_midfield_truncated, midfield_reason = self._detect_midfield_truncation(elevated_yaml)
+        if is_midfield_truncated:
+            logger.warning(f"[MIDFIELD-TRUNCATION] Detected: {midfield_reason}")
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.QC_FAILED,
+                canonical_id=canonical_id,
+                file_path=file_path,
+                qc_issues=[f"Content truncated mid-field: {midfield_reason}"],
+                elevated_yaml=elevated_yaml,
+            )
+
+        # D112: AI smell check - catch conversational AI tells before expensive stages
+        ai_smell_issues = self._audit_ai_smell(elevated_yaml)
+        if ai_smell_issues:
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.QC_FAILED,
+                canonical_id=canonical_id,
+                file_path=file_path,
+                qc_issues=ai_smell_issues,
+                elevated_yaml=elevated_yaml,
+            )
+
+        # D113: AI writing pattern check (Categories 5-11)
+        ai_pattern_issues = self._audit_ai_patterns(elevated_yaml)
+        if ai_pattern_issues:
+            return ConversionResult(
+                activity_id=raw_id,
+                status=ActivityStatus.QC_FAILED,
+                canonical_id=canonical_id,
+                file_path=file_path,
+                qc_issues=ai_pattern_issues,
+                elevated_yaml=elevated_yaml,
+            )
+
+        # Adversarial check (non-blocking) - D113: Capture warnings for quality audit
+        adversarial_warnings = None
         try:
             verification = await self.sub_executor.verify_adversarially(
-                output={"yaml": elevated_yaml[:15000], "grade": grade or "A"},
+                output={
+                    "yaml": elevated_yaml[:15000],
+                    "grade": grade or "A",
+                    "valid_schema_fields": self.ACTIVITY_SCHEMA_SUMMARY,
+                },
                 skill_name="elevate_voice_activity",
                 persona="senior Montessori education specialist",
             )
             if not verification.passed:
                 logger.warning(f"Adversarial check found issues: {verification.issues}")
+                adversarial_warnings = verification.issues  # D113
         except Exception as adv_err:
             logger.warning(f"Adversarial verification skipped: {adv_err}")
 
@@ -2966,6 +3443,7 @@ If ANY of these appear, rewrite that sentence before outputting.
             elevated_yaml=elevated_yaml,
             activity_id=raw_id,
             is_final_attempt=is_final_attempt,
+            adversarial_warnings=adversarial_warnings,  # D113
         )
 
         self.scratch_pad.add("quality_audit", audit, step=7, skill_name="quality_audit")
@@ -3372,6 +3850,9 @@ If ANY of these appear, rewrite that sentence before outputting.
             # Fix age range to match original file (ELEVATE may incorrectly change it)
             elevated_yaml = self._fix_age_range(elevated_yaml, existing_yaml)
 
+            # D113: Fix LLM-hallucinated dates
+            elevated_yaml = self._fix_dates(elevated_yaml)
+
             # D80: Post-ELEVATE dash cleanup (elevate_existing path)
             elevated_yaml = self._remove_dashes(elevated_yaml)
 
@@ -3406,6 +3887,71 @@ If ANY of these appear, rewrite that sentence before outputting.
                     qc_issues=[f"Output truncated: {truncation_reason}"],
                     elevated_yaml=elevated_yaml,
                 )
+
+            # D113: Mid-field truncation detection
+            is_midfield_truncated, midfield_reason = self._detect_midfield_truncation(elevated_yaml)
+            if is_midfield_truncated:
+                logger.warning(f"[MIDFIELD-TRUNCATION] Detected: {midfield_reason}")
+                if not is_final_attempt:
+                    feedback = f"Content truncated mid-field: {midfield_reason}. Ensure all fields are complete."
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=[f"Content truncated mid-field: {midfield_reason}"],
+                    elevated_yaml=elevated_yaml,
+                )
+
+            # D112: AI smell check
+            ai_smell_issues = self._audit_ai_smell(elevated_yaml)
+            if ai_smell_issues:
+                if not is_final_attempt:
+                    feedback = f"AI smell detected: {ai_smell_issues}. Rewrite without conversational AI patterns."
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=ai_smell_issues,
+                    elevated_yaml=elevated_yaml,
+                )
+
+            # D113: AI writing pattern check (Categories 5-11)
+            ai_pattern_issues = self._audit_ai_patterns(elevated_yaml)
+            if ai_pattern_issues:
+                if not is_final_attempt:
+                    formatted_feedback = self._format_issue_feedback(ai_pattern_issues)
+                    feedback = f"AI writing patterns detected:\n{formatted_feedback}"
+                    continue
+                return ConversionResult(
+                    activity_id=activity_id,
+                    status=ActivityStatus.QC_FAILED,
+                    canonical_id=canonical_id,
+                    file_path=file_path,
+                    qc_issues=ai_pattern_issues,
+                    elevated_yaml=elevated_yaml,
+                )
+
+            # D113: Adversarial verification (Path 3 - was missing)
+            adversarial_warnings = None
+            try:
+                verification = await self.sub_executor.verify_adversarially(
+                    output={
+                        "yaml": elevated_yaml[:15000],
+                        "grade": "A",
+                        "valid_schema_fields": self.ACTIVITY_SCHEMA_SUMMARY,
+                    },
+                    skill_name="elevate_voice_activity",
+                    persona="senior Montessori education specialist",
+                )
+                if not verification.passed:
+                    logger.warning(f"Adversarial check found issues: {verification.issues}")
+                    adversarial_warnings = verification.issues
+            except Exception as adv_err:
+                logger.warning(f"Adversarial verification skipped: {adv_err}")
 
             # Stage 5: VALIDATE
             success, validate_output, error = await self._execute_validate(
@@ -3455,6 +4001,7 @@ If ANY of these appear, rewrite that sentence before outputting.
                 elevated_yaml=elevated_yaml,
                 activity_id=activity_id,
                 is_final_attempt=is_final_attempt,
+                adversarial_warnings=adversarial_warnings,  # D113
             )
 
             grade = audit.get("grade", "Unknown")
