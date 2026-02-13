@@ -56,6 +56,9 @@ from atlas.babybrains.ai_detection import (
     check_list_intros as _ai_check_list_intros,
     check_enthusiasm as _ai_check_enthusiasm,
     check_filler_phrases as _ai_check_filler_phrases,
+    # D114: Categories 2 & 4
+    check_outcome_promises as _ai_check_outcome_promises,
+    check_formal_transitions as _ai_check_formal_transitions,
 )
 from atlas.orchestrator.hooks import HookRunner
 from atlas.orchestrator.skill_executor import SkillExecutor, SkillLoader
@@ -64,6 +67,13 @@ from atlas.orchestrator.session_manager import SessionManager
 from atlas.orchestrator.subagent_executor import SubAgentExecutor
 
 logger = logging.getLogger(__name__)
+
+
+def _format_display_issue(issue: Any) -> str:
+    """Format a QC issue (str or dict) for human-readable display."""
+    if isinstance(issue, dict):
+        return issue.get("msg", issue.get("issue", str(issue)))
+    return str(issue)
 
 
 class ActivityStatus(Enum):
@@ -88,7 +98,7 @@ class ConversionResult:
     file_path: Optional[str] = None
     skip_reason: Optional[str] = None
     error: Optional[str] = None
-    qc_issues: list[str] = field(default_factory=list)
+    qc_issues: list[str | dict] = field(default_factory=list)
     qc_warnings: list[str] = field(default_factory=list)
     elevated_yaml: Optional[str] = None
 
@@ -141,7 +151,7 @@ class ActivityConversionPipeline:
         "execution_steps, observation_focus, typical_progression, safety_considerations, "
         "contraindications, requires_materials, grounded_in_principles, links_to_guidance, "
         "evidence_strength, stated_in_sources, modern_validation, au_cultural_adaptation, "
-        "au_compliance_standards, production_notes, tags, priority_ranking, "
+        "au_compliance_standards, tags, priority_ranking, "
         "query_frequency_estimate, parent_search_terms"
     )
 
@@ -150,7 +160,7 @@ class ActivityConversionPipeline:
     STAGE_TIMEOUTS = {
         "ingest": 300,      # 5 min - simple data extraction
         "research": 600,    # 10 min - cross-referencing
-        "transform": 900,   # 15 min - building 34-section YAML
+        "transform": 900,   # 15 min - building 33-section YAML
         "elevate": 1500,    # 25 min - voice elevation (most complex)
         "validate": 300,    # 5 min - structural checks
         "qc_hook": 120,     # 2 min - regex + LLM context checks (D109)
@@ -2008,10 +2018,11 @@ class ActivityConversionPipeline:
 
     def _audit_ai_patterns(self, yaml_content: str) -> list[dict]:
         """
-        D113: Scan elevated YAML for AI writing patterns (Categories 5-11).
+        D113/D114: Scan elevated YAML for AI writing patterns (Categories 2, 4-11).
 
-        Checks for non-contractions, hollow affirmations, AI clichés,
-        hedge stacking, list intros, enthusiasm markers, and filler phrases.
+        Checks for outcome promises, formal transitions, non-contractions,
+        hollow affirmations, AI clichés, hedge stacking, list intros,
+        enthusiasm markers, and filler phrases.
         Strips parent_search_terms section before checking (SEO content
         would produce false positives).
 
@@ -2030,6 +2041,22 @@ class ActivityConversionPipeline:
         )
 
         all_issues = []
+
+        # Category 2: Outcome promises (D114)
+        for issue in _ai_check_outcome_promises(text):
+            all_issues.append({
+                "code": "AI_PATTERN_OUTCOME_PROMISE",
+                "category": "outcome_promise",
+                "msg": issue.get("msg", "Outcome promise detected"),
+            })
+
+        # Category 4: Formal transitions (D114)
+        for issue in _ai_check_formal_transitions(text):
+            all_issues.append({
+                "code": "AI_PATTERN_FORMAL_TRANSITION",
+                "category": "formal_transition",
+                "msg": issue.get("msg", "Formal transition detected"),
+            })
 
         # Category 5: Non-contractions
         for issue in _ai_check_non_contractions(text):
@@ -2499,7 +2526,7 @@ OR if blocking issues found:
         Pipeline stages:
             1. Ingest - Load and validate raw activity
             2. Research - Find principles, safety, sources
-            3. Transform - Build 34-section canonical YAML
+            3. Transform - Build 33-section canonical YAML
             4. Elevate - Apply BabyBrains voice (with feedback if retrying)
             5. Validate - Structure and cross-reference checks
             6. QC Hook - Deterministic quality gate
@@ -2925,6 +2952,9 @@ OR if blocking issues found:
         superlative_issues = []
         emdash_issues = []
         ai_smell_issues = []
+        # D114: Categories 2 & 4
+        outcome_promise_issues = []
+        formal_transition_issues = []
         # D113: New issue groups for categories 5-11
         non_contraction_issues = []
         hollow_affirmation_issues = []
@@ -2946,6 +2976,13 @@ OR if blocking issues found:
                 emdash_issues.append(msg)
             elif "CONVERSATIONAL" in code or "ai_tell" in category or "ai smell" in msg.lower():
                 ai_smell_issues.append(msg)
+            # D114: Route categories 2 & 4
+            # Matches both AI_PATTERN_OUTCOME_PROMISE and SCRIPT_OUTCOME_PROMISE
+            elif "OUTCOME_PROMISE" in code or "outcome_promise" in category:
+                outcome_promise_issues.append(msg)
+            # Matches both AI_PATTERN_FORMAL_TRANSITION and SCRIPT_FORMAL_TRANSITION
+            elif "FORMAL_TRANSITION" in code or "formal_transition" in category:
+                formal_transition_issues.append(msg)
             # D113: Route new categories
             elif "NON_CONTRACTION" in code or "non_contraction" in category:
                 non_contraction_issues.append(msg)
@@ -3062,6 +3099,60 @@ HOW TO FIX:
 - AFTER: "Start tummy time small."
 - BEFORE: "Think of it as a brain workout."
 - AFTER: "It's a brain workout." (or just use the metaphor directly)
+"""
+            sections.append(section)
+
+        # D114: Feedback for categories 2 & 4
+        if outcome_promise_issues:
+            section = """### OUTCOME PROMISES - MUST FIX (D114)
+
+Found outcome promises that claim guaranteed child development:
+"""
+            for issue in outcome_promise_issues[:5]:
+                section += f"- {issue}\n"
+
+            section += """
+BANNED PATTERNS:
+- "will develop" → "may help support" or "can encourage"
+- "will become" → "may grow into" or describe what you observe
+- "will make your child" → "can give your child opportunities to"
+- "guarantees" → Remove entirely, no activity guarantees outcomes
+- "ensures your child will" → "supports your child's"
+
+EXAMPLE TRANSFORMS:
+- BEFORE: "This activity will develop your child's motor skills."
+- AFTER: "This activity supports motor skill development."
+
+- BEFORE: "Tummy time guarantees stronger neck muscles."
+- AFTER: "Tummy time helps build neck strength over time."
+"""
+            sections.append(section)
+
+        if formal_transition_issues:
+            section = """### FORMAL TRANSITIONS - MUST FIX (D114)
+
+Found academic-sounding transitions that betray AI authorship:
+"""
+            for issue in formal_transition_issues[:5]:
+                section += f"- {issue}\n"
+
+            section += """
+BANNED WORDS (never use):
+moreover, furthermore, consequently, nevertheless, additionally,
+subsequently, nonetheless, hence, thus, therefore, in conclusion
+
+ALSO BANNED: "However" at start of sentence.
+
+HOW TO FIX:
+- Remove the transition word entirely and restructure
+- BEFORE: "Furthermore, babies benefit from floor time."
+- AFTER: "Babies also benefit from floor time." (or just start the sentence)
+- BEFORE: "However, not all babies enjoy tummy time."
+- AFTER: "Not all babies enjoy tummy time, and that's okay."
+- BEFORE: "Consequently, motor skills improve."
+- AFTER: "Motor skills improve as a result." (or just state the fact)
+
+Use natural connectors: "and", "but", "so", "also", or just start a new sentence.
 """
             sections.append(section)
 
@@ -3626,7 +3717,7 @@ If ANY of these appear, rewrite that sentence before outputting.
             if display_issues:
                 print(f"Issues from attempt {attempt + 1}:")
                 for issue in display_issues[:5]:
-                    print(f"  - {issue}")
+                    print(f"  - {_format_display_issue(issue)}")
 
         return last_result or ConversionResult(
             activity_id=raw_id,
@@ -3687,7 +3778,7 @@ If ANY of these appear, rewrite that sentence before outputting.
         if result.qc_issues:
             print(f"Issues ({len(result.qc_issues)}):")
             for issue in result.qc_issues[:5]:
-                print(f"  - {issue}")
+                print(f"  - {_format_display_issue(issue)}")
             if len(result.qc_issues) > 5:
                 print(f"  ... and {len(result.qc_issues) - 5} more")
 
@@ -4578,7 +4669,7 @@ Quality audit requires Grade A to proceed to human review.
             if result.qc_issues:
                 print("QC Issues:")
                 for issue in result.qc_issues[:5]:
-                    print(f"  - {issue}")
+                    print(f"  - {_format_display_issue(issue)}")
             pipeline._update_progress_file(raw_id, ActivityStatus.FAILED, result.error or "Failed")
             sys.exit(1)  # D84: Exit with error code on failure
 
@@ -4599,7 +4690,7 @@ Quality audit requires Grade A to proceed to human review.
             if result.qc_issues:
                 print("QC Issues:")
                 for issue in result.qc_issues[:5]:
-                    print(f"  - {issue}")
+                    print(f"  - {_format_display_issue(issue)}")
             pipeline._update_progress_file(raw_id, ActivityStatus.QC_FAILED, "QC failed")
             sys.exit(1)  # D84: Exit with error code on QC failure
 
@@ -4693,7 +4784,7 @@ Quality audit requires Grade A to proceed to human review.
             if result.qc_issues:
                 print(f"QC Issues ({len(result.qc_issues)}):")
                 for issue in result.qc_issues:
-                    print(f"  - {issue}")
+                    print(f"  - {_format_display_issue(issue)}")
             if result.qc_warnings:
                 print(f"QC Warnings ({len(result.qc_warnings)}):")
                 for warning in result.qc_warnings[:5]:
@@ -4780,7 +4871,7 @@ Quality audit requires Grade A to proceed to human review.
             if result.qc_issues:
                 print("QC Issues:")
                 for issue in result.qc_issues[:5]:
-                    print(f"  - {issue}")
+                    print(f"  - {_format_display_issue(issue)}")
             sys.exit(1)
 
         else:

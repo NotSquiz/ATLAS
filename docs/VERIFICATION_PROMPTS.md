@@ -319,3 +319,209 @@ from atlas.health.progression import ProgressionService
 ---
 
 *Agents should use these patterns proactively, especially for safety-critical domains.*
+
+---
+
+## D112: Voice Spec + AI Detection Pipeline Verification
+
+### Voice Spec Integrity Check
+```
+Verify: Does the voice spec tag structure parse correctly?
+1. All XML-like tags have matching open/close pairs
+2. No broken tags (e.g., asterisks instead of underscores)
+3. <persona_architecture> replaces old <persona>
+4. <ai_proof_architecture> replaces old <ai_detection_avoidance>
+5. <wonder_science_bridge> exists between </voice_dna> and <ai_proof_architecture>
+6. <anti_pattern_examples> exists before </few_shot_examples>
+7. No examples contain banned AI patterns ("Here's the thing", etc.)
+```
+
+### Cross-Repo Consistency Check
+```
+Verify: Are all voice spec consumers updated?
+1. voice_spec.py section lists reference ai_proof_architecture (not ai_detection_avoidance)
+2. voice_spec.py section lists include wonder_science_bridge
+3. ELEVATE_VOICE_EXTRACT.md contains persona_architecture (not old persona)
+4. ELEVATE_VOICE_EXTRACT.md contains ai_proof_architecture (not ai_detection_avoidance)
+5. ELEVATE_VOICE_EXTRACT.md does NOT contain "Here's the thing" as acceptable
+6. No file in pipeline references old tag name ai_detection_avoidance
+```
+
+### Category 13 Detection Verification
+```
+Verify: Do all voice spec banned patterns have matching detection?
+For each pattern in <what_you_never_do>:
+  - Regex exists in CONVERSATIONAL_AI_TELLS
+  - Test exists in test_ai_detection.py
+  - Both ASCII and curly apostrophe variants handled
+  - All matches reported (no early break)
+```
+
+### Pipeline Wiring Verification
+```
+Verify: Does _audit_ai_smell() work end-to-end?
+1. _audit_ai_smell() is called in all 3 code paths:
+   - convert_activity (main path)
+   - _convert_from_cached_transform (retry path)
+   - elevate_existing_file (elevation path)
+2. Issues from _audit_ai_smell() route correctly to ai_smell_issues in _format_issue_feedback()
+3. AI smell feedback section generates actionable rewrite guidance
+4. Issues block progression (added to qc_issues, trigger retry)
+```
+
+### Number Range Preservation Verification
+```
+Verify: Does _remove_dashes() preserve number ranges?
+Test cases:
+  "5-8 cm" -> "5-8 cm" (en-dash preserved as hyphen)
+  "0-36 months" -> "0-36 months" (em-dash preserved as hyphen)
+  "37-38 C" -> "37-38 C" (temperature range)
+  "word-word" -> "word. word" (prose dash replaced)
+  "word-. Next" -> "word. Next" (no double period)
+```
+
+### Burstiness & AI-Proof Writing Verification
+```
+Verify: Does the voice spec produce measurably different output?
+1. Re-run 2 previously-failed activities with new spec
+2. Measure sentence length SD (target: >8 words)
+3. Check for 0 em-dashes in output
+4. Check for 0 banned AI patterns in output
+5. Compare Grade before/after spec change
+```
+
+---
+
+## D113 + D114: Full AI Detection Coverage Verification
+
+### 13-Category Coverage Matrix
+```
+Verify: All 13 AI detection categories have at least one blocking gate.
+
+| Cat | Name                  | QC Hook | _audit_ai_patterns | _audit_ai_smell | Blocking? |
+|-----|-----------------------|---------|--------------------|-----------------| --------- |
+|  1  | Superlatives          |   YES   |        YES (D113)  |                 |    YES    |
+|  2  | Outcome Promises      |         |        YES (D114)  |                 |    YES    |
+|  3  | Pressure Language     |   YES   |                    |                 |    YES    |
+|  4  | Formal Transitions    |         |        YES (D114)  |                 |    YES    |
+|  5  | Non-Contractions      |         |        YES (D113)  |                 |    YES    |
+|  6  | Hollow Affirmations   |         |        YES (D113)  |                 |    YES    |
+|  7  | AI Clichés            |         |        YES (D113)  |                 |    YES    |
+|  8  | Hedge Stacking        |         |        YES (D113)  |                 |    YES    |
+|  9  | List Intros           |         |        YES (D113)  |                 |    YES    |
+| 10  | Enthusiasm Markers    |         |        YES (D113)  |                 |    YES    |
+| 11  | Filler Phrases        |         |        YES (D113)  |                 |    YES    |
+| 12  | Em-Dashes             |   YES   |                    |                 |    YES    |
+| 13  | Conversational AI     |         |                    |      YES (D112) |    YES    |
+
+Expected: All 13 rows show YES in at least one gate column.
+```
+
+### 3 Code Path Verification
+```
+Verify: All 3 pipeline code paths run all AI detection gates.
+
+Path 1: convert_with_retry (new file, full pipeline)
+  → Calls _audit_ai_patterns() at VALIDATE stage? YES
+  → Calls _audit_ai_smell() at VALIDATE stage? YES
+  → Calls QC hook subprocess? YES
+
+Path 2: elevate_existing_file (re-elevate existing canonical)
+  → Calls _audit_ai_patterns()? YES
+  → Calls _audit_ai_smell()? YES
+  → Calls adversarial verification? YES (D113)
+
+Path 3: cached transform path (retry with cached stages)
+  → Calls _audit_ai_patterns()? YES (stages 4-7 still run)
+  → Calls _audit_ai_smell()? YES
+  → Calls QC hook subprocess? YES
+
+Expected: All 3 paths run all gates. No path skips detection.
+```
+
+### Type Safety Verification
+```
+Verify: qc_issues consumers handle str|dict correctly.
+
+1. Search: grep -n "qc_issues" atlas/pipelines/activity_conversion.py
+2. Every location that prints/displays a qc_issue must use _format_display_issue()
+3. _format_display_issue handles: str → passthrough, dict → extract "msg" key
+4. ConversionResult.qc_issues typed as list[str | dict]
+
+Expected: No raw dict repr in CLI output. All 6 print locations use helper.
+```
+
+### Feedback Routing Verification
+```
+Verify: All AI pattern codes have feedback routing in _format_issue_feedback().
+
+Codes that must route to feedback sections:
+  SCRIPT_NO_CONTRACTION    → NON-CONTRACTIONS section
+  SCRIPT_HOLLOW_AFFIRMATION → AI WRITING PATTERNS section
+  SCRIPT_AI_CLICHE         → AI WRITING PATTERNS section
+  SCRIPT_HEDGE_STACKING    → AI WRITING PATTERNS section
+  SCRIPT_LIST_INTRO        → AI WRITING PATTERNS section
+  SCRIPT_ENTHUSIASM        → AI WRITING PATTERNS section
+  SCRIPT_FILLER_PHRASE     → FILLER PHRASES section
+  SCRIPT_OUTCOME_PROMISE   → OUTCOME PROMISES section (D114)
+  SCRIPT_FORMAL_TRANSITION → FORMAL TRANSITIONS section (D114)
+
+Expected: Each code produces specific, actionable feedback (not generic "fix this").
+```
+
+### Regression Audit Prompt
+```
+Run: python scripts/audit_canonicals.py
+
+Verify: All 29 canonical YAMLs pass all 13 AI detection categories.
+If failures exist, categorize:
+  - Pre-existing violations (written before D112-D114 gates existed)
+  - False positives (detection rule too aggressive)
+  - Genuine quality issues needing remediation
+
+Action: Pre-existing violations → remediation backlog (not blocking new pipeline runs).
+False positives → adjust detection rules. Genuine issues → fix in canonical files.
+```
+
+---
+
+## D115: Production Field Removal Verification
+
+```
+Verify: Activity Atoms contain NO production direction fields.
+
+1. grep -r "^production_notes:" knowledge/data/canonical/ --include="*.yaml"
+   Expected: ZERO matches
+
+2. grep -r "^content_production:" knowledge/data/canonical/ --include="*.yaml"
+   Expected: ZERO matches
+
+3. grep "production_notes" atlas/pipelines/activity_conversion.py
+   Expected: ZERO matches (removed from ACTIVITY_SCHEMA_SUMMARY)
+
+4. grep "production_notes" knowledge/scripts/check_activity_quality.py
+   Expected: ZERO matches (removed from REQUIRED_SECTIONS)
+
+5. Spot-check: tail -15 knowledge/data/canonical/activities/movement/ACTIVITY_MOVEMENT_TUMMY_TIME_MICRO_SESSIONS_0_6M.yaml
+   Expected: Ends with parent_search_terms. No production_notes or content_production.
+
+6. python scripts/audit_canonicals.py
+   Expected: Runs successfully (no errors about missing production fields)
+```
+
+### Separation of Concerns Verification
+```
+Verify: Pipeline generates Activity Atoms WITHOUT production fields.
+
+1. Check: ACTIVITY_SCHEMA_SUMMARY constant in activity_conversion.py
+   Expected: "production_notes" NOT in the string
+
+2. Check: REQUIRED_SECTIONS in check_activity_quality.py
+   Expected: "production_notes" NOT in the list
+
+3. Check: transform_activity.md section count
+   Expected: "31" (not "32")
+
+4. Check: validate_activity.md
+   Expected: No "production" group in required_sections
+```

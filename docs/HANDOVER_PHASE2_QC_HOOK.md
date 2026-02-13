@@ -135,10 +135,7 @@ evidence_strength, stated_in_sources, modern_validation
 # SECTION 28-30: AU ADAPTATION
 au_cultural_adaptation, au_compliance_standards, au_resources
 
-# SECTION 31: PRODUCTION NOTES
-production_notes
-
-# SECTION 32: TAGS AND METADATA
+# SECTION 31: TAGS AND METADATA
 tags, priority_ranking, query_frequency_estimate, parent_search_terms
 ```
 

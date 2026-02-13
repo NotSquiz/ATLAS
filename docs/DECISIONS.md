@@ -2,7 +2,7 @@
 
 Decisions are logged chronologically. Future agents should read this to understand why choices were made.
 
-**Last Updated:** February 13, 2026 (D113: Pipeline quality gate hardening)
+**Last Updated:** February 13, 2026 (D115: Strip production fields from Activity Atoms)
 
 ---
 
@@ -3587,5 +3587,65 @@ ai_detection.py has 13 categories:
 - Path 3 (`elevate_existing_file`) now has adversarial verification (was missing entirely)
 
 **Tests:** 25 new cases across 5 classes. 192 pipeline tests, 1082 total pass.
+
+---
+
+## D114: Pipeline Production Readiness — Categories 2 & 4 + Type Safety
+**Date:** February 13, 2026
+**Context:** Independent audit agents found 2 orphaned AI detection categories (Outcome Promises, Formal Transitions) — defined in `ai_detection.py` but never imported or called anywhere in the pipeline. Also found `ConversionResult.qc_issues` typed as `list[str]` but actually storing `list[dict]`, and 6 print locations rendering dicts as raw repr instead of readable messages.
+
+**Architecture Gap (closed):**
+```
+ai_detection.py has 13 categories:
+  Cat 1:    Superlatives    — Wired in QC hook + _audit_ai_patterns (D113)
+  Cat 2:    Outcome Promises — NOT IMPORTED ← Gap
+  Cat 3:    Pressure Language — Wired in QC hook
+  Cat 4:    Formal Transitions — NOT IMPORTED ← Gap
+  Cat 5-11: Wired in _audit_ai_patterns (D113)
+  Cat 12:   Em-dashes — Wired in QC hook + _remove_dashes
+  Cat 13:   Conversational AI — Wired in _audit_ai_smell (D112)
+```
+
+**Fix (3 changes):**
+
+1. **Wire Categories 2 & 4 into `_audit_ai_patterns()`** — Added `check_outcome_promises` (Cat 2) and `check_formal_transitions` (Cat 4) imports and calls. Both run after `parent_search_terms` strip. Both already wired into all 3 code paths via existing `_audit_ai_patterns` calls.
+
+2. **Expand `_format_issue_feedback()`** — Added routing for `OUTCOME_PROMISE` and `FORMAL_TRANSITION` codes with full feedback sections: banned patterns, replacement suggestions, before/after examples.
+
+3. **Type safety for `qc_issues`** — Changed `ConversionResult.qc_issues: list[str]` to `list[str | dict]`. Added module-level `_format_display_issue(issue: Any) -> str` helper. Updated all 6 print locations to use helper (extracts `msg` from dicts, passes strings through).
+
+**Design Decisions:**
+- All 13 categories now have at least one blocking gate — no orphaned detection code remains
+- `_format_issue_feedback()` handles both `str` and `dict` issue types via `isinstance` check
+- Type union `str | dict` chosen over full migration to `dict` to avoid breaking existing string-based issues from QC hook subprocess
+
+**Tests:** 8 new cases. 1131 total pass (2 pre-existing env-dependent failures).
+
+---
+
+## D115: Strip Production Fields from Activity Atoms
+**Date:** February 13, 2026
+**Context:** Activity Atoms contained `production_notes` (scene descriptions, timestamps, accessibility) and `content_production` (format_fit scores, production notes). These created mixed concerns: knowledge artifacts entangled with video/content production direction that becomes stale when platform strategy changes.
+
+**Architecture (clean separation):**
+```
+Activity Atom = WHAT, WHY, HOW (pure knowledge)
+  ↓ (input)
+Director Agent + Research Context → Video Brief (platform-specific, always current)
+```
+
+**Changes:**
+- Removed `production_notes` from `ACTIVITY_SCHEMA_SUMMARY` in pipeline
+- Removed `production_notes` from QC hook `REQUIRED_SECTIONS` (33 fields, was 34)
+- Deleted SECTION 31 from `transform_activity.md` (31 sections, was 32)
+- Removed production fields from `validate_activity.md` (29 required sections)
+- Removed `production_notes.scene_description` from `elevate_voice_activity.md`
+- Removed `production_notes` from `audit_canonicals.py` PROSE_FIELDS
+- Stripped production blocks from 71 YAML files (28 activities, 38 guidance, 5 staging) — 812 lines removed
+- Updated 7 documentation files across 3 repos
+
+**Script:** `scripts/strip_production_fields.py` — regex-based strip with safety checks (preserves `au_safety_overlays`, validates `tags:` and `parent_search_terms` survive).
+
+**Tests:** 901 passed (pipeline + babybrains), 0 regressions. Audit script runs clean.
 
 ---

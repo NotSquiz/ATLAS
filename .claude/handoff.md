@@ -1,8 +1,151 @@
 # ATLAS Session Handoff
 
 **Date:** February 13, 2026
-**Status:** D113 complete. Wired AI detection categories 5-11 into blocking gates. All 1082 tests pass.
+**Status:** D115 complete. Production fields stripped from Activity Atoms. Clean separation: Activity Atom = pure knowledge, Director Agent = production decisions.
 **Rename Pending:** ATLAS -> Astro (not blocking build, do after Sprint 3)
+
+---
+
+## D115: Strip Production Fields from Activity Atoms (Feb 13, 2026)
+
+### What Was Done
+1. **Pipeline schema** — Removed `production_notes` from `ACTIVITY_SCHEMA_SUMMARY`, updated section counts (34→33) in 2 comments
+2. **QC hook** — Removed `production_notes` from `REQUIRED_SECTIONS` (34→33 fields)
+3. **Transform skill** — Deleted SECTION 31 (production_notes template), updated counts 32→31
+4. **Elevate skill** — Removed `production_notes.scene_description` from priority table
+5. **Validate skill** — Removed production group from required_sections, updated count 32→29
+6. **Audit script** — Removed `production_notes` from PROSE_FIELDS
+7. **Strip script** — Built `scripts/strip_production_fields.py` (regex-based, safety-checked)
+8. **71 YAML files stripped** — 28 activities + 38 guidance + 5 staging = 812 lines removed
+9. **7 doc files updated** — Handoff, rubric, playbook, schema draft, handover, remediation plan
+10. **DECISIONS.md** — Added D115 entry
+11. **VERIFICATION_PROMPTS.md** — Added D115 verification section
+
+### Key Architecture Decision
+```
+BEFORE: Activity Atom = knowledge + production direction (scenes, shots, format_fit scores)
+AFTER:  Activity Atom = pure knowledge → Director Agent → Video Brief
+```
+
+### Verification Results
+- `^production_notes:` in canonical YAMLs: **ZERO** matches
+- `^content_production:` in canonical YAMLs: **ZERO** matches
+- `production_notes` in pipeline code: **ZERO** matches
+- `au_safety_overlays` preserved: **31/31** guidance files intact
+- Tests: **901 passed** (pipeline + babybrains), 0 regressions
+- Audit script: runs clean (no production field errors)
+
+### Cross-Repo Changes
+- `knowledge/scripts/check_activity_quality.py` — REQUIRED_SECTIONS updated
+- `knowledge/coverage/VOICE_ELEVATION_RUBRIC.md` — Section 5.7 removed
+- `knowledge/docs/planning/ACTIVITIES_DESIGN_PLAYBOOK.md` — content_production template removed
+- `knowledge/docs/schema/06_SCHEMA_DESIGN_DRAFT.md` — 3 production blocks removed
+- `knowledge/.claude/workflow/HANDOFF_CONVERSION_SESSION.md` — production_notes schema removed
+- `babybrains-os/skills/activity/transform_activity.md` — SECTION 31 deleted, counts updated
+- `babybrains-os/skills/activity/elevate_voice_activity.md` — production_notes row deleted
+- `babybrains-os/skills/activity/validate_activity.md` — production group removed, counts updated
+
+---
+
+## D114 Continued: Docs + Regression Audit (Feb 13, 2026 — Session 2)
+
+### What Was Done
+1. **DECISIONS.md** — Added D114 entry documenting Categories 2 & 4 wiring + type safety fixes
+2. **VERIFICATION_PROMPTS.md** — Added D113+D114 combined verification section (13-category matrix, 3 code paths, type safety, feedback routing, regression audit prompt)
+3. **atlas-progress.json** — Added D113, D113-fix, D114, D114-docs, D114-audit task entries
+4. **scripts/audit_canonicals.py** — NEW regression audit script (runs all 13 AI detection categories against canonical YAMLs)
+5. **tests/scripts/test_audit_canonicals.py** — NEW 14 tests for audit script (all pass)
+
+### Regression Audit Results (29 Canonical YAMLs)
+
+**29/29 files fail** under current detection rules. 76 total issues (1 CRITICAL, 46 HIGH, 29 MEDIUM).
+
+| Category | Count | Analysis |
+|----------|-------|----------|
+| Cat 5: Non-Contractions | 27 | Most are single instances per file. Genuine violations. |
+| Cat 1: Superlatives | 16 | ~50% FALSE POSITIVES: "is best in early morning", "is ideal" (predicate exception exists but "is best" exception missing). ~50% are negated perfect ("isn't a perfect result") where exception only covers "doesn't need to be perfect". |
+| Cat 3: Pressure Language | 10 | ALL FALSE POSITIVES: Every instance is negated ("you don't need to") or conditional ("if you need to"). No exception for negation/conditional context. |
+| Cat 13: Conversational AI | 9 | Genuine violations ("Here's the thing:", "Not just X, but Y"). Pre-date D112 rules. |
+| Cat 2: Outcome Promises | 7 | Mix: some "will become" used in descriptive context ("they will become confident"), not as promises. Needs context analysis. |
+| Cat 4: Formal Transitions | 4 | "therefore" and "thus" — genuine but mild. Some in rationale fields where formal register is appropriate. |
+| Cat 12: Em-Dashes | 1 | Genuine (tummy-time file). Single instance. |
+| Cat 6: Hollow Affirmations | 1 | Genuine. |
+| Cat 7: AI Clichés | 1 | Genuine. |
+
+### Priority Fixes Needed (Detection Rules)
+
+**P0 — Cat 3 Pressure Language (all 10 are false positives):**
+- Add negation exception: `don't need to`, `doesn't need to`, `don't have to`
+- Add conditional exception: `if you need to`, `when you need to`, `rest if you need to`
+
+**P1 — Cat 1 Superlatives (8+ are false positives):**
+- Add "is best" exception (predicate form: "X is best in/before/after/when")
+- Expand "perfect" negation to cover: "isn't a perfect", "not a perfect", "don't expect perfect"
+
+**P2 — Cat 2 Outcome Promises:**
+- Consider allowing descriptive "will become" in rationale/why_it_works fields (technical description vs marketing promise)
+
+### Files Changed
+- `docs/DECISIONS.md` — D114 entry added
+- `docs/VERIFICATION_PROMPTS.md` — D113+D114 verification section appended
+- `.claude/atlas-progress.json` — D113/D114 tasks + metadata updated
+- `scripts/audit_canonicals.py` — NEW
+- `tests/scripts/test_audit_canonicals.py` — NEW
+- `tests/scripts/__init__.py` — NEW
+
+### Next Steps
+1. **Fix Cat 3 false positives** — Add negation/conditional exceptions to `check_pressure_language()`
+2. **Fix Cat 1 false positives** — Expand superlative exception patterns
+3. **Categories 14-17** — Burstiness, colon overuse, list uniformity, question-answer (deferred)
+4. **Independent critic** — Spawn Opus to read 2-3 canonicals against full voice spec (deferred)
+5. **Remediation** — Fix genuine violations in canonical YAMLs (Cat 5 non-contractions, Cat 13 AI tells)
+
+---
+
+## D114: Pipeline Production Readiness — Categories 2 & 4 + Type Safety (Feb 13, 2026)
+
+### Problem
+Audit agents found 2 orphaned AI detection categories (Outcome Promises, Formal Transitions) — defined in `ai_detection.py` but never imported or called in the pipeline. Also found `ConversionResult.qc_issues` typed as `list[str]` but actually storing `list[dict]`, and 6 print locations rendering dicts as raw repr.
+
+### What Was Done
+
+**Wired categories 2 & 4 into `_audit_ai_patterns()`:**
+- `check_outcome_promises` (Category 2): Detects "will develop", "guarantees", etc.
+- `check_formal_transitions` (Category 4): Detects "moreover", "furthermore", sentence-start "However", etc.
+- Both run after `parent_search_terms` strip (prevents SEO false positives)
+- Both already wired into all 3 code paths via existing `_audit_ai_patterns` calls
+
+**Expanded `_format_issue_feedback()`:**
+- Routing for `OUTCOME_PROMISE` and `FORMAL_TRANSITION` codes
+- Full feedback sections with banned patterns, replacement suggestions, before/after examples
+
+**Type safety fixes:**
+- `ConversionResult.qc_issues: list[str]` → `list[str | dict]`
+- Module-level `_format_display_issue(issue: Any) -> str` helper
+- All 6 print locations now use helper (extracts `msg` from dicts, passes strings through)
+
+**Independent code review:** Spawned code-reviewer agent per `.claude/agents/code-reviewer.md`. Found 4 minor issues (missing type hint, 3 test gaps, dual-matching routing comment). All fixed before merge.
+
+**Tests:** 15 new test cases across 3 classes (359 total pipeline+AI detection tests, all pass)
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `atlas/pipelines/activity_conversion.py` | 2 imports, helper, _audit_ai_patterns expanded, _format_issue_feedback expanded, type annotation, 6 print fixes |
+| `tests/pipelines/test_activity_conversion.py` | 15 new tests (8 detection, 2 feedback routing, 5 display helper) |
+
+### Process
+1. Two research agents ran independently: qc_issues consumer audit + 13-category trace
+2. User wrote implementation plan from audit findings
+3. Implementation executed per plan
+4. Independent code-reviewer agent spawned, found 4 issues
+5. All 4 issues fixed and re-verified
+6. Handoff updated
+
+### Next Steps
+1. Clear caches: `rm -f ~/.atlas/scratch/convert_*.json`
+2. Re-run previously-failed activities to validate categories 2 & 4 catch real issues
+3. Em-dash implementation consolidation (3 duplicate impls exist — deferred, not blocking)
 
 ---
 
