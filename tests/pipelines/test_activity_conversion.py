@@ -1780,6 +1780,17 @@ class TestFormatIssueFeedbackD113:
         assert "FILLER PHRASES" in feedback
         assert '"In order to" → "To"' in feedback
 
+    def test_dict_msg_does_not_crash(self, pipeline):
+        """D113-fix: msg field that is a dict should not crash .lower()."""
+        issues = [{
+            "category": "QC",
+            "issue": {"code": "AI_PATTERN_NON_CONTRACTION", "msg": "nested dict"},
+            "fix": "Review and fix",
+        }]
+        # Should not raise AttributeError
+        feedback = pipeline._format_issue_feedback(issues)
+        assert isinstance(feedback, str)
+
 
 # ============================================================
 # D113: audit_quality adversarial param (2 cases)

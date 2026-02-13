@@ -2935,7 +2935,8 @@ OR if blocking issues found:
         for issue in issues:
             code = issue.get("code", "").upper()
             category = issue.get("category", "").lower()
-            msg = issue.get("issue", issue.get("msg", ""))
+            raw_msg = issue.get("issue", issue.get("msg", ""))
+            msg = str(raw_msg) if not isinstance(raw_msg, str) else raw_msg
 
             if "PRESSURE" in code or "pressure" in category:
                 pressure_issues.append(msg)
@@ -3595,10 +3596,15 @@ If ANY of these appear, rewrite that sentence before outputting.
             # Use QC issues if QC failed, otherwise use quality audit issues
             if result.status == ActivityStatus.QC_FAILED and result.qc_issues:
                 # Convert QC issues to audit format for reflection
-                issues = [
-                    {"category": "QC", "issue": issue, "fix": "Review and fix"}
-                    for issue in result.qc_issues
-                ]
+                # D113: qc_issues may contain dicts (from _audit_ai_patterns)
+                # or strings (from QC hook). Normalize to audit format.
+                issues = []
+                for issue in result.qc_issues:
+                    if isinstance(issue, dict):
+                        # Already structured — pass through directly
+                        issues.append(issue)
+                    else:
+                        issues.append({"category": "QC", "issue": str(issue), "fix": "Review and fix"})
                 grade = "QC_FAILED"
             else:
                 # Get audit results from scratch pad
